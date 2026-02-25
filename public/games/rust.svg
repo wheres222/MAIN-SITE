@@ -1,0 +1,20 @@
+<svg width="760" height="980" viewBox="0 0 760 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="bg" x1="380" y1="0" x2="380" y2="980" gradientUnits="userSpaceOnUse">
+    <stop stop-color="#231B10"/>
+    <stop offset="1" stop-color="#10131F"/>
+  </linearGradient>
+  <radialGradient id="spot" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(380 780) rotate(90) scale(310 240)">
+    <stop stop-color="#F6B32C" stop-opacity="0.82"/>
+    <stop offset="1" stop-color="#F6B32C" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<rect width="760" height="980" rx="20" fill="url(#bg)"/>
+<polygon points="80,940 670,940 560,130" fill="#C0891C" fill-opacity="0.22"/>
+<ellipse cx="380" cy="780" rx="320" ry="220" fill="url(#spot)"/>
+<circle cx="380" cy="320" r="130" fill="#5E646D"/>
+<circle cx="340" cy="300" r="32" fill="#0F1219"/>
+<circle cx="420" cy="300" r="32" fill="#0F1219"/>
+<rect x="290" y="470" width="180" height="290" rx="78" fill="#646B74"/>
+<text x="380" y="910" fill="#F1E7D1" font-size="108" font-family="Arial Black, Arial" text-anchor="middle">RUST</text>
+</svg>
