@@ -1,4 +1,4 @@
-# CheatParadise SellAuth Marketplace
+﻿# CheatParadise SellAuth Marketplace
 
 This project is a full storefront built with Next.js, with:
 
