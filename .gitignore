@@ -9,6 +9,7 @@ build/
 
 # Local tooling/runtime artifacts
 .node/
+node.zip
 
 # Environment files
 .env
