@@ -23,6 +23,7 @@ Set:
 - Optional: `SELLAUTH_API_BASE_URL` (default: `https://api.sellauth.com`)
 - Optional: `NEXT_PUBLIC_DISCORD_URL`
 - Optional: `NEXT_PUBLIC_SUPPORT_URL`
+- Optional: `NEXT_IMAGE_REMOTE_HOSTS` (comma-separated HTTPS hostnames for external images)
 
 Security note:
 - Never commit real API keys to the repository.
