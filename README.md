@@ -24,6 +24,10 @@ Set:
 - Optional: `NEXT_PUBLIC_DISCORD_URL`
 - Optional: `NEXT_PUBLIC_SUPPORT_URL`
 
+Security note:
+- Never commit real API keys to the repository.
+- If a key was ever committed, rotate it immediately in SellAuth.
+
 ## 2. Install dependencies
 
 If you have Node installed:
