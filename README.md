@@ -62,6 +62,10 @@ Open:
     - optional `email`, `couponCode`
   - Creates SellAuth checkout and returns `redirectUrl` when available
 
+- `GET /api/sellauth-health`
+  - Validates current SellAuth env credentials against your shop
+  - Use this first when checkout/storefront calls return `401 Unauthenticated`
+
 ## Notes
 
 - Without SellAuth env vars, UI remains fully interactive in demo mode.
