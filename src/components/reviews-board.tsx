@@ -65,10 +65,6 @@ export function ReviewsBoard({ reviews }: ReviewsBoardProps) {
         <p className={styles.subtitle}>
           Verified buyer feedback including rating, date, and purchased product details.
         </p>
-        <p className={styles.integrationNote}>
-          <span className={styles.integrationDot} />
-          Demo feed now, SellAuth reviews integration next.
-        </p>
       </header>
 
       <section className={styles.grid}>

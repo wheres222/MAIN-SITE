@@ -39,8 +39,6 @@ const faqs = [
 
 export default function SupportPage() {
   const discordUrl = getDiscordUrl();
-  const siteSupportUrl =
-    process.env.NEXT_PUBLIC_SUPPORT_URL?.trim() || "/support#direct-support";
 
   const options = [
     {
@@ -57,28 +55,14 @@ export default function SupportPage() {
       cta: { label: "Join Discord Server", href: discordUrl, external: true },
       recommended: true,
     },
-    {
-      id: 3,
-      title: "Select the Right Support Type",
-      body: "When opening a ticket, pick the category that matches your issue so our team can route and resolve it faster.",
-      cta: { label: "Open Site Support", href: siteSupportUrl, external: false },
-      recommended: false,
-    },
+
   ];
 
   return (
     <div className="marketplace-page">
-      <SiteHeader activeTab="support" searchSlot={null} />
+      <SiteHeader activeTab="support" />
 
       <main className="shell subpage-wrap support-page">
-        <div className="support-crumb-bar">
-          <div className="support-crumb-trail" aria-label="Breadcrumb">
-            <span>Home</span>
-            <span>/</span>
-            <span>support</span>
-          </div>
-          <div className="support-activity-pill">All Activity</div>
-        </div>
 
         <section className="support-main-card">
           <header className="support-main-header">

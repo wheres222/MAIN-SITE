@@ -760,7 +760,13 @@ select::-ms-expand { display: none; }
   font-weight: 700;
   text-shadow: 0 10px 24px rgba(17, 33, 64, 0.35);
 }
-.faq-title span { color: #5ca0ff; }
+.faq-title span {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--themed-blue-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
 .faq-subtitle { margin: 10px auto 0; color: #9ba8c2; font-size: clamp(0.98rem, 1.05vw, 1.18rem); line-height: 1.55; max-width: 760px; }
 .faq-list { display: grid; gap: 14px; max-width: 1120px; margin: 0 auto; }
 .faq-item {
@@ -775,11 +781,11 @@ select::-ms-expand { display: none; }
 .faq-item summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; padding: 19px 20px; font-weight: 700; color: #eef3ff; }
 .faq-item summary::-webkit-details-marker { display: none; }
 .faq-question { font-size: clamp(1.02rem, 1.12vw, 1.35rem); line-height: 1.35; }
-.faq-chevron { width: 22px; height: 22px; color: #7f8ca7; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.22s ease, color 0.22s ease; }
+.faq-chevron { width: 22px; height: 22px; color: #7f8ca7; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.16s ease, color 0.16s ease; }
 .faq-chevron svg { width: 100%; height: 100%; }
 .faq-item[open] .faq-chevron { transform: rotate(180deg); color: #5ca0ff; }
-.faq-answer-wrap { display: grid; grid-template-rows: 0fr; padding: 0 20px; transition: grid-template-rows 0.24s ease, padding-bottom 0.24s ease; }
-.faq-answer-wrap p { margin: 0; min-height: 0; overflow: hidden; color: #b7c4db; line-height: 1.6; font-size: clamp(0.95rem, 1.02vw, 1.13rem); opacity: 0; transform: translateY(-4px); transition: opacity 0.18s ease, transform 0.24s ease; }
+.faq-answer-wrap { display: grid; grid-template-rows: 0fr; padding: 0 20px; transition: grid-template-rows 0.16s ease, padding-bottom 0.16s ease; }
+.faq-answer-wrap p { margin: 0; min-height: 0; overflow: hidden; color: #b7c4db; line-height: 1.6; font-size: clamp(0.95rem, 1.02vw, 1.13rem); opacity: 0; transform: translateY(-4px); transition: opacity 0.14s ease, transform 0.16s ease; }
 .faq-item[open] .faq-answer-wrap { grid-template-rows: 1fr; padding-bottom: 18px; }
 .faq-item[open] .faq-answer-wrap p { opacity: 1; transform: translateY(0); }
 
@@ -815,10 +821,37 @@ select::-ms-expand { display: none; }
 .checkout-form { border-top: 1px solid var(--ui-border); padding: 14px; display: grid; gap: 10px; background: #111216; }
 .checkout-form label { display: grid; gap: 6px; color: #c3cee4; font-size: 0.9rem; }
 .checkout-total { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
-.checkout-total strong { font-size: 1.22rem; color: var(--accent-soft); }
-.checkout-btn { width: 100%; border: 0; border-radius: 6px; background: #5e90df; color: #0a162a; font-weight: 700; padding: 10px 16px; cursor: pointer; }
+.checkout-total strong {
+  font-size: 1.22rem;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  background-image: var(--themed-blue-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+.checkout-btn { width: 100%; border: 0; border-radius: 6px; background: var(--themed-blue-gradient); color: #eef5ff; font-weight: 700; padding: 10px 16px; cursor: pointer; }
 .checkout-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 .checkout-message { margin: 0; color: var(--accent-soft); font-size: 0.9rem; }
+.qty-presets {
+  display: flex;
+  gap: 8px;
+  margin-top: -2px;
+}
+.qty-preset-btn {
+  border: 1px solid #2a3f66;
+  background: #111216;
+  color: #c9daf8;
+  border-radius: 6px;
+  padding: 7px 10px;
+  min-width: 56px;
+  cursor: pointer;
+}
+.qty-preset-btn.active,
+.qty-preset-btn:hover {
+  border-color: #4b78c7;
+  background: #12203a;
+  color: #e6f1ff;
+}
 .state-message { color: #c0c9dc; font-size: 0.95rem; }
 .state-message.error { color: #ffb8b8; }
 .cart-overlay { position: fixed; inset: 0; border: 0; background: rgba(2,5,10,0.62); z-index: 50; }

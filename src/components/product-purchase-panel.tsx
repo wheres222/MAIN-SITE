@@ -36,7 +36,8 @@ export function ProductPurchasePanel({
   const [variantId, setVariantId] = useState<number | undefined>(
     product.variants[0]?.id
   );
-  const [quantity, setQuantity] = useState(1);
+  const minQuantity = /mail/i.test(product.name) ? 25 : 1;
+  const [quantity, setQuantity] = useState(minQuantity);
   const [email, setEmail] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState(
@@ -117,11 +118,28 @@ export function ProductPurchasePanel({
         Quantity
         <input
           type="number"
-          min={1}
+          min={minQuantity}
           value={quantity}
-          onChange={(event) => setQuantity(Math.max(1, Number(event.target.value) || 1))}
+          onChange={(event) =>
+            setQuantity(Math.max(minQuantity, Number(event.target.value) || minQuantity))
+          }
         />
       </label>
+
+      {minQuantity > 1 ? (
+        <div className="qty-presets" aria-label="Quick quantity presets">
+          {[25, 50, 100].map((value) => (
+            <button
+              key={value}
+              type="button"
+              className={`qty-preset-btn ${quantity === value ? "active" : ""}`}
+              onClick={() => setQuantity(value)}
+            >
+              {value}
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <label>
         Payment Method
