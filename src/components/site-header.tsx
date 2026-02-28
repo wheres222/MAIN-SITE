@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { CartDrawer } from "@/components/cart-drawer";
+import { GlobalSearch } from "@/components/global-search";
 import { getDiscordUrl } from "@/lib/links";
 
 export type NavTab = "store" | "status" | "reviews" | "support";
@@ -94,7 +95,7 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
           </nav>
 
           <div className="nav-row-actions">
-            {searchSlot || <div className="search-wrap search-static" />}
+            {searchSlot || <GlobalSearch />}
             <button className="site-nav-cart" type="button" onClick={() => setCartOpen(true)}>
               <span className="nav-icon" aria-hidden>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

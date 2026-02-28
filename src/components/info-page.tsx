@@ -15,7 +15,7 @@ interface InfoPageProps {
 export function InfoPage({ title, subtitle, sections }: InfoPageProps) {
   return (
     <div className="marketplace-page">
-      <SiteHeader activeTab="support" searchSlot={null} />
+      <SiteHeader activeTab="support" />
 
       <main className="shell info-page">
         <div className="breadcrumb-row">

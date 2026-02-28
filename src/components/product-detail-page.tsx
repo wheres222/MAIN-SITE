@@ -140,14 +140,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
   return (
     <div className={styles.page}>
-      <SiteHeader
-        activeTab="store"
-        searchSlot={
-          <div className="search-wrap">
-            <input placeholder="Search..." aria-label="Search products" />
-          </div>
-        }
-      />
+      <SiteHeader activeTab="store" />
 
       <main className={styles.shell}>
         <div className={styles.breadcrumbs}>

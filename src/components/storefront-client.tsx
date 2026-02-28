@@ -27,11 +27,6 @@ function withVersion(source: string, version: string): string {
   return `${source}${joiner}v=${encodeURIComponent(version)}`;
 }
 
-function ratingForProduct(product: SellAuthProduct): number {
-  const seed = Math.abs((product.id * 17) % 100) / 100;
-  return Number((3.6 + seed * 1.4).toFixed(1));
-}
-
 function productLowestPrice(product: SellAuthProduct): number | null {
   const prices: number[] = [];
   if (typeof product.price === "number") prices.push(product.price);
@@ -60,7 +55,6 @@ export function StorefrontClient() {
   const [storefront, setStorefront] = useState<StorefrontData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [query, setQuery] = useState("");
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -89,28 +83,10 @@ export function StorefrontClient() {
     };
   }, []);
 
-  const filteredGroups = useMemo(() => {
-    const groups = storefront?.groups || [];
-    const keyword = normalized(query);
-    if (!keyword) return groups;
-    return groups.filter((group) =>
-      normalized(`${group.name} ${group.description}`).includes(keyword)
-    );
-  }, [query, storefront]);
-
-  const productSuggestions = useMemo(() => {
-    const keyword = normalized(query);
-    if (!keyword) return [];
-
-    const products = storefront?.products || [];
-    return products
-      .map((product) => ({ product, rating: ratingForProduct(product) }))
-      .filter(({ product }) =>
-        normalized(`${product.name} ${product.groupName} ${product.categoryName}`).includes(keyword)
-      )
-      .sort((a, b) => b.rating - a.rating || a.product.name.localeCompare(b.product.name))
-      .slice(0, 8);
-  }, [query, storefront]);
+  const filteredGroups = useMemo(
+    () => [...(storefront?.groups || [])].sort((a, b) => a.name.localeCompare(b.name)),
+    [storefront]
+  );
 
   const activeGroup = useMemo<SellAuthGroup | null>(() => {
     if (activeGroupId === null) return null;
@@ -149,75 +125,7 @@ export function StorefrontClient() {
 
   return (
     <div className="marketplace-page">
-      <SiteHeader
-        activeTab="store"
-        searchSlot={
-          <div className="search-wrap">
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search games..."
-              aria-label="Search games"
-            />
-            {query.trim() ? (
-              <div className="search-suggestions" role="listbox" aria-label="Suggested products">
-                {productSuggestions.length > 0 ? (
-                  productSuggestions.map(({ product }) => {
-                    const price = money(
-                      productLowestPrice(product),
-                      product.currency || "USD"
-                    );
-                    const inStock = isStockAvailable(product);
-                    const suggestionImage = withVersion(
-                      product.image || "/games/fortnite.svg",
-                      storefront?.fetchedAt || "search-v2"
-                    );
-
-                    return (
-                    <Link
-                      key={product.id}
-                      href={`/products/${product.id}`}
-                      className="search-suggestion-item"
-                    >
-                      <span className="search-suggestion-thumb" aria-hidden="true">
-                        <Image
-                          src={suggestionImage}
-                          alt=""
-                          width={160}
-                          height={90}
-                          sizes="72px"
-                          unoptimized
-                        />
-                      </span>
-                      <span className="search-suggestion-copy">
-                        <span className="search-suggestion-name">{product.name}</span>
-                        <span className="search-suggestion-meta">
-                          {product.groupName || product.categoryName || "Product"}
-                        </span>
-                      </span>
-                      <span className="search-suggestion-right">
-                        <span className="search-suggestion-price">{price}</span>
-                        <span
-                          className={`search-suggestion-stock ${
-                            inStock
-                              ? "search-suggestion-stock-ok"
-                              : "search-suggestion-stock-low"
-                          }`}
-                        >
-                          {inStock ? "In Stock" : "Out of Stock"}
-                        </span>
-                      </span>
-                    </Link>
-                    );
-                  })
-                ) : (
-                  <p className="search-suggestion-empty">No matching products.</p>
-                )}
-              </div>
-            ) : null}
-          </div>
-        }
-      />
+      <SiteHeader activeTab="store" />
 
       <main id="top">
         <section className="hero">
@@ -233,8 +141,8 @@ export function StorefrontClient() {
                 </span>
               </h1>
               <p className="hero-subtext">
-                <span>Choose a category banner to open a dedicated page with all available</span>
-                <span>products, live search, and detailed previews.</span>
+                <span>Check Status, Reviews, and Support anytime while browsing live categories.</span>
+                <span>Open any product to continue to checkout in seconds.</span>
               </p>
             </div>
           </div>
@@ -244,9 +152,8 @@ export function StorefrontClient() {
           <div className="categories-intro">
             <span className="categories-intro-pill">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <rect x="3.5" y="7.5" width="17" height="9" rx="3" stroke="currentColor" strokeWidth="1.7" />
-                <circle cx="9" cy="12" r="1.4" fill="currentColor" />
-                <circle cx="15" cy="12" r="1.4" fill="currentColor" />
+                <path d="M5 7h14l-1 12H6L5 7Z" stroke="currentColor" strokeWidth="1.6" />
+                <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.6" />
               </svg>
               CATEGORIES
             </span>
