@@ -1,5 +1,6 @@
 import { GameCatalogPage } from "@/components/game-catalog-page";
 import { isSameGameSlug, toGameSlug } from "@/lib/game-slug";
+import { createExampleProductsForBanner, getLocalCategoryBanners } from "@/lib/local-banners";
 import { getStorefrontData } from "@/lib/sellauth";
 import type { SellAuthGroup } from "@/types/sellauth";
 
@@ -23,13 +24,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     isSameGameSlug(item.name, categorySlug)
   );
 
-  const products = storefront.products.filter((product) => {
+  let products = storefront.products.filter((product) => {
     if (matchedCategory && product.categoryId === matchedCategory.id) return true;
+    if (matchedCategory && product.groupId === matchedCategory.id) return true;
     if (product.categoryName && isSameGameSlug(product.categoryName, categorySlug))
       return true;
-    if (!matchedCategory && product.groupName) {
-      return isSameGameSlug(product.groupName, categorySlug);
-    }
+    if (product.groupName && isSameGameSlug(product.groupName, categorySlug)) return true;
     return false;
   });
 
@@ -48,6 +48,16 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       description: matchedCategory?.description || "",
       image: { url: fallbackImage },
     } satisfies SellAuthGroup);
+
+  if (products.length === 0) {
+    const fallbackBanner = getLocalCategoryBanners(14).find((banner) =>
+      isSameGameSlug(banner.name, categorySlug)
+    );
+
+    if (fallbackBanner) {
+      products = createExampleProductsForBanner(fallbackBanner, 0);
+    }
+  }
 
   return <GameCatalogPage group={group} products={products} />;
 }

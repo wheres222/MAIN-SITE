@@ -96,10 +96,17 @@ export function StorefrontClient() {
   const activeGroupProducts = useMemo(() => {
     if (!storefront || !activeGroup) return [];
     const activeName = normalized(activeGroup.name);
+    const activeSlug = toGameSlug(activeGroup.name);
+
     return storefront.products
       .filter((product) => {
         if (product.groupId !== null && product.groupId === activeGroup.id) return true;
-        return normalized(product.groupName) === activeName;
+        if (product.categoryId !== null && product.categoryId === activeGroup.id) return true;
+        if (normalized(product.groupName) === activeName) return true;
+        if (normalized(product.categoryName) === activeName) return true;
+        if (toGameSlug(product.groupName || "") === activeSlug) return true;
+        if (toGameSlug(product.categoryName || "") === activeSlug) return true;
+        return false;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [activeGroup, storefront]);
