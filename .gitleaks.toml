@@ -1,0 +1,13 @@
+title = "MAIN-SITE gitleaks config"
+
+[allowlist]
+description = "Allow obvious placeholder/test values"
+regexes = [
+  '''your_shop_id_here''',
+  '''your_api_key_here''',
+  '''https://discord\.gg/yourserver''',
+  '''SELLAUTH_API_KEY\s*=\s*your_api_key_here'''
+]
+paths = [
+  '''\.env\.example$'''
+]

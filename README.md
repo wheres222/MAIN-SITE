@@ -28,6 +28,8 @@ Set:
 Security note:
 - Never commit real API keys to the repository.
 - If a key was ever committed, rotate it immediately in SellAuth.
+- This repo now includes a CI secret scan (`.github/workflows/security.yml`) using Gitleaks.
+- If a leak happened in old commits, rewrite git history and force-push after rotating keys.
 
 ## 2. Install dependencies
 
