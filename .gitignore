@@ -19,5 +19,9 @@ node.zip
 # Logs
 *.log
 
+# Fulfillment runtime artifacts
+fulfillment/state/
+fulfillment/artifacts/
+
 # Editor
 .vscode/

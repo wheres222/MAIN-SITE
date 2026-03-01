@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "fulfillment:start": "node fulfillment/src/server.js",
+    "fulfillment:dev": "node --watch fulfillment/src/server.js"
   },
   "dependencies": {
     "next": "16.1.6",

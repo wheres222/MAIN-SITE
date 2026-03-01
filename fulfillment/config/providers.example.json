@@ -1,0 +1,12 @@
+{
+  "mappings": [
+    {
+      "sellauthProductId": 632330,
+      "provider": "demo",
+      "providerProductId": "MAILS_GMX",
+      "coin": "LTC",
+      "minQuantity": 25,
+      "notes": "Example mapping. Replace with real provider adapter."
+    }
+  ]
+}

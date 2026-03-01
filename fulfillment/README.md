@@ -1,0 +1,125 @@
+# Fulfillment Worker (VPS 24/7)
+
+This service runs on your VPS and automates provider purchases after a paid SellAuth order.
+
+## What it does
+
+1. Receives SellAuth webhook (`/webhooks/sellauth`) for paid orders
+2. Creates fulfillment jobs per purchased item
+3. Uses provider adapter (Playwright-ready) to buy from supplier
+4. Extracts license key(s)
+5. Stores order status + keys locally
+6. Optionally notifies your website callback endpoint
+
+## Why this is separate from Next.js/Cloudflare
+
+- Browser automation (Playwright) should run on VPS, not on edge routes
+- 24/7 background worker + retries + queue are easier/stable on VPS
+- Faster to add new providers with adapter templates
+
+## Files
+
+- `fulfillment/src/server.js` - API + queue processor
+- `fulfillment/src/processor.js` - worker loop and retry logic
+- `fulfillment/src/state-store.js` - local persistent state (`fulfillment/state/state.json`)
+- `fulfillment/src/adapters/` - provider automation adapters
+- `fulfillment/config/providers.example.json` - mapping template
+
+## Quick start
+
+```bash
+cd MAIN-SITE
+cp fulfillment/config/providers.example.json fulfillment/config/providers.json
+npm run fulfillment:start
+```
+
+Health check:
+
+```bash
+curl http://127.0.0.1:8788/health
+```
+
+## Required env vars
+
+- `FULFILLMENT_ADMIN_TOKEN` - protects admin/manual endpoints
+- `FULFILLMENT_WEBHOOK_SECRET` - optional webhook secret check
+- `FULFILLMENT_MAPPING_FILE` - defaults to `fulfillment/config/providers.json`
+
+Optional:
+
+- `FULFILLMENT_PORT` - default `8788`
+- `FULFILLMENT_CONCURRENCY` - default `1`
+- `FULFILLMENT_MAX_ATTEMPTS` - default `3`
+- `FULFILLMENT_NOTIFY_URL` - website callback URL
+- `FULFILLMENT_NOTIFY_TOKEN` - auth for callback
+
+## SellAuth webhook target
+
+Set SellAuth webhook URL to:
+
+`https://<your-vps-domain-or-tunnel>/webhooks/sellauth?secret=<FULFILLMENT_WEBHOOK_SECRET>`
+
+(or use reverse proxy to `http://127.0.0.1:8788/webhooks/sellauth`)
+
+## Mapping products to providers
+
+Edit `fulfillment/config/providers.json`:
+
+```json
+{
+  "mappings": [
+    {
+      "sellauthProductId": 632330,
+      "provider": "demo",
+      "providerProductId": "MAILS_GMX",
+      "coin": "LTC",
+      "minQuantity": 25
+    }
+  ]
+}
+```
+
+## Add a real provider fast
+
+1. Copy `fulfillment/src/adapters/playwright-template.js`
+2. Implement selectors and purchase flow
+3. Register adapter in `fulfillment/src/adapters/index.js`
+4. Point product mapping to your adapter key
+
+## Useful endpoints
+
+- `GET /health` - service health
+- `POST /webhooks/sellauth` - webhook receiver
+- `POST /jobs/manual` - manual test enqueue (admin token)
+- `GET /orders/:orderId` - order fulfillment status
+- `GET /jobs?limit=50` - latest jobs (admin token)
+
+## systemd (recommended)
+
+Use a service unit like:
+
+```ini
+[Unit]
+Description=MAIN-SITE Fulfillment Worker
+After=network.target
+
+[Service]
+WorkingDirectory=/root/.openclaw/workspace/MAIN-SITE
+Environment=NODE_ENV=production
+Environment=FULFILLMENT_ADMIN_TOKEN=change-me
+Environment=FULFILLMENT_WEBHOOK_SECRET=change-me
+ExecStart=/usr/bin/npm run fulfillment:start
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now main-site-fulfillment.service
+sudo systemctl status main-site-fulfillment.service
+```
