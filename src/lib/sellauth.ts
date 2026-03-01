@@ -140,6 +140,14 @@ function extractImageCandidate(value: unknown, depth = 0): string {
     "image",
     "image_url",
     "imageUrl",
+    "product_image",
+    "productImage",
+    "featured_image",
+    "featuredImage",
+    "main_image",
+    "mainImage",
+    "cover",
+    "banner",
     "thumbnail",
     "thumbnail_url",
     "thumb",
@@ -362,6 +370,72 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
   };
 }
 
+async function fetchProductDetailRecord(productId: number): Promise<GenericRecord | null> {
+  const paths = [
+    `/v1/shops/${SELLAUTH_SHOP_ID}/products/${productId}`,
+    `/v1/shops/${SELLAUTH_SHOP_ID}/product/${productId}`,
+    `/v1/products/${productId}`,
+  ];
+
+  for (const path of paths) {
+    try {
+      const response = await fetchSellAuth<unknown>(path);
+      const root = asRecord(response.data);
+      const candidates = [
+        asRecord(root.product),
+        asRecord(root.item),
+        asRecord(root.data),
+        root,
+      ];
+
+      const record = candidates.find((candidate) => Object.keys(candidate).length > 0);
+      if (record) return record;
+    } catch {
+      // Try next known path shape.
+    }
+  }
+
+  return null;
+}
+
+async function enrichMissingProductImages(
+  products: SellAuthProduct[]
+): Promise<SellAuthProduct[]> {
+  const missing = products.filter((product) => product.image === PRODUCT_IMAGE_PLACEHOLDER);
+  if (missing.length === 0) return products;
+
+  const map = new Map<number, string>();
+
+  await Promise.all(
+    missing.slice(0, 80).map(async (product) => {
+      const detail = await fetchProductDetailRecord(product.id);
+      if (!detail) return;
+
+      const detailImage =
+        extractImageCandidate(detail.image) ||
+        extractImageCandidate(detail.image_url) ||
+        extractImageCandidate(detail.imageUrl) ||
+        extractImageCandidate(detail.thumbnail) ||
+        extractImageCandidate(detail.thumbnail_url) ||
+        extractImageCandidate(detail.photo) ||
+        extractImageCandidate(detail.preview) ||
+        extractImageCandidate(detail.gallery) ||
+        extractImageCandidate(detail.media) ||
+        extractImageCandidate(detail.assets) ||
+        extractImageCandidate(detail.variants);
+
+      if (detailImage) {
+        map.set(product.id, detailImage);
+      }
+    })
+  );
+
+  if (map.size === 0) return products;
+  return products.map((product) =>
+    map.has(product.id) ? { ...product, image: map.get(product.id) as string } : product
+  );
+}
+
 function parsePaymentMethod(rawMethod: unknown): SellAuthPaymentMethod | null {
   const method = asRecord(rawMethod);
   const numericId =
@@ -577,6 +651,8 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       return product;
     });
 
+    const productsFinal = await enrichMissingProductImages(productsClean);
+
     const categoryGroups: SellAuthGroup[] = categoriesClean.map((category) => ({
       id: category.id,
       name: category.name,
@@ -610,15 +686,15 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       success: true,
       provider: "sellauth",
       message: "Live data loaded from SellAuth dashboard.",
-      products: productsClean,
+      products: productsFinal,
       groups:
         mergedGroups.length > 0
           ? mergedGroups
-          : ensureGroupsFromProducts(productsClean),
+          : ensureGroupsFromProducts(productsFinal),
       categories:
         mergedCategories.length > 0
           ? mergedCategories
-          : ensureCategoriesFromProducts(productsClean),
+          : ensureCategoriesFromProducts(productsFinal),
       paymentMethods,
       warnings,
       fetchedAt: new Date().toISOString(),
