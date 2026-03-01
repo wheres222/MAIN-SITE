@@ -85,10 +85,6 @@ select::-ms-expand { display: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-left: 1px solid var(--nav-separator);
-  border-right: 1px solid var(--nav-separator);
-  padding-left: 14px;
-  padding-right: 14px;
 }
 .brand { display: flex; align-items: center; gap: 14px; }
 .brand-mark { width: 64px; height: 64px; object-fit: contain; }
@@ -142,10 +138,6 @@ select::-ms-expand { display: none; }
   grid-template-columns: 1fr auto;
   gap: 24px;
   align-items: center;
-  border-left: 1px solid var(--nav-separator);
-  border-right: 1px solid var(--nav-separator);
-  padding-left: 14px;
-  padding-right: 14px;
 }
 .site-nav { display: flex; gap: 8px; flex-wrap: wrap; }
 .nav-row-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; min-width: 0; }
