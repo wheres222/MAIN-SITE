@@ -4,6 +4,8 @@ import { ReviewsBoard } from "@/components/reviews-board";
 import { createMockReviewsFromProducts } from "@/lib/reviews";
 import { getStorefrontData } from "@/lib/sellauth";
 
+export const runtime = "edge";
+
 export default async function ReviewsPage() {
   const storefront = await getStorefrontData();
   const reviews = createMockReviewsFromProducts(storefront.products, 16);

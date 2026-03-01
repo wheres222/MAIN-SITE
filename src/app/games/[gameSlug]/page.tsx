@@ -1,7 +1,9 @@
 import { GameCatalogPage } from "@/components/game-catalog-page";
-import { isSameGameSlug, toGameSlug } from "@/lib/game-slug";
+import { isSameGameSlug } from "@/lib/game-slug";
 import { getStorefrontData } from "@/lib/sellauth";
 import type { SellAuthGroup } from "@/types/sellauth";
+
+export const runtime = "edge";
 
 interface GamePageProps {
   params: Promise<{ gameSlug: string }>;
@@ -36,9 +38,3 @@ export default async function GamePage({ params }: GamePageProps) {
   return <GameCatalogPage group={group} products={products} />;
 }
 
-export async function generateStaticParams() {
-  const storefront = await getStorefrontData();
-  return storefront.groups.map((group) => ({
-    gameSlug: toGameSlug(group.name),
-  }));
-}

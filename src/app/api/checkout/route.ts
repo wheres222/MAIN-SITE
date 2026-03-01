@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createSellAuthCheckout, SellAuthRequestError } from "@/lib/sellauth";
 import type { CheckoutRequestInput } from "@/types/sellauth";
 
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 function invalid(message: string, status = 400) {

@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { ProductDetailPage } from "@/components/product-detail-page";
 import { getStorefrontData } from "@/lib/sellauth";
 
+export const runtime = "edge";
+
 interface ProductPageProps {
   params: Promise<{ productId: string }>;
 }

@@ -1,8 +1,10 @@
 import { GameCatalogPage } from "@/components/game-catalog-page";
-import { isSameGameSlug, toGameSlug } from "@/lib/game-slug";
+import { isSameGameSlug } from "@/lib/game-slug";
 import { createExampleProductsForBanner, getLocalCategoryBanners } from "@/lib/local-banners";
 import { getStorefrontData } from "@/lib/sellauth";
 import type { SellAuthGroup } from "@/types/sellauth";
+
+export const runtime = "edge";
 
 interface CategoryPageProps {
   params: Promise<{ categorySlug: string }>;
@@ -62,17 +64,3 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return <GameCatalogPage group={group} products={products} />;
 }
 
-export async function generateStaticParams() {
-  const storefront = await getStorefrontData();
-  const slugs = new Set<string>();
-
-  storefront.categories.forEach((category) => {
-    slugs.add(toGameSlug(category.name));
-  });
-
-  storefront.groups.forEach((group) => {
-    slugs.add(toGameSlug(group.name));
-  });
-
-  return [...slugs].map((categorySlug) => ({ categorySlug }));
-}
