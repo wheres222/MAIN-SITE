@@ -22,7 +22,6 @@ export function SiteFooter() {
               <h3 className="footer-minimal-title">CheatParadise</h3>
             </div>
             <p>Copyright © CheatParadise 2026. All Rights Reserved</p>
-            <p>Developed by Panther Designs</p>
           </div>
 
           <div className="footer-minimal-right">
