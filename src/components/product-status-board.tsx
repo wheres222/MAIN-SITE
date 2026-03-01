@@ -28,12 +28,12 @@ function fallbackImageForProduct(product: SellAuthProduct): string {
 }
 
 function inferStatus(product: SellAuthProduct): ProductStatusMeta {
-  const stock = product.stock ?? 0;
-  const seed = Math.abs(product.id + product.name.length + stock);
+  const stock = product.stock;
 
-  if (stock <= 0 || seed % 7 === 0) {
+  if (typeof stock === "number" && stock <= 0) {
     return { kind: "updating", label: "UPDATING (NOT WORKING)" };
   }
+
   return { kind: "undetected", label: "UNDETECTED (WORKING)" };
 }
 

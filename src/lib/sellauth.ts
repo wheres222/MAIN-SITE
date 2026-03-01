@@ -1,5 +1,10 @@
 import { mockStorefrontData } from "@/lib/mock-data";
 import { toGameSlug } from "@/lib/game-slug";
+import {
+  bannersToCategories,
+  bannersToGroups,
+  getLocalCategoryBanners,
+} from "@/lib/local-banners";
 import type {
   CheckoutRequestInput,
   SellAuthCategory,
@@ -225,7 +230,12 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
       asNumber(product.amount) ??
       (parsedVariants.length > 0 ? parsedVariants[0].price : null),
     currency: asString(product.currency, "USD"),
-    stock: asNumber(product.stock),
+    stock:
+      asNumber(product.stock) ??
+      asNumber(product.quantity) ??
+      asNumber(product.inventory) ??
+      asNumber(product.inventory_count) ??
+      asNumber(product.available),
     groupId,
     groupName,
     categoryId,
@@ -326,6 +336,29 @@ function ensureCategoriesFromProducts(
   return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
+function mergeBySlug<T extends { name: string }>(
+  liveItems: T[],
+  baselineItems: T[]
+): T[] {
+  const seen = new Set<string>();
+  const output: T[] = [];
+
+  for (const item of liveItems) {
+    const slug = toGameSlug(item.name);
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    output.push(item);
+  }
+
+  for (const item of baselineItems) {
+    const slug = toGameSlug(item.name);
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    output.push(item);
+  }
+
+  return output;
+}
 
 export async function getStorefrontData(): Promise<StorefrontData> {
   if (!isSellAuthConfigured()) {
@@ -395,23 +428,36 @@ export async function getStorefrontData(): Promise<StorefrontData> {
             )
         : [];
 
-    const groupsClean = groupsFromSellAuth.map((group) =>
-      toGameSlug(group.name) === "rainbow-six-siege"
-        ? { ...group, image: { url: "/pd/rainbow-six-siege.png" } }
-        : group
+    const baselineBanners = getLocalCategoryBanners(14);
+    const baselineGroups = bannersToGroups(baselineBanners);
+    const baselineCategories = bannersToCategories(baselineBanners);
+
+    const baselineImageBySlug = new Map(
+      baselineBanners.map((banner) => [toGameSlug(banner.name), banner.imageUrl])
     );
 
-    const categoriesClean = categoriesFromSellAuth.map((category) =>
-      toGameSlug(category.name) === "rainbow-six-siege"
-        ? { ...category, image: { url: "/pd/rainbow-six-siege.png" } }
-        : category
-    );
+    const groupsClean = groupsFromSellAuth.map((group) => {
+      const slug = toGameSlug(group.name);
+      const baselineImage = baselineImageBySlug.get(slug);
+      if (baselineImage) return { ...group, image: { url: baselineImage } };
+      return group;
+    });
+
+    const categoriesClean = categoriesFromSellAuth.map((category) => {
+      const slug = toGameSlug(category.name);
+      const baselineImage = baselineImageBySlug.get(slug);
+      if (baselineImage) return { ...category, image: { url: baselineImage } };
+      return category;
+    });
 
     const productsClean = products.map((product) =>
       toGameSlug(product.groupName || product.categoryName || "") === "rainbow-six-siege"
         ? { ...product, image: "/pd/rainbow-six-siege.png" }
         : product
     );
+
+    const mergedGroups = mergeBySlug(groupsClean, baselineGroups);
+    const mergedCategories = mergeBySlug(categoriesClean, baselineCategories);
 
     if (groupsResult.status !== "fulfilled") {
       warnings.push("Could not fetch groups from SellAuth.");
@@ -428,7 +474,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
     }
     if (groupsFromSellAuth.length === 0 && categoriesFromSellAuth.length === 0) {
       warnings.push(
-        "SellAuth groups/categories are empty. Showing categories inferred from products only."
+        "SellAuth groups/categories are empty. Showing default category banners plus live products."
       );
     }
 
@@ -438,12 +484,12 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       message: "Live data loaded from SellAuth dashboard.",
       products: productsClean,
       groups:
-        groupsClean.length > 0
-          ? groupsClean
+        mergedGroups.length > 0
+          ? mergedGroups
           : ensureGroupsFromProducts(productsClean),
       categories:
-        categoriesClean.length > 0
-          ? categoriesClean
+        mergedCategories.length > 0
+          ? mergedCategories
           : ensureCategoriesFromProducts(productsClean),
       paymentMethods,
       warnings,
