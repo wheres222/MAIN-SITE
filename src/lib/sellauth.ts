@@ -37,6 +37,7 @@ const SELLAUTH_BASE_URL =
   process.env.SELLAUTH_API_BASE_URL?.trim() || "https://api.sellauth.com";
 const SELLAUTH_SHOP_ID = process.env.SELLAUTH_SHOP_ID?.trim() || "";
 const SELLAUTH_API_KEY = process.env.SELLAUTH_API_KEY?.trim() || "";
+const PRODUCT_IMAGE_PLACEHOLDER = "/placeholders/product-image-not-added.svg";
 
 function isSellAuthConfigured(): boolean {
   return Boolean(SELLAUTH_SHOP_ID && SELLAUTH_API_KEY);
@@ -97,6 +98,65 @@ function fallbackGameImage(label: string): string {
     return "/games/cod.svg";
   if (normalized.includes("rust")) return "/games/rust.svg";
   return "/games/fortnite.svg";
+}
+
+function looksLikeImagePath(value: string): boolean {
+  return /(\.png|\.jpe?g|\.webp|\.gif|\.avif|\.svg)(\?|$)/i.test(value);
+}
+
+function normalizeImageUrl(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+  if (trimmed.startsWith("//")) return `https:${trimmed}`;
+  if (trimmed.startsWith("/")) return trimmed;
+  if (looksLikeImagePath(trimmed)) {
+    return `${SELLAUTH_BASE_URL.replace(/\/$/, "")}/${trimmed.replace(/^\/+/, "")}`;
+  }
+  return "";
+}
+
+function extractImageCandidate(value: unknown, depth = 0): string {
+  if (depth > 3 || value === null || value === undefined) return "";
+
+  if (typeof value === "string") {
+    return normalizeImageUrl(value);
+  }
+
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      const found = extractImageCandidate(entry, depth + 1);
+      if (found) return found;
+    }
+    return "";
+  }
+
+  if (typeof value !== "object") return "";
+
+  const record = value as GenericRecord;
+  const preferredKeys = [
+    "url",
+    "src",
+    "image",
+    "image_url",
+    "imageUrl",
+    "thumbnail",
+    "thumbnail_url",
+    "thumb",
+    "preview",
+    "preview_image",
+    "photo",
+    "file",
+    "path",
+    "cdn_url",
+  ];
+
+  for (const key of preferredKeys) {
+    const found = extractImageCandidate(record[key], depth + 1);
+    if (found) return found;
+  }
+
+  return "";
 }
 
 const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
@@ -206,6 +266,7 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
   const groupRecord = asRecord(product.group ?? product.shop_group);
   const categoryRecord = asRecord(product.category ?? product.shop_category);
   const imageRecord = asRecord(product.image);
+  const variantsRaw = toArray(product.variants);
 
   const groupId =
     asNumber(product.group_id) ??
@@ -231,13 +292,21 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
     asString(product.categoryName) ||
     (typeof product.category === "string" ? asString(product.category) : "");
   const name = asString(product.name, `Product ${id}`);
-  const image =
-    asString(imageRecord.url) ||
-    asString(imageRecord.src) ||
-    asString(product.image) ||
-    fallbackGameImage(groupName || name);
 
-  const parsedVariants = toArray(product.variants)
+  const image =
+    extractImageCandidate(imageRecord) ||
+    extractImageCandidate(product.image) ||
+    extractImageCandidate(product.image_url) ||
+    extractImageCandidate(product.imageUrl) ||
+    extractImageCandidate(product.thumbnail) ||
+    extractImageCandidate(product.thumbnail_url) ||
+    extractImageCandidate(product.photo) ||
+    extractImageCandidate(product.preview) ||
+    extractImageCandidate(product.gallery) ||
+    extractImageCandidate(variantsRaw) ||
+    PRODUCT_IMAGE_PLACEHOLDER;
+
+  const parsedVariants = variantsRaw
     .map(parseVariant)
     .filter((variant): variant is SellAuthVariant => Boolean(variant));
 

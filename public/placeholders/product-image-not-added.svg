@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Product image not added">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10141d"/>
+      <stop offset="100%" stop-color="#171f2f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect x="110" y="90" width="980" height="495" rx="20" fill="none" stroke="#2b3a59" stroke-width="4"/>
+  <text x="600" y="315" text-anchor="middle" fill="#d9e6ff" font-size="44" font-family="Inter,Segoe UI,Arial,sans-serif" font-weight="700">Product image not added</text>
+  <text x="600" y="365" text-anchor="middle" fill="#92a7ce" font-size="24" font-family="Inter,Segoe UI,Arial,sans-serif">Upload an image in SellAuth product settings</text>
+</svg>
