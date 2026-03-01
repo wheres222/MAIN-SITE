@@ -36,7 +36,20 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     return value > max ? value : max;
   }, 1);
 
-  const minQuantity = Math.max(1, product.minQuantity || 1, variantMinQuantity);
+  const heuristicMinQuantity = /mail/i.test(
+    `${product.name} ${product.groupName} ${product.categoryName} ${variants
+      .map((variant) => variant.name)
+      .join(" ")}`
+  )
+    ? 25
+    : 1;
+
+  const minQuantity = Math.max(
+    1,
+    product.minQuantity || 1,
+    variantMinQuantity,
+    heuristicMinQuantity
+  );
   const [quantity, setQuantity] = useState(minQuantity);
 
   const unitPrice = variants[0]?.price ?? product.price ?? 0;
@@ -49,7 +62,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     const variantMinimum =
       typeof variant?.minQuantity === "number" ? Math.max(1, variant.minQuantity) : 1;
     const requiredMinimum = Math.max(minQuantity, variantMinimum);
-    const checkoutQuantity = Math.max(requiredMinimum, quantity);
+    let checkoutQuantity = Math.max(requiredMinimum, quantity);
 
     if (checkoutQuantity !== quantity) {
       setQuantity(checkoutQuantity);
@@ -57,44 +70,51 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
     setBuyingVariantId(variantId);
     try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          paymentMethod,
-          items: [
-            {
-              productId: product.id,
-              quantity: checkoutQuantity,
-              variantId,
-            },
-          ],
-        }),
-      });
-      const payload = (await response.json()) as {
-        success?: boolean;
-        message?: string;
-        redirectUrl?: string | null;
-      };
+      for (let attempt = 0; attempt < 2; attempt += 1) {
+        const response = await fetch("/api/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentMethod,
+            items: [
+              {
+                productId: product.id,
+                quantity: checkoutQuantity,
+                variantId,
+              },
+            ],
+          }),
+        });
 
-      if (!response.ok || !payload.success) {
+        const payload = (await response.json()) as {
+          success?: boolean;
+          message?: string;
+          redirectUrl?: string | null;
+        };
+
+        if (response.ok && payload.success) {
+          if (payload.redirectUrl) {
+            window.location.href = payload.redirectUrl;
+            return;
+          }
+          setNotice(payload.message || "Checkout created.");
+          return;
+        }
+
         const message = payload.message || "Unable to create checkout.";
         const minMatch = message.match(/minimum quantity of\s*(\d+)/i);
-        if (minMatch) {
+        if (minMatch && attempt === 0) {
           const parsedMinimum = Number(minMatch[1]);
-          if (Number.isFinite(parsedMinimum) && parsedMinimum > quantity) {
+          if (Number.isFinite(parsedMinimum) && parsedMinimum > checkoutQuantity) {
+            checkoutQuantity = parsedMinimum;
             setQuantity(parsedMinimum);
+            continue;
           }
         }
+
         setNotice(message);
         return;
       }
-
-      if (payload.redirectUrl) {
-        window.location.href = payload.redirectUrl;
-        return;
-      }
-      setNotice(payload.message || "Checkout created.");
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Checkout failed.");
     } finally {

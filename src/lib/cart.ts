@@ -34,6 +34,7 @@ export function variantsFor(product: SellAuthProduct): SellAuthVariant[] {
       name: "Default",
       price: product.price ?? 0,
       stock: product.stock ?? 999,
+      minQuantity: product.minQuantity ?? 1,
     },
   ];
 }

@@ -40,7 +40,19 @@ export function ProductPurchasePanel({
     const value = typeof variant.minQuantity === "number" ? variant.minQuantity : 1;
     return value > max ? value : max;
   }, 1);
-  const minQuantity = Math.max(1, product.minQuantity || 1, variantMinimum);
+  const heuristicMinQuantity = /mail/i.test(
+    `${product.name} ${product.groupName} ${product.categoryName} ${product.variants
+      .map((variant) => variant.name)
+      .join(" ")}`
+  )
+    ? 25
+    : 1;
+  const minQuantity = Math.max(
+    1,
+    product.minQuantity || 1,
+    variantMinimum,
+    heuristicMinQuantity
+  );
   const [quantity, setQuantity] = useState(minQuantity);
   const [email, setEmail] = useState("");
   const [couponCode, setCouponCode] = useState("");

@@ -210,7 +210,15 @@ async function fetchSellAuth<T>(
     const message = body.message || "SellAuth request failed.";
     throw new SellAuthRequestError(response.status, message);
   }
-  return body;
+
+  if (body.data !== undefined) {
+    return body;
+  }
+
+  return {
+    ...body,
+    data: body as unknown as T,
+  };
 }
 
 function parseVariant(rawVariant: unknown): SellAuthVariant | null {
@@ -344,6 +352,17 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
       ? productMinQuantity
       : variantMinQuantity;
 
+  const heuristicMinQuantity = /mail/i.test(
+    `${name} ${groupName} ${categoryName} ${parsedVariants.map((variant) => variant.name).join(" ")}`
+  )
+    ? 25
+    : null;
+
+  const enforcedMinQuantity =
+    typeof minQuantity === "number" && minQuantity > 1
+      ? minQuantity
+      : heuristicMinQuantity;
+
   return {
     id,
     name,
@@ -361,7 +380,7 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
       asNumber(product.inventory) ??
       asNumber(product.inventory_count) ??
       asNumber(product.available),
-    minQuantity,
+    minQuantity: enforcedMinQuantity,
     groupId,
     groupName,
     categoryId,
@@ -715,18 +734,65 @@ export async function getStorefrontData(): Promise<StorefrontData> {
   }
 }
 
-function parseCheckoutUrl(rawData: unknown): string | null {
-  const data = asRecord(rawData);
-  const urlCandidates = [
-    asString(data.url),
-    asString(data.checkout_url),
-    asString(data.checkoutUrl),
-    asString(data.payment_url),
-    asString(data.paymentUrl),
-    asString(asRecord(data.invoice).url),
-  ].filter(Boolean);
+function looksLikeCheckoutUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
+}
 
-  return urlCandidates[0] || null;
+function parseCheckoutUrl(rawData: unknown): string | null {
+  const queue: unknown[] = [rawData];
+  const seen = new Set<unknown>();
+
+  while (queue.length > 0) {
+    const current = queue.shift();
+    if (!current || seen.has(current)) continue;
+    seen.add(current);
+
+    if (typeof current === "string") {
+      const value = current.trim();
+      if (looksLikeCheckoutUrl(value)) return value;
+      continue;
+    }
+
+    if (Array.isArray(current)) {
+      queue.push(...current);
+      continue;
+    }
+
+    if (typeof current !== "object") continue;
+
+    const record = current as GenericRecord;
+    const directCandidates = [
+      asString(record.url),
+      asString(record.checkout_url),
+      asString(record.checkoutUrl),
+      asString(record.checkout_link),
+      asString(record.checkoutLink),
+      asString(record.payment_url),
+      asString(record.paymentUrl),
+      asString(record.payment_link),
+      asString(record.paymentLink),
+      asString(record.invoice_url),
+      asString(record.invoiceUrl),
+      asString(record.hosted_url),
+      asString(record.hostedUrl),
+      asString(record.link),
+      asString(record.redirect_url),
+      asString(record.redirectUrl),
+      asString(asRecord(record.invoice).url),
+      asString(asRecord(record.invoice).checkout_url),
+      asString(asRecord(record.invoice).checkoutUrl),
+      asString(asRecord(record.data).url),
+    ].filter(Boolean);
+
+    const matched = directCandidates.find(looksLikeCheckoutUrl);
+    if (matched) return matched;
+
+    for (const value of Object.values(record)) {
+      queue.push(value);
+    }
+  }
+
+  return null;
 }
 
 export async function createSellAuthCheckout(input: CheckoutRequestInput): Promise<{
@@ -773,8 +839,10 @@ export async function createSellAuthCheckout(input: CheckoutRequestInput): Promi
     }
   );
 
+  const redirectUrl = parseCheckoutUrl(response.data) || parseCheckoutUrl(response);
+
   return {
-    redirectUrl: parseCheckoutUrl(response.data),
-    raw: response.data,
+    redirectUrl,
+    raw: response.data ?? response,
   };
 }
