@@ -1,13 +1,4 @@
 import { mockStorefrontData } from "@/lib/mock-data";
-import {
-  aliasTokensForLabel,
-  bannersToCategories,
-  bannersToGroups,
-  createExampleProductsForBanner,
-  getLocalCategoryBanners,
-  normalizeAliasToken,
-  type LocalCategoryBanner,
-} from "@/lib/local-banners";
 import { toGameSlug } from "@/lib/game-slug";
 import type {
   CheckoutRequestInput,
@@ -308,136 +299,6 @@ function ensureCategoriesFromProducts(
   return [...map.values()];
 }
 
-function findBannerForProduct(
-  product: SellAuthProduct,
-  banners: LocalCategoryBanner[],
-  aliasToBanner: Map<string, LocalCategoryBanner>
-): LocalCategoryBanner | null {
-  if (banners.length === 0) return null;
-
-  const slugCandidates = [
-    toGameSlug(product.groupName || ""),
-    toGameSlug(product.categoryName || ""),
-    product.groupName || "",
-    product.categoryName || "",
-  ].filter(Boolean);
-
-  for (const candidate of slugCandidates) {
-    const token = normalizeAliasToken(candidate);
-    if (!token) continue;
-    const exact = aliasToBanner.get(token);
-    if (exact) return exact;
-  }
-
-  const textTokens = `${product.name} ${product.description} ${product.groupName} ${product.categoryName}`
-    .toLowerCase()
-    .split(/[^a-z0-9]+/g)
-    .map((token) => token.trim())
-    .filter(Boolean);
-
-  for (let index = 0; index < textTokens.length; index += 1) {
-    const single = normalizeAliasToken(textTokens[index]);
-    if (single && aliasToBanner.has(single)) {
-      return aliasToBanner.get(single) || null;
-    }
-
-    const pairRaw = `${textTokens[index]}${textTokens[index + 1] || ""}`;
-    const pair = normalizeAliasToken(pairRaw);
-    if (pair && aliasToBanner.has(pair)) {
-      return aliasToBanner.get(pair) || null;
-    }
-
-    const triRaw = `${textTokens[index]}${textTokens[index + 1] || ""}${textTokens[index + 2] || ""}`;
-    const tri = normalizeAliasToken(triRaw);
-    if (tri && aliasToBanner.has(tri)) {
-      return aliasToBanner.get(tri) || null;
-    }
-  }
-
-  const hashSeed = Math.abs((product.id || 0) + product.name.length);
-  return banners[hashSeed % banners.length];
-}
-
-function buildBannerAliasIndex(
-  banners: LocalCategoryBanner[]
-): Map<string, LocalCategoryBanner> {
-  const map = new Map<string, LocalCategoryBanner>();
-
-  for (const banner of banners) {
-    const tokens = new Set<string>([
-      ...aliasTokensForLabel(banner.name),
-      normalizeAliasToken(banner.slug),
-      normalizeAliasToken(banner.name),
-    ]);
-
-    tokens.forEach((token) => {
-      if (!token || map.has(token)) return;
-      map.set(token, banner);
-    });
-  }
-
-  return map;
-}
-
-function assignProductsToBanners(
-  products: SellAuthProduct[],
-  banners: LocalCategoryBanner[]
-): SellAuthProduct[] {
-  if (banners.length === 0) return products;
-  const aliasToBanner = buildBannerAliasIndex(banners);
-
-  return products.map((product) => {
-    const banner = findBannerForProduct(product, banners, aliasToBanner);
-    if (!banner) return product;
-
-    const shouldReplaceImage = !product.image || product.image.startsWith("/games/");
-
-    return {
-      ...product,
-      image: shouldReplaceImage ? banner.imageUrl : product.image,
-      groupId: banner.groupId,
-      groupName: banner.name,
-      categoryId: banner.categoryId,
-      categoryName: banner.name,
-    };
-  });
-}
-
-function ensureExampleProductsPerBanner(
-  products: SellAuthProduct[],
-  banners: LocalCategoryBanner[],
-  minimumPerBanner = 3
-): SellAuthProduct[] {
-  if (banners.length === 0) return products;
-
-  const output = [...products];
-  const usedIds = new Set(output.map((product) => product.id));
-
-  for (let index = 0; index < banners.length; index += 1) {
-    const banner = banners[index];
-    let count = output.filter(
-      (product) => product.categoryId === banner.categoryId
-    ).length;
-
-    if (count >= minimumPerBanner) continue;
-
-    const examples = createExampleProductsForBanner(banner, index);
-    for (const sample of examples) {
-      if (count >= minimumPerBanner) break;
-
-      let nextId = sample.id;
-      while (usedIds.has(nextId)) {
-        nextId += 1000000;
-      }
-
-      output.push({ ...sample, id: nextId });
-      usedIds.add(nextId);
-      count += 1;
-    }
-  }
-
-  return output;
-}
 
 export async function getStorefrontData(): Promise<StorefrontData> {
   if (!isSellAuthConfigured()) {
@@ -507,19 +368,35 @@ export async function getStorefrontData(): Promise<StorefrontData> {
             )
         : [];
 
-    const localBanners = getLocalCategoryBanners(14);
-    const localGroups = bannersToGroups(localBanners);
-    const localCategories = bannersToCategories(localBanners);
-    const hasPdBannerImages = localBanners.some((banner) =>
-      banner.imageUrl.startsWith("/pd.png/") || banner.imageUrl.startsWith("/pd/")
-    );
+    const blockedCategorySlugs = new Set(["pubg", "league-of-legends", "lol"]);
 
-    const productsAssigned = assignProductsToBanners(products, localBanners);
-    const productsWithExamples = ensureExampleProductsPerBanner(
-      productsAssigned,
-      localBanners,
-      3
-    );
+    const groupsClean = groupsFromSellAuth
+      .filter((group) => !blockedCategorySlugs.has(toGameSlug(group.name)))
+      .map((group) =>
+        toGameSlug(group.name) === "rainbow-six-siege"
+          ? { ...group, image: { url: "/pd/rainbow-six-siege.png" } }
+          : group
+      );
+
+    const categoriesClean = categoriesFromSellAuth
+      .filter((category) => !blockedCategorySlugs.has(toGameSlug(category.name)))
+      .map((category) =>
+        toGameSlug(category.name) === "rainbow-six-siege"
+          ? { ...category, image: { url: "/pd/rainbow-six-siege.png" } }
+          : category
+      );
+
+    const productsClean = products
+      .filter(
+        (product) =>
+          !blockedCategorySlugs.has(toGameSlug(product.groupName || "")) &&
+          !blockedCategorySlugs.has(toGameSlug(product.categoryName || ""))
+      )
+      .map((product) =>
+        toGameSlug(product.groupName || product.categoryName || "") === "rainbow-six-siege"
+          ? { ...product, image: "/pd/rainbow-six-siege.png" }
+          : product
+      );
 
     if (groupsResult.status !== "fulfilled") {
       warnings.push("Could not fetch groups from SellAuth.");
@@ -534,19 +411,9 @@ export async function getStorefrontData(): Promise<StorefrontData> {
         "SellAuth returned zero enabled payment methods. Configure at least one payment method in your SellAuth dashboard."
       );
     }
-    if (localBanners.length < 14) {
-      warnings.push(
-        "Fewer than 14 banner images found. Added fallback categories to keep 14 visible categories."
-      );
-    }
-    if (!hasPdBannerImages) {
-      warnings.push(
-        "No banner files found in public/pd.png, public/pd, pd.png, or pd. Using fallback images."
-      );
-    }
     if (groupsFromSellAuth.length === 0 && categoriesFromSellAuth.length === 0) {
       warnings.push(
-        "SellAuth groups/categories are empty. Applied local pd.png categories for storefront navigation."
+        "SellAuth groups/categories are empty. Showing categories inferred from products only."
       );
     }
 
@@ -554,19 +421,15 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       success: true,
       provider: "sellauth",
       message: "Live data loaded from SellAuth dashboard.",
-      products: productsWithExamples,
+      products: productsClean,
       groups:
-        localGroups.length > 0
-          ? localGroups
-          : groupsFromSellAuth.length > 0
-            ? groupsFromSellAuth
-            : ensureGroupsFromProducts(productsWithExamples),
+        groupsClean.length > 0
+          ? groupsClean
+          : ensureGroupsFromProducts(productsClean),
       categories:
-        localCategories.length > 0
-          ? localCategories
-          : categoriesFromSellAuth.length > 0
-            ? categoriesFromSellAuth
-            : ensureCategoriesFromProducts(productsWithExamples),
+        categoriesClean.length > 0
+          ? categoriesClean
+          : ensureCategoriesFromProducts(productsClean),
       paymentMethods,
       warnings,
       fetchedAt: new Date().toISOString(),
