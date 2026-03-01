@@ -38,9 +38,52 @@ const SELLAUTH_BASE_URL =
 const SELLAUTH_SHOP_ID = process.env.SELLAUTH_SHOP_ID?.trim() || "";
 const SELLAUTH_API_KEY = process.env.SELLAUTH_API_KEY?.trim() || "";
 const PRODUCT_IMAGE_PLACEHOLDER = "/placeholders/product-image-not-added.svg";
+const STOREFRONT_CACHE_TTL_MS = 25_000;
+
+let storefrontCache:
+  | {
+      data: StorefrontData;
+      expiresAt: number;
+    }
+  | null = null;
+
+const productImageCache = new Map<number, string>();
 
 function isSellAuthConfigured(): boolean {
   return Boolean(SELLAUTH_SHOP_ID && SELLAUTH_API_KEY);
+}
+
+function cloneStorefront(data: StorefrontData): StorefrontData {
+  return {
+    ...data,
+    products: data.products.map((product) => ({
+      ...product,
+      variants: product.variants.map((variant) => ({ ...variant })),
+    })),
+    groups: data.groups.map((group) => ({
+      ...group,
+      image: group.image ? { ...group.image } : null,
+    })),
+    categories: data.categories.map((category) => ({
+      ...category,
+      image: category.image ? { ...category.image } : null,
+    })),
+    paymentMethods: data.paymentMethods.map((method) => ({ ...method })),
+    warnings: [...data.warnings],
+  };
+}
+
+function getCachedStorefront(): StorefrontData | null {
+  if (!storefrontCache) return null;
+  if (Date.now() > storefrontCache.expiresAt) return null;
+  return cloneStorefront(storefrontCache.data);
+}
+
+function setCachedStorefront(data: StorefrontData) {
+  storefrontCache = {
+    data: cloneStorefront(data),
+    expiresAt: Date.now() + STOREFRONT_CACHE_TTL_MS,
+  };
 }
 
 function asNumber(value: unknown): number | null {
@@ -327,6 +370,7 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
     extractImageCandidate(product.preview) ||
     extractImageCandidate(product.gallery) ||
     extractImageCandidate(variantsRaw) ||
+    productImageCache.get(id) ||
     PRODUCT_IMAGE_PLACEHOLDER;
 
   const parsedVariants = variantsRaw
@@ -362,6 +406,10 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
     typeof minQuantity === "number" && minQuantity > 1
       ? minQuantity
       : heuristicMinQuantity;
+
+  if (image && image !== PRODUCT_IMAGE_PLACEHOLDER) {
+    productImageCache.set(id, image);
+  }
 
   return {
     id,
@@ -425,8 +473,21 @@ async function enrichMissingProductImages(
 
   const map = new Map<number, string>();
 
+  // Pull from in-memory cache first.
+  for (const product of missing) {
+    const cached = productImageCache.get(product.id);
+    if (cached) {
+      map.set(product.id, cached);
+    }
+  }
+
+  // Enrich only a few uncached items per request to avoid SellAuth rate limits.
+  const uncachedMissing = missing
+    .filter((product) => !map.has(product.id))
+    .slice(0, 6);
+
   await Promise.all(
-    missing.slice(0, 80).map(async (product) => {
+    uncachedMissing.map(async (product) => {
       const detail = await fetchProductDetailRecord(product.id);
       if (!detail) return;
 
@@ -445,6 +506,7 @@ async function enrichMissingProductImages(
 
       if (detailImage) {
         map.set(product.id, detailImage);
+        productImageCache.set(product.id, detailImage);
       }
     })
   );
@@ -579,6 +641,11 @@ export async function getStorefrontData(): Promise<StorefrontData> {
     };
   }
 
+  const cached = getCachedStorefront();
+  if (cached) {
+    return cached;
+  }
+
   const warnings: string[] = [];
 
   try {
@@ -701,7 +768,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       );
     }
 
-    return {
+    const result: StorefrontData = {
       success: true,
       provider: "sellauth",
       message: "Live data loaded from SellAuth dashboard.",
@@ -718,7 +785,26 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       warnings,
       fetchedAt: new Date().toISOString(),
     };
+
+    setCachedStorefront(result);
+    return result;
   } catch (error) {
+    if (storefrontCache) {
+      const stale = cloneStorefront(storefrontCache.data);
+      return {
+        ...stale,
+        message:
+          error instanceof Error
+            ? `SellAuth temporarily failed: ${error.message}`
+            : "SellAuth request failed.",
+        warnings: [
+          "Using last known live storefront data while SellAuth is rate-limited.",
+          ...(error instanceof Error ? [error.message] : []),
+        ],
+        fetchedAt: stale.fetchedAt,
+      };
+    }
+
     return {
       ...mockStorefrontData,
       message:

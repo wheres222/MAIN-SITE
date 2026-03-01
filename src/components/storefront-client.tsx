@@ -62,7 +62,7 @@ export function StorefrontClient() {
 
     (async () => {
       try {
-        const response = await fetch("/api/storefront", { cache: "no-store" });
+        const response = await fetch("/api/storefront");
         const data = (await response.json()) as StorefrontData;
         if (!active) return;
         setStorefront(data);

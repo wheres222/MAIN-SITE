@@ -9,6 +9,7 @@ export interface SellAuthVariant {
   price: number | null;
   stock: number | null;
   minQuantity?: number | null;
+  isSynthetic?: boolean;
 }
 
 export interface SellAuthGroup {

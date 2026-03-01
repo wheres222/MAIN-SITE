@@ -70,6 +70,10 @@ export function ProductPurchasePanel({
   async function handleCheckout() {
     setMessage("");
     setIsBusy(true);
+
+    const selectedVariant = product.variants.find((item) => item.id === variantId);
+    const checkoutVariantId = selectedVariant?.isSynthetic ? undefined : variantId;
+
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
@@ -82,7 +86,7 @@ export function ProductPurchasePanel({
             {
               productId: product.id,
               quantity,
-              ...(variantId ? { variantId } : {}),
+              ...(checkoutVariantId ? { variantId: checkoutVariantId } : {}),
             },
           ],
         }),

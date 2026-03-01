@@ -62,6 +62,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     const variantMinimum =
       typeof variant?.minQuantity === "number" ? Math.max(1, variant.minQuantity) : 1;
     const requiredMinimum = Math.max(minQuantity, variantMinimum);
+    const checkoutVariantId = variant?.isSynthetic ? undefined : variantId;
     let checkoutQuantity = Math.max(requiredMinimum, quantity);
 
     if (checkoutQuantity !== quantity) {
@@ -80,7 +81,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               {
                 productId: product.id,
                 quantity: checkoutQuantity,
-                variantId,
+                ...(checkoutVariantId ? { variantId: checkoutVariantId } : {}),
               },
             ],
           }),
