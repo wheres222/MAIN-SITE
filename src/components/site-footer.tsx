@@ -19,10 +19,7 @@ export function SiteFooter() {
           <div className="footer-minimal-left">
             <div className="footer-minimal-brand">
               <img src="/branding/cp-logo.png" alt="CheatParadise logo" className="footer-minimal-logo" />
-              <h3 className="footer-minimal-title">
-                <span className="brand-word brand-word-cheat">cheat</span>
-                <span className="brand-word brand-word-paradise">paradise</span>
-              </h3>
+              <h3 className="footer-minimal-title">CheatParadise</h3>
             </div>
             <p>Copyright © CheatParadise 2026. All Rights Reserved</p>
             <p>Developed by Panther Designs</p>
@@ -41,7 +38,6 @@ export function SiteFooter() {
             </a>
           </div>
         </div>
-        <div className="footer-minimal-glow" aria-hidden="true" />
       </div>
     </footer>
   );
