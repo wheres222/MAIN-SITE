@@ -28,6 +28,7 @@
   --brand-gold: #7cc4ff;
   --ui-border: rgba(255, 255, 255, 0.07);
   --ui-border-strong: rgba(255, 255, 255, 0.12);
+  --nav-separator: rgba(255, 255, 255, 0.05);
 }
 
 * { box-sizing: border-box; }
@@ -75,11 +76,20 @@ select::-ms-expand { display: none; }
 
 .top-header {
   background: rgba(14, 16, 22, 0.72);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--nav-separator);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
-.top-header-inner { min-height: 110px; display: flex; align-items: center; justify-content: space-between; }
+.top-header-inner {
+  min-height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-left: 1px solid var(--nav-separator);
+  border-right: 1px solid var(--nav-separator);
+  padding-left: 14px;
+  padding-right: 14px;
+}
 .brand { display: flex; align-items: center; gap: 14px; }
 .brand-mark { width: 64px; height: 64px; object-fit: contain; }
 .brand-text {
@@ -120,13 +130,23 @@ select::-ms-expand { display: none; }
 
 .nav-row {
   background: rgba(17, 20, 28, 0.72);
-  border-top: 1px solid rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--nav-separator);
+  border-bottom: 1px solid var(--nav-separator);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
-.nav-row-inner { min-height: 78px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+.nav-row-inner {
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+  border-left: 1px solid var(--nav-separator);
+  border-right: 1px solid var(--nav-separator);
+  padding-left: 14px;
+  padding-right: 14px;
+}
 .site-nav { display: flex; gap: 8px; flex-wrap: wrap; }
 .nav-row-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; min-width: 0; }
 .site-nav a, .site-nav button, .site-nav-cart { background: transparent; border: 1px solid transparent; color: #e2e8f8; padding: 12px 16px; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
