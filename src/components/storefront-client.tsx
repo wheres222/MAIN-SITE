@@ -83,10 +83,22 @@ export function StorefrontClient() {
     };
   }, []);
 
-  const filteredGroups = useMemo(
-    () => [...(storefront?.groups || [])].sort((a, b) => a.name.localeCompare(b.name)),
-    [storefront]
-  );
+  const filteredGroups = useMemo(() => {
+    const groups = storefront?.groups || [];
+    if (groups.length > 0) {
+      return [...groups].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    const categories = storefront?.categories || [];
+    return categories
+      .map((category) => ({
+        id: category.id,
+        name: category.name,
+        description: category.description,
+        image: category.image,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [storefront]);
 
   const activeGroup = useMemo<SellAuthGroup | null>(() => {
     if (activeGroupId === null) return null;
@@ -234,7 +246,7 @@ export function StorefrontClient() {
           </div>
 
           {!isLoading && filteredGroups.length === 0 && (
-            <p className="state-message">No games matched your search.</p>
+            <p className="state-message">No categories are available yet.</p>
           )}
         </section>
 
