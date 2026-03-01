@@ -456,7 +456,14 @@ export async function getStorefrontData(): Promise<StorefrontData> {
         : product
     );
 
-    const mergedGroups = mergeBySlug(groupsClean, baselineGroups);
+    const categoryGroups: SellAuthGroup[] = categoriesClean.map((category) => ({
+      id: category.id,
+      name: category.name,
+      description: category.description || `${category.name} category`,
+      image: category.image,
+    }));
+
+    const mergedGroups = mergeBySlug([...groupsClean, ...categoryGroups], baselineGroups);
     const mergedCategories = mergeBySlug(categoriesClean, baselineCategories);
 
     if (groupsResult.status !== "fulfilled") {
