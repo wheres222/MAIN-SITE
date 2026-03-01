@@ -3,6 +3,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { ProductStatusBoard } from "@/components/product-status-board";
 import { getStorefrontData } from "@/lib/sellauth";
 
+export const runtime = "edge";
+
 export default async function StatusPage() {
   const data = await getStorefrontData();
 
