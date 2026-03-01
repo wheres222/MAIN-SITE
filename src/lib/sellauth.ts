@@ -368,35 +368,23 @@ export async function getStorefrontData(): Promise<StorefrontData> {
             )
         : [];
 
-    const blockedCategorySlugs = new Set(["pubg", "league-of-legends", "lol"]);
+    const groupsClean = groupsFromSellAuth.map((group) =>
+      toGameSlug(group.name) === "rainbow-six-siege"
+        ? { ...group, image: { url: "/pd/rainbow-six-siege.png" } }
+        : group
+    );
 
-    const groupsClean = groupsFromSellAuth
-      .filter((group) => !blockedCategorySlugs.has(toGameSlug(group.name)))
-      .map((group) =>
-        toGameSlug(group.name) === "rainbow-six-siege"
-          ? { ...group, image: { url: "/pd/rainbow-six-siege.png" } }
-          : group
-      );
+    const categoriesClean = categoriesFromSellAuth.map((category) =>
+      toGameSlug(category.name) === "rainbow-six-siege"
+        ? { ...category, image: { url: "/pd/rainbow-six-siege.png" } }
+        : category
+    );
 
-    const categoriesClean = categoriesFromSellAuth
-      .filter((category) => !blockedCategorySlugs.has(toGameSlug(category.name)))
-      .map((category) =>
-        toGameSlug(category.name) === "rainbow-six-siege"
-          ? { ...category, image: { url: "/pd/rainbow-six-siege.png" } }
-          : category
-      );
-
-    const productsClean = products
-      .filter(
-        (product) =>
-          !blockedCategorySlugs.has(toGameSlug(product.groupName || "")) &&
-          !blockedCategorySlugs.has(toGameSlug(product.categoryName || ""))
-      )
-      .map((product) =>
-        toGameSlug(product.groupName || product.categoryName || "") === "rainbow-six-siege"
-          ? { ...product, image: "/pd/rainbow-six-siege.png" }
-          : product
-      );
+    const productsClean = products.map((product) =>
+      toGameSlug(product.groupName || product.categoryName || "") === "rainbow-six-siege"
+        ? { ...product, image: "/pd/rainbow-six-siege.png" }
+        : product
+    );
 
     if (groupsResult.status !== "fulfilled") {
       warnings.push("Could not fetch groups from SellAuth.");
