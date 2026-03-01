@@ -10,6 +10,7 @@ function readConfig() {
   const root = process.cwd();
 
   return {
+    host: process.env.FULFILLMENT_HOST || "127.0.0.1",
     port: toInt(process.env.FULFILLMENT_PORT, 8788),
     pollMs: toInt(process.env.FULFILLMENT_POLL_MS, 1500),
     concurrency: toInt(process.env.FULFILLMENT_CONCURRENCY, 1),

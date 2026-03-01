@@ -22,6 +22,7 @@ node.zip
 # Fulfillment runtime artifacts
 fulfillment/state/
 fulfillment/artifacts/
+fulfillment/.env
 
 # Editor
 .vscode/

@@ -226,8 +226,9 @@ const server = http.createServer(async (request, response) => {
   }
 });
 
-server.listen(config.port, () => {
+server.listen(config.port, config.host, () => {
   logger.info("Fulfillment server listening", {
+    host: config.host,
     port: config.port,
     mappingFile: config.mappingFile,
   });

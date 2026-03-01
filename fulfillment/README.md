@@ -47,6 +47,7 @@ curl http://127.0.0.1:8788/health
 
 Optional:
 
+- `FULFILLMENT_HOST` - default `127.0.0.1`
 - `FULFILLMENT_PORT` - default `8788`
 - `FULFILLMENT_CONCURRENCY` - default `1`
 - `FULFILLMENT_MAX_ATTEMPTS` - default `3`
