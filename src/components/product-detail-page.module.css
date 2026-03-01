@@ -160,6 +160,54 @@
   color: #f3f7ff;
 }
 
+.quantityWrap {
+  margin-top: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+.quantityLabel {
+  color: #9ab0d8;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.quantityRow {
+  display: grid;
+  gap: 8px;
+}
+
+.quantityRow input {
+  width: 100%;
+  border: 1px solid #25467c;
+  background: #0a1328;
+  color: #e9f1ff;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.quantityPresets {
+  display: flex;
+  gap: 8px;
+}
+
+.quantityPresetBtn {
+  border: 1px solid #28477e;
+  background: #0c1730;
+  color: #b8caea;
+  border-radius: 7px;
+  padding: 7px 10px;
+  min-width: 60px;
+  cursor: pointer;
+}
+
+.quantityPresetBtnActive,
+.quantityPresetBtn:hover {
+  border-color: #4f8eff;
+  background: #11264c;
+  color: #f1f6ff;
+}
+
 .optionLabel {
   margin: 18px 0 11px;
   color: #a2b5d8;

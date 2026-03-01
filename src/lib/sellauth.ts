@@ -217,6 +217,13 @@ function parseVariant(rawVariant: unknown): SellAuthVariant | null {
       asNumber(variant.sale_price) ??
       asNumber(variant.amount),
     stock: asNumber(variant.stock),
+    minQuantity:
+      asNumber(variant.min_quantity) ??
+      asNumber(variant.minimum_quantity) ??
+      asNumber(variant.minimumQuantity) ??
+      asNumber(variant.minQuantity) ??
+      asNumber(variant.minimum) ??
+      asNumber(variant.min),
   };
 }
 
@@ -310,6 +317,25 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
     .map(parseVariant)
     .filter((variant): variant is SellAuthVariant => Boolean(variant));
 
+  const productMinQuantity =
+    asNumber(product.min_quantity) ??
+    asNumber(product.minimum_quantity) ??
+    asNumber(product.minimumQuantity) ??
+    asNumber(product.minQuantity) ??
+    asNumber(product.minimum) ??
+    asNumber(product.min);
+
+  const variantMinQuantity = parsedVariants.reduce<number | null>((max, variant) => {
+    if (typeof variant.minQuantity !== "number" || variant.minQuantity <= 1) return max;
+    if (max === null) return variant.minQuantity;
+    return variant.minQuantity > max ? variant.minQuantity : max;
+  }, null);
+
+  const minQuantity =
+    typeof productMinQuantity === "number" && productMinQuantity > 1
+      ? productMinQuantity
+      : variantMinQuantity;
+
   return {
     id,
     name,
@@ -327,6 +353,7 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
       asNumber(product.inventory) ??
       asNumber(product.inventory_count) ??
       asNumber(product.available),
+    minQuantity,
     groupId,
     groupName,
     categoryId,
@@ -638,12 +665,16 @@ export async function createSellAuthCheckout(input: CheckoutRequestInput): Promi
 
   const paymentMethod = input.paymentMethod.trim();
   const paymentMethodId = asNumber(paymentMethod);
+  const checkoutItems = input.items.map((item) => ({
+    productId: item.productId,
+    product_id: item.productId,
+    quantity: item.quantity,
+    ...(item.variantId ? { variantId: item.variantId, variant_id: item.variantId } : {}),
+  }));
+
   const payload: GenericRecord = {
-    cart: input.items.map((item) => ({
-      productId: item.productId,
-      quantity: item.quantity,
-      ...(item.variantId ? { variantId: item.variantId } : {}),
-    })),
+    cart: checkoutItems,
+    items: checkoutItems,
     ...(input.email ? { customer_email: input.email } : {}),
     ...(input.couponCode ? { coupon_code: input.couponCode } : {}),
   };

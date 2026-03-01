@@ -295,17 +295,18 @@ export function StorefrontClient() {
                     const price = productLowestPrice(product);
                     const inStock = isStockAvailable(product);
                     const productImage = withVersion(
-                      product.image || activeGroup.image?.url || "/games/fortnite.svg",
+                      product.image || "/placeholders/product-image-not-added.svg",
                       storefront?.fetchedAt || "modal-v1"
                     );
 
                     return (
-                      <article key={product.id} className="category-modal-product">
-                        <Link
-                          href={`/products/${product.id}`}
-                          className="category-modal-product-image"
-                          onClick={() => setActiveGroupId(null)}
-                        >
+                      <Link
+                        key={product.id}
+                        href={`/products/${product.id}`}
+                        className="category-modal-product"
+                        onClick={() => setActiveGroupId(null)}
+                      >
+                        <span className="category-modal-product-image">
                           <Image
                             src={productImage}
                             alt={product.name}
@@ -314,18 +315,11 @@ export function StorefrontClient() {
                             sizes="(max-width: 900px) 100vw, 33vw"
                             unoptimized
                           />
-                        </Link>
+                        </span>
 
-                        <div className="category-modal-product-body">
-                          <div className="category-modal-product-top">
-                            <h4>
-                              <Link
-                                href={`/products/${product.id}`}
-                                onClick={() => setActiveGroupId(null)}
-                              >
-                                {product.name}
-                              </Link>
-                            </h4>
+                        <span className="category-modal-product-body">
+                          <span className="category-modal-product-top">
+                            <h4>{product.name}</h4>
                             <span
                               className={`category-modal-status ${
                                 inStock
@@ -335,20 +329,20 @@ export function StorefrontClient() {
                             >
                               {inStock ? "Operational" : "Unavailable"}
                             </span>
-                          </div>
+                          </span>
 
-                          <div className="category-modal-meta">
-                            <div className="category-modal-meta-box">
+                          <span className="category-modal-meta">
+                            <span className="category-modal-meta-box">
                               <span>From</span>
                               <strong>{money(price, product.currency || "USD")}</strong>
-                            </div>
-                            <div className="category-modal-meta-box">
+                            </span>
+                            <span className="category-modal-meta-box">
                               <span>Stock</span>
                               <strong>{inStock ? "In Stock" : "Out of Stock"}</strong>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
+                            </span>
+                          </span>
+                        </span>
+                      </Link>
                     );
                   })}
                 </div>

@@ -31,11 +31,30 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
   const [notice, setNotice] = useState("");
   const showcaseRef = useRef<HTMLElement | null>(null);
 
+  const variantMinQuantity = variants.reduce<number>((max, variant) => {
+    const value = typeof variant.minQuantity === "number" ? variant.minQuantity : 1;
+    return value > max ? value : max;
+  }, 1);
+
+  const minQuantity = Math.max(1, product.minQuantity || 1, variantMinQuantity);
+  const [quantity, setQuantity] = useState(minQuantity);
+
   const unitPrice = variants[0]?.price ?? product.price ?? 0;
   const paymentMethod = paymentMethods[0]?.id || "crypto";
 
   async function onBuyVariant(variantId: number) {
     setNotice("");
+
+    const variant = variants.find((item) => item.id === variantId);
+    const variantMinimum =
+      typeof variant?.minQuantity === "number" ? Math.max(1, variant.minQuantity) : 1;
+    const requiredMinimum = Math.max(minQuantity, variantMinimum);
+    const checkoutQuantity = Math.max(requiredMinimum, quantity);
+
+    if (checkoutQuantity !== quantity) {
+      setQuantity(checkoutQuantity);
+    }
+
     setBuyingVariantId(variantId);
     try {
       const response = await fetch("/api/checkout", {
@@ -46,7 +65,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           items: [
             {
               productId: product.id,
-              quantity: 1,
+              quantity: checkoutQuantity,
               variantId,
             },
           ],
@@ -59,7 +78,15 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
       };
 
       if (!response.ok || !payload.success) {
-        setNotice(payload.message || "Unable to create checkout.");
+        const message = payload.message || "Unable to create checkout.";
+        const minMatch = message.match(/minimum quantity of\s*(\d+)/i);
+        if (minMatch) {
+          const parsedMinimum = Number(minMatch[1]);
+          if (Number.isFinite(parsedMinimum) && parsedMinimum > quantity) {
+            setQuantity(parsedMinimum);
+          }
+        }
+        setNotice(message);
         return;
       }
 
@@ -216,6 +243,41 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
             </p>
             <h1>{product.name}</h1>
             <p className={styles.price}>{money(unitPrice, product.currency)}</p>
+
+            {minQuantity > 1 ? (
+              <div className={styles.quantityWrap}>
+                <label htmlFor="detail-quantity" className={styles.quantityLabel}>
+                  Quantity (minimum {minQuantity})
+                </label>
+                <div className={styles.quantityRow}>
+                  <input
+                    id="detail-quantity"
+                    type="number"
+                    min={minQuantity}
+                    value={quantity}
+                    onChange={(event) =>
+                      setQuantity(
+                        Math.max(minQuantity, Number(event.target.value) || minQuantity)
+                      )
+                    }
+                  />
+                  <div className={styles.quantityPresets}>
+                    {[minQuantity, minQuantity * 2, minQuantity * 4].map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className={`${styles.quantityPresetBtn} ${
+                          quantity === value ? styles.quantityPresetBtnActive : ""
+                        }`}
+                        onClick={() => setQuantity(value)}
+                      >
+                        {value}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : null}
 
             <h3 className={styles.optionLabel}>SELECT OPTION</h3>
             <div className={styles.optionsGrid}>

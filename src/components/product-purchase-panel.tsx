@@ -36,7 +36,11 @@ export function ProductPurchasePanel({
   const [variantId, setVariantId] = useState<number | undefined>(
     product.variants[0]?.id
   );
-  const minQuantity = /mail/i.test(product.name) ? 25 : 1;
+  const variantMinimum = product.variants.reduce<number>((max, variant) => {
+    const value = typeof variant.minQuantity === "number" ? variant.minQuantity : 1;
+    return value > max ? value : max;
+  }, 1);
+  const minQuantity = Math.max(1, product.minQuantity || 1, variantMinimum);
   const [quantity, setQuantity] = useState(minQuantity);
   const [email, setEmail] = useState("");
   const [couponCode, setCouponCode] = useState("");
@@ -128,7 +132,7 @@ export function ProductPurchasePanel({
 
       {minQuantity > 1 ? (
         <div className="qty-presets" aria-label="Quick quantity presets">
-          {[25, 50, 100].map((value) => (
+          {[minQuantity, minQuantity * 2, minQuantity * 4].map((value) => (
             <button
               key={value}
               type="button"

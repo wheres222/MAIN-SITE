@@ -8,6 +8,7 @@ export interface SellAuthVariant {
   name: string;
   price: number | null;
   stock: number | null;
+  minQuantity?: number | null;
 }
 
 export interface SellAuthGroup {
@@ -32,6 +33,7 @@ export interface SellAuthProduct {
   price: number | null;
   currency: string;
   stock: number | null;
+  minQuantity?: number | null;
   groupId: number | null;
   groupName: string;
   categoryId: number | null;
