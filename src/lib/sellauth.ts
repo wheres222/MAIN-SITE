@@ -182,15 +182,27 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
 
   const groupId =
     asNumber(product.group_id) ??
+    asNumber(product.groupId) ??
     asNumber(product.shop_group_id) ??
+    asNumber(product.shopGroupId) ??
     asNumber(groupRecord.id);
   const categoryId =
     asNumber(product.category_id) ??
+    asNumber(product.categoryId) ??
     asNumber(product.shop_category_id) ??
+    asNumber(product.shopCategoryId) ??
     asNumber(categoryRecord.id);
 
-  const groupName = asString(groupRecord.name);
-  const categoryName = asString(categoryRecord.name);
+  const groupName =
+    asString(groupRecord.name) ||
+    asString(product.group_name) ||
+    asString(product.groupName) ||
+    (typeof product.group === "string" ? asString(product.group) : "");
+  const categoryName =
+    asString(categoryRecord.name) ||
+    asString(product.category_name) ||
+    asString(product.categoryName) ||
+    (typeof product.category === "string" ? asString(product.category) : "");
   const name = asString(product.name, `Product ${id}`);
   const image =
     asString(imageRecord.url) ||
@@ -269,18 +281,30 @@ function parsePaymentMethod(rawMethod: unknown): SellAuthPaymentMethod | null {
   };
 }
 
+function syntheticIdFromName(name: string, base: number): number {
+  const slug = toGameSlug(name) || "unknown";
+  let hash = 0;
+  for (const ch of slug) {
+    hash = (hash * 31 + ch.charCodeAt(0)) % 100000;
+  }
+  return base + hash;
+}
+
 function ensureGroupsFromProducts(products: SellAuthProduct[]): SellAuthGroup[] {
   const map = new Map<number, SellAuthGroup>();
   for (const product of products) {
-    if (!product.groupId || map.has(product.groupId)) continue;
-    map.set(product.groupId, {
-      id: product.groupId,
-      name: product.groupName || `Group ${product.groupId}`,
+    const name = product.groupName || product.categoryName || product.name;
+    const id = product.groupId ?? (name ? syntheticIdFromName(name, 700000) : null);
+    if (!id || map.has(id)) continue;
+
+    map.set(id, {
+      id,
+      name: name || `Group ${id}`,
       description: "",
-      image: { url: fallbackGameImage(product.groupName || product.name) },
+      image: { url: fallbackGameImage(name || product.name) },
     });
   }
-  return [...map.values()];
+  return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function ensureCategoriesFromProducts(
@@ -288,15 +312,18 @@ function ensureCategoriesFromProducts(
 ): SellAuthCategory[] {
   const map = new Map<number, SellAuthCategory>();
   for (const product of products) {
-    if (!product.categoryId || map.has(product.categoryId)) continue;
-    map.set(product.categoryId, {
-      id: product.categoryId,
-      name: product.categoryName || `Category ${product.categoryId}`,
+    const name = product.categoryName || product.groupName || product.name;
+    const id = product.categoryId ?? (name ? syntheticIdFromName(name, 800000) : null);
+    if (!id || map.has(id)) continue;
+
+    map.set(id, {
+      id,
+      name: name || `Category ${id}`,
       description: "",
-      image: null,
+      image: { url: fallbackGameImage(name || product.name) },
     });
   }
-  return [...map.values()];
+  return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
 
