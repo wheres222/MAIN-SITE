@@ -35,11 +35,11 @@
 html, body {
   margin: 0;
   min-height: 100%;
-  background-color: #0b0d12;
+  background-color: #0a0c11;
   background-image:
-    radial-gradient(circle at 1px 1px, rgba(152, 160, 176, 0.15) 1px, transparent 1.25px),
-    linear-gradient(180deg, #0f1218 0%, #0a0c11 100%);
-  background-size: 16px 16px, 100% 100%;
+    radial-gradient(circle at 0.8px 0.8px, rgba(122, 130, 146, 0.12) 0.8px, transparent 1.05px),
+    linear-gradient(180deg, #0f1218 0%, #090b10 100%);
+  background-size: 12px 12px, 100% 100%;
   color: var(--text-primary);
   font-family: var(--font-body), "Segoe UI", Tahoma, sans-serif;
 }
@@ -58,8 +58,8 @@ select::-ms-expand { display: none; }
 .marketplace-page {
   min-height: 100vh;
   background-color: transparent;
-  background-image: radial-gradient(circle at 1px 1px, rgba(146, 154, 171, 0.11) 1px, transparent 1.2px);
-  background-size: 16px 16px;
+  background-image: radial-gradient(circle at 0.8px 0.8px, rgba(140, 148, 165, 0.09) 0.8px, transparent 1.05px);
+  background-size: 12px 12px;
   --ui-border: transparent;
   --ui-border-strong: transparent;
 }
@@ -73,7 +73,12 @@ select::-ms-expand { display: none; }
   border-color: transparent;
 }
 
-.top-header { background: #0e0e10; border-bottom: 1px solid var(--ui-border); }
+.top-header {
+  background: rgba(14, 16, 22, 0.72);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
 .top-header-inner { min-height: 110px; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 14px; }
 .brand-mark { width: 64px; height: 64px; object-fit: contain; }
@@ -113,7 +118,14 @@ select::-ms-expand { display: none; }
 .btn-icon { width: 20px; height: 20px; object-fit: contain; flex: 0 0 auto; }
 .discord-btn .btn-icon { filter: brightness(0) invert(1); }
 
-.nav-row { background: #111216; border-top: 1px solid var(--ui-border); border-bottom: 1px solid var(--ui-border); }
+.nav-row {
+  background: rgba(17, 20, 28, 0.72);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
 .nav-row-inner { min-height: 78px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
 .site-nav { display: flex; gap: 8px; flex-wrap: wrap; }
 .nav-row-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; min-width: 0; }
