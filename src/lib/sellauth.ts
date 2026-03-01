@@ -99,6 +99,29 @@ function fallbackGameImage(label: string): string {
   return "/games/fortnite.svg";
 }
 
+const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
+  "apex-legends": "apex",
+  apexlegends: "apex",
+  cs2: "counter-strike-2",
+  counterstrike2: "counter-strike-2",
+  "counter-strike2": "counter-strike-2",
+  r6: "rainbow-six-siege",
+  "r6-siege": "rainbow-six-siege",
+  rainbowsixsiege: "rainbow-six-siege",
+  callofduty: "call-of-duty",
+  cod: "call-of-duty",
+  lol: "league-of-legends",
+  leagueoflegends: "league-of-legends",
+  arcraiders: "arc-raiders",
+};
+
+function canonicalCategorySlug(name: string): string {
+  const slug = toGameSlug(name);
+  if (!slug) return "";
+  const compact = slug.replace(/-/g, "");
+  return CANONICAL_CATEGORY_ALIASES[slug] || CANONICAL_CATEGORY_ALIASES[compact] || slug;
+}
+
 async function fetchSellAuth<T>(
   path: string,
   init?: RequestInit
@@ -147,8 +170,7 @@ function parseGroup(rawGroup: unknown): SellAuthGroup | null {
   const imageUrl =
     asString(imageRecord.url) ||
     asString(imageRecord.src) ||
-    asString(imageValue) ||
-    fallbackGameImage(asString(group.name));
+    asString(imageValue);
 
   return {
     id,
@@ -344,14 +366,14 @@ function mergeBySlug<T extends { name: string }>(
   const output: T[] = [];
 
   for (const item of liveItems) {
-    const slug = toGameSlug(item.name);
+    const slug = canonicalCategorySlug(item.name);
     if (!slug || seen.has(slug)) continue;
     seen.add(slug);
     output.push(item);
   }
 
   for (const item of baselineItems) {
-    const slug = toGameSlug(item.name);
+    const slug = canonicalCategorySlug(item.name);
     if (!slug || seen.has(slug)) continue;
     seen.add(slug);
     output.push(item);
@@ -433,28 +455,31 @@ export async function getStorefrontData(): Promise<StorefrontData> {
     const baselineCategories = bannersToCategories(baselineBanners);
 
     const baselineImageBySlug = new Map(
-      baselineBanners.map((banner) => [toGameSlug(banner.name), banner.imageUrl])
+      baselineBanners.map((banner) => [canonicalCategorySlug(banner.name), banner.imageUrl])
     );
 
     const groupsClean = groupsFromSellAuth.map((group) => {
-      const slug = toGameSlug(group.name);
+      const slug = canonicalCategorySlug(group.name);
       const baselineImage = baselineImageBySlug.get(slug);
       if (baselineImage) return { ...group, image: { url: baselineImage } };
       return group;
     });
 
     const categoriesClean = categoriesFromSellAuth.map((category) => {
-      const slug = toGameSlug(category.name);
+      const slug = canonicalCategorySlug(category.name);
       const baselineImage = baselineImageBySlug.get(slug);
       if (baselineImage) return { ...category, image: { url: baselineImage } };
       return category;
     });
 
-    const productsClean = products.map((product) =>
-      toGameSlug(product.groupName || product.categoryName || "") === "rainbow-six-siege"
-        ? { ...product, image: "/pd/rainbow-six-siege.png" }
-        : product
-    );
+    const productsClean = products.map((product) => {
+      const slug = canonicalCategorySlug(product.groupName || product.categoryName || "");
+      const baselineImage = baselineImageBySlug.get(slug);
+      if (baselineImage && (!product.image || product.image.startsWith("/games/"))) {
+        return { ...product, image: baselineImage };
+      }
+      return product;
+    });
 
     const categoryGroups: SellAuthGroup[] = categoriesClean.map((category) => ({
       id: category.id,

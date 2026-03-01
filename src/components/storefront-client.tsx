@@ -192,11 +192,12 @@ export function StorefrontClient() {
 
           <div className="game-grid frontpage-products-grid">
             {filteredGroups.map((group) => {
-              const baseSrcRaw = group.image?.url || "/games/fortnite.svg";
-              const hoverSrcRaw = hoverImageFor(baseSrcRaw);
+              const baseSrcRaw = group.image?.url?.trim() || "";
+              const hasImage = Boolean(baseSrcRaw);
+              const hoverSrcRaw = hasImage ? hoverImageFor(baseSrcRaw) : "";
               const version = storefront?.fetchedAt || "category-v2";
-              const baseSrc = withVersion(baseSrcRaw, version);
-              const hoverSrc = withVersion(hoverSrcRaw, version);
+              const baseSrc = hasImage ? withVersion(baseSrcRaw, version) : "";
+              const hoverSrc = hasImage ? withVersion(hoverSrcRaw, version) : "";
 
               return (
                 <Link
@@ -218,27 +219,36 @@ export function StorefrontClient() {
                   }}
                 >
                   <div className="game-card-media">
-                    <Image
-                      src={baseSrc}
-                      alt={group.name}
-                      width={600}
-                      height={600}
-                      sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
-                      priority={false}
-                      unoptimized
-                      className="game-card-image game-card-image--base"
-                    />
-                    <Image
-                      src={hoverSrc}
-                      alt=""
-                      aria-hidden="true"
-                      width={600}
-                      height={600}
-                      sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
-                      priority={false}
-                      unoptimized
-                      className="game-card-image game-card-image--hover"
-                    />
+                    {hasImage ? (
+                      <>
+                        <Image
+                          src={baseSrc}
+                          alt={group.name}
+                          width={600}
+                          height={600}
+                          sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
+                          priority={false}
+                          unoptimized
+                          className="game-card-image game-card-image--base"
+                        />
+                        <Image
+                          src={hoverSrc}
+                          alt=""
+                          aria-hidden="true"
+                          width={600}
+                          height={600}
+                          sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
+                          priority={false}
+                          unoptimized
+                          className="game-card-image game-card-image--hover"
+                        />
+                      </>
+                    ) : (
+                      <div className="game-card-missing-media">
+                        <strong>{group.name}</strong>
+                        <p>Product image not added</p>
+                      </div>
+                    )}
                   </div>
                 </Link>
               );
