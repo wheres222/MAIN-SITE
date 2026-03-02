@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14223d"/><stop offset="1" stop-color="#0f1728"/></linearGradient></defs>
+  <rect width="1200" height="675" fill="url(#g)"/>
+  <circle cx="360" cy="330" r="86" fill="#2e5fb6" opacity="0.45"/>
+  <circle cx="430" cy="300" r="62" fill="#4a7fe0" opacity="0.6"/>
+  <text x="600" y="352" text-anchor="middle" fill="#e6f0ff" font-size="72" font-family="Inter,Segoe UI,Arial" font-weight="700">Accounts</text>
+</svg>

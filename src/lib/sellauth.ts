@@ -735,26 +735,46 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       baselineBanners.map((banner) => [canonicalCategorySlug(banner.name), banner.imageUrl])
     );
 
+    const accountsMiscVpnFallbackBySlug = new Map<string, string>([
+      ["accounts", "/pd/accounts.svg"],
+      ["misc", "/pd/misc.svg"],
+      ["vpns", "/pd/vpns.svg"],
+      ["vpn", "/pd/vpns.svg"],
+    ]);
+
     const groupsClean = groupsFromSellAuth.map((group) => {
       const slug = canonicalCategorySlug(group.name);
       const baselineImage = baselineImageBySlug.get(slug);
+      const fallbackImage = accountsMiscVpnFallbackBySlug.get(slug);
+
       if (baselineImage) return { ...group, image: { url: baselineImage } };
+      if (!group.image && fallbackImage) return { ...group, image: { url: fallbackImage } };
       return group;
     });
 
     const categoriesClean = categoriesFromSellAuth.map((category) => {
       const slug = canonicalCategorySlug(category.name);
       const baselineImage = baselineImageBySlug.get(slug);
+      const fallbackImage = accountsMiscVpnFallbackBySlug.get(slug);
+
       if (baselineImage) return { ...category, image: { url: baselineImage } };
+      if (!category.image && fallbackImage) return { ...category, image: { url: fallbackImage } };
       return category;
     });
 
     const productsClean = products.map((product) => {
       const slug = canonicalCategorySlug(product.groupName || product.categoryName || "");
       const baselineImage = baselineImageBySlug.get(slug);
+      const fallbackImage = accountsMiscVpnFallbackBySlug.get(slug);
+
       if (baselineImage && (!product.image || product.image.startsWith("/games/"))) {
         return { ...product, image: baselineImage };
       }
+
+      if (product.image === PRODUCT_IMAGE_PLACEHOLDER && fallbackImage) {
+        return { ...product, image: fallbackImage };
+      }
+
       return product;
     });
 

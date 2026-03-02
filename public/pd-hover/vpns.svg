@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#12213b"/><stop offset="1" stop-color="#0d1728"/></linearGradient></defs>
+  <rect width="1200" height="675" fill="url(#g)"/>
+  <path d="M290 360c0-100 72-172 170-172s170 72 170 172" fill="none" stroke="#4a7fe0" stroke-width="38" opacity="0.45"/>
+  <rect x="315" y="330" width="290" height="190" rx="24" fill="#2f5fae" opacity="0.5"/>
+  <text x="600" y="352" text-anchor="middle" fill="#e6f0ff" font-size="72" font-family="Inter,Segoe UI,Arial" font-weight="700">VPNs</text>
+</svg>
