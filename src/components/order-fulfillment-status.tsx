@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -42,18 +41,18 @@ interface Props {
   mockData?: MockOrderData;
 }
 
-function statusLabel(status: OrderStatus): string {
+function formatStatus(status: OrderStatus): string {
   switch (status) {
     case "queued":
-      return "Queued";
+      return "queued";
     case "processing":
-      return "Processing";
+      return "processing";
     case "fulfilled":
-      return "Payment successful";
+      return "paid";
     case "failed":
-      return "Payment failed";
+      return "failed";
     default:
-      return status || "Unknown";
+      return status || "unknown";
   }
 }
 
@@ -71,8 +70,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
         }
       : null
   );
-  const [invoiceEmail, setInvoiceEmail] = useState(mockData?.customerEmail || "");
-  const [invoiceNotice, setInvoiceNotice] = useState("");
+  const [copiedKey, setCopiedKey] = useState("");
 
   useEffect(() => {
     if (mockData) return;
@@ -121,120 +119,121 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
     };
   }, [mockData, order?.status, orderId]);
 
-  const done = useMemo(
-    () => order?.status === "fulfilled" || order?.status === "failed",
-    [order?.status]
+  const items = useMemo(
+    () =>
+      mockData?.items || [
+        {
+          name: "Digital Product",
+          quantity: 1,
+          note: "Auto delivery enabled",
+        },
+      ],
+    [mockData?.items]
   );
 
-  const items = mockData?.items || [
-    {
-      name: "Digital Product",
-      quantity: 1,
-      note: "Delivered automatically after payment confirmation",
-    },
-  ];
+  const primaryItem = items[0];
+  const totalUnits = useMemo(
+    () => items.reduce((acc, item) => acc + Math.max(1, item.quantity || 1), 0),
+    [items]
+  );
 
-  function submitInvoiceEmail(event: React.FormEvent) {
-    event.preventDefault();
-    if (!invoiceEmail.trim()) {
-      setInvoiceNotice("Please enter an email address.");
-      return;
+  const keys = order?.licenseKeys || [];
+
+  async function copyKey(value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedKey(value);
+      setTimeout(() => setCopiedKey(""), 1400);
+    } catch {
+      setCopiedKey("copy-failed");
+      setTimeout(() => setCopiedKey(""), 1400);
     }
-    setInvoiceNotice("Invoice email request received.");
   }
 
   return (
-    <section className="order-complete-shell receipt-style-shell">
-      <div className="receipt-card">
-        <header className="receipt-card-top">
-          <div className="receipt-brand-left">
-            <Image src="/branding/cp-logo.png" alt="CheatParadise" width={30} height={30} />
-          </div>
-          <div className="receipt-brand-right">
-            <h1>CheatParadise</h1>
-            <p>
-              For any help: <a href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"} target="_blank" rel="noreferrer">Support</a>
-            </p>
-          </div>
-        </header>
+    <section className="postpay-shell">
+      <div className="postpay-grid">
+        <article className="postpay-left">
+          <h1>{primaryItem?.name || "Order completed"}</h1>
+          {primaryItem?.note ? <p className="postpay-sub">{primaryItem.note}</p> : null}
 
-        <div className="receipt-state-wrap">
-          <span className={`receipt-check-badge receipt-check-${order?.status || "unknown"}`}>
-            ✓
-          </span>
-          <h2>{statusLabel(order?.status || "processing")}</h2>
-          <p>
-            {order?.status === "failed"
-              ? "We couldn't finish this payment. Please contact support."
-              : "Thank you! Your payment was successfully processed."}
+          <dl className="postpay-details">
+            <div>
+              <dt>Order:</dt>
+              <dd>{order?.orderId || orderId}</dd>
+            </div>
+            <div>
+              <dt>Amount:</dt>
+              <dd>{totalUnits}</dd>
+            </div>
+            <div>
+              <dt>Total:</dt>
+              <dd>{mockData?.total || "—"}</dd>
+            </div>
+            <div>
+              <dt>Time of purchase:</dt>
+              <dd>{order?.updatedAt ? new Date(order.updatedAt).toLocaleString() : "Pending"}</dd>
+            </div>
+            <div>
+              <dt>Email:</dt>
+              <dd>{mockData?.customerEmail || "Not provided"}</dd>
+            </div>
+            <div>
+              <dt>Payment method:</dt>
+              <dd>{mockData?.paymentMethod || "Crypto"}</dd>
+            </div>
+          </dl>
+
+          <p className="postpay-status">
+            Payment status: <strong>{formatStatus(order?.status || "processing")}</strong>
           </p>
-        </div>
 
-        <article className="receipt-summary-box">
-          <div>
-            <span>Amount Paid</span>
-            <strong>{mockData?.total || "—"}</strong>
-          </div>
-          <div>
-            <span>Transaction ID</span>
-            <strong>{mockData?.transactionId || order?.orderId || orderId}</strong>
-          </div>
-        </article>
+          {mockData?.transactionId ? (
+            <p className="postpay-bonus">Transaction: {mockData.transactionId}</p>
+          ) : null}
 
-        <form className="receipt-invoice-form" onSubmit={submitInvoiceEmail}>
-          <label htmlFor="invoice-email">Enter email address to receive invoice</label>
-          <input
-            id="invoice-email"
-            value={invoiceEmail}
-            onChange={(event) => setInvoiceEmail(event.target.value)}
-            placeholder="abc@email.com"
-            type="email"
-          />
-          <button type="submit">Submit</button>
-          {invoiceNotice ? <p className="receipt-invoice-notice">{invoiceNotice}</p> : null}
-        </form>
+          <div className="postpay-personal-box">Personal</div>
+          <p className="postpay-personal-note">
+            A personal account is created automatically upon the first purchase.
+          </p>
 
-        <div className="receipt-delivery-block">
-          <h3>Delivered items</h3>
-          <ul className="order-summary-list">
-            {items.map((item, index) => (
-              <li key={`${item.name}-${index}`}>
-                <div>
-                  <strong>{item.name}</strong>
-                  {item.note ? <p>{item.note}</p> : null}
-                </div>
-                <span>x{item.quantity}</span>
-              </li>
-            ))}
-          </ul>
-
-          {Array.isArray(order?.licenseKeys) && order.licenseKeys.length > 0 ? (
-            <ul className="order-keys-list">
-              {order.licenseKeys.map((key) => (
-                <li key={key}>{key}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="state-message">
-              {done
-                ? "No keys were attached to this order."
-                : "Your license key(s) will appear here as soon as fulfillment completes."}
-            </p>
-          )}
-
+          {loading ? <p className="state-message">Loading order status...</p> : null}
+          {error ? <p className="state-message error">{error}</p> : null}
           {order?.status === "failed" && order.lastError ? (
             <p className="state-message error">{order.lastError}</p>
           ) : null}
-        </div>
+        </article>
 
-        {loading ? <p className="state-message">Loading order status...</p> : null}
-        {error ? <p className="state-message error">{error}</p> : null}
+        <article className="postpay-right">
+          <h2>Your keys:</h2>
 
-        <footer className="receipt-footer-links">
-          <Link href="/terms-of-service">Terms</Link>
-          <span>&</span>
-          <Link href="/privacy-policy">Privacy</Link>
-        </footer>
+          {keys.length > 0 ? (
+            <ul className="postpay-key-list">
+              {keys.map((key) => (
+                <li key={key}>
+                  <span>{key}</span>
+                  <button type="button" onClick={() => copyKey(key)}>
+                    {copiedKey === key ? "Copied" : "Copy"}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="state-message">No keys yet. Delivery will appear here automatically.</p>
+          )}
+
+          <div className="postpay-actions">
+            <a href="#">Instructions and loader</a>
+            <a href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"} target="_blank" rel="noreferrer">
+              Help
+            </a>
+            <Link href="/">Store</Link>
+          </div>
+
+          {copiedKey === "copy-failed" ? (
+            <p className="state-message error">Copy failed on this device.</p>
+          ) : null}
+        </article>
       </div>
     </section>
   );

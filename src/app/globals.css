@@ -1161,216 +1161,139 @@ select::-ms-expand { display: none; }
   }
 }
 
-.order-complete-shell {
-  margin-top: 10px;
+.postpay-shell {
+  margin-top: 8px;
+}
+.postpay-grid {
   display: grid;
-  place-items: center;
+  grid-template-columns: minmax(320px, 420px) minmax(360px, 560px);
+  gap: 26px;
+  align-items: start;
 }
-.receipt-style-shell {
-  padding: 8px 0 24px;
+.postpay-left h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
 }
-.receipt-card {
-  width: min(560px, 100%);
-  border: 1px solid #273247;
-  border-radius: 16px;
-  background: linear-gradient(180deg, rgba(16, 21, 31, 0.96) 0%, rgba(12, 16, 24, 0.94) 100%);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
-  overflow: hidden;
+.postpay-sub {
+  margin: 4px 0 0;
+  color: #a2b2d4;
+  font-size: 1rem;
 }
-.receipt-card-top {
+.postpay-details {
+  margin: 14px 0 0;
+  display: grid;
+  gap: 3px;
+}
+.postpay-details div {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid #273247;
-  padding: 14px 16px;
+  align-items: baseline;
+  gap: 8px;
 }
-.receipt-brand-left img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
+.postpay-details dt {
+  color: #9db0d8;
+  font-size: 0.91rem;
 }
-.receipt-brand-right {
-  text-align: right;
-}
-.receipt-brand-right h1 {
+.postpay-details dd {
   margin: 0;
-  font-size: 1.04rem;
+  color: #e7efff;
+  font-size: 0.91rem;
 }
-.receipt-brand-right p {
-  margin: 3px 0 0;
-  color: #8fa4ce;
-  font-size: 0.78rem;
+.postpay-status {
+  margin: 14px 0 0;
+  color: #b0c0de;
 }
-.receipt-brand-right a { color: #7cb2ff; }
-
-.receipt-state-wrap {
-  text-align: center;
-  padding: 24px 16px 6px;
+.postpay-status strong {
+  color: #67d69a;
+  text-transform: lowercase;
 }
-.receipt-check-badge {
-  width: 72px;
-  height: 72px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.05rem;
-  font-weight: 800;
-  color: #eff8ff;
-  margin-bottom: 12px;
-  border: 8px solid rgba(94, 119, 168, 0.2);
+.postpay-bonus {
+  margin: 8px 0 0;
+  color: #a4b9df;
+  font-size: 0.88rem;
 }
-.receipt-check-fulfilled,
-.receipt-check-processing,
-.receipt-check-queued {
-  background: linear-gradient(180deg, #2fbf89 0%, #1f996d 100%);
+.postpay-personal-box {
+  margin-top: 24px;
+  width: fit-content;
+  border: 1px solid #314565;
+  border-radius: 8px;
+  background: #121b2b;
+  color: #cad9f6;
+  padding: 7px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: lowercase;
 }
-.receipt-check-failed {
-  background: linear-gradient(180deg, #c84b5c 0%, #a03343 100%);
-}
-.receipt-state-wrap h2 {
-  margin: 0;
-  font-size: 1.92rem;
-}
-.receipt-state-wrap p {
-  margin: 7px auto 0;
-  max-width: 390px;
-  color: #9fb1d4;
-  font-size: 1.02rem;
+.postpay-personal-note {
+  margin: 10px 0 0;
+  max-width: 360px;
+  color: #8fa3cc;
+  font-size: 0.86rem;
   line-height: 1.45;
 }
 
-.receipt-summary-box {
-  margin: 16px;
-  border: 1px solid #2b3750;
-  border-radius: 12px;
-  background: #111827;
-  overflow: hidden;
+.postpay-right h2 {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
 }
-.receipt-summary-box > div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-}
-.receipt-summary-box > div + div {
-  border-top: 1px dashed #2e3b56;
-}
-.receipt-summary-box span {
-  color: #9bb0d8;
-  font-size: 0.9rem;
-}
-.receipt-summary-box strong {
-  color: #edf4ff;
-  font-size: 1.06rem;
-}
-
-.receipt-invoice-form {
-  margin: 0 16px;
+.postpay-key-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
   display: grid;
+  gap: 9px;
+}
+.postpay-key-list li {
+  border: 1px solid #394872;
+  border-radius: 9px;
+  background: #10192d;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
   gap: 8px;
+  padding: 8px 10px;
 }
-.receipt-invoice-form label {
-  color: #9db1d7;
-  font-size: 0.9rem;
+.postpay-key-list li span {
+  color: #e4eeff;
+  font-size: 0.82rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  overflow-wrap: anywhere;
 }
-.receipt-invoice-form input {
-  border: 1px solid #304468;
-  border-radius: 9px;
-  background: #0e1625;
-  color: #e9f1ff;
-  padding: 10px 11px;
-}
-.receipt-invoice-form button {
-  border: 1px solid #3f5f97;
-  border-radius: 9px;
-  background: linear-gradient(180deg, #567fda 0%, #3d62bb 100%);
-  color: #edf5ff;
-  padding: 10px 12px;
-  font-weight: 700;
+.postpay-key-list li button {
+  border: 1px solid #3f578b;
+  background: #152746;
+  color: #dbe8ff;
+  border-radius: 7px;
+  padding: 6px 10px;
+  font-size: 0.74rem;
   cursor: pointer;
 }
-.receipt-invoice-form button:hover {
+.postpay-key-list li button:hover {
+  background: #1e3a6c;
+}
+.postpay-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.postpay-actions a {
+  border: 1px solid #4f4fa2;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #6f68e3 0%, #5147b7 100%);
+  color: #f0f3ff;
+  padding: 7px 11px;
+  font-size: 0.8rem;
+}
+.postpay-actions a:hover {
   filter: brightness(1.05);
 }
-.receipt-invoice-notice {
-  margin: 0;
-  color: #8fb6ff;
-  font-size: 0.85rem;
+
+@media (max-width: 980px) {
+  .postpay-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
 
-.receipt-delivery-block {
-  margin: 14px 16px 0;
-  border: 1px solid #2d3851;
-  border-radius: 12px;
-  background: #101725;
-  padding: 12px;
-}
-.receipt-delivery-block h3 {
-  margin: 0 0 10px;
-  font-size: 0.98rem;
-}
-.order-summary-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 8px;
-}
-.order-summary-list li {
-  border: 1px solid #2f3b53;
-  border-radius: 8px;
-  background: #0f1522;
-  padding: 9px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-.order-summary-list li strong {
-  display: block;
-  color: #e8f0ff;
-}
-.order-summary-list li p {
-  margin: 3px 0 0;
-  color: #9aabcb;
-  font-size: 0.82rem;
-}
-.order-summary-list li > span {
-  color: #bdd0f5;
-  font-weight: 700;
-}
-
-.order-keys-list {
-  margin: 10px 0 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 8px;
-}
-.order-keys-list li {
-  border: 1px solid #2f3b53;
-  border-radius: 8px;
-  background: #0f1522;
-  padding: 9px 10px;
-  color: #dce7ff;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 0.84rem;
-}
-
-.receipt-footer-links {
-  margin-top: 14px;
-  border-top: 1px solid #273247;
-  padding: 12px 16px;
-  text-align: center;
-  color: #86a2d4;
-  font-size: 0.82rem;
-}
-.receipt-footer-links a {
-  color: #79acff;
-}
-.receipt-footer-links span {
-  margin: 0 6px;
-}
 
