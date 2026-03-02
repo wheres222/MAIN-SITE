@@ -134,27 +134,24 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
     [mockData?.items]
   );
 
-  const primaryItem = items[0];
-  const totalUnits = useMemo(
-    () => items.reduce((acc, item) => acc + Math.max(1, item.quantity || 1), 0),
-    [items]
-  );
-
   const keys = order?.licenseKeys || [];
   const primaryKey = keys[0] || "Pending delivery...";
+  const primaryItem = items[0];
 
   const isFailed = order?.status === "failed";
   const isPaid = order?.status === "fulfilled";
+
   const successTitle = isFailed
     ? "Payment failed"
     : isPaid
       ? "Payment successful"
       : "Payment processing";
+
   const successMessage = isFailed
-    ? "We couldn't process this payment completely. Please contact support."
+    ? "We couldn't complete this payment. Please contact support."
     : isPaid
-      ? "Thank you. Your payment was successfully processed."
-      : "Thanks! We received your payment and are processing delivery now.";
+      ? "Thank you for your purchase. Your order is being delivered automatically."
+      : "Thanks for your payment. We are currently processing your order delivery.";
 
   async function copyKey(value: string) {
     try {
@@ -169,89 +166,101 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
 
   return (
     <section className="postpay-shell">
-      <div className="postpay-grid">
-        <article className="postpay-left">
-          <h1>{primaryItem?.name || "Order completed"}</h1>
-          <h2>{mockData?.subtitle || `${totalUnits} item${totalUnits > 1 ? "s" : ""}`}</h2>
+      <div className="postpay-card">
+        <header className="postpay-top">
+          <span className={`postpay-top-icon ${isFailed ? "is-failed" : ""}`}>✓</span>
+          <h2>{successTitle}</h2>
+          <p>{successMessage}</p>
+        </header>
 
-          <div className="postpay-success-wrap">
-            <span className={`postpay-success-icon ${isFailed ? "is-failed" : ""}`}>✓</span>
-            <h4>{successTitle}</h4>
-            <p>{successMessage}</p>
-          </div>
+        <div className="postpay-separator" />
 
-          <dl className="postpay-details">
-            <div>
-              <dt>Order:</dt>
-              <dd>{order?.orderId || orderId}</dd>
+        <div className="postpay-content">
+          <article className="postpay-block">
+            <h3>Order details</h3>
+            <dl className="postpay-details">
+              <div>
+                <dt>Product:</dt>
+                <dd>{primaryItem?.name || "Digital Product"}</dd>
+              </div>
+              <div>
+                <dt>Order:</dt>
+                <dd>{order?.orderId || orderId}</dd>
+              </div>
+              <div>
+                <dt>Total:</dt>
+                <dd>{mockData?.total || "—"}</dd>
+              </div>
+              <div>
+                <dt>Time of purchase:</dt>
+                <dd>{order?.updatedAt ? new Date(order.updatedAt).toLocaleString() : "Pending"}</dd>
+              </div>
+              <div>
+                <dt>Email:</dt>
+                <dd>{mockData?.customerEmail || "Not provided"}</dd>
+              </div>
+              <div>
+                <dt>Payment method:</dt>
+                <dd>{mockData?.paymentMethod || "Crypto"}</dd>
+              </div>
+              <div>
+                <dt>Status:</dt>
+                <dd className="postpay-status-inline">{formatStatus(order?.status || "processing")}</dd>
+              </div>
+              {mockData?.transactionId ? (
+                <div>
+                  <dt>Transaction:</dt>
+                  <dd>{mockData.transactionId}</dd>
+                </div>
+              ) : null}
+            </dl>
+          </article>
+
+          <article className="postpay-block">
+            <h3>Your keys</h3>
+
+            <div className="postpay-primary-key">
+              <span>{primaryKey}</span>
+              <button type="button" onClick={() => copyKey(primaryKey)}>
+                {copiedKey === primaryKey ? "Copied" : "Copy"}
+              </button>
             </div>
-            <div>
-              <dt>Total:</dt>
-              <dd>{mockData?.total || "—"}</dd>
+
+            {keys.length > 1 ? (
+              <ul className="postpay-key-list">
+                {keys.slice(1).map((key) => (
+                  <li key={key}>
+                    <span>{key}</span>
+                    <button type="button" onClick={() => copyKey(key)}>
+                      {copiedKey === key ? "Copied" : "Copy"}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
+            <div className="postpay-actions">
+              <a href="#">Instructions and loader</a>
+              <a
+                href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Help
+              </a>
             </div>
-            <div>
-              <dt>Time of purchase:</dt>
-              <dd>{order?.updatedAt ? new Date(order.updatedAt).toLocaleString() : "Pending"}</dd>
-            </div>
-            <div>
-              <dt>Email:</dt>
-              <dd>{mockData?.customerEmail || "Not provided"}</dd>
-            </div>
-            <div>
-              <dt>Payment method:</dt>
-              <dd>{mockData?.paymentMethod || "Crypto"}</dd>
-            </div>
-          </dl>
 
-          <p className="postpay-status">
-            Payment status: <strong>{formatStatus(order?.status || "processing")}</strong>
-          </p>
+            {copiedKey === "copy-failed" ? (
+              <p className="state-message error">Copy failed on this device.</p>
+            ) : null}
+          </article>
+        </div>
 
-          {loading ? <p className="state-message">Loading order status...</p> : null}
-          {error ? <p className="state-message error">{error}</p> : null}
-          {order?.status === "failed" && order.lastError ? (
-            <p className="state-message error">{order.lastError}</p>
-          ) : null}
-        </article>
-
-        <article className="postpay-right">
-          <h3>Your keys:</h3>
-
-          <div className="postpay-primary-key">
-            <span>{primaryKey}</span>
-            <button type="button" onClick={() => copyKey(primaryKey)}>
-              {copiedKey === primaryKey ? "Copied" : "Copy"}
-            </button>
-          </div>
-
-          {keys.length > 1 ? (
-            <ul className="postpay-key-list">
-              {keys.slice(1).map((key) => (
-                <li key={key}>
-                  <span>{key}</span>
-                  <button type="button" onClick={() => copyKey(key)}>
-                    {copiedKey === key ? "Copied" : "Copy"}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-
-          <div className="postpay-actions">
-            <a href="#">Instructions and loader</a>
-            <a
-              href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Help
-            </a>
-          </div>
-
-          {copiedKey === "copy-failed" ? (
-            <p className="state-message error">Copy failed on this device.</p>
-          ) : null}
-        </article>
+        {loading ? <p className="state-message">Loading order status...</p> : null}
+        {error ? <p className="state-message error">{error}</p> : null}
+        {order?.status === "failed" && order.lastError ? (
+          <p className="state-message error">{order.lastError}</p>
+        ) : null}
       </div>
     </section>
   );

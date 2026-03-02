@@ -11,9 +11,9 @@ export function OrderRouteClient() {
   const isMock = orderId.toLowerCase() === "mock";
 
   return (
-    <div className="marketplace-page">
+    <div className="marketplace-page order-page-layout">
       <SiteHeader activeTab="store" />
-      <main className="shell" style={{ paddingTop: 24 }}>
+      <main className="shell order-page-main">
         <OrderFulfillmentStatus
           orderId={orderId}
           mockData={
