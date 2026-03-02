@@ -152,16 +152,13 @@ export function StorefrontClient() {
           <div className="shell hero-content">
             <div className="hero-copy">
               <h1 className="hero-title">
-                <span className="hero-title-row hero-line-primary">
-                  Undetected Cheats
-                </span>
-                <span className="hero-title-row hero-line-accent">
-                  Play Without Limits.
-                </span>
+                <span className="hero-title-row hero-line-primary">Upgrade Your</span>
+                <span className="hero-title-row hero-line-accent">Gameplay</span>
               </h1>
               <p className="hero-subtext">
-                <span>Check Status, Reviews, and Support anytime while browsing live categories.</span>
-                <span>Open any product to continue to checkout in seconds.</span>
+                <span>
+                  Access Custom Mods, Tools, and Enhancements for a Better Experience.
+                </span>
               </p>
             </div>
           </div>
