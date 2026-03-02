@@ -150,12 +150,26 @@ function looksLikeImagePath(value: string): boolean {
 function normalizeImageUrl(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) return "";
+
   if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
   if (trimmed.startsWith("//")) return `https:${trimmed}`;
   if (trimmed.startsWith("/")) return trimmed;
-  if (looksLikeImagePath(trimmed)) {
+
+  // Ignore obvious non-image tokens.
+  if (
+    trimmed.startsWith("data:") ||
+    trimmed === "null" ||
+    trimmed === "undefined" ||
+    /^#[0-9a-f]{3,8}$/i.test(trimmed)
+  ) {
+    return "";
+  }
+
+  // Many providers return relative paths without file extension.
+  if (looksLikeImagePath(trimmed) || trimmed.includes("/") || trimmed.includes("uploads")) {
     return `${SELLAUTH_BASE_URL.replace(/\/$/, "")}/${trimmed.replace(/^\/+/, "")}`;
   }
+
   return "";
 }
 
@@ -197,6 +211,11 @@ function extractImageCandidate(value: unknown, depth = 0): string {
     "preview",
     "preview_image",
     "photo",
+    "media_url",
+    "asset_url",
+    "icon",
+    "avatar",
+    "filename",
     "file",
     "path",
     "cdn_url",
@@ -291,12 +310,12 @@ function parseGroup(rawGroup: unknown): SellAuthGroup | null {
   const id = asNumber(group.id);
   if (id === null) return null;
 
-  const imageValue = group.image;
-  const imageRecord = asRecord(imageValue);
   const imageUrl =
-    asString(imageRecord.url) ||
-    asString(imageRecord.src) ||
-    asString(imageValue);
+    extractImageCandidate(group.image) ||
+    extractImageCandidate(group.image_url) ||
+    extractImageCandidate(group.imageUrl) ||
+    extractImageCandidate(group.banner) ||
+    extractImageCandidate(group.thumbnail);
 
   return {
     id,
@@ -311,10 +330,12 @@ function parseCategory(rawCategory: unknown): SellAuthCategory | null {
   const id = asNumber(category.id);
   if (id === null) return null;
 
-  const imageValue = category.image;
-  const imageRecord = asRecord(imageValue);
   const imageUrl =
-    asString(imageRecord.url) || asString(imageRecord.src) || asString(imageValue);
+    extractImageCandidate(category.image) ||
+    extractImageCandidate(category.image_url) ||
+    extractImageCandidate(category.imageUrl) ||
+    extractImageCandidate(category.banner) ||
+    extractImageCandidate(category.thumbnail);
 
   return {
     id,
