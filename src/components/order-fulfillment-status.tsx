@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 type OrderStatus = "queued" | "processing" | "fulfilled" | "failed" | string;
@@ -16,8 +17,28 @@ interface OrderPayload {
   };
 }
 
+interface OrderItemView {
+  name: string;
+  quantity: number;
+  note?: string;
+}
+
+interface MockOrderData {
+  orderId: string;
+  status: OrderStatus;
+  updatedAt?: string;
+  licenseKeys?: string[];
+  lastError?: string;
+  paymentMethod?: string;
+  total?: string;
+  customerEmail?: string;
+  items?: OrderItemView[];
+  transactionId?: string;
+}
+
 interface Props {
   orderId: string;
+  mockData?: MockOrderData;
 }
 
 function statusLabel(status: OrderStatus): string {
@@ -27,7 +48,7 @@ function statusLabel(status: OrderStatus): string {
     case "processing":
       return "Processing";
     case "fulfilled":
-      return "Fulfilled";
+      return "Delivered";
     case "failed":
       return "Failed";
     default:
@@ -35,12 +56,24 @@ function statusLabel(status: OrderStatus): string {
   }
 }
 
-export function OrderFulfillmentStatus({ orderId }: Props) {
-  const [loading, setLoading] = useState(true);
+export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
+  const [loading, setLoading] = useState(!mockData);
   const [error, setError] = useState("");
-  const [order, setOrder] = useState<OrderPayload["order"] | null>(null);
+  const [order, setOrder] = useState<OrderPayload["order"] | null>(
+    mockData
+      ? {
+          orderId: mockData.orderId,
+          status: mockData.status,
+          updatedAt: mockData.updatedAt,
+          licenseKeys: mockData.licenseKeys,
+          lastError: mockData.lastError,
+        }
+      : null
+  );
 
   useEffect(() => {
+    if (mockData) return;
+
     let alive = true;
     let timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -83,54 +116,114 @@ export function OrderFulfillmentStatus({ orderId }: Props) {
       alive = false;
       if (timer) clearTimeout(timer);
     };
-  }, [orderId, order?.status]);
+  }, [mockData, order?.status, orderId]);
 
   const done = useMemo(
     () => order?.status === "fulfilled" || order?.status === "failed",
     [order?.status]
   );
 
+  const items = mockData?.items || [
+    {
+      name: "Digital Product",
+      quantity: 1,
+      note: "Delivered automatically after payment confirmation",
+    },
+  ];
+
   return (
-    <section className="order-status-card">
-      <h1>Order Fulfillment</h1>
-      <p className="order-id">Order: {orderId}</p>
+    <section className="order-complete-shell">
+      <header className="order-complete-header">
+        <div className="order-complete-header-left">
+          <span className="order-complete-check" aria-hidden="true">
+            ✓
+          </span>
+          <div>
+            <h1>Payment Completed</h1>
+            <p>Your order is being processed and delivered automatically.</p>
+          </div>
+        </div>
+
+        <div className="order-complete-header-right">
+          <span className={`order-status-pill order-status-${order?.status || "unknown"}`}>
+            {statusLabel(order?.status || "unknown")}
+          </span>
+          <span className="order-id">Order #{order?.orderId || orderId}</span>
+        </div>
+      </header>
 
       {loading ? <p className="state-message">Loading order status...</p> : null}
       {error ? <p className="state-message error">{error}</p> : null}
 
-      {order ? (
-        <>
-          <div className="order-status-pill-wrap">
-            <span className={`order-status-pill order-status-${order.status || "unknown"}`}>
-              {statusLabel(order.status || "unknown")}
-            </span>
-            {order.updatedAt ? (
-              <span className="order-updated">Updated: {new Date(order.updatedAt).toLocaleString()}</span>
-            ) : null}
+      <div className="order-complete-grid">
+        <article className="order-panel">
+          <h2>Order Summary</h2>
+          <ul className="order-summary-list">
+            {items.map((item, index) => (
+              <li key={`${item.name}-${index}`}>
+                <div>
+                  <strong>{item.name}</strong>
+                  {item.note ? <p>{item.note}</p> : null}
+                </div>
+                <span>x{item.quantity}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="order-meta-grid">
+            <div>
+              <span>Payment Method</span>
+              <strong>{mockData?.paymentMethod || "Crypto"}</strong>
+            </div>
+            <div>
+              <span>Total</span>
+              <strong>{mockData?.total || "—"}</strong>
+            </div>
+            <div>
+              <span>Customer</span>
+              <strong>{mockData?.customerEmail || "—"}</strong>
+            </div>
+            <div>
+              <span>Last Update</span>
+              <strong>
+                {order?.updatedAt ? new Date(order.updatedAt).toLocaleString() : "Pending"}
+              </strong>
+            </div>
           </div>
 
-          {Array.isArray(order.licenseKeys) && order.licenseKeys.length > 0 ? (
-            <div className="order-keys-wrap">
-              <h2>License Keys</h2>
-              <ul>
-                {order.licenseKeys.map((key) => (
-                  <li key={key}>{key}</li>
-                ))}
-              </ul>
-            </div>
+          {mockData?.transactionId ? (
+            <p className="order-transaction">Transaction: {mockData.transactionId}</p>
+          ) : null}
+        </article>
+
+        <article className="order-panel order-panel-delivery">
+          <h2>Delivery</h2>
+          {Array.isArray(order?.licenseKeys) && order.licenseKeys.length > 0 ? (
+            <ul className="order-keys-list">
+              {order.licenseKeys.map((key) => (
+                <li key={key}>{key}</li>
+              ))}
+            </ul>
           ) : (
             <p className="state-message">
               {done
                 ? "No keys were attached to this order."
-                : "Keys will appear here automatically once fulfillment is complete."}
+                : "Your license key(s) will appear here as soon as fulfillment completes."}
             </p>
           )}
 
-          {order.status === "failed" && order.lastError ? (
+          {order?.status === "failed" && order.lastError ? (
             <p className="state-message error">{order.lastError}</p>
           ) : null}
-        </>
-      ) : null}
+
+          <div className="order-actions">
+            <Link href="/">Back to Store</Link>
+            <a href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"} target="_blank" rel="noreferrer">
+              Need Support?
+            </a>
+          </div>
+        </article>
+      </div>
     </section>
   );
 }

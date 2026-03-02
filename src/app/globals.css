@@ -1161,33 +1161,61 @@ select::-ms-expand { display: none; }
   }
 }
 
-.order-status-card {
+.order-complete-shell {
   margin-top: 10px;
   border: 1px solid #273247;
-  border-radius: 12px;
-  background: rgba(15, 19, 27, 0.78);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(16, 21, 31, 0.95) 0%, rgba(12, 16, 24, 0.92) 100%);
   padding: 22px;
 }
-.order-status-card h1 {
-  margin: 0;
-  font-size: 1.9rem;
+.order-complete-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #273247;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
 }
-.order-id {
-  margin: 8px 0 0;
+.order-complete-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.order-complete-check {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #e7f2ff;
+  background: linear-gradient(180deg, #4d85ff 0%, #3260cc 100%);
+  font-weight: 800;
+}
+.order-complete-header h1 {
+  margin: 0;
+  font-size: 1.7rem;
+}
+.order-complete-header p {
+  margin: 6px 0 0;
   color: #9fb0d3;
 }
-.order-status-pill-wrap {
-  margin-top: 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+.order-complete-header-right {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+.order-id {
+  color: #9fb0d3;
+  font-size: 0.88rem;
 }
 .order-status-pill {
   border: 1px solid #3a4561;
   border-radius: 999px;
   padding: 6px 11px;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: #e6eeff;
   background: #1a1f2b;
 }
@@ -1195,25 +1223,89 @@ select::-ms-expand { display: none; }
 .order-status-failed { border-color: #8c3a3a; background: #3b1a1a; }
 .order-status-processing { border-color: #4465a7; background: #172746; }
 .order-status-queued { border-color: #5f6a80; background: #212735; }
-.order-updated {
-  color: #95a7cb;
-  font-size: 0.85rem;
+.order-complete-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 14px;
 }
-.order-keys-wrap {
-  margin-top: 16px;
+.order-panel {
+  border: 1px solid #2a354a;
+  border-radius: 10px;
+  background: rgba(13, 18, 27, 0.9);
+  padding: 14px;
 }
-.order-keys-wrap h2 {
-  margin: 0 0 10px;
-  font-size: 1.1rem;
+.order-panel h2 {
+  margin: 0 0 12px;
+  font-size: 1.03rem;
 }
-.order-keys-wrap ul {
+.order-summary-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.order-summary-list li {
+  border: 1px solid #2f3b53;
+  border-radius: 8px;
+  background: #0f1522;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.order-summary-list li strong {
+  display: block;
+  color: #e8f0ff;
+}
+.order-summary-list li p {
+  margin: 4px 0 0;
+  color: #9aabcb;
+  font-size: 0.83rem;
+}
+.order-summary-list li > span {
+  color: #bdd0f5;
+  font-weight: 700;
+}
+.order-meta-grid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.order-meta-grid > div {
+  border: 1px solid #28354d;
+  border-radius: 8px;
+  background: #11192a;
+  padding: 9px;
+  display: grid;
+  gap: 3px;
+}
+.order-meta-grid span {
+  color: #8ea2c8;
+  font-size: 0.76rem;
+}
+.order-meta-grid strong {
+  color: #ecf3ff;
+  font-size: 0.88rem;
+}
+.order-transaction {
+  margin: 11px 0 0;
+  color: #90a5cb;
+  font-size: 0.82rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.order-panel-delivery .state-message {
+  margin: 0;
+}
+.order-keys-list {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
   gap: 8px;
 }
-.order-keys-wrap li {
+.order-keys-list li {
   border: 1px solid #2f3b53;
   border-radius: 8px;
   background: #0f1522;
@@ -1221,4 +1313,25 @@ select::-ms-expand { display: none; }
   color: #dce7ff;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 0.84rem;
+}
+.order-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.order-actions a {
+  border: 1px solid #31508a;
+  background: #11213f;
+  color: #d8e8ff;
+  border-radius: 7px;
+  padding: 8px 12px;
+  font-size: 0.84rem;
+}
+.order-actions a:hover {
+  background: #173164;
+  color: #f4f8ff;
+}
+@media (max-width: 980px) {
+  .order-complete-grid { grid-template-columns: 1fr; }
 }
