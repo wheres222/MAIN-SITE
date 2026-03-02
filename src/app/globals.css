@@ -39,9 +39,9 @@ html, body {
   overflow-x: hidden;
   background-color: #0a0c11;
   background-image:
-    radial-gradient(circle at 0.8px 0.8px, rgba(122, 130, 146, 0.12) 0.8px, transparent 1.05px),
+    radial-gradient(circle at 0.7px 0.7px, rgba(128, 138, 156, 0.06) 0.7px, transparent 1px),
     linear-gradient(180deg, #0f1218 0%, #090b10 100%);
-  background-size: 12px 12px, 100% 100%;
+  background-size: 16px 16px, 100% 100%;
   color: var(--text-primary);
   font-family: var(--font-body), "Segoe UI", Tahoma, sans-serif;
 }
@@ -60,8 +60,8 @@ select::-ms-expand { display: none; }
 .marketplace-page {
   min-height: 100vh;
   background-color: transparent;
-  background-image: radial-gradient(circle at 0.8px 0.8px, rgba(140, 148, 165, 0.09) 0.8px, transparent 1.05px);
-  background-size: 12px 12px;
+  background-image: radial-gradient(circle at 0.7px 0.7px, rgba(142, 150, 167, 0.05) 0.7px, transparent 1px);
+  background-size: 16px 16px;
   --ui-border: transparent;
   --ui-border-strong: transparent;
 }
