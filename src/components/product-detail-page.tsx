@@ -127,64 +127,8 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     showcaseRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  const gameLabel = product.groupName || product.categoryName || "Rust";
-  const discordUrl = getDiscordUrl();
-  const featureGroups = [
-    {
-      title: "Combat",
-      items: [
-        "FOV",
-        "Smoothing",
-        "Recoil",
-        "Spread",
-        "Sway",
-        "Hitboxes",
-        "Silent Aim",
-        "Trigger Assist",
-        "Always Shoot",
-        "No Recoil Pattern",
-      ],
-    },
-    {
-      title: "Visual",
-      items: [
-        "Box",
-        "Name",
-        "Distance",
-        "Weapon",
-        "Team ID",
-        "Skeleton",
-        "Chams",
-        "Bright Night",
-        "Third Person",
-        "Radar Markers",
-      ],
-    },
-    {
-      title: "Entities",
-      items: [
-        "Animals",
-        "Loot Crates",
-        "Dropped Items",
-        "Vehicles",
-        "Construction",
-        "Corpse Markers",
-        "Tool Cupboards",
-      ],
-    },
-    {
-      title: "Misc",
-      items: [
-        "Instant Loot",
-        "Fast Revive",
-        "Instant Pickup",
-        "Movement Assist",
-        "No Fall",
-        "Debug Camera",
-        "Speed Config",
-      ],
-    },
-  ];
+  const showExtendedDetails =
+    process.env.NEXT_PUBLIC_ENABLE_EXTENDED_PRODUCT_DETAILS === "true";
 
   return (
     <div className={styles.page}>
@@ -324,130 +268,189 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           </article>
         </section>
 
-        <button className={styles.scrollHint} onClick={toShowcase}>
-          Scroll down to view features and showcase
-        </button>
+        {showExtendedDetails ? (
+          <>
+            <button className={styles.scrollHint} onClick={toShowcase}>
+              Scroll down to view features and showcase
+            </button>
 
-        <section className={styles.requirements}>
-          <h2>System Requirements</h2>
-          <div className={styles.requirementGrid}>
-            <article>
-              <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </span>
-              <h4>Operating System</h4>
-              <p>Windows 10 & 11 NO CUSTOM OS</p>
-            </article>
-            <article>
-              <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </span>
-              <h4>Processors</h4>
-              <p>Intel & AMD</p>
-            </article>
-            <article>
-              <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </span>
-              <h4>Inbuilt Spoofer</h4>
-              <p>No</p>
-            </article>
-            <article>
-              <span className={`${styles.requirementIcon} ${styles.requirementIconGamepad}`} aria-hidden>
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M7.2 8.4h9.6c2.5 0 4.3 2.4 3.6 4.8l-1 3.2c-.5 1.7-2.5 2.4-3.9 1.3l-1.7-1.4a2.8 2.8 0 0 0-3.6 0l-1.7 1.4c-1.4 1.1-3.4.4-3.9-1.3l-1-3.2c-.7-2.4 1.1-4.8 3.6-4.8Z"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                  />
-                  <path d="M8.8 12.4v2.4M7.6 13.6H10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  <circle cx="15.7" cy="12.8" r="1" fill="currentColor" />
-                  <circle cx="17.4" cy="14.4" r="1" fill="currentColor" />
-                </svg>
-              </span>
-              <h4>Game</h4>
-              <p>{gameLabel}</p>
-            </article>
-          </div>
-        </section>
-
-        <section className={styles.showcase} ref={showcaseRef}>
-          <div className={styles.showcaseHeading}>
-            <h2>Product Showcase</h2>
-            <button onClick={() => setActiveTab("video")}>Watch Showcase</button>
-          </div>
-
-          <div className={styles.showcaseCard}>
-            <div className={styles.showcaseTabs}>
-              <button
-                className={activeTab === "preview" ? styles.tabActive : ""}
-                onClick={() => setActiveTab("preview")}
-              >
-                Preview
-              </button>
-              <button
-                className={activeTab === "video" ? styles.tabActive : ""}
-                onClick={() => setActiveTab("video")}
-              >
-                Showcase Video
-              </button>
-            </div>
-
-            {activeTab === "preview" ? (
-              <div className={styles.previewPane}>
-                <img src="/showcase/menu-preview.svg" alt="Showcase preview" />
+            <section className={styles.requirements}>
+              <h2>System Requirements</h2>
+              <div className={styles.requirementGrid}>
+                <article>
+                  <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinejoin="round"
+                      />
+                      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </span>
+                  <h4>Operating System</h4>
+                  <p>Windows 10 & 11 NO CUSTOM OS</p>
+                </article>
+                <article>
+                  <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinejoin="round"
+                      />
+                      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </span>
+                  <h4>Processors</h4>
+                  <p>Intel & AMD</p>
+                </article>
+                <article>
+                  <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinejoin="round"
+                      />
+                      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
+                    </svg>
+                  </span>
+                  <h4>Inbuilt Spoofer</h4>
+                  <p>No</p>
+                </article>
+                <article>
+                  <span className={`${styles.requirementIcon} ${styles.requirementIconGamepad}`} aria-hidden>
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M7.2 8.4h9.6c2.5 0 4.3 2.4 3.6 4.8l-1 3.2c-.5 1.7-2.5 2.4-3.9 1.3l-1.7-1.4a2.8 2.8 0 0 0-3.6 0l-1.7 1.4c-1.4 1.1-3.4.4-3.9-1.3l-1-3.2c-.7-2.4 1.1-4.8 3.6-4.8Z"
+                        stroke="currentColor"
+                        strokeWidth="1.6"
+                        strokeLinejoin="round"
+                      />
+                      <path d="M8.8 12.4v2.4M7.6 13.6H10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      <circle cx="15.7" cy="12.8" r="1" fill="currentColor" />
+                      <circle cx="17.4" cy="14.4" r="1" fill="currentColor" />
+                    </svg>
+                  </span>
+                  <h4>Game</h4>
+                  <p>{product.groupName || product.categoryName || "Rust"}</p>
+                </article>
               </div>
-            ) : (
-              <div className={styles.videoPane}>
-                <p>Video preview tab is active.</p>
-                <a href={discordUrl} target="_blank" rel="noreferrer">
-                  Open Showcase Link
-                </a>
-              </div>
-            )}
-          </div>
-        </section>
+            </section>
 
-        <section className={styles.features}>
-          <h2>Features</h2>
-          <div className={styles.featureGrid}>
-            {featureGroups.map((group) => (
-              <article key={group.title}>
-                <h3>{group.title}</h3>
-                <ul>
-                  {group.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </section>
+            <section className={styles.showcase} ref={showcaseRef}>
+              <div className={styles.showcaseHeading}>
+                <h2>Product Showcase</h2>
+                <button onClick={() => setActiveTab("video")}>Watch Showcase</button>
+              </div>
+
+              <div className={styles.showcaseCard}>
+                <div className={styles.showcaseTabs}>
+                  <button
+                    className={activeTab === "preview" ? styles.tabActive : ""}
+                    onClick={() => setActiveTab("preview")}
+                  >
+                    Preview
+                  </button>
+                  <button
+                    className={activeTab === "video" ? styles.tabActive : ""}
+                    onClick={() => setActiveTab("video")}
+                  >
+                    Showcase Video
+                  </button>
+                </div>
+
+                {activeTab === "preview" ? (
+                  <div className={styles.previewPane}>
+                    <img src="/showcase/menu-preview.svg" alt="Showcase preview" />
+                  </div>
+                ) : (
+                  <div className={styles.videoPane}>
+                    <p>Video preview tab is active.</p>
+                    <a href={getDiscordUrl()} target="_blank" rel="noreferrer">
+                      Open Showcase Link
+                    </a>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <section className={styles.features}>
+              <h2>Features</h2>
+              <div className={styles.featureGrid}>
+                {[
+                  {
+                    title: "Combat",
+                    items: [
+                      "FOV",
+                      "Smoothing",
+                      "Recoil",
+                      "Spread",
+                      "Sway",
+                      "Hitboxes",
+                      "Silent Aim",
+                      "Trigger Assist",
+                      "Always Shoot",
+                      "No Recoil Pattern",
+                    ],
+                  },
+                  {
+                    title: "Visual",
+                    items: [
+                      "Box",
+                      "Name",
+                      "Distance",
+                      "Weapon",
+                      "Team ID",
+                      "Skeleton",
+                      "Chams",
+                      "Bright Night",
+                      "Third Person",
+                      "Radar Markers",
+                    ],
+                  },
+                  {
+                    title: "Entities",
+                    items: [
+                      "Animals",
+                      "Loot Crates",
+                      "Dropped Items",
+                      "Vehicles",
+                      "Construction",
+                      "Corpse Markers",
+                      "Tool Cupboards",
+                    ],
+                  },
+                  {
+                    title: "Misc",
+                    items: [
+                      "Instant Loot",
+                      "Fast Revive",
+                      "Instant Pickup",
+                      "Movement Assist",
+                      "No Fall",
+                      "Debug Camera",
+                      "Speed Config",
+                    ],
+                  },
+                ].map((group) => (
+                  <article key={group.title}>
+                    <h3>{group.title}</h3>
+                    <ul>
+                      {group.items.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </section>
+          </>
+        ) : null}
       </main>
 
       <SiteFooter />
