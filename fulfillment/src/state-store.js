@@ -188,6 +188,73 @@ class StateStore {
     return job;
   }
 
+  upsertOrderPending(orderId, meta = null) {
+    const key = String(orderId);
+    const updatedAt = nowIso();
+
+    if (!this.state.orders[key]) {
+      this.state.orders[key] = {
+        orderId: key,
+        status: "processing",
+        licenseKeys: [],
+        jobs: [],
+        createdAt: updatedAt,
+        updatedAt,
+      };
+    } else {
+      this.state.orders[key].status =
+        this.state.orders[key].status === "fulfilled" ? "fulfilled" : "processing";
+      this.state.orders[key].updatedAt = updatedAt;
+    }
+
+    if (meta && typeof meta === "object") {
+      this.state.orders[key].meta = {
+        ...(this.state.orders[key].meta || {}),
+        ...meta,
+      };
+    }
+
+    this._persist();
+    return this.state.orders[key];
+  }
+
+  upsertOrderFulfilled(orderId, licenseKeys, meta = null) {
+    const key = String(orderId);
+    const updatedAt = nowIso();
+
+    if (!this.state.orders[key]) {
+      this.state.orders[key] = {
+        orderId: key,
+        status: "fulfilled",
+        licenseKeys: [],
+        jobs: [],
+        createdAt: updatedAt,
+        updatedAt,
+      };
+    }
+
+    const existing = Array.isArray(this.state.orders[key].licenseKeys)
+      ? this.state.orders[key].licenseKeys
+      : [];
+    const incoming = Array.isArray(licenseKeys)
+      ? licenseKeys.filter((item) => typeof item === "string" && item.trim())
+      : [];
+
+    this.state.orders[key].licenseKeys = [...new Set([...existing, ...incoming])];
+    this.state.orders[key].status = "fulfilled";
+    this.state.orders[key].updatedAt = updatedAt;
+
+    if (meta && typeof meta === "object") {
+      this.state.orders[key].meta = {
+        ...(this.state.orders[key].meta || {}),
+        ...meta,
+      };
+    }
+
+    this._persist();
+    return this.state.orders[key];
+  }
+
   getOrder(orderId) {
     return this.state.orders[String(orderId)] || null;
   }

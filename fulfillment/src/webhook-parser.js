@@ -127,13 +127,86 @@ function extractItems(payload) {
   return [];
 }
 
+function collectStringValues(value, out, depth = 0, path = "root") {
+  if (depth > 6 || value === null || value === undefined) return;
+
+  if (typeof value === "string") {
+    const normalized = value.trim();
+    if (!normalized) return;
+
+    const p = path.toLowerCase();
+    if (
+      p.includes("key") ||
+      p.includes("license") ||
+      p.includes("code") ||
+      p.includes("token") ||
+      p.includes("credential") ||
+      p.includes("account")
+    ) {
+      out.push(normalized);
+    }
+    return;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => collectStringValues(entry, out, depth + 1, `${path}[${index}]`));
+    return;
+  }
+
+  if (typeof value !== "object") return;
+
+  const record = asObject(value);
+  for (const [key, entry] of Object.entries(record)) {
+    collectStringValues(entry, out, depth + 1, `${path}.${key}`);
+  }
+}
+
+function looksLikeDeliverable(value) {
+  const lower = value.toLowerCase();
+
+  // Ignore generic status words.
+  if (
+    ["paid", "processing", "pending", "completed", "success", "ok", "true", "false"].includes(lower)
+  ) {
+    return false;
+  }
+
+  if (lower.length < 6) return false;
+
+  // Accept likely key/code patterns.
+  if (/[-_]/.test(value) || /[a-z]/i.test(value) && /\d/.test(value)) return true;
+
+  // Email:pass or user:pass style.
+  if (/^[^\s:@]+@[^\s:@]+\.[^\s:@]+:[^\s]+$/.test(value)) return true;
+
+  return false;
+}
+
+function extractLicenseKeys(payload) {
+  const candidates = [];
+  collectStringValues(payload, candidates);
+
+  const unique = [];
+  const seen = new Set();
+  for (const value of candidates) {
+    if (!looksLikeDeliverable(value)) continue;
+    if (seen.has(value)) continue;
+    seen.add(value);
+    unique.push(value);
+  }
+
+  return unique;
+}
+
 function parseWebhook(payload) {
   const orderId = extractOrderId(payload);
   const items = extractItems(payload);
+  const licenseKeys = extractLicenseKeys(payload);
 
   return {
     orderId,
     items,
+    licenseKeys,
     paid: isPaidEvent(payload),
     rawStatus: statusFromPayload(payload),
   };

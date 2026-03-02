@@ -82,21 +82,46 @@ async function handleWebhook(request, response, requestUrl) {
     return badRequest(response, "Missing order/invoice id in webhook payload");
   }
 
+  // Fast path: SellAuth payload already includes delivered keys.
+  if (Array.isArray(parsed.licenseKeys) && parsed.licenseKeys.length > 0) {
+    const order = store.upsertOrderFulfilled(parsed.orderId, parsed.licenseKeys, {
+      source: "sellauth-webhook",
+      status: parsed.rawStatus,
+      mode: "direct-delivery",
+    });
+
+    return json(response, 200, {
+      success: true,
+      accepted: true,
+      orderId: parsed.orderId,
+      mode: "direct-delivery",
+      deliveredKeys: order.licenseKeys.length,
+    });
+  }
+
   if (!parsed.paid) {
     return json(response, 202, {
       success: true,
       accepted: false,
-      message: "Webhook ignored (not a paid/completed event)",
+      message: "Webhook ignored (not paid/completed and no deliverables found)",
       status: parsed.rawStatus,
     });
   }
 
   if (parsed.items.length === 0) {
+    // Keep order visible on site even if webhook has no cart items yet.
+    store.upsertOrderPending(parsed.orderId, {
+      source: "sellauth-webhook",
+      status: parsed.rawStatus,
+      mode: "awaiting-delivery",
+    });
+
     return json(response, 202, {
       success: true,
-      accepted: false,
-      message: "No purchasable items found in webhook payload",
+      accepted: true,
+      message: "Order accepted; waiting for delivery details.",
       orderId: parsed.orderId,
+      mode: "awaiting-delivery",
     });
   }
 
@@ -106,6 +131,7 @@ async function handleWebhook(request, response, requestUrl) {
     success: true,
     accepted: true,
     orderId: parsed.orderId,
+    mode: "worker-queue",
     queued: jobs.length,
     jobIds: jobs.map((job) => job.id),
   });
