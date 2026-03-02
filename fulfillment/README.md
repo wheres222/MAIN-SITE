@@ -97,30 +97,43 @@ Edit `fulfillment/config/providers.json`:
 
 ## systemd (recommended)
 
-Use a service unit like:
+Worker service unit is provided at:
 
-```ini
-[Unit]
-Description=MAIN-SITE Fulfillment Worker
-After=network.target
+- `fulfillment/systemd/main-site-fulfillment.service`
 
-[Service]
-WorkingDirectory=/root/.openclaw/workspace/MAIN-SITE
-Environment=NODE_ENV=production
-Environment=FULFILLMENT_ADMIN_TOKEN=change-me
-Environment=FULFILLMENT_WEBHOOK_SECRET=change-me
-ExecStart=/usr/bin/npm run fulfillment:start
-Restart=always
-RestartSec=2
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Then:
+Install:
 
 ```bash
+sudo cp fulfillment/systemd/main-site-fulfillment.service /etc/systemd/system/main-site-fulfillment.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now main-site-fulfillment.service
 sudo systemctl status main-site-fulfillment.service
 ```
+
+## Safer public exposure: Cloudflare Tunnel
+
+Use Cloudflare Tunnel so fulfillment stays localhost-only and still reachable from your website.
+
+1) In Cloudflare Zero Trust, create a tunnel and public hostname:
+- Hostname: `fulfill.cheatparadise.com`
+- Service: `http://127.0.0.1:8788`
+
+2) Save tunnel token to:
+- `fulfillment/tunnel.env` (copy from `fulfillment/tunnel.env.example`)
+
+3) Install tunnel systemd unit:
+
+```bash
+sudo cp fulfillment/systemd/fulfillment-tunnel.service /etc/systemd/system/fulfillment-tunnel.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now fulfillment-tunnel.service
+sudo systemctl status fulfillment-tunnel.service
+```
+
+4) Set website env vars in Cloudflare Pages:
+- `FULFILLMENT_API_URL=https://fulfill.cheatparadise.com`
+- `FULFILLMENT_API_TOKEN=<FULFILLMENT_ADMIN_TOKEN from fulfillment/.env>`
+- `FULFILLMENT_WEBHOOK_SECRET=<FULFILLMENT_WEBHOOK_SECRET from fulfillment/.env>`
+
+5) Set SellAuth webhook URL to:
+- `https://cheatparadise.com/api/webhooks/sellauth`

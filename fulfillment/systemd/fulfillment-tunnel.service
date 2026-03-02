@@ -1,0 +1,14 @@
+[Unit]
+Description=Cloudflare Tunnel for MAIN-SITE Fulfillment API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/root/.openclaw/workspace/MAIN-SITE/fulfillment/tunnel.env
+ExecStart=/usr/bin/cloudflared tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

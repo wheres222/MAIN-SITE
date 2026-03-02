@@ -23,6 +23,7 @@ node.zip
 fulfillment/state/
 fulfillment/artifacts/
 fulfillment/.env
+fulfillment/tunnel.env
 
 # Editor
 .vscode/
