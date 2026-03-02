@@ -290,7 +290,7 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
                     <span>(Rated: {Math.round(ratingFor(activeProduct) * 10)})</span>
                   </div>
 
-                  <Link href={`/products/${activeProduct.id}`} className={styles.previewCta}>
+                  <Link href={`/products?id=${activeProduct.id}`} className={styles.previewCta}>
                     Learn more and buy
                   </Link>
                 </>

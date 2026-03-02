@@ -1,15 +1,13 @@
+"use client";
+
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { OrderFulfillmentStatus } from "@/components/order-fulfillment-status";
+import { useSearchParams } from "next/navigation";
 
-export const runtime = "edge";
-
-interface Props {
-  params: Promise<{ orderId: string }>;
-}
-
-export default async function OrderPage({ params }: Props) {
-  const { orderId } = await params;
+export function OrderRouteClient() {
+  const searchParams = useSearchParams();
+  const orderId = (searchParams.get("orderId") || "mock").trim();
   const isMock = orderId.toLowerCase() === "mock";
 
   return (

@@ -81,9 +81,12 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
 
     async function run() {
       try {
-        const response = await fetch(`/api/fulfillment/orders/${encodeURIComponent(orderId)}`, {
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `/api/fulfillment/order?orderId=${encodeURIComponent(orderId)}`,
+          {
+            cache: "no-store",
+          }
+        );
         const payload = (await response.json()) as OrderPayload;
 
         if (!alive) return;

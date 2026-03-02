@@ -78,7 +78,7 @@ export function ReviewsBoard({ reviews }: ReviewsBoardProps) {
             <p className={styles.message}>{review.message}</p>
 
             <footer className={styles.cardBottom}>
-              <Link href={`/products/${review.productId}`} className={styles.productLink}>
+              <Link href={`/products?id=${review.productId}`} className={styles.productLink}>
                 <img
                   src={review.productImage}
                   alt={review.productName}

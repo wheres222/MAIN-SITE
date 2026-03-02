@@ -20,6 +20,35 @@ const nextConfig: NextConfig = {
       hostname,
     })),
   },
+  async redirects() {
+    return [
+      {
+        source: "/products/:productId",
+        destination: "/products?id=:productId",
+        permanent: false,
+      },
+      {
+        source: "/categories/:categorySlug",
+        destination: "/categories?slug=:categorySlug",
+        permanent: false,
+      },
+      {
+        source: "/games/:gameSlug",
+        destination: "/categories?slug=:gameSlug",
+        permanent: false,
+      },
+      {
+        source: "/orders/mock",
+        destination: "/orders?orderId=mock",
+        permanent: false,
+      },
+      {
+        source: "/orders/:orderId",
+        destination: "/orders?orderId=:orderId",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

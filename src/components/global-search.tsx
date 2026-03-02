@@ -79,7 +79,7 @@ export function GlobalSearch() {
               return (
                 <Link
                   key={product.id}
-                  href={`/products/${product.id}`}
+                  href={`/products?id=${product.id}`}
                   className="search-suggestion-item"
                   onClick={() => setQuery("")}
                 >

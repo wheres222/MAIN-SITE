@@ -6,10 +6,7 @@ export const dynamic = "force-dynamic";
 const FULFILLMENT_API_URL = process.env.FULFILLMENT_API_URL?.trim() || "";
 const FULFILLMENT_API_TOKEN = process.env.FULFILLMENT_API_TOKEN?.trim() || "";
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ orderId: string }> }
-) {
+export async function GET(request: Request) {
   if (!FULFILLMENT_API_URL) {
     return NextResponse.json(
       { success: false, message: "Fulfillment API is not configured." },
@@ -17,7 +14,9 @@ export async function GET(
     );
   }
 
-  const { orderId } = await context.params;
+  const url = new URL(request.url);
+  const orderId = url.searchParams.get("orderId")?.trim() || "";
+
   if (!orderId) {
     return NextResponse.json(
       { success: false, message: "orderId is required." },
@@ -25,10 +24,10 @@ export async function GET(
     );
   }
 
-  const url = `${FULFILLMENT_API_URL.replace(/\/$/, "")}/orders/${encodeURIComponent(orderId)}`;
+  const target = `${FULFILLMENT_API_URL.replace(/\/$/, "")}/orders/${encodeURIComponent(orderId)}`;
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(target, {
       headers: {
         ...(FULFILLMENT_API_TOKEN
           ? { Authorization: `Bearer ${FULFILLMENT_API_TOKEN}` }

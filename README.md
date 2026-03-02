@@ -68,7 +68,7 @@ Open:
   - Validates current SellAuth env credentials against your shop
   - Use this first when checkout/storefront calls return `401 Unauthenticated`
 
-- `GET /api/fulfillment/orders/:orderId`
+- `GET /api/fulfillment/order?orderId=<id>`
   - Proxies to your VPS fulfillment service (if configured)
   - Requires `FULFILLMENT_API_URL` and optional `FULFILLMENT_API_TOKEN`
 

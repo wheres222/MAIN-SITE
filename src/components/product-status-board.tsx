@@ -159,7 +159,7 @@ export function ProductStatusBoard({ products }: ProductStatusBoardProps) {
                     </span>
                     {status.label}
                   </span>
-                  <Link href={`/products/${product.id}`} className={styles.purchaseBtn}>
+                  <Link href={`/products?id=${product.id}`} className={styles.purchaseBtn}>
                     Purchase Now
                   </Link>
                 </article>

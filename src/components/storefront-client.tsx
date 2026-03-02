@@ -202,7 +202,7 @@ export function StorefrontClient() {
               return (
                 <Link
                   key={group.id}
-                  href={`/categories/${toGameSlug(group.name)}`}
+                  href={`/categories?slug=${encodeURIComponent(toGameSlug(group.name))}`}
                   className="game-card"
                   aria-haspopup="dialog"
                   onClick={(event) => {
@@ -302,7 +302,7 @@ export function StorefrontClient() {
                     return (
                       <Link
                         key={product.id}
-                        href={`/products/${product.id}`}
+                        href={`/products?id=${product.id}`}
                         className="category-modal-product"
                         onClick={() => setActiveGroupId(null)}
                       >
