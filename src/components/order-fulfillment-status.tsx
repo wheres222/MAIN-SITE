@@ -34,7 +34,6 @@ interface MockOrderData {
   items?: OrderItemView[];
   transactionId?: string;
   subtitle?: string;
-  bonusPoints?: string;
 }
 
 interface Props {
@@ -144,6 +143,19 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
   const keys = order?.licenseKeys || [];
   const primaryKey = keys[0] || "Pending delivery...";
 
+  const isFailed = order?.status === "failed";
+  const isPaid = order?.status === "fulfilled";
+  const successTitle = isFailed
+    ? "Payment failed"
+    : isPaid
+      ? "Payment successful"
+      : "Payment processing";
+  const successMessage = isFailed
+    ? "We couldn't process this payment completely. Please contact support."
+    : isPaid
+      ? "Thank you. Your payment was successfully processed."
+      : "Thanks! We received your payment and are processing delivery now.";
+
   async function copyKey(value: string) {
     try {
       await navigator.clipboard.writeText(value);
@@ -162,14 +174,16 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
           <h1>{primaryItem?.name || "Order completed"}</h1>
           <h2>{mockData?.subtitle || `${totalUnits} item${totalUnits > 1 ? "s" : ""}`}</h2>
 
+          <div className="postpay-success-wrap">
+            <span className={`postpay-success-icon ${isFailed ? "is-failed" : ""}`}>✓</span>
+            <h4>{successTitle}</h4>
+            <p>{successMessage}</p>
+          </div>
+
           <dl className="postpay-details">
             <div>
               <dt>Order:</dt>
               <dd>{order?.orderId || orderId}</dd>
-            </div>
-            <div>
-              <dt>Amount:</dt>
-              <dd>{totalUnits}</dd>
             </div>
             <div>
               <dt>Total:</dt>
@@ -191,14 +205,6 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
 
           <p className="postpay-status">
             Payment status: <strong>{formatStatus(order?.status || "processing")}</strong>
-          </p>
-
-          <p className="postpay-bonus">◎ + {mockData?.bonusPoints || "0.0279"} bonus points</p>
-
-          <div className="postpay-personal-box">Personal</div>
-          <p className="postpay-personal-note">
-            A personal account is created automatically upon the first purchase, a password from
-            it is sent to the mail you specified.
           </p>
 
           {loading ? <p className="state-message">Loading order status...</p> : null}

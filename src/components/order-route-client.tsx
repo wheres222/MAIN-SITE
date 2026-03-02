@@ -27,7 +27,6 @@ export function OrderRouteClient() {
                   customerEmail: "buyer@example.com",
                   transactionId: "CA-016766",
                   subtitle: "1 day",
-                  bonusPoints: "0.0279",
                   items: [
                     {
                       name: "UNKNOWN Lite for APEX",
