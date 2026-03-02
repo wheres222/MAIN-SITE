@@ -36,6 +36,7 @@
 html, body {
   margin: 0;
   min-height: 100%;
+  overflow-x: hidden;
   background-color: #0a0c11;
   background-image:
     radial-gradient(circle at 0.8px 0.8px, rgba(122, 130, 146, 0.12) 0.8px, transparent 1.05px),
@@ -1358,6 +1359,41 @@ select::-ms-expand { display: none; }
   .postpay-content {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .postpay-top {
+    padding: 22px 12px 18px;
+  }
+  .postpay-top h2 {
+    font-size: 1.35rem;
+  }
+  .postpay-top p {
+    font-size: 0.88rem;
+  }
+  .postpay-content {
+    padding: 10px;
+  }
+  .postpay-block {
+    padding: 10px;
+  }
+  .postpay-primary-key,
+  .postpay-key-list li {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .postpay-primary-key button,
+  .postpay-key-list li button {
+    width: 100%;
+    justify-self: stretch;
+  }
+  .postpay-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .postpay-actions a {
+    text-align: center;
   }
 }
 
