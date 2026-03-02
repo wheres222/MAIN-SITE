@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 
+export const runtime = "edge";
+
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
 export default function robots(): MetadataRoute.Robots {

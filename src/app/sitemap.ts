@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { toGameSlug } from "@/lib/game-slug";
 import { getStorefrontData } from "@/lib/sellauth";
 
+export const runtime = "edge";
+
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
