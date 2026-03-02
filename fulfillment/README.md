@@ -54,6 +54,12 @@ Optional:
 - `FULFILLMENT_NOTIFY_URL` - website callback URL
 - `FULFILLMENT_NOTIFY_TOKEN` - auth for callback
 
+Provider check env (Desync API):
+- `DESYNC_API_BASE_URL` (example: `https://api.reselling.pro`)
+- `DESYNC_API_KEY`
+- `DESYNC_AUTH_MODE` (`bearer` | `x-api-key` | `apikey` | `query`)
+- `DESYNC_HEALTH_PATH` (default: `/api/apikeys/seller`)
+
 ## SellAuth webhook target
 
 Set SellAuth webhook URL to:
@@ -119,6 +125,7 @@ curl -X POST http://127.0.0.1:8788/jobs/manual \
 - `POST /jobs/manual` - manual test enqueue (admin token)
 - `GET /orders/:orderId` - order fulfillment status
 - `GET /jobs?limit=50` - latest jobs (admin token)
+- `GET /providers/desync/check` - test provider API auth/connectivity (admin token)
 
 ## systemd (recommended)
 

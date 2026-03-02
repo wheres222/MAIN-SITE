@@ -9,6 +9,7 @@ const { MappingRegistry } = require("./mappings");
 const { Processor } = require("./processor");
 const { parseWebhook } = require("./webhook-parser");
 const { adapters } = require("./adapters");
+const { checkDesyncApi } = require("./providers/desync-api");
 const { readBody, json, notFound, badRequest, unauthorized } = require("./http-utils");
 
 const config = readConfig();
@@ -215,6 +216,18 @@ const server = http.createServer(async (request, response) => {
 
     if (request.method === "GET" && requestUrl.pathname === "/jobs") {
       return routeJobs(request, response, requestUrl);
+    }
+
+    if (request.method === "GET" && requestUrl.pathname === "/providers/desync/check") {
+      if (!hasAdminAccess(request)) {
+        return unauthorized(response);
+      }
+
+      const result = await checkDesyncApi({ logger });
+      return json(response, result.ok ? 200 : 502, {
+        success: result.ok,
+        result,
+      });
     }
 
     return notFound(response);
