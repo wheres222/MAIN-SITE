@@ -390,6 +390,7 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
   const image =
     extractImageCandidate(imageRecord) ||
     extractImageCandidate(product.image) ||
+    extractImageCandidate(product.images) ||
     extractImageCandidate(product.image_url) ||
     extractImageCandidate(product.imageUrl) ||
     extractImageCandidate(product.thumbnail) ||
@@ -767,15 +768,52 @@ export async function getStorefrontData(): Promise<StorefrontData> {
 
     const productsFinal = await enrichMissingProductImages(productsClean);
 
-    const categoryGroups: SellAuthGroup[] = categoriesClean.map((category) => ({
+    const imageByCategorySlug = new Map<string, string>();
+    const imageByGroupSlug = new Map<string, string>();
+
+    for (const product of productsFinal) {
+      if (!product.image || product.image === PRODUCT_IMAGE_PLACEHOLDER) continue;
+
+      const categorySlug = canonicalCategorySlug(product.categoryName || "");
+      const groupSlug = canonicalCategorySlug(product.groupName || "");
+
+      if (categorySlug && !imageByCategorySlug.has(categorySlug)) {
+        imageByCategorySlug.set(categorySlug, product.image);
+      }
+      if (groupSlug && !imageByGroupSlug.has(groupSlug)) {
+        imageByGroupSlug.set(groupSlug, product.image);
+      }
+    }
+
+    const categoriesWithDerivedImages = categoriesClean.map((category) => {
+      if (category.image?.url) return category;
+      const slug = canonicalCategorySlug(category.name);
+      const derived = imageByCategorySlug.get(slug) || imageByGroupSlug.get(slug);
+      return derived ? { ...category, image: { url: derived } } : category;
+    });
+
+    const groupsWithDerivedImages = groupsClean.map((group) => {
+      if (group.image?.url) return group;
+      const slug = canonicalCategorySlug(group.name);
+      const derived = imageByGroupSlug.get(slug) || imageByCategorySlug.get(slug);
+      return derived ? { ...group, image: { url: derived } } : group;
+    });
+
+    const categoryGroups: SellAuthGroup[] = categoriesWithDerivedImages.map((category) => ({
       id: category.id,
       name: category.name,
       description: category.description || `${category.name} category`,
       image: category.image,
     }));
 
-    const mergedGroups = mergeBySlug([...groupsClean, ...categoryGroups], baselineGroups);
-    const mergedCategories = mergeBySlug(categoriesClean, baselineCategories);
+    const mergedGroups = mergeBySlug(
+      [...groupsWithDerivedImages, ...categoryGroups],
+      baselineGroups
+    );
+    const mergedCategories = mergeBySlug(
+      categoriesWithDerivedImages,
+      baselineCategories
+    );
 
     if (groupsResult.status !== "fulfilled") {
       warnings.push("Could not fetch groups from SellAuth.");
