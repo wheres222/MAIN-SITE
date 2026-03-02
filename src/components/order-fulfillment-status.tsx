@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 type OrderStatus = "queued" | "processing" | "fulfilled" | "failed" | string;
@@ -34,6 +33,8 @@ interface MockOrderData {
   customerEmail?: string;
   items?: OrderItemView[];
   transactionId?: string;
+  subtitle?: string;
+  bonusPoints?: string;
 }
 
 interface Props {
@@ -138,6 +139,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
   );
 
   const keys = order?.licenseKeys || [];
+  const primaryKey = keys[0] || "Pending delivery...";
 
   async function copyKey(value: string) {
     try {
@@ -155,7 +157,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
       <div className="postpay-grid">
         <article className="postpay-left">
           <h1>{primaryItem?.name || "Order completed"}</h1>
-          {primaryItem?.note ? <p className="postpay-sub">{primaryItem.note}</p> : null}
+          <h2>{mockData?.subtitle || `${totalUnits} item${totalUnits > 1 ? "s" : ""}`}</h2>
 
           <dl className="postpay-details">
             <div>
@@ -188,13 +190,12 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
             Payment status: <strong>{formatStatus(order?.status || "processing")}</strong>
           </p>
 
-          {mockData?.transactionId ? (
-            <p className="postpay-bonus">Transaction: {mockData.transactionId}</p>
-          ) : null}
+          <p className="postpay-bonus">◎ + {mockData?.bonusPoints || "0.0279"} bonus points</p>
 
           <div className="postpay-personal-box">Personal</div>
           <p className="postpay-personal-note">
-            A personal account is created automatically upon the first purchase.
+            A personal account is created automatically upon the first purchase, a password from
+            it is sent to the mail you specified.
           </p>
 
           {loading ? <p className="state-message">Loading order status...</p> : null}
@@ -205,11 +206,18 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
         </article>
 
         <article className="postpay-right">
-          <h2>Your keys:</h2>
+          <h3>Your keys:</h3>
 
-          {keys.length > 0 ? (
+          <div className="postpay-primary-key">
+            <span>{primaryKey}</span>
+            <button type="button" onClick={() => copyKey(primaryKey)}>
+              {copiedKey === primaryKey ? "Copied" : "Copy"}
+            </button>
+          </div>
+
+          {keys.length > 1 ? (
             <ul className="postpay-key-list">
-              {keys.map((key) => (
+              {keys.slice(1).map((key) => (
                 <li key={key}>
                   <span>{key}</span>
                   <button type="button" onClick={() => copyKey(key)}>
@@ -218,16 +226,17 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p className="state-message">No keys yet. Delivery will appear here automatically.</p>
-          )}
+          ) : null}
 
           <div className="postpay-actions">
             <a href="#">Instructions and loader</a>
-            <a href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"} target="_blank" rel="noreferrer">
+            <a
+              href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"}
+              target="_blank"
+              rel="noreferrer"
+            >
               Help
             </a>
-            <Link href="/">Store</Link>
           </div>
 
           {copiedKey === "copy-failed" ? (
