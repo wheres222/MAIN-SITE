@@ -23,7 +23,7 @@ export default function MockOrderPage() {
             bonusPoints: "0.0279",
             items: [
               {
-                name: "Mails for GMX",
+                name: "UNKNOWN Lite for APEX",
                 quantity: 35,
                 note: "Auto-delivered after payment",
               },
