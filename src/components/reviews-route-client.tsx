@@ -43,7 +43,7 @@ export function ReviewsRouteClient() {
   }, []);
 
   const reviews = useMemo(
-    () => (data ? createMockReviewsFromProducts(data.products, 16) : []),
+    () => (data ? createMockReviewsFromProducts(data.products, 36) : []),
     [data]
   );
 

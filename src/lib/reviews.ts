@@ -10,14 +10,7 @@ export interface StoreReview {
   productImage: string;
 }
 
-const REVIEW_MESSAGES = [
-  "Automatic feedback after 7 days.",
-  "Solid update cadence and smooth setup.",
-  "Undetected so far, performance is stable.",
-  "Delivery was instant and key worked first try.",
-  "Clean menu and easy configuration.",
-  "Support replied quickly and solved my issue.",
-];
+const AUTO_REVIEW_MESSAGE = "Automatic feedback after 7 days.";
 
 function fallbackImageFor(name: string): string {
   const normalized = name.toLowerCase();
@@ -55,9 +48,8 @@ export function createMockReviewsFromProducts(
     const product = sourceProducts[index % sourceProducts.length];
     const date = new Date(now);
     date.setDate(now.getDate() - Math.floor(index / 4));
-    const message = REVIEW_MESSAGES[index % REVIEW_MESSAGES.length];
-    const isAutomaticFeedback = message === "Automatic feedback after 7 days.";
-    const rating = isAutomaticFeedback ? 5 : index % 7 === 0 ? 4 : 5;
+    const message = AUTO_REVIEW_MESSAGE;
+    const rating = 5;
 
     return {
       id: `review-${product.id}-${index + 1}`,

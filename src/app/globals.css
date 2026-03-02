@@ -776,11 +776,17 @@ select::-ms-expand { display: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   border-radius: 6px;
   border: 1px solid #334761;
   color: #ffffff;
   font-weight: 700;
   padding: 12px 14px;
+}
+.support-cta-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
 }
 .support-option-cta-secondary { background: #111216; }
 .support-option-cta-primary {

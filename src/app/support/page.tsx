@@ -37,6 +37,48 @@ const faqs = [
   },
 ];
 
+type SupportIcon = "book" | "discord" | "ticket";
+
+function SupportCtaIcon({ type }: { type: SupportIcon }) {
+  if (type === "book") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="support-cta-icon">
+        <path
+          d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v16H7.5A2.5 2.5 0 0 0 5 21V5.5Z"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinejoin="round"
+        />
+        <path d="M9 7h6M9 10h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (type === "discord") {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="support-cta-icon">
+        <path
+          d="M8 7.8a14.3 14.3 0 0 0-2.2.8A14 14 0 0 0 4 16.7a13.9 13.9 0 0 0 4.3 2.2l.8-1.3a9.4 9.4 0 0 1-1.9-.9l.4-.3c2.6 1.2 5.3 1.2 7.9 0l.4.3a9.4 9.4 0 0 1-1.9.9l.8 1.3A13.9 13.9 0 0 0 20 16.7a14 14 0 0 0-1.8-8.1 14.3 14.3 0 0 0-2.2-.8l-.3.6c-2-.3-3.4-.3-5.4 0L8 7.8Z"
+          fill="currentColor"
+        />
+        <circle cx="9.5" cy="12.6" r="1.1" fill="#111216" />
+        <circle cx="14.5" cy="12.6" r="1.1" fill="#111216" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className="support-cta-icon">
+      <path
+        d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v6A2.5 2.5 0 0 1 17.5 16H11l-4.5 3v-3H6.5A2.5 2.5 0 0 1 4 13.5v-6Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function SupportPage() {
   const discordUrl = getDiscordUrl();
 
@@ -45,17 +87,23 @@ export default function SupportPage() {
       id: 1,
       title: "Read the Instructions First",
       body: "Before reaching out to support, go through the FAQ and setup guidance. Most common delivery and setup questions are already covered there.",
-      cta: { label: "View Guides & Instructions", href: "#faq-section", external: false },
+      cta: { label: "View Guides & Instructions", href: "#faq-section", external: false, icon: "book" as SupportIcon },
       recommended: false,
     },
     {
       id: 2,
       title: "Join Our Discord Server",
       body: "Still need help after checking guides? Join our Discord for direct staff support and ticket assistance.",
-      cta: { label: "Join Discord Server", href: discordUrl, external: true },
+      cta: { label: "Join Discord Server", href: discordUrl, external: true, icon: "discord" as SupportIcon },
       recommended: true,
     },
-
+    {
+      id: 3,
+      title: "Select the Right Support Type",
+      body: "When creating your ticket make sure to select the correct category that matches your issue.",
+      cta: { label: "Open Support Ticket", href: discordUrl, external: true, icon: "ticket" as SupportIcon },
+      recommended: false,
+    },
   ];
 
   return (
@@ -63,7 +111,6 @@ export default function SupportPage() {
       <SiteHeader activeTab="support" />
 
       <main className="shell subpage-wrap support-page">
-
         <section className="support-main-card">
           <header className="support-main-header">
             <h1>
@@ -96,11 +143,10 @@ export default function SupportPage() {
                     option.recommended ? "support-option-cta-primary" : "support-option-cta-secondary"
                   }`}
                   href={option.cta.href}
-                  {...(option.cta.external
-                    ? { target: "_blank", rel: "noreferrer" }
-                    : {})}
+                  {...(option.cta.external ? { target: "_blank", rel: "noreferrer" } : {})}
                 >
-                  {option.cta.label}
+                  <SupportCtaIcon type={option.cta.icon} />
+                  <span>{option.cta.label}</span>
                 </a>
               </article>
             ))}
