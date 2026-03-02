@@ -111,5 +111,47 @@ export function CategoryRouteClient() {
     );
   }
 
-  return <GameCatalogPage group={resolved.group} products={resolved.products} />;
+  const siteUrl =
+    (typeof window !== "undefined" ? window.location.origin : "") ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://cheatparadise.com";
+
+  const categoryUrl = `${siteUrl}/categories?slug=${encodeURIComponent(slug)}`;
+
+  const collectionJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `${resolved.group.name} Marketplace`,
+    description:
+      resolved.group.description || `Browse ${resolved.group.name} products with fast delivery.`,
+    url: categoryUrl,
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: resolved.group.name,
+        item: categoryUrl,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <GameCatalogPage group={resolved.group} products={resolved.products} />
+    </>
+  );
 }

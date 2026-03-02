@@ -38,10 +38,37 @@ const heroFontSora = Sora({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
+
 export const metadata: Metadata = {
-  title: "CheatParadise Marketplace",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "CheatParadise | Cheap Gaming Marketplace",
+    template: "%s | CheatParadise",
+  },
   description:
-    "Full marketplace storefront with SellAuth API integration, filtering, cart and checkout.",
+    "Buy affordable gaming accounts, mods, tools, and enhancements with instant delivery and secure checkout.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "CheatParadise | Cheap Gaming Marketplace",
+    description:
+      "Affordable gaming products with fast delivery, secure checkout, and active support.",
+    url: siteUrl,
+    siteName: "CheatParadise",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CheatParadise | Cheap Gaming Marketplace",
+    description:
+      "Affordable gaming products with fast delivery, secure checkout, and active support.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -49,11 +76,39 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "CheatParadise",
+    url: siteUrl,
+    sameAs: [process.env.NEXT_PUBLIC_DISCORD_URL?.trim()].filter(Boolean),
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "CheatParadise",
+    url: siteUrl,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/products?id={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <html lang="en">
       <body
         className={`${headingFont.variable} ${bodyFont.variable} ${brandFont.variable} ${heroFontManrope.variable} ${heroFontOutfit.variable} ${heroFontSora.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         {children}
       </body>
     </html>

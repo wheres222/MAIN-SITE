@@ -74,5 +74,67 @@ export function ProductRouteClient() {
     );
   }
 
-  return <ProductDetailPage product={product} paymentMethods={storefront.paymentMethods} />;
+  const siteUrl =
+    (typeof window !== "undefined" ? window.location.origin : "") ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://cheatparadise.com";
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description || `Buy ${product.name} with instant delivery on CheatParadise.`,
+    sku: String(product.id),
+    category: product.categoryName || product.groupName || "Gaming Product",
+    image: product.image ? [product.image] : undefined,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: product.currency || "USD",
+      price: typeof product.price === "number" ? product.price.toFixed(2) : undefined,
+      availability:
+        typeof product.stock === "number" && product.stock <= 0
+          ? "https://schema.org/OutOfStock"
+          : "https://schema.org/InStock",
+      url: `${siteUrl}/products?id=${product.id}`,
+    },
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: product.categoryName || product.groupName || "Category",
+        item: `${siteUrl}/categories?slug=${encodeURIComponent(
+          (product.categoryName || product.groupName || "category")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+        )}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: product.name,
+        item: `${siteUrl}/products?id=${product.id}`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <ProductDetailPage product={product} paymentMethods={storefront.paymentMethods} />
+    </>
+  );
 }
