@@ -244,6 +244,8 @@ const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
   "counter-strike2": "counter-strike-2",
   r6: "rainbow-six-siege",
   "r6-siege": "rainbow-six-siege",
+  "rainbow-6-siege": "rainbow-six-siege",
+  rainbow6siege: "rainbow-six-siege",
   rainbowsixsiege: "rainbow-six-siege",
   callofduty: "call-of-duty",
   cod: "call-of-duty",
@@ -652,24 +654,37 @@ function mergeBySlug<T extends { name: string }>(
   liveItems: T[],
   baselineItems: T[]
 ): T[] {
-  const seen = new Set<string>();
-  const output: T[] = [];
+  const outputBySlug = new Map<string, T>();
+
+  const score = (item: T): number => {
+    const anyItem = item as unknown as { image?: { url?: string | null } | null };
+    return anyItem?.image?.url ? 2 : 1;
+  };
 
   for (const item of liveItems) {
     const slug = canonicalCategorySlug(item.name);
-    if (!slug || seen.has(slug)) continue;
-    seen.add(slug);
-    output.push(item);
+    if (!slug) continue;
+
+    const existing = outputBySlug.get(slug);
+    if (!existing) {
+      outputBySlug.set(slug, item);
+      continue;
+    }
+
+    if (score(item) > score(existing)) {
+      outputBySlug.set(slug, item);
+    }
   }
 
   for (const item of baselineItems) {
     const slug = canonicalCategorySlug(item.name);
-    if (!slug || seen.has(slug)) continue;
-    seen.add(slug);
-    output.push(item);
+    if (!slug) continue;
+    if (!outputBySlug.has(slug)) {
+      outputBySlug.set(slug, item);
+    }
   }
 
-  return output;
+  return [...outputBySlug.values()];
 }
 
 export async function getStorefrontData(): Promise<StorefrontData> {
@@ -785,7 +800,45 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       image: category.image,
     }));
 
-    const mergedGroups = mergeBySlug([...groupsClean, ...categoryGroups], baselineGroups);
+    const productCountBySlug = new Map<string, number>();
+    for (const product of productsFinal) {
+      const groupSlug = canonicalCategorySlug(product.groupName || "");
+      const categorySlug = canonicalCategorySlug(product.categoryName || "");
+      if (groupSlug) {
+        productCountBySlug.set(groupSlug, (productCountBySlug.get(groupSlug) || 0) + 1);
+      }
+      if (categorySlug) {
+        productCountBySlug.set(categorySlug, (productCountBySlug.get(categorySlug) || 0) + 1);
+      }
+    }
+
+    const combinedGroups = [...groupsClean, ...categoryGroups];
+    const bestGroupBySlug = new Map<string, SellAuthGroup>();
+    for (const group of combinedGroups) {
+      const slug = canonicalCategorySlug(group.name);
+      if (!slug) continue;
+
+      const existing = bestGroupBySlug.get(slug);
+      if (!existing) {
+        bestGroupBySlug.set(slug, group);
+        continue;
+      }
+
+      const currentHasProducts = (productCountBySlug.get(slug) || 0) > 0;
+      const existingHasImage = Boolean(existing.image?.url);
+      const currentHasImage = Boolean(group.image?.url);
+
+      if (currentHasProducts && !existingHasImage && currentHasImage) {
+        bestGroupBySlug.set(slug, group);
+        continue;
+      }
+
+      if (!existingHasImage && currentHasImage) {
+        bestGroupBySlug.set(slug, group);
+      }
+    }
+
+    const mergedGroups = mergeBySlug([...bestGroupBySlug.values()], baselineGroups);
     const mergedCategories = mergeBySlug(categoriesClean, baselineCategories);
 
     if (groupsResult.status !== "fulfilled") {
