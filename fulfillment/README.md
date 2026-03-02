@@ -87,6 +87,31 @@ Edit `fulfillment/config/providers.json`:
 3. Register adapter in `fulfillment/src/adapters/index.js`
 4. Point product mapping to your adapter key
 
+### Included test adapter: disconnectcheats
+
+A starter adapter exists at:
+- `fulfillment/src/adapters/disconnectcheats.js`
+
+It currently runs in safe `testMode` by default:
+- Scrapes product page metadata
+- Captures screenshot artifact
+- Returns test keys (no real purchase)
+
+To manual test:
+
+```bash
+curl -X POST http://127.0.0.1:8788/jobs/manual \
+  -H "Authorization: Bearer <FULFILLMENT_ADMIN_TOKEN>" \
+  -H "Content-Type: application/json" \
+  --data '{
+    "orderId":"DC-TEST-1",
+    "sellauthProductId":999001,
+    "quantity":1,
+    "provider":"disconnectcheats",
+    "providerProductId":"https://disconnectcheats.com/store/product/19-exception-hwid-spoofer/"
+  }'
+```
+
 ## Useful endpoints
 
 - `GET /health` - service health

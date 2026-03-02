@@ -142,6 +142,8 @@ async function handleManualJob(request, response) {
         provider: payload.provider || null,
         providerProductId: payload.providerProductId || null,
         coin: payload.coin || null,
+        testMode:
+          typeof payload.testMode === "boolean" ? payload.testMode : undefined,
         raw: payload.raw || null,
       },
     ],

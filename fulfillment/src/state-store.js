@@ -70,6 +70,12 @@ class StateStore {
       provider: item.provider || null,
       providerProductId: item.providerProductId || null,
       coin: item.coin || null,
+      testMode:
+        typeof item.testMode === "boolean"
+          ? item.testMode
+          : item.testMode === undefined
+            ? null
+            : String(item.testMode),
       raw: item.raw || null,
       status: "queued",
       attempts: 0,

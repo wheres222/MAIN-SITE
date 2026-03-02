@@ -70,6 +70,7 @@ class Processor {
             provider: job.provider,
             providerProductId: job.providerProductId,
             coin: job.coin,
+            testMode: job.testMode,
             minQuantity: 1,
           }
         : null);

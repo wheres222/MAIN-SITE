@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const demo = require("./demo");
 const playwrightTemplate = require("./playwright-template");
+const disconnectcheats = require("./disconnectcheats");
 
-const adapterList = [demo, playwrightTemplate];
+const adapterList = [demo, playwrightTemplate, disconnectcheats];
 
 const adapters = Object.fromEntries(
   adapterList
