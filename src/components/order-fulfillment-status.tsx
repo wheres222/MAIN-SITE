@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
@@ -48,9 +49,9 @@ function statusLabel(status: OrderStatus): string {
     case "processing":
       return "Processing";
     case "fulfilled":
-      return "Delivered";
+      return "Payment successful";
     case "failed":
-      return "Failed";
+      return "Payment failed";
     default:
       return status || "Unknown";
   }
@@ -70,6 +71,8 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
         }
       : null
   );
+  const [invoiceEmail, setInvoiceEmail] = useState(mockData?.customerEmail || "");
+  const [invoiceNotice, setInvoiceNotice] = useState("");
 
   useEffect(() => {
     if (mockData) return;
@@ -131,33 +134,68 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
     },
   ];
 
+  function submitInvoiceEmail(event: React.FormEvent) {
+    event.preventDefault();
+    if (!invoiceEmail.trim()) {
+      setInvoiceNotice("Please enter an email address.");
+      return;
+    }
+    setInvoiceNotice("Invoice email request received.");
+  }
+
   return (
-    <section className="order-complete-shell">
-      <header className="order-complete-header">
-        <div className="order-complete-header-left">
-          <span className="order-complete-check" aria-hidden="true">
+    <section className="order-complete-shell receipt-style-shell">
+      <div className="receipt-card">
+        <header className="receipt-card-top">
+          <div className="receipt-brand-left">
+            <Image src="/branding/cp-logo.png" alt="CheatParadise" width={30} height={30} />
+          </div>
+          <div className="receipt-brand-right">
+            <h1>CheatParadise</h1>
+            <p>
+              For any help: <a href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"} target="_blank" rel="noreferrer">Support</a>
+            </p>
+          </div>
+        </header>
+
+        <div className="receipt-state-wrap">
+          <span className={`receipt-check-badge receipt-check-${order?.status || "unknown"}`}>
             ✓
           </span>
+          <h2>{statusLabel(order?.status || "processing")}</h2>
+          <p>
+            {order?.status === "failed"
+              ? "We couldn't finish this payment. Please contact support."
+              : "Thank you! Your payment was successfully processed."}
+          </p>
+        </div>
+
+        <article className="receipt-summary-box">
           <div>
-            <h1>Payment Completed</h1>
-            <p>Your order is being processed and delivered automatically.</p>
+            <span>Amount Paid</span>
+            <strong>{mockData?.total || "—"}</strong>
           </div>
-        </div>
+          <div>
+            <span>Transaction ID</span>
+            <strong>{mockData?.transactionId || order?.orderId || orderId}</strong>
+          </div>
+        </article>
 
-        <div className="order-complete-header-right">
-          <span className={`order-status-pill order-status-${order?.status || "unknown"}`}>
-            {statusLabel(order?.status || "unknown")}
-          </span>
-          <span className="order-id">Order #{order?.orderId || orderId}</span>
-        </div>
-      </header>
+        <form className="receipt-invoice-form" onSubmit={submitInvoiceEmail}>
+          <label htmlFor="invoice-email">Enter email address to receive invoice</label>
+          <input
+            id="invoice-email"
+            value={invoiceEmail}
+            onChange={(event) => setInvoiceEmail(event.target.value)}
+            placeholder="abc@email.com"
+            type="email"
+          />
+          <button type="submit">Submit</button>
+          {invoiceNotice ? <p className="receipt-invoice-notice">{invoiceNotice}</p> : null}
+        </form>
 
-      {loading ? <p className="state-message">Loading order status...</p> : null}
-      {error ? <p className="state-message error">{error}</p> : null}
-
-      <div className="order-complete-grid">
-        <article className="order-panel">
-          <h2>Order Summary</h2>
+        <div className="receipt-delivery-block">
+          <h3>Delivered items</h3>
           <ul className="order-summary-list">
             {items.map((item, index) => (
               <li key={`${item.name}-${index}`}>
@@ -170,34 +208,6 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
             ))}
           </ul>
 
-          <div className="order-meta-grid">
-            <div>
-              <span>Payment Method</span>
-              <strong>{mockData?.paymentMethod || "Crypto"}</strong>
-            </div>
-            <div>
-              <span>Total</span>
-              <strong>{mockData?.total || "—"}</strong>
-            </div>
-            <div>
-              <span>Customer</span>
-              <strong>{mockData?.customerEmail || "—"}</strong>
-            </div>
-            <div>
-              <span>Last Update</span>
-              <strong>
-                {order?.updatedAt ? new Date(order.updatedAt).toLocaleString() : "Pending"}
-              </strong>
-            </div>
-          </div>
-
-          {mockData?.transactionId ? (
-            <p className="order-transaction">Transaction: {mockData.transactionId}</p>
-          ) : null}
-        </article>
-
-        <article className="order-panel order-panel-delivery">
-          <h2>Delivery</h2>
           {Array.isArray(order?.licenseKeys) && order.licenseKeys.length > 0 ? (
             <ul className="order-keys-list">
               {order.licenseKeys.map((key) => (
@@ -215,14 +225,16 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
           {order?.status === "failed" && order.lastError ? (
             <p className="state-message error">{order.lastError}</p>
           ) : null}
+        </div>
 
-          <div className="order-actions">
-            <Link href="/">Back to Store</Link>
-            <a href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"} target="_blank" rel="noreferrer">
-              Need Support?
-            </a>
-          </div>
-        </article>
+        {loading ? <p className="state-message">Loading order status...</p> : null}
+        {error ? <p className="state-message error">{error}</p> : null}
+
+        <footer className="receipt-footer-links">
+          <Link href="/terms-of-service">Terms</Link>
+          <span>&</span>
+          <Link href="/privacy-policy">Privacy</Link>
+        </footer>
       </div>
     </section>
   );
