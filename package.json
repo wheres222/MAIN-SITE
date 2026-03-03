@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "fulfillment:start": "node fulfillment/src/server.js",
-    "fulfillment:dev": "node --watch fulfillment/src/server.js"
+    "fulfillment:dev": "node --watch fulfillment/src/server.js",
+    "fulfillment:test": "bash ./scripts/fulfillment-test.sh"
   },
   "dependencies": {
     "next": "16.1.6",
