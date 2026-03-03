@@ -29,6 +29,7 @@
   --ui-border: rgba(255, 255, 255, 0.07);
   --ui-border-strong: rgba(255, 255, 255, 0.12);
   --nav-separator: rgba(255, 255, 255, 0.05);
+  --page-body-surface: rgb(13, 15, 17);
 }
 
 * { box-sizing: border-box; }
@@ -692,7 +693,7 @@ select::-ms-expand { display: none; }
   margin-bottom: 16px;
   border: 1px solid #232d43;
   border-radius: 6px;
-  background: #111216;
+  background: var(--page-body-surface);
   min-height: 52px;
   padding: 0 14px;
   display: flex;
@@ -705,7 +706,7 @@ select::-ms-expand { display: none; }
 .support-activity-pill {
   border: 1px solid #2a3854;
   border-radius: 5px;
-  background: #111216;
+  background: var(--page-body-surface);
   color: #b6c7e6;
   font-size: 0.85rem;
   padding: 8px 12px;
@@ -715,7 +716,7 @@ select::-ms-expand { display: none; }
   margin-top: 14px;
   border: 1px solid #232d43;
   border-radius: 6px;
-  background: #111216;
+  background: var(--page-body-surface);
   padding: clamp(24px, 3vw, 38px);
 }
 .support-main-header { text-align: center; margin-bottom: 22px; }
@@ -747,7 +748,7 @@ select::-ms-expand { display: none; }
 .support-option-card {
   border: 1px solid #2a354d;
   border-radius: 12px;
-  background: #111216;
+  background: var(--page-body-surface);
   padding: 18px 18px 20px;
   color: #e7efff;
   display: grid;
@@ -789,7 +790,7 @@ select::-ms-expand { display: none; }
   height: 16px;
   flex: 0 0 auto;
 }
-.support-option-cta-secondary { background: #111216; }
+.support-option-cta-secondary { background: var(--page-body-surface); }
 .support-option-cta-primary {
   background: var(--themed-blue-gradient);
   border-color: #5e86ea;
@@ -805,7 +806,7 @@ select::-ms-expand { display: none; }
   margin-top: 28px;
   border: 1px solid #232d43;
   border-radius: 6px;
-  background: #111216;
+  background: var(--page-body-surface);
   padding: clamp(22px, 2.5vw, 34px);
 }
 .faq-header { text-align: center; margin: 0 auto 22px; max-width: 860px; }
@@ -830,7 +831,7 @@ select::-ms-expand { display: none; }
 .faq-item {
   border: 1px solid #2a354d;
   border-radius: 8px;
-  background: #111216;
+  background: var(--page-body-surface);
   overflow: clip;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
