@@ -27,6 +27,36 @@ function withVersion(source: string, version: string): string {
   return `${source}${joiner}v=${encodeURIComponent(version)}`;
 }
 
+function canonicalGroupSlug(value: string): string {
+  const slug = toGameSlug(value || "");
+  const compact = slug.replace(/-/g, "");
+
+  if (
+    compact === "r6" ||
+    compact === "r6s" ||
+    compact.includes("rainbowsixsiege") ||
+    compact.includes("rainbow6siege") ||
+    compact.includes("rainbowsixseige") ||
+    compact.includes("rainbow6seige")
+  ) {
+    return "rainbow-six-siege";
+  }
+
+  if (compact === "lol" || compact.includes("leagueoflegends")) {
+    return "league-of-legends";
+  }
+
+  if (compact === "cs2" || compact.includes("counterstrike2")) {
+    return "counter-strike-2";
+  }
+
+  if (compact.includes("apexlegends")) {
+    return "apex";
+  }
+
+  return slug;
+}
+
 function productLowestPrice(product: SellAuthProduct): number | null {
   const prices: number[] = [];
   if (typeof product.price === "number") prices.push(product.price);
@@ -98,6 +128,9 @@ export function StorefrontClient() {
           }));
 
     const productCountBySlug = new Map<string, number>();
+    const directProductCountByGroupId = new Map<number, number>();
+    const directProductCountByCategoryId = new Map<number, number>();
+
     for (const product of storefront?.products || []) {
       const groupSlug = canonicalGroupSlug(product.groupName || "");
       const categorySlug = canonicalGroupSlug(product.categoryName || "");
@@ -107,10 +140,26 @@ export function StorefrontClient() {
       if (categorySlug) {
         productCountBySlug.set(categorySlug, (productCountBySlug.get(categorySlug) || 0) + 1);
       }
+      if (product.groupId !== null) {
+        directProductCountByGroupId.set(
+          product.groupId,
+          (directProductCountByGroupId.get(product.groupId) || 0) + 1
+        );
+      }
+      if (product.categoryId !== null) {
+        directProductCountByCategoryId.set(
+          product.categoryId,
+          (directProductCountByCategoryId.get(product.categoryId) || 0) + 1
+        );
+      }
     }
 
     const bestBySlug = new Map<string, (typeof groups)[number]>();
     const bestImageBySlug = new Map<string, string>();
+
+    const directCountForGroup = (group: (typeof groups)[number]) => {
+      return (directProductCountByGroupId.get(group.id) || 0) + (directProductCountByCategoryId.get(group.id) || 0);
+    };
 
     for (const group of groups) {
       const slug = canonicalGroupSlug(group.name);
@@ -120,9 +169,10 @@ export function StorefrontClient() {
         bestImageBySlug.set(slug, group.image.url);
       }
 
-      const productCount = productCountBySlug.get(slug) || 0;
+      const directCount = directCountForGroup(group);
+      const slugCount = productCountBySlug.get(slug) || 0;
       const hasImage = Boolean(group.image?.url);
-      const score = productCount * 100 + (hasImage ? 10 : 0);
+      const score = directCount * 1000 + slugCount * 100 + (hasImage ? 10 : 0);
 
       const existing = bestBySlug.get(slug);
       if (!existing) {
@@ -130,9 +180,11 @@ export function StorefrontClient() {
         continue;
       }
 
-      const existingCount = productCountBySlug.get(canonicalGroupSlug(existing.name)) || 0;
+      const existingDirectCount = directCountForGroup(existing);
+      const existingSlugCount = productCountBySlug.get(canonicalGroupSlug(existing.name)) || 0;
       const existingHasImage = Boolean(existing.image?.url);
-      const existingScore = existingCount * 100 + (existingHasImage ? 10 : 0);
+      const existingScore =
+        existingDirectCount * 1000 + existingSlugCount * 100 + (existingHasImage ? 10 : 0);
 
       if (score > existingScore) {
         bestBySlug.set(slug, group);
@@ -142,10 +194,13 @@ export function StorefrontClient() {
     return [...bestBySlug.values()]
       .map((group) => {
         const slug = canonicalGroupSlug(group.name);
-        if (group.image?.url) return group;
         const familyImage = bestImageBySlug.get(slug);
-        return familyImage ? { ...group, image: { url: familyImage } } : group;
+        if (familyImage && !group.image?.url) {
+          return { ...group, image: { url: familyImage } };
+        }
+        return group;
       })
+      .filter((group) => canonicalGroupSlug(group.name) !== "league-of-legends")
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [storefront]);
 
