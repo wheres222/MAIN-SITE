@@ -6,168 +6,172 @@ import { useMemo, useState } from "react";
 import type { SellAuthProduct } from "@/types/sellauth";
 import styles from "@/components/product-status-board.module.css";
 
-type StatusKind = "updating" | "undetected";
+type PrimaryStatus = "safe" | "updating";
+type FreshnessStatus = "upToDate" | "needsUpdate";
 
 interface ProductStatusMeta {
-  kind: StatusKind;
-  label: string;
+  primary: PrimaryStatus;
+  primaryLabel: string;
+  freshness: FreshnessStatus;
+  freshnessLabel: string;
 }
 
 interface ProductStatusBoardProps {
   products: SellAuthProduct[];
 }
 
-function fallbackImageForProduct(product: SellAuthProduct): string {
-  const source = `${product.groupName} ${product.categoryName} ${product.name}`.toLowerCase();
-  if (source.includes("rust")) return "/pd/rust.png";
-  if (source.includes("valorant") || source.includes("val")) return "/pd/valorant.png";
-  if (source.includes("rainbow") || source.includes("r6")) return "/pd/rainbow-six-siege.png";
-  if (source.includes("apex")) return "/pd/apex.png";
-  if (source.includes("call of duty") || source.includes("cod")) return "/pd/call-of-duty.png";
-  return "/games/fortnite.svg";
-}
-
 function inferStatus(product: SellAuthProduct): ProductStatusMeta {
-  const stock = product.stock;
-
-  if (typeof stock === "number" && stock <= 0) {
-    return { kind: "updating", label: "UPDATING (NOT WORKING)" };
+  if (typeof product.stock === "number" && product.stock <= 0) {
+    return {
+      primary: "updating",
+      primaryLabel: "Updating",
+      freshness: "needsUpdate",
+      freshnessLabel: "Needs Update",
+    };
   }
 
-  return { kind: "undetected", label: "UNDETECTED (WORKING)" };
+  return {
+    primary: "safe",
+    primaryLabel: "Safe",
+    freshness: "upToDate",
+    freshnessLabel: "Up To Date",
+  };
 }
 
 function normalized(value: string): string {
   return value.toLowerCase().trim();
 }
 
-function StatusBadgeIcon({ kind }: { kind: StatusKind }) {
-  if (kind === "undetected") {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path
-          d="M12 4.1 18 6.7v5.4c0 4-2.6 6.3-6 7.5-3.4-1.2-6-3.5-6-7.5V6.7l6-2.6Z"
-          fill="currentColor"
-          opacity="0.18"
-        />
-        <path
-          d="M12 4.1 6 6.7v5.4c0 4 2.6 6.3 6 7.5V4.1Z"
-          fill="currentColor"
-          opacity="0.52"
-        />
-        <path
-          d="M12 4.1 18 6.7v5.4c0 4-2.6 6.3-6 7.5-3.4-1.2-6-3.5-6-7.5V6.7l6-2.6Z"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
+function categoryLogoForName(groupName: string): string {
+  const source = normalized(groupName);
 
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M14.2 6a4.1 4.1 0 0 0-4.5 5.5L5.2 16l2.8 2.8 4.6-4.5a4.1 4.1 0 0 0 5.4-4.5L15.6 12l-1.9-1.9L16 8Z"
-        stroke="currentColor"
-        strokeWidth="1.9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  if (source.includes("apex")) return "/pd/apex.png";
+  if (source.includes("valorant") || source.includes("val")) return "/pd/valorant.png";
+  if (source.includes("rust")) return "/pd/rust.png";
+  if (source.includes("rainbow") || source.includes("r6")) return "/pd/rainbow-six-siege.png";
+  if (source.includes("call of duty") || source.includes("cod")) return "/pd/call-of-duty.png";
+  if (source.includes("fortnite")) return "/pd/fortnite.png";
+  if (source.includes("counter") || source.includes("cs2")) return "/pd/counter-strike-2.png";
+  if (source.includes("dayz")) return "/pd/dayz.png";
+  if (source.includes("fivem")) return "/pd/fivem.png";
+  if (source.includes("roblox")) return "/pd/roblox.png";
+  if (source.includes("pubg")) return "/pd/pubg.png";
+  if (source.includes("league") || source.includes("lol")) return "/pd/lol.png";
+  if (source.includes("hwid")) return "/pd/hwid-spoofers.png";
+
+  return "/pd/misc.svg";
+}
+
+interface GroupedCategory {
+  name: string;
+  logo: string;
+  items: SellAuthProduct[];
 }
 
 export function ProductStatusBoard({ products }: ProductStatusBoardProps) {
   const [query, setQuery] = useState("");
 
-  const grouped = useMemo(() => {
+  const grouped = useMemo<GroupedCategory[]>(() => {
     const keyword = normalized(query);
     const groupedMap = new Map<string, SellAuthProduct[]>();
 
     for (const product of products) {
-      const groupName = product.groupName || product.categoryName || "Other";
+      const categoryName = product.groupName || product.categoryName || "Other";
+
       const haystack = normalized(
-        `${groupName} ${product.name} ${product.description} ${product.categoryName}`
+        `${categoryName} ${product.categoryName} ${product.name} ${product.description}`
       );
+
       if (keyword && !haystack.includes(keyword)) continue;
 
-      const existing = groupedMap.get(groupName) || [];
+      const existing = groupedMap.get(categoryName) || [];
       existing.push(product);
-      groupedMap.set(groupName, existing);
+      groupedMap.set(categoryName, existing);
     }
 
     return [...groupedMap.entries()]
-      .map(([groupName, groupProducts]) => ({
-        groupName,
-        items: groupProducts.sort((a, b) => a.name.localeCompare(b.name)),
+      .map(([name, items]) => ({
+        name,
+        logo: categoryLogoForName(name),
+        items: [...items].sort((a, b) => a.name.localeCompare(b.name)),
       }))
-      .sort((a, b) => a.groupName.localeCompare(b.groupName));
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [products, query]);
-
-  const hasAnyProducts = grouped.some((group) => group.items.length > 0);
 
   return (
     <section className={styles.statusPage}>
       <header className={styles.hero}>
-        <div className={styles.heroTop}>
-          <h1>Status</h1>
-          <label className={styles.searchWrap} aria-label="Search product status">
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.6" />
-              <path d="m16 16 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search products..."
-            />
-          </label>
-        </div>
+        <h1>Status</h1>
+        <p>Real-time status. Perfectly simple.</p>
       </header>
 
-      {!hasAnyProducts && (
-        <div className={styles.empty}>No products matched your search query.</div>
-      )}
+      <label className={styles.searchWrap} aria-label="Search status list">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.6" />
+          <path d="m16 16 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search products..."
+        />
+      </label>
 
-      {grouped.map((group) => (
-        <section key={group.groupName} className={styles.group}>
-          <h2 className={styles.groupTitle}>{group.groupName}</h2>
-          <div className={styles.list}>
-            {group.items.map((product) => {
-              const status = inferStatus(product);
-              const image = product.image || fallbackImageForProduct(product);
+      {!grouped.length && <div className={styles.empty}>No products matched your search query.</div>}
 
-              return (
-                <article key={product.id} className={styles.row}>
-                  <div className={styles.rowLeft}>
-                    <img
-                      src={image}
-                      alt={product.name}
-                      className={styles.thumb}
-                      loading="lazy"
-                    />
-                    <p className={styles.name}>{product.name}</p>
-                  </div>
-                  <p className={styles.supportedOn}>
-                    <span>SUPPORTED ON:</span>
-                    <strong>Windows 10 & 11</strong>
-                  </p>
-                  <span className={`${styles.badge} ${styles[status.kind]}`}>
-                    <span className={styles.badgeIcon}>
-                      <StatusBadgeIcon kind={status.kind} />
-                    </span>
-                    {status.label}
-                  </span>
-                  <Link href={`/products?id=${product.id}`} className={styles.purchaseBtn}>
-                    Purchase Now
-                  </Link>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+      {grouped.length ? (
+        <div className={styles.categoryGrid}>
+          {grouped.map((category) => (
+            <section key={category.name} className={styles.categoryCard}>
+              <header className={styles.categoryHeader}>
+                <span className={styles.categoryLogoBox} aria-hidden="true">
+                  <img src={category.logo} alt="" className={styles.categoryLogo} loading="lazy" />
+                </span>
+
+                <h2 className={styles.categoryTitle}>{category.name}</h2>
+
+                <span className={styles.countChip}>
+                  {category.items.length} {category.items.length === 1 ? "product" : "products"}
+                </span>
+              </header>
+
+              <ul className={styles.productList}>
+                {category.items.map((product) => {
+                  const status = inferStatus(product);
+
+                  return (
+                    <li key={product.id} className={styles.productRow}>
+                      <p className={styles.name}>
+                        <Link href={`/products?id=${product.id}`}>{product.name}</Link>
+                      </p>
+
+                      <div className={styles.rowBadges}>
+                        <span
+                          className={`${styles.inlineBadge} ${
+                            status.primary === "safe" ? styles.pillSafe : styles.pillUpdating
+                          }`}
+                        >
+                          {status.primaryLabel}
+                        </span>
+
+                        <span
+                          className={`${styles.inlineBadge} ${
+                            status.freshness === "upToDate"
+                              ? styles.pillUpToDate
+                              : styles.pillNeedsUpdate
+                          }`}
+                        >
+                          {status.freshnessLabel}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      ) : null}
     </section>
   );
 }
