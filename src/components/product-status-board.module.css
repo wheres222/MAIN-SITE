@@ -1,6 +1,6 @@
 .statusPage {
-  margin: 18px auto 56px;
-  width: min(960px, 100%);
+  margin: 18px 0 56px;
+  width: 100%;
 }
 
 .board {
