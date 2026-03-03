@@ -56,8 +56,8 @@ export function ProductRouteClient() {
   const pathname = usePathname();
   const params = useParams<{ slug?: string | string[] }>();
 
-  const productIdRaw = searchParams.get("id") || "";
-  const productId = Number(productIdRaw);
+  const productIdRaw = (searchParams.get("id") || "").trim();
+  const productId = productIdRaw ? Number(productIdRaw) : Number.NaN;
 
   const slugFromParams =
     typeof params?.slug === "string"
