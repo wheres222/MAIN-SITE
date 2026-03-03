@@ -1,96 +1,35 @@
 .statusPage {
-  margin: 26px auto 62px;
-  width: min(920px, 100%);
-  padding: 0;
+  margin: 18px auto 56px;
+  width: min(960px, 100%);
 }
 
-.hero {
-  margin-bottom: 22px;
-  text-align: center;
-  display: grid;
-  gap: 8px;
-}
-
-.hero h1 {
-  margin: 0;
-  color: #ffffff;
-  font-size: clamp(2.2rem, 4vw, 3.2rem);
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.hero p {
-  margin: 0;
-  color: #7f8797;
-  font-size: 0.98rem;
-  line-height: 1.35;
-}
-
-.searchWrap {
-  margin: 0 auto 14px;
-  width: min(430px, 100%);
-  position: relative;
-  display: block;
-}
-
-.searchWrap svg {
-  position: absolute;
-  left: 13px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 16px;
-  color: #6f7888;
-  pointer-events: none;
-}
-
-.searchWrap input {
-  width: 100%;
-  border: 1px solid #252b35;
-  border-radius: 8px;
-  background: #111216;
-  color: #dce4f4;
-  font-size: 0.94rem;
-  line-height: 1.35;
-  padding: 10px 13px 10px 36px;
-  outline: none;
-}
-
-.searchWrap input::placeholder {
-  color: #6f7888;
-}
-
-.searchWrap input:focus {
-  border-color: #2f7aff;
-}
-
-.categoryGrid {
+.board {
   display: grid;
   gap: 14px;
 }
 
 .categoryCard {
-  border-radius: 12px;
-  border: 1px solid #20242d;
-  background: #111216;
-  padding: 14px;
+  border: 1px solid #1a1f29;
+  border-radius: 10px;
+  background: #0c1017;
+  padding: 10px 12px 12px;
 }
 
 .categoryHeader {
+  min-height: 34px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
 .categoryLogoBox {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
   overflow: hidden;
-  border: 1px solid #2a303b;
-  background: #0b0d12;
+  border: 1px solid #2a3040;
+  background: #0a0d12;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -106,23 +45,23 @@
 
 .categoryTitle {
   margin: 0;
-  color: #f7faff;
-  font-size: clamp(1.1rem, 1.8vw, 1.35rem);
-  line-height: 1.1;
+  color: #f1f5ff;
+  font-size: 0.98rem;
+  line-height: 1;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .countChip {
-  margin-left: auto;
-  min-height: 26px;
-  padding: 0 10px;
-  border-radius: 999px;
-  border: 1px solid #2d3441;
-  background: #161921;
-  color: #9aa5ba;
-  font-size: 0.76rem;
+  margin-left: 2px;
+  min-height: 18px;
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid #272c38;
+  background: #171b24;
+  color: #8e98ab;
+  font-size: 0.62rem;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -134,19 +73,19 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 8px;
 }
 
 .productRow {
-  min-height: 44px;
-  border-radius: 8px;
-  border: 1px solid #1d2129;
-  background: #0f1218;
-  padding: 8px 10px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  padding: 6px 0;
+}
+
+.productRow + .productRow {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .name {
@@ -155,60 +94,78 @@
 }
 
 .name a {
-  color: #f5f8ff;
-  font-size: 0.97rem;
-  line-height: 1.25;
+  color: #eef3ff;
+  font-size: 0.94rem;
+  line-height: 1.2;
   font-weight: 600;
-  letter-spacing: 0;
 }
 
 .name a:hover {
-  color: #cce1ff;
+  color: #bfd8ff;
 }
 
-.rowBadges {
+.rowRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.statusPill {
+  min-height: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  padding: 0 10px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.inlineBadge {
-  min-height: 26px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  padding: 0 9px;
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.73rem;
+  font-size: 0.72rem;
   line-height: 1;
   font-weight: 700;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
-.pillSafe {
-  color: #3af08d;
-  border-color: rgba(46, 173, 102, 0.42);
-  background: rgba(26, 91, 56, 0.42);
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
 }
 
-.pillUpdating {
-  color: #7db6ff;
-  border-color: rgba(58, 122, 224, 0.42);
-  background: rgba(24, 62, 118, 0.42);
+.undetected {
+  color: #2fe496;
+  border-color: rgba(31, 124, 80, 0.5);
+  background: rgba(18, 67, 45, 0.48);
 }
 
-.pillUpToDate {
-  color: #3af08d;
-  border-color: rgba(46, 173, 102, 0.42);
-  background: rgba(26, 91, 56, 0.42);
+.testing {
+  color: #62abff;
+  border-color: rgba(44, 105, 196, 0.5);
+  background: rgba(21, 54, 102, 0.5);
 }
 
-.pillNeedsUpdate {
-  color: #7db6ff;
-  border-color: rgba(58, 122, 224, 0.42);
-  background: rgba(24, 62, 118, 0.42);
+.purchaseBtn {
+  min-width: 104px;
+  min-height: 32px;
+  border-radius: 6px;
+  border: 0;
+  background: var(--themed-blue-gradient);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: transform 0.16s ease, filter 0.16s ease;
+}
+
+.purchaseBtn:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
 }
 
 .empty {
@@ -222,30 +179,18 @@
 
 @media (max-width: 760px) {
   .statusPage {
-    margin-top: 18px;
-    margin-bottom: 44px;
-  }
-
-  .hero {
-    margin-bottom: 16px;
-  }
-
-  .categoryHeader {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .countChip {
-    margin-left: 0;
+    margin-top: 16px;
   }
 
   .productRow {
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
+    padding: 8px 0;
   }
 
-  .rowBadges {
-    justify-content: flex-start;
+  .rowRight {
+    width: 100%;
+    justify-content: space-between;
   }
 }
