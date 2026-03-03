@@ -2,10 +2,9 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { getDiscordUrl } from "@/lib/links";
 import { lineId, readCart, variantsFor, writeCart } from "@/lib/cart";
 import type { SellAuthPaymentMethod, SellAuthProduct } from "@/types/sellauth";
 import styles from "./product-detail-page.module.css";
@@ -13,6 +12,22 @@ import styles from "./product-detail-page.module.css";
 interface ProductDetailPageProps {
   product: SellAuthProduct;
   paymentMethods: SellAuthPaymentMethod[];
+}
+
+interface RequirementItem {
+  label: string;
+  value: string;
+}
+
+interface FeatureTab {
+  title: string;
+  items: string[];
+}
+
+interface ParsedDetailContent {
+  descriptionParagraphs: string[];
+  requirements: RequirementItem[];
+  featureTabs: FeatureTab[];
 }
 
 function money(value: number | null, code = "USD"): string {
@@ -24,15 +39,269 @@ function money(value: number | null, code = "USD"): string {
   }).format(value);
 }
 
+function cleanDescription(value: string): string {
+  return value
+    .replace(/<br\s*\/?\s*>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\r/g, "")
+    .trim();
+}
+
+function normalizeLabel(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function parseRequirementLine(line: string): RequirementItem | null {
+  const match = line.match(/^([^:]{2,40})\s*:\s*(.+)$/);
+  if (!match) return null;
+
+  const rawLabel = match[1].trim();
+  const value = match[2].trim();
+  if (!rawLabel || !value) return null;
+
+  const normalized = normalizeLabel(rawLabel);
+
+  if (/(supported )?os|operating system|windows|linux|mac/.test(normalized)) {
+    return { label: "Supported OS", value };
+  }
+  if (/(supported )?cpu|processor/.test(normalized)) {
+    return { label: "Supported CPU", value };
+  }
+  if (/(supported )?gpu|graphics/.test(normalized)) {
+    return { label: "Supported GPU", value };
+  }
+  if (/ram|memory/.test(normalized)) {
+    return { label: "RAM", value };
+  }
+  if (/game/.test(normalized)) {
+    return { label: "Game", value };
+  }
+
+  return { label: rawLabel, value };
+}
+
+function parseTabHeading(line: string): string | null {
+  const headingMatches = [
+    line.match(/^##+\s+(.+)$/),
+    line.match(/^\[tab\]\s*(.+)$/i),
+    line.match(/^tab\s*:\s*(.+)$/i),
+    line.match(/^([a-z0-9][a-z0-9\s/+&-]{1,30})\s*:\s*$/i),
+  ];
+
+  for (const match of headingMatches) {
+    if (match?.[1]) {
+      const title = match[1].trim();
+      if (title && !/^requirements?$/i.test(title) && !/^features?$/i.test(title)) {
+        return title;
+      }
+    }
+  }
+
+  return null;
+}
+
+function uniqueByLabel(input: RequirementItem[]): RequirementItem[] {
+  const map = new Map<string, RequirementItem>();
+  for (const item of input) {
+    const key = normalizeLabel(item.label);
+    if (!key) continue;
+    map.set(key, item);
+  }
+  return [...map.values()];
+}
+
+function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
+  const descriptionText = cleanDescription(product.description || "");
+  const lines = descriptionText
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const requirements: RequirementItem[] = [];
+  const tabs: FeatureTab[] = [];
+  const descriptionParagraphs: string[] = [];
+
+  let currentTab: FeatureTab | null = null;
+  let mode: "neutral" | "requirements" | "features" = "neutral";
+
+  const ensureTab = (title: string) => {
+    const existing = tabs.find((tab) => normalizeLabel(tab.title) === normalizeLabel(title));
+    if (existing) {
+      currentTab = existing;
+      return existing;
+    }
+
+    const next: FeatureTab = { title: title.trim(), items: [] };
+    tabs.push(next);
+    currentTab = next;
+    return next;
+  };
+
+  for (const line of lines) {
+    if (/^requirements?$/i.test(line)) {
+      mode = "requirements";
+      currentTab = null;
+      continue;
+    }
+
+    if (/^features?$/i.test(line)) {
+      mode = "features";
+      continue;
+    }
+
+    const tabTitle = parseTabHeading(line);
+    if (tabTitle) {
+      mode = "features";
+      ensureTab(tabTitle);
+      continue;
+    }
+
+    const requirement = parseRequirementLine(line);
+    if (requirement && mode !== "features") {
+      requirements.push(requirement);
+      continue;
+    }
+
+    const bullet = line.match(/^(?:[-*•]\s+|\d+[.)]\s+)(.+)$/)?.[1]?.trim();
+    if (bullet && currentTab) {
+      (currentTab as FeatureTab).items.push(bullet);
+      continue;
+    }
+
+    if (mode === "features" && currentTab) {
+      const inlineItems = line
+        .split(/[|,]/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      if (inlineItems.length > 1) {
+        (currentTab as FeatureTab).items.push(...inlineItems);
+        continue;
+      }
+
+      if (line.length <= 90) {
+        (currentTab as FeatureTab).items.push(line);
+        continue;
+      }
+    }
+
+    descriptionParagraphs.push(line);
+  }
+
+  const parsedRequirements = uniqueByLabel(requirements);
+  const featureTabs = tabs
+    .map((tab) => ({ ...tab, items: [...new Set(tab.items)] }))
+    .filter((tab) => tab.title && tab.items.length > 0);
+
+  const fallbackRequirements: RequirementItem[] = [
+    { label: "Supported OS", value: "Windows 10/11" },
+    { label: "Supported CPU", value: "AMD / Intel" },
+  ];
+
+  const fallbackFeatureTabs: FeatureTab[] = [
+    {
+      title: "Aimbot",
+      items: [
+        "Field Of View",
+        "Smoothness",
+        "Bone Selection",
+        "Max Distance",
+        "FOV Circle",
+        "Ignore Invisible",
+        "Aim Line",
+        "Aim Cross",
+        "Perfect Prediction",
+      ],
+    },
+    {
+      title: "Player ESP",
+      items: [
+        "Player Name",
+        "Distance",
+        "Box",
+        "Corner Box",
+        "Skeleton",
+        "Health Bars",
+        "Shield Bars (Color Based)",
+        "OOF Arrow",
+        "Look Direction",
+      ],
+    },
+    {
+      title: "Radar",
+      items: ["Show Players", "Aimline", "Distance"],
+    },
+    {
+      title: "Misc",
+      items: ["Extra utility options can be configured from SellAuth description tabs."],
+    },
+  ];
+
+  return {
+    descriptionParagraphs,
+    requirements: parsedRequirements.length ? parsedRequirements : fallbackRequirements,
+    featureTabs: featureTabs.length ? featureTabs : fallbackFeatureTabs,
+  };
+}
+
+function featureIconSvg(title: string) {
+  const value = normalizeLabel(title);
+
+  if (value.includes("aim")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="6.6" stroke="currentColor" strokeWidth="1.8" />
+        <circle cx="12" cy="12" r="1.9" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (value.includes("esp") || value.includes("player")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="8.1" cy="10" r="2.1" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M4.8 16.2c.9-1.6 2.1-2.3 3.3-2.3 1.3 0 2.5.7 3.3 2.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <circle cx="15.9" cy="10.4" r="2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M13.2 16.4c.7-1.4 1.6-2 2.7-2 .9 0 1.8.4 2.6 1.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("radar")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M12 12 16.5 7.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="6" cy="12" r="1.8" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+      <circle cx="18" cy="12" r="1.8" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function ProductDetailPage({ product, paymentMethods }: ProductDetailPageProps) {
   const variants = useMemo(() => variantsFor(product), [product]);
-  const [activeTab, setActiveTab] = useState<"preview" | "video">("preview");
   const [selectedVariantId, setSelectedVariantId] = useState<number>(
     variants[0]?.id || product.id
   );
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [notice, setNotice] = useState("");
-  const showcaseRef = useRef<HTMLElement | null>(null);
+
+  const detailContent = useMemo(() => parseDetailContent(product), [product]);
+  const [openTabs, setOpenTabs] = useState<string[]>([]);
+
+  useEffect(() => {
+    setOpenTabs(detailContent.featureTabs.slice(0, 3).map((tab) => tab.title));
+  }, [detailContent.featureTabs, product.id]);
 
   const variantMinQuantity = variants.reduce<number>((max, variant) => {
     const value = typeof variant.minQuantity === "number" ? variant.minQuantity : 1;
@@ -178,12 +447,13 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     }
   }
 
-  function toShowcase() {
-    showcaseRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  function toggleTab(title: string) {
+    setOpenTabs((previous) =>
+      previous.includes(title)
+        ? previous.filter((item) => item !== title)
+        : [...previous, title]
+    );
   }
-
-  const showExtendedDetails =
-    process.env.NEXT_PUBLIC_ENABLE_EXTENDED_PRODUCT_DETAILS === "true";
 
   return (
     <div className={styles.page}>
@@ -220,8 +490,8 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                     <path d="m9.3 12.2 1.8 1.9 3.6-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
-                <strong>In stock</strong>
-                <span>Available</span>
+                <strong>Secure</strong>
+                <span>Checkout</span>
               </article>
               <article>
                 <span className={styles.supportIcon} aria-hidden>
@@ -337,193 +607,96 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           </article>
         </section>
 
-        {showExtendedDetails ? (
-          <>
-            <button className={styles.scrollHint} onClick={toShowcase}>
-              Scroll down to view features and showcase
-            </button>
-
-            <section className={styles.requirements}>
-              <h2>System Requirements</h2>
-              <div className={styles.requirementGrid}>
-                <article>
-                  <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinejoin="round"
-                      />
-                      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
-                  </span>
-                  <h4>Operating System</h4>
-                  <p>Windows 10 & 11 NO CUSTOM OS</p>
-                </article>
-                <article>
-                  <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinejoin="round"
-                      />
-                      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
-                  </span>
-                  <h4>Processors</h4>
-                  <p>Intel & AMD</p>
-                </article>
-                <article>
-                  <span className={`${styles.requirementIcon} ${styles.requirementIconGear}`} aria-hidden>
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M10.9 3.7h2.2l.3 2.1c.6.2 1.1.4 1.6.7l1.8-1.1 1.6 1.6-1.1 1.8c.3.5.5 1 .7 1.6l2.1.3v2.2l-2.1.3c-.2.6-.4 1.1-.7 1.6l1.1 1.8-1.6 1.6-1.8-1.1c-.5.3-1 .5-1.6.7l-.3 2.1h-2.2l-.3-2.1c-.6-.2-1.1-.4-1.6-.7l-1.8 1.1-1.6-1.6 1.1-1.8a6.8 6.8 0 0 1-.7-1.6L3.7 13v-2.2l2.1-.3c.2-.6.4-1.1.7-1.6L5.4 7.1l1.6-1.6 1.8 1.1c.5-.3 1-.5 1.6-.7l.5-2.2Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinejoin="round"
-                      />
-                      <circle cx="12" cy="12" r="2.6" stroke="currentColor" strokeWidth="1.5" />
-                    </svg>
-                  </span>
-                  <h4>Inbuilt Spoofer</h4>
-                  <p>No</p>
-                </article>
-                <article>
-                  <span className={`${styles.requirementIcon} ${styles.requirementIconGamepad}`} aria-hidden>
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M7.2 8.4h9.6c2.5 0 4.3 2.4 3.6 4.8l-1 3.2c-.5 1.7-2.5 2.4-3.9 1.3l-1.7-1.4a2.8 2.8 0 0 0-3.6 0l-1.7 1.4c-1.4 1.1-3.4.4-3.9-1.3l-1-3.2c-.7-2.4 1.1-4.8 3.6-4.8Z"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinejoin="round"
-                      />
-                      <path d="M8.8 12.4v2.4M7.6 13.6H10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                      <circle cx="15.7" cy="12.8" r="1" fill="currentColor" />
-                      <circle cx="17.4" cy="14.4" r="1" fill="currentColor" />
-                    </svg>
-                  </span>
-                  <h4>Game</h4>
-                  <p>{product.groupName || product.categoryName || "Rust"}</p>
-                </article>
-              </div>
+        <section className={styles.detailsStack}>
+          {detailContent.descriptionParagraphs.length ? (
+            <section className={styles.detailBlock}>
+              <h2 className={styles.detailBlockTitle}>Description</h2>
+              {detailContent.descriptionParagraphs.map((line, index) => (
+                <p key={`${product.id}-description-${index}`} className={styles.descriptionText}>
+                  {line}
+                </p>
+              ))}
             </section>
+          ) : null}
 
-            <section className={styles.showcase} ref={showcaseRef}>
-              <div className={styles.showcaseHeading}>
-                <h2>Product Showcase</h2>
-                <button onClick={() => setActiveTab("video")}>Watch Showcase</button>
-              </div>
+          <section className={styles.detailBlock}>
+            <h2 className={styles.detailBlockTitle}>Requirements</h2>
+            <div className={styles.requirementsRow}>
+              {detailContent.requirements.map((item) => (
+                <article key={`${item.label}-${item.value}`} className={styles.requirementMini}>
+                  <span className={styles.requirementMiniIcon} aria-hidden>
+                    {item.label.toLowerCase().includes("cpu") ? (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
+                        <path d="M9.8 3.8v2.4M14.2 3.8v2.4M9.8 17.8v2.4M14.2 17.8v2.4M3.8 9.8h2.4M17.8 9.8h2.4M3.8 14.2h2.4M17.8 14.2h2.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                      </svg>
+                    ) : (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M4.8 5.4h14.4v13.2H4.8z" stroke="currentColor" strokeWidth="1.6" />
+                        <path d="M9.2 8.5v6.8M12 8.5v6.8M14.8 8.5v6.8" stroke="currentColor" strokeWidth="1.4" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className={styles.requirementMiniLabel}>{item.label}</span>
+                  <strong className={styles.requirementMiniValue}>{item.value}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
 
-              <div className={styles.showcaseCard}>
-                <div className={styles.showcaseTabs}>
-                  <button
-                    className={activeTab === "preview" ? styles.tabActive : ""}
-                    onClick={() => setActiveTab("preview")}
-                  >
-                    Preview
-                  </button>
-                  <button
-                    className={activeTab === "video" ? styles.tabActive : ""}
-                    onClick={() => setActiveTab("video")}
-                  >
-                    Showcase Video
-                  </button>
-                </div>
+          <section className={styles.detailBlock}>
+            <h2 className={styles.detailBlockTitle}>Features</h2>
+            <div className={styles.featuresGrid}>
+              {detailContent.featureTabs.map((tab) => {
+                const isOpen = openTabs.includes(tab.title);
+                const maxHeight = Math.max(78, tab.items.length * 30 + 18);
 
-                {activeTab === "preview" ? (
-                  <div className={styles.previewPane}>
-                    <img src="/showcase/menu-preview.svg" alt="Showcase preview" />
-                  </div>
-                ) : (
-                  <div className={styles.videoPane}>
-                    <p>Video preview tab is active.</p>
-                    <a href={getDiscordUrl()} target="_blank" rel="noreferrer">
-                      Open Showcase Link
-                    </a>
-                  </div>
-                )}
-              </div>
-            </section>
+                return (
+                  <article key={tab.title} className={styles.featureTabCard}>
+                    <button
+                      type="button"
+                      className={styles.featureTabHeader}
+                      onClick={() => toggleTab(tab.title)}
+                      aria-expanded={isOpen}
+                    >
+                      <span className={styles.featureTabHeaderLeft}>
+                        <span className={styles.featureTabIcon}>{featureIconSvg(tab.title)}</span>
+                        <strong>{tab.title}</strong>
+                      </span>
 
-            <section className={styles.features}>
-              <h2>Features</h2>
-              <div className={styles.featureGrid}>
-                {[
-                  {
-                    title: "Combat",
-                    items: [
-                      "FOV",
-                      "Smoothing",
-                      "Recoil",
-                      "Spread",
-                      "Sway",
-                      "Hitboxes",
-                      "Silent Aim",
-                      "Trigger Assist",
-                      "Always Shoot",
-                      "No Recoil Pattern",
-                    ],
-                  },
-                  {
-                    title: "Visual",
-                    items: [
-                      "Box",
-                      "Name",
-                      "Distance",
-                      "Weapon",
-                      "Team ID",
-                      "Skeleton",
-                      "Chams",
-                      "Bright Night",
-                      "Third Person",
-                      "Radar Markers",
-                    ],
-                  },
-                  {
-                    title: "Entities",
-                    items: [
-                      "Animals",
-                      "Loot Crates",
-                      "Dropped Items",
-                      "Vehicles",
-                      "Construction",
-                      "Corpse Markers",
-                      "Tool Cupboards",
-                    ],
-                  },
-                  {
-                    title: "Misc",
-                    items: [
-                      "Instant Loot",
-                      "Fast Revive",
-                      "Instant Pickup",
-                      "Movement Assist",
-                      "No Fall",
-                      "Debug Camera",
-                      "Speed Config",
-                    ],
-                  },
-                ].map((group) => (
-                  <article key={group.title}>
-                    <h3>{group.title}</h3>
-                    <ul>
-                      {group.items.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
+                      <span
+                        className={`${styles.featureTabChevron} ${
+                          isOpen ? styles.featureTabChevronOpen : ""
+                        }`}
+                        aria-hidden
+                      >
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <path d="m8.5 10.5 3.5 3.5 3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                    </button>
+
+                    <div
+                      className={`${styles.featureTabBody} ${isOpen ? styles.featureTabBodyOpen : ""}`}
+                      style={{
+                        ["--feature-max-height" as string]: `${maxHeight}px`,
+                      }}
+                    >
+                      <ul className={styles.featureList}>
+                        {tab.items.map((item) => (
+                          <li key={`${tab.title}-${item}`}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
                   </article>
-                ))}
-              </div>
-            </section>
-          </>
-        ) : null}
+                );
+              })}
+            </div>
+          </section>
+        </section>
       </main>
 
       <SiteFooter />
     </div>
   );
 }
-

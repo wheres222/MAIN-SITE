@@ -6,15 +6,11 @@ import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
-import { toGameSlug } from "@/lib/game-slug";
+import { canonicalGameSlug } from "@/lib/game-slug";
 import { productHref } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import type { SellAuthGroup, SellAuthProduct, StorefrontData } from "@/types/sellauth";
-
-function normalized(value: string): string {
-  return value.toLowerCase().trim();
-}
 
 function hoverImageFor(source: string): string {
   if (source.startsWith("/pd/")) {
@@ -32,33 +28,7 @@ function withVersion(source: string, version: string): string {
 }
 
 function canonicalGroupSlug(value: string): string {
-  const slug = toGameSlug(value || "");
-  const compact = slug.replace(/-/g, "");
-
-  if (
-    compact === "r6" ||
-    compact === "r6s" ||
-    compact.includes("rainbowsixsiege") ||
-    compact.includes("rainbow6siege") ||
-    compact.includes("rainbowsixseige") ||
-    compact.includes("rainbow6seige")
-  ) {
-    return "rainbow-six-siege";
-  }
-
-  if (compact === "lol" || compact.includes("leagueoflegends")) {
-    return "league-of-legends";
-  }
-
-  if (compact === "cs2" || compact.includes("counterstrike2")) {
-    return "counter-strike-2";
-  }
-
-  if (compact.includes("apexlegends")) {
-    return "apex";
-  }
-
-  return slug;
+  return canonicalGameSlug(value || "");
 }
 
 const HIDDEN_GROUP_SLUGS = new Set(["valorant", "pubg"]);
@@ -106,16 +76,11 @@ function money(value: number | null, currency = "USD"): string {
   }).format(value);
 }
 
-function isStockAvailable(product: SellAuthProduct): boolean {
-  if (typeof product.stock === "number") return product.stock > 0;
-  return true;
-}
-
 export function StorefrontClient() {
   const [storefront, setStorefront] = useState<StorefrontData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
+  const [activeGroupSlug, setActiveGroupSlug] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -146,15 +111,15 @@ export function StorefrontClient() {
     const baseGroups = storefront?.groups || [];
     const categories = storefront?.categories || [];
 
-    const groups =
-      baseGroups.length > 0
-        ? baseGroups
-        : categories.map((category) => ({
-            id: category.id,
-            name: category.name,
-            description: category.description,
-            image: category.image,
-          }));
+    const groups = [
+      ...baseGroups,
+      ...categories.map((category) => ({
+        id: category.id,
+        name: category.name,
+        description: category.description,
+        image: category.image,
+      })),
+    ];
 
     const productCountBySlug = new Map<string, number>();
     const directProductCountByGroupId = new Map<number, number>();
@@ -251,27 +216,40 @@ export function StorefrontClient() {
   }, [storefront]);
 
   const activeGroup = useMemo<SellAuthGroup | null>(() => {
-    if (activeGroupId === null) return null;
-    return storefront?.groups.find((group) => group.id === activeGroupId) || null;
-  }, [activeGroupId, storefront]);
+    if (!activeGroupSlug) return null;
+    return (
+      filteredGroups.find((group) => canonicalGroupSlug(group.name) === activeGroupSlug) ||
+      null
+    );
+  }, [activeGroupSlug, filteredGroups]);
 
   const activeGroupProducts = useMemo(() => {
-    if (!storefront || !activeGroup) return [];
-    const activeName = normalized(activeGroup.name);
-    const activeSlug = toGameSlug(activeGroup.name);
+    if (!storefront || !activeGroupSlug) return [];
+
+    const relatedGroupIds = new Set<number>();
+
+    for (const group of storefront.groups || []) {
+      if (canonicalGroupSlug(group.name) === activeGroupSlug) {
+        relatedGroupIds.add(group.id);
+      }
+    }
+
+    for (const category of storefront.categories || []) {
+      if (canonicalGroupSlug(category.name) === activeGroupSlug) {
+        relatedGroupIds.add(category.id);
+      }
+    }
 
     return storefront.products
       .filter((product) => {
-        if (product.groupId !== null && product.groupId === activeGroup.id) return true;
-        if (product.categoryId !== null && product.categoryId === activeGroup.id) return true;
-        if (normalized(product.groupName) === activeName) return true;
-        if (normalized(product.categoryName) === activeName) return true;
-        if (toGameSlug(product.groupName || "") === activeSlug) return true;
-        if (toGameSlug(product.categoryName || "") === activeSlug) return true;
+        if (product.groupId !== null && relatedGroupIds.has(product.groupId)) return true;
+        if (product.categoryId !== null && relatedGroupIds.has(product.categoryId)) return true;
+        if (canonicalGroupSlug(product.groupName || "") === activeGroupSlug) return true;
+        if (canonicalGroupSlug(product.categoryName || "") === activeGroupSlug) return true;
         return false;
       })
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [activeGroup, storefront]);
+  }, [activeGroupSlug, storefront]);
 
   const warningMessages = useMemo(
     () => formatStorefrontWarnings(storefront?.warnings || []),
@@ -279,11 +257,11 @@ export function StorefrontClient() {
   );
 
   useEffect(() => {
-    if (activeGroupId === null) return;
+    if (activeGroupSlug === null) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setActiveGroupId(null);
+        setActiveGroupSlug(null);
       }
     };
 
@@ -295,7 +273,7 @@ export function StorefrontClient() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
     };
-  }, [activeGroupId]);
+  }, [activeGroupSlug]);
 
   return (
     <div className="marketplace-page">
@@ -354,7 +332,7 @@ export function StorefrontClient() {
               return (
                 <Link
                   key={group.id}
-                  href={`/categories?slug=${encodeURIComponent(toGameSlug(group.name))}`}
+                  href={`/categories?slug=${encodeURIComponent(canonicalGroupSlug(group.name))}`}
                   className="game-card"
                   aria-haspopup="dialog"
                   onClick={(event) => {
@@ -367,7 +345,7 @@ export function StorefrontClient() {
                       return;
                     }
                     event.preventDefault();
-                    setActiveGroupId(group.id);
+                    setActiveGroupSlug(canonicalGroupSlug(group.name));
                   }}
                 >
                   <div className="game-card-media">
@@ -417,7 +395,7 @@ export function StorefrontClient() {
             className="category-modal-overlay"
             onClick={(event) => {
               if (event.target === event.currentTarget) {
-                setActiveGroupId(null);
+                setActiveGroupSlug(null);
               }
             }}
           >
@@ -435,7 +413,7 @@ export function StorefrontClient() {
                   type="button"
                   className="category-modal-close"
                   aria-label="Close products popup"
-                  onClick={() => setActiveGroupId(null)}
+                  onClick={() => setActiveGroupSlug(null)}
                 >
                   ×
                 </button>
@@ -445,7 +423,6 @@ export function StorefrontClient() {
                 <div className="category-modal-grid">
                   {activeGroupProducts.map((product) => {
                     const price = productLowestPrice(product);
-                    const inStock = isStockAvailable(product);
                     const productImage = withVersion(
                       product.image || "/placeholders/product-image-not-added.svg",
                       storefront?.fetchedAt || "modal-v1"
@@ -456,7 +433,7 @@ export function StorefrontClient() {
                         key={product.id}
                         href={productHref(product)}
                         className="category-modal-product"
-                        onClick={() => setActiveGroupId(null)}
+                        onClick={() => setActiveGroupSlug(null)}
                       >
                         <span className="category-modal-product-image">
                           <Image
@@ -472,14 +449,8 @@ export function StorefrontClient() {
                         <span className="category-modal-product-body">
                           <span className="category-modal-product-top">
                             <h4>{product.name}</h4>
-                            <span
-                              className={`category-modal-status ${
-                                inStock
-                                  ? "category-modal-status-ok"
-                                  : "category-modal-status-low"
-                              }`}
-                            >
-                              {inStock ? "Operational" : "Unavailable"}
+                            <span className="category-modal-status category-modal-status-ok">
+                              Operational
                             </span>
                           </span>
 
@@ -487,10 +458,6 @@ export function StorefrontClient() {
                             <span className="category-modal-meta-box">
                               <span>From</span>
                               <strong>{money(price, product.currency || "USD")}</strong>
-                            </span>
-                            <span className="category-modal-meta-box">
-                              <span>Stock</span>
-                              <strong>{inStock ? "In Stock" : "Out of Stock"}</strong>
                             </span>
                           </span>
                         </span>
