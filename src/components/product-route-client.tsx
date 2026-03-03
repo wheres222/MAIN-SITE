@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ProductDetailPage } from "@/components/product-detail-page";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
@@ -53,12 +53,28 @@ function safeDecoded(value: string): string {
 
 export function ProductRouteClient() {
   const searchParams = useSearchParams();
-  const params = useParams<{ slug?: string }>();
+  const pathname = usePathname();
+  const params = useParams<{ slug?: string | string[] }>();
 
   const productIdRaw = searchParams.get("id") || "";
   const productId = Number(productIdRaw);
-  const slugFromPath = typeof params?.slug === "string" ? params.slug : "";
-  const requestedSlug = safeDecoded((slugFromPath || searchParams.get("slug") || "").trim());
+
+  const slugFromParams =
+    typeof params?.slug === "string"
+      ? params.slug
+      : Array.isArray(params?.slug)
+        ? params.slug[0] || ""
+        : "";
+
+  const slugFromPathname = (() => {
+    const parts = (pathname || "").split("/").filter(Boolean);
+    if (parts[0] !== "products") return "";
+    return parts[1] ? safeDecoded(parts[1]) : "";
+  })();
+
+  const requestedSlug = safeDecoded(
+    (slugFromParams || slugFromPathname || searchParams.get("slug") || "").trim()
+  );
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -140,7 +156,9 @@ export function ProductRouteClient() {
     return <p className="state-message error" style={{ padding: "20px" }}>{error}</p>;
   }
 
-  if (!Number.isFinite(productId) && !requestedSlug) {
+  const isProductsRoot = pathname === "/products" || pathname === "/products/";
+
+  if (!Number.isFinite(productId) && !requestedSlug && isProductsRoot) {
     return (
       <p className="state-message" style={{ padding: "20px" }}>
         Invalid product link. <Link href="/">Back to store</Link>
