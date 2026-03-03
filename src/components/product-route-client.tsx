@@ -88,16 +88,16 @@ export function ProductRouteClient() {
   useEffect(() => {
     if (!product || typeof window === "undefined") return;
 
-    const siteName = "CheatParadise";
+    const siteName = "Cheat Paradise";
     const siteUrl = window.location.origin;
     const canonicalUrl = `${siteUrl}/products?id=${product.id}`;
     const description =
       product.description ||
       `Buy ${product.name} with instant delivery and secure checkout on ${siteName}.`;
 
-    document.title = `${product.name} | ${siteName}`;
+    document.title = product.name;
     upsertMeta({ key: "name", value: "description" }, description);
-    upsertMeta({ key: "property", value: "og:title" }, `${product.name} | ${siteName}`);
+    upsertMeta({ key: "property", value: "og:title" }, product.name);
     upsertMeta({ key: "property", value: "og:description" }, description);
     upsertMeta({ key: "property", value: "og:url" }, canonicalUrl);
     if (product.image) {

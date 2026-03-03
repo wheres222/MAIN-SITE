@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { StorefrontClient } from "@/components/storefront-client";
 
 export const metadata: Metadata = {
-  title: "Cheap Gaming Marketplace",
+  title: {
+    absolute: "Cheat Paradise",
+  },
   description:
-    "Upgrade your gameplay with affordable mods, tools, accounts, and enhancements with instant delivery.",
+    "The #1 cheat marketplace access custom cheats, tools, and enhancements for a better gaming experience",
   alternates: {
     canonical: "/",
   },

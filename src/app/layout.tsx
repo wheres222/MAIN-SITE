@@ -43,27 +43,34 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadi
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "CheatParadise | Cheap Gaming Marketplace",
-    template: "%s | CheatParadise",
+    default: "Cheat Paradise",
+    template: "%s | Cheat Paradise",
   },
   description:
-    "Buy affordable gaming accounts, mods, tools, and enhancements with instant delivery and secure checkout.",
+    "The #1 cheat marketplace access custom cheats, tools, and enhancements for a better gaming experience",
   alternates: {
     canonical: "/",
   },
+  icons: {
+    icon: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
+    shortcut: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
+    apple: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
+  },
   openGraph: {
-    title: "CheatParadise | Cheap Gaming Marketplace",
+    title: "Cheat Paradise",
     description:
-      "Affordable gaming products with fast delivery, secure checkout, and active support.",
+      "The #1 cheat marketplace access custom cheats, tools, and enhancements for a better gaming experience",
     url: siteUrl,
-    siteName: "CheatParadise",
+    siteName: "Cheat Paradise",
     type: "website",
+    images: [{ url: "/branding/site-icon.jpg" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CheatParadise | Cheap Gaming Marketplace",
+    title: "Cheat Paradise",
     description:
-      "Affordable gaming products with fast delivery, secure checkout, and active support.",
+      "The #1 cheat marketplace access custom cheats, tools, and enhancements for a better gaming experience",
+    images: ["/branding/site-icon.jpg"],
   },
   robots: {
     index: true,
