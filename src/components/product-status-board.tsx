@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
+import { productHref } from "@/lib/product-route";
 import type {
   SellAuthCategory,
   SellAuthGroup,
@@ -11,13 +12,10 @@ import type {
 import styles from "@/components/product-status-board.module.css";
 
 type StatusKind = "undetected" | "testing" | "detected";
-type StockKind = "stocked" | "empty";
 
 interface ProductStatusMeta {
   kind: StatusKind;
   label: string;
-  stockKind: StockKind;
-  stockLabel: string;
 }
 
 interface GroupedProductEntry {
@@ -78,15 +76,10 @@ function inferStatus(product: SellAuthProduct): ProductStatusMeta {
     `${product.name} ${product.description} ${product.variants.map((variant) => variant.name).join(" ")}`
   );
 
-  const stockKind: StockKind =
-    typeof product.stock === "number" && product.stock <= 0 ? "empty" : "stocked";
-
   if (/(detected|disabled|offline|down|banned|unsafe)/i.test(operationalText)) {
     return {
       kind: "detected",
       label: "DETECTED",
-      stockKind,
-      stockLabel: stockKind === "stocked" ? "IN STOCK" : "OUT OF STOCK",
     };
   }
 
@@ -94,16 +87,12 @@ function inferStatus(product: SellAuthProduct): ProductStatusMeta {
     return {
       kind: "testing",
       label: "TESTING",
-      stockKind,
-      stockLabel: stockKind === "stocked" ? "IN STOCK" : "OUT OF STOCK",
     };
   }
 
   return {
     kind: "undetected",
     label: "UNDETECTED",
-    stockKind,
-    stockLabel: stockKind === "stocked" ? "IN STOCK" : "OUT OF STOCK",
   };
 }
 
@@ -209,7 +198,7 @@ export function ProductStatusBoard({
                 return (
                   <li key={key} className={styles.productRow}>
                     <p className={styles.name}>
-                      <Link href={`/products?id=${product.id}`}>{product.name}</Link>
+                      <Link href={productHref(product)}>{product.name}</Link>
                     </p>
 
                     <div className={styles.rowRight}>
@@ -226,15 +215,7 @@ export function ProductStatusBoard({
                         {status.label}
                       </span>
 
-                      <span
-                        className={`${styles.statusPill} ${
-                          status.stockKind === "stocked" ? styles.stockIn : styles.stockOut
-                        }`}
-                      >
-                        {status.stockLabel}
-                      </span>
-
-                      <Link href={`/products?id=${product.id}`} className={styles.purchaseBtn}>
+                      <Link href={productHref(product)} className={styles.purchaseBtn}>
                         Purchase Now
                       </Link>
                     </div>

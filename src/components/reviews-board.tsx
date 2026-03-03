@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
+import { productSlugFromName } from "@/lib/product-route";
 import type { StoreReview } from "@/lib/reviews";
 import styles from "@/components/reviews-board.module.css";
 
@@ -78,7 +79,12 @@ export function ReviewsBoard({ reviews }: ReviewsBoardProps) {
             <p className={styles.message}>{review.message}</p>
 
             <footer className={styles.cardBottom}>
-              <Link href={`/products?id=${review.productId}`} className={styles.productLink}>
+              <Link
+                href={`/products/${encodeURIComponent(
+                  productSlugFromName(review.productName, review.productId)
+                )}`}
+                className={styles.productLink}
+              >
                 <img
                   src={review.productImage}
                   alt={review.productName}

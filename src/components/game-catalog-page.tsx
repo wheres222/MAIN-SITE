@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { toGameSlug } from "@/lib/game-slug";
+import { productHref } from "@/lib/product-route";
 import type { SellAuthGroup, SellAuthProduct } from "@/types/sellauth";
 import styles from "./game-catalog-page.module.css";
 
@@ -290,7 +291,7 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
                     <span>(Rated: {Math.round(ratingFor(activeProduct) * 10)})</span>
                   </div>
 
-                  <Link href={`/products?id=${activeProduct.id}`} className={styles.previewCta}>
+                  <Link href={productHref(activeProduct)} className={styles.previewCta}>
                     Learn more and buy
                   </Link>
                 </>

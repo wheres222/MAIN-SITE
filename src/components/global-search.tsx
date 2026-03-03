@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { productHref } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
@@ -92,7 +93,7 @@ export function GlobalSearch() {
 
     if (event.key === "Enter" && activeIndex >= 0 && suggestions[activeIndex]) {
       event.preventDefault();
-      window.location.href = `/products?id=${suggestions[activeIndex].id}`;
+      window.location.href = productHref(suggestions[activeIndex]);
     }
   }
 
@@ -127,7 +128,7 @@ export function GlobalSearch() {
                 <Link
                   key={product.id}
                   id={`search-option-${product.id}`}
-                  href={`/products?id=${product.id}`}
+                  href={productHref(product)}
                   className={`search-suggestion-item ${isActive ? "search-suggestion-item-active" : ""}`}
                   onClick={() => setQuery("")}
                   onMouseEnter={() => setActiveIndex(index)}

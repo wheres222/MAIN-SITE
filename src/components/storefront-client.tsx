@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { toGameSlug } from "@/lib/game-slug";
+import { productHref } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import type { SellAuthGroup, SellAuthProduct, StorefrontData } from "@/types/sellauth";
@@ -453,7 +454,7 @@ export function StorefrontClient() {
                     return (
                       <Link
                         key={product.id}
-                        href={`/products?id=${product.id}`}
+                        href={productHref(product)}
                         className="category-modal-product"
                         onClick={() => setActiveGroupId(null)}
                       >

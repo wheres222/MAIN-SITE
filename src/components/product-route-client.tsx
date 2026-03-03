@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ProductDetailPage } from "@/components/product-detail-page";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
+import { productHref, productSlugFromName } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
 
@@ -42,10 +43,22 @@ function upsertCanonical(url: string) {
   element.setAttribute("href", url);
 }
 
+function safeDecoded(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export function ProductRouteClient() {
   const searchParams = useSearchParams();
+  const params = useParams<{ slug?: string }>();
+
   const productIdRaw = searchParams.get("id") || "";
   const productId = Number(productIdRaw);
+  const slugFromPath = typeof params?.slug === "string" ? params.slug : "";
+  const requestedSlug = safeDecoded((slugFromPath || searchParams.get("slug") || "").trim());
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -81,16 +94,28 @@ export function ProductRouteClient() {
   }, []);
 
   const product = useMemo(() => {
-    if (!storefront || !Number.isFinite(productId)) return null;
-    return storefront.products.find((item) => item.id === productId) || null;
-  }, [storefront, productId]);
+    if (!storefront) return null;
+
+    if (Number.isFinite(productId)) {
+      return storefront.products.find((item) => item.id === productId) || null;
+    }
+
+    if (!requestedSlug) return null;
+
+    const normalizedSlug = requestedSlug.toLowerCase();
+    return (
+      storefront.products.find(
+        (item) => productSlugFromName(item.name, item.id) === normalizedSlug
+      ) || null
+    );
+  }, [storefront, productId, requestedSlug]);
 
   useEffect(() => {
     if (!product || typeof window === "undefined") return;
 
     const siteName = "Cheat Paradise";
     const siteUrl = window.location.origin;
-    const canonicalUrl = `${siteUrl}/products?id=${product.id}`;
+    const canonicalUrl = `${siteUrl}${productHref(product)}`;
     const description =
       product.description ||
       `Buy ${product.name} with instant delivery and secure checkout on ${siteName}.`;
@@ -115,7 +140,7 @@ export function ProductRouteClient() {
     return <p className="state-message error" style={{ padding: "20px" }}>{error}</p>;
   }
 
-  if (!Number.isFinite(productId)) {
+  if (!Number.isFinite(productId) && !requestedSlug) {
     return (
       <p className="state-message" style={{ padding: "20px" }}>
         Invalid product link. <Link href="/">Back to store</Link>
@@ -136,6 +161,8 @@ export function ProductRouteClient() {
     process.env.NEXT_PUBLIC_SITE_URL ||
     "https://cheatparadise.com";
 
+  const productUrl = `${siteUrl}${productHref(product)}`;
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -152,7 +179,7 @@ export function ProductRouteClient() {
         typeof product.stock === "number" && product.stock <= 0
           ? "https://schema.org/OutOfStock"
           : "https://schema.org/InStock",
-      url: `${siteUrl}/products?id=${product.id}`,
+      url: productUrl,
     },
   };
 
@@ -176,7 +203,7 @@ export function ProductRouteClient() {
         "@type": "ListItem",
         position: 3,
         name: product.name,
-        item: `${siteUrl}/products?id=${product.id}`,
+        item: productUrl,
       },
     ],
   };
