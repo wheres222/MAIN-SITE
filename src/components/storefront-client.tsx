@@ -60,6 +60,32 @@ function canonicalGroupSlug(value: string): string {
   return slug;
 }
 
+const HIDDEN_GROUP_SLUGS = new Set(["valorant", "pubg"]);
+
+const PRIORITY_GROUP_ORDER = [
+  "rust",
+  "arc-raiders",
+  "call-of-duty",
+  "fortnite",
+  "fivem",
+  "dayz",
+  "roblox",
+  "counter-strike-2",
+  "rainbow-six-siege",
+];
+
+const BOTTOM_GROUP_ORDER = ["accounts", "vpns", "vpn"];
+
+function groupSortPriority(slug: string): number {
+  const priorityIndex = PRIORITY_GROUP_ORDER.indexOf(slug);
+  if (priorityIndex >= 0) return priorityIndex;
+
+  const bottomIndex = BOTTOM_GROUP_ORDER.indexOf(slug);
+  if (bottomIndex >= 0) return 10_000 + bottomIndex;
+
+  return 5_000;
+}
+
 function productLowestPrice(product: SellAuthProduct): number | null {
   const prices: number[] = [];
   if (typeof product.price === "number") prices.push(product.price);
@@ -202,8 +228,25 @@ export function StorefrontClient() {
         }
         return group;
       })
-      .filter((group) => canonicalGroupSlug(group.name) !== "league-of-legends")
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .filter((group) => {
+        const slug = canonicalGroupSlug(group.name);
+        if (!slug) return false;
+        if (slug === "league-of-legends") return false;
+        if (HIDDEN_GROUP_SLUGS.has(slug)) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const aSlug = canonicalGroupSlug(a.name);
+        const bSlug = canonicalGroupSlug(b.name);
+        const aPriority = groupSortPriority(aSlug);
+        const bPriority = groupSortPriority(bSlug);
+
+        if (aPriority !== bPriority) {
+          return aPriority - bPriority;
+        }
+
+        return a.name.localeCompare(b.name);
+      });
   }, [storefront]);
 
   const activeGroup = useMemo<SellAuthGroup | null>(() => {
