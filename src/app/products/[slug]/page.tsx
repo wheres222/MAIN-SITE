@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ProductRouteClient } from "@/components/product-route-client";
 
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "Products",
   description:
