@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   readCart,
   subscribeCart,
@@ -8,6 +8,8 @@ import {
   type CartStatus,
   type StoredCartLine,
 } from "@/lib/cart";
+import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import type { SellAuthPaymentMethod } from "@/types/sellauth";
 
 interface CartDrawerProps {
   open: boolean;
@@ -23,7 +25,51 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     readCart,
     () => EMPTY_CART_LINES
   );
-  const lines = open ? cartLines : [];
+  const lines = open ? cartLines : EMPTY_CART_LINES;
+
+  const [paymentMethods, setPaymentMethods] = useState<SellAuthPaymentMethod[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState("crypto");
+  const [email, setEmail] = useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [isBusy, setIsBusy] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+
+    let alive = true;
+    (async () => {
+      try {
+        const storefront = await fetchStorefrontClient();
+        if (!alive) return;
+
+        const methods = storefront.paymentMethods || [];
+        setPaymentMethods(methods);
+        if (methods.length > 0) {
+          setPaymentMethod(methods[0].id);
+        }
+      } catch {
+        if (!alive) return;
+        setPaymentMethods([]);
+        setPaymentMethod("crypto");
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      setMessage("");
+    }
+  }, [open]);
+
+  const total = useMemo(
+    () => lines.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0),
+    [lines]
+  );
 
   function updateLines(next: StoredCartLine[]) {
     writeCart(next);
@@ -51,10 +97,52 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     );
   }
 
-  const total = lines.reduce(
-    (sum, line) => sum + line.unitPrice * line.quantity,
-    0
-  );
+  async function proceedToCheckout() {
+    if (lines.length === 0 || isBusy) return;
+
+    setMessage("");
+    setIsBusy(true);
+
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentMethod,
+          email: email.trim() || undefined,
+          couponCode: couponCode.trim() || undefined,
+          items: lines.map((line) => ({
+            productId: line.productId,
+            quantity: line.quantity,
+            ...(line.variantId ? { variantId: line.variantId } : {}),
+          })),
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        success?: boolean;
+        message?: string;
+        redirectUrl?: string | null;
+      };
+
+      if (!response.ok || !payload.success) {
+        setMessage(payload.message || "Checkout failed.");
+        return;
+      }
+
+      if (payload.redirectUrl) {
+        setMessage("Redirecting to secure checkout...");
+        window.location.href = payload.redirectUrl;
+        return;
+      }
+
+      setMessage(payload.message || "Checkout created.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Checkout failed.");
+    } finally {
+      setIsBusy(false);
+    }
+  }
 
   return (
     <>
@@ -112,13 +200,55 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         </div>
 
         <div className="checkout-form">
+          <label>
+            Payment Method
+            <select
+              value={paymentMethod}
+              onChange={(event) => setPaymentMethod(event.target.value)}
+            >
+              {paymentMethods.map((method) => (
+                <option key={method.id} value={method.id}>
+                  {method.name}
+                </option>
+              ))}
+              {paymentMethods.length === 0 ? <option value="crypto">Crypto</option> : null}
+            </select>
+          </label>
+
+          <label>
+            Email (optional)
+            <input
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="you@example.com"
+            />
+          </label>
+
+          <label>
+            Coupon (optional)
+            <input
+              value={couponCode}
+              onChange={(event) => setCouponCode(event.target.value)}
+              placeholder="Coupon code"
+            />
+          </label>
+
+          <p className="cart-persist-note">
+            Cart is saved locally, so your items stay even if you close this tab.
+          </p>
+
           <div className="checkout-total">
             <span>Total</span>
             <strong>USD {total.toFixed(2)}</strong>
           </div>
-          <button className="checkout-btn" onClick={onClose}>
-            Proceed To Checkout
+          <button
+            className="checkout-btn"
+            onClick={proceedToCheckout}
+            disabled={lines.length === 0 || isBusy}
+          >
+            {isBusy ? "Processing..." : "Proceed To Checkout"}
           </button>
+          {message ? <p className="checkout-message">{message}</p> : null}
         </div>
       </div>
       {open && <button className="cart-overlay" onClick={onClose} aria-label="Close cart overlay" />}

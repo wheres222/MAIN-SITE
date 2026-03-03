@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -15,12 +16,18 @@ interface InfoPageProps {
 export function InfoPage({ title, subtitle, sections }: InfoPageProps) {
   return (
     <div className="marketplace-page">
-      <SiteHeader activeTab="support" />
+      <SiteHeader activeTab="none" />
 
       <main className="shell info-page">
-        <div className="breadcrumb-row">
-          <div className="crumb">{title}</div>
-        </div>
+        <nav className="breadcrumb-row" aria-label="Breadcrumb">
+          <Link href="/" className="crumb crumb-link">
+            Home
+          </Link>
+          <span className="crumb-sep" aria-hidden="true">
+            /
+          </span>
+          <span className="crumb crumb-current">{title}</span>
+        </nav>
 
         <section className="info-card">
           <h1>{title}</h1>

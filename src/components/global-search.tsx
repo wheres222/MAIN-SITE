@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
 function normalized(value: string): string {
@@ -31,16 +32,19 @@ function productLowestPrice(product: SellAuthProduct): number | null {
 export function GlobalSearch() {
   const [query, setQuery] = useState("");
   const [storefront, setStorefront] = useState<StorefrontData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   useEffect(() => {
     let active = true;
     (async () => {
       try {
-        const response = await fetch("/api/storefront");
-        const data = (await response.json()) as StorefrontData;
+        const data = await fetchStorefrontClient();
         if (active) setStorefront(data);
       } catch {
         if (active) setStorefront(null);
+      } finally {
+        if (active) setIsLoading(false);
       }
     })();
 
@@ -60,28 +64,73 @@ export function GlobalSearch() {
       .slice(0, 8);
   }, [query, storefront]);
 
+  useEffect(() => {
+    setActiveIndex(-1);
+  }, [query]);
+
+  function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (!query.trim()) return;
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveIndex((current) => Math.min(current + 1, suggestions.length - 1));
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex((current) => Math.max(current - 1, 0));
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setQuery("");
+      setActiveIndex(-1);
+      return;
+    }
+
+    if (event.key === "Enter" && activeIndex >= 0 && suggestions[activeIndex]) {
+      event.preventDefault();
+      window.location.href = `/products?id=${suggestions[activeIndex].id}`;
+    }
+  }
+
   return (
     <div className="search-wrap">
+      <span className="search-icon" aria-hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.6" />
+          <path d="m16 16 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      </span>
+
       <input
         value={query}
         onChange={(event) => setQuery(event.target.value)}
+        onKeyDown={onKeyDown}
         placeholder="Search games..."
         aria-label="Search games"
       />
 
       {query.trim() ? (
-        <div className="search-suggestions" role="listbox" aria-label="Suggested products">
-          {suggestions.length > 0 ? (
-            suggestions.map((product) => {
+        <div id="global-search-list" className="search-suggestions" role="listbox" aria-label="Suggested products">
+          {isLoading ? (
+            <p className="search-suggestion-empty">Searching products...</p>
+          ) : suggestions.length > 0 ? (
+            suggestions.map((product, index) => {
               const price = money(productLowestPrice(product), product.currency || "USD");
               const inStock = (product.stock ?? 1) > 0;
+              const isActive = index === activeIndex;
 
               return (
                 <Link
                   key={product.id}
+                  id={`search-option-${product.id}`}
                   href={`/products?id=${product.id}`}
-                  className="search-suggestion-item"
+                  className={`search-suggestion-item ${isActive ? "search-suggestion-item-active" : ""}`}
                   onClick={() => setQuery("")}
+                  onMouseEnter={() => setActiveIndex(index)}
                 >
                   <span className="search-suggestion-thumb" aria-hidden="true">
                     <Image
@@ -116,6 +165,20 @@ export function GlobalSearch() {
             <p className="search-suggestion-empty">No matching products.</p>
           )}
         </div>
+      ) : null}
+
+      {query ? (
+        <button
+          type="button"
+          className="search-clear-btn"
+          aria-label="Clear search"
+          onClick={() => {
+            setQuery("");
+            setActiveIndex(-1);
+          }}
+        >
+          ×
+        </button>
       ) : null}
     </div>
   );

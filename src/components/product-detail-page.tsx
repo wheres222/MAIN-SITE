@@ -6,7 +6,7 @@ import { useMemo, useRef, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { getDiscordUrl } from "@/lib/links";
-import { variantsFor } from "@/lib/cart";
+import { lineId, readCart, variantsFor, writeCart } from "@/lib/cart";
 import type { SellAuthPaymentMethod, SellAuthProduct } from "@/types/sellauth";
 import styles from "./product-detail-page.module.css";
 
@@ -27,7 +27,10 @@ function money(value: number | null, code = "USD"): string {
 export function ProductDetailPage({ product, paymentMethods }: ProductDetailPageProps) {
   const variants = useMemo(() => variantsFor(product), [product]);
   const [activeTab, setActiveTab] = useState<"preview" | "video">("preview");
-  const [buyingVariantId, setBuyingVariantId] = useState<number | null>(null);
+  const [selectedVariantId, setSelectedVariantId] = useState<number>(
+    variants[0]?.id || product.id
+  );
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [notice, setNotice] = useState("");
   const showcaseRef = useRef<HTMLElement | null>(null);
 
@@ -52,24 +55,77 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
   );
   const [quantity, setQuantity] = useState(minQuantity);
 
-  const unitPrice = variants[0]?.price ?? product.price ?? 0;
+  const selectedVariant =
+    variants.find((variant) => variant.id === selectedVariantId) || variants[0] || null;
+
+  const selectedUnitPrice =
+    selectedVariant?.price ?? variants[0]?.price ?? product.price ?? 0;
+
   const paymentMethod = paymentMethods[0]?.id || "crypto";
 
-  async function onBuyVariant(variantId: number) {
-    setNotice("");
-
-    const variant = variants.find((item) => item.id === variantId);
+  function resolveCheckoutQuantity() {
     const variantMinimum =
-      typeof variant?.minQuantity === "number" ? Math.max(1, variant.minQuantity) : 1;
+      typeof selectedVariant?.minQuantity === "number"
+        ? Math.max(1, selectedVariant.minQuantity)
+        : 1;
     const requiredMinimum = Math.max(minQuantity, variantMinimum);
-    const checkoutVariantId = variant?.isSynthetic ? undefined : variantId;
-    let checkoutQuantity = Math.max(requiredMinimum, quantity);
+    const checkoutQuantity = Math.max(requiredMinimum, quantity);
 
     if (checkoutQuantity !== quantity) {
       setQuantity(checkoutQuantity);
     }
 
-    setBuyingVariantId(variantId);
+    return checkoutQuantity;
+  }
+
+  function addToCart() {
+    const checkoutQuantity = resolveCheckoutQuantity();
+    const checkoutVariantId = selectedVariant?.isSynthetic ? undefined : selectedVariant?.id;
+    const id = lineId(product.id, checkoutVariantId);
+    const currentLines = readCart();
+    const existingLine = currentLines.find((line) => line.lineId === id);
+
+    if (existingLine) {
+      writeCart(
+        currentLines.map((line) =>
+          line.lineId === id
+            ? {
+                ...line,
+                quantity: line.quantity + checkoutQuantity,
+                unitPrice: selectedUnitPrice,
+              }
+            : line
+        )
+      );
+      setNotice("Quantity updated in cart. Cart is saved if you close the tab.");
+      return;
+    }
+
+    writeCart([
+      ...currentLines,
+      {
+        lineId: id,
+        productId: product.id,
+        productName: product.name,
+        image: product.image,
+        quantity: checkoutQuantity,
+        variantId: checkoutVariantId,
+        variantName: selectedVariant?.isSynthetic ? undefined : selectedVariant?.name,
+        unitPrice: selectedUnitPrice,
+        currency: product.currency || "USD",
+        status: "undetected",
+      },
+    ]);
+
+    setNotice("Added to cart. Cart is saved in your browser.");
+  }
+
+  async function checkoutNow() {
+    setNotice("");
+    const checkoutQuantity = resolveCheckoutQuantity();
+    const checkoutVariantId = selectedVariant?.isSynthetic ? undefined : selectedVariant?.id;
+
+    setIsCheckingOut(true);
     try {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         const response = await fetch("/api/checkout", {
@@ -107,7 +163,6 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
         if (minMatch && attempt === 0) {
           const parsedMinimum = Number(minMatch[1]);
           if (Number.isFinite(parsedMinimum) && parsedMinimum > checkoutQuantity) {
-            checkoutQuantity = parsedMinimum;
             setQuantity(parsedMinimum);
             continue;
           }
@@ -119,7 +174,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Checkout failed.");
     } finally {
-      setBuyingVariantId(null);
+      setIsCheckingOut(false);
     }
   }
 
@@ -204,10 +259,10 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           <article className={styles.buyColumn}>
             <p className={styles.stock}>
               <span className={styles.stockDot} aria-hidden />
-              In stock
+              {(selectedVariant?.stock ?? product.stock ?? 1) > 0 ? "In stock" : "Out of stock"}
             </p>
             <h1>{product.name}</h1>
-            <p className={styles.price}>{money(unitPrice, product.currency)}</p>
+            <p className={styles.price}>{money(selectedUnitPrice, product.currency)}</p>
 
             {minQuantity > 1 ? (
               <div className={styles.quantityWrap}>
@@ -247,23 +302,37 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
             <h3 className={styles.optionLabel}>SELECT OPTION</h3>
             <div className={styles.optionsGrid}>
               {variants.map((variant) => {
+                const isSelected = variant.id === selectedVariantId;
                 return (
                   <button
                     key={variant.id}
-                    className={styles.optionCard}
-                    onClick={() => onBuyVariant(variant.id)}
-                    disabled={buyingVariantId !== null}
+                    className={`${styles.optionCard} ${isSelected ? styles.optionCardSelected : ""}`}
+                    onClick={() => setSelectedVariantId(variant.id)}
+                    disabled={isCheckingOut}
                   >
                     <strong className={styles.optionLine}>
-                      {buyingVariantId === variant.id
-                        ? "Processing..."
-                        : `${variant.name} - ${money(variant.price, product.currency)}`}
+                      {`${variant.name} - ${money(variant.price, product.currency)}`}
                     </strong>
                   </button>
                 );
               })}
             </div>
 
+            <div className={styles.actionRow}>
+              <button type="button" className={styles.addToCartBtn} onClick={addToCart}>
+                Add To Cart
+              </button>
+              <button
+                type="button"
+                className={styles.checkoutNowBtn}
+                onClick={checkoutNow}
+                disabled={isCheckingOut}
+              >
+                {isCheckingOut ? "Processing..." : "Checkout Now"}
+              </button>
+            </div>
+
+            <p className={styles.cartHint}>Cart persists if you close and reopen your tab.</p>
             {notice ? <p className={styles.notice}>{notice}</p> : null}
           </article>
         </section>

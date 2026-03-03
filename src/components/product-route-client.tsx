@@ -4,7 +4,43 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ProductDetailPage } from "@/components/product-detail-page";
+import { SubpageSkeleton } from "@/components/subpage-skeleton";
+import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
+
+function upsertMeta(
+  selector: { key: "name" | "property"; value: string },
+  content: string
+) {
+  if (typeof document === "undefined") return;
+
+  const query = `meta[${selector.key}="${selector.value}"]`;
+  let element = document.head.querySelector(query) as HTMLMetaElement | null;
+
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute(selector.key, selector.value);
+    document.head.appendChild(element);
+  }
+
+  element.setAttribute("content", content);
+}
+
+function upsertCanonical(url: string) {
+  if (typeof document === "undefined") return;
+
+  let element = document.head.querySelector('link[rel="canonical"]') as
+    | HTMLLinkElement
+    | null;
+
+  if (!element) {
+    element = document.createElement("link");
+    element.setAttribute("rel", "canonical");
+    document.head.appendChild(element);
+  }
+
+  element.setAttribute("href", url);
+}
 
 export function ProductRouteClient() {
   const searchParams = useSearchParams();
@@ -20,8 +56,7 @@ export function ProductRouteClient() {
 
     async function run() {
       try {
-        const response = await fetch("/api/storefront");
-        const payload = (await response.json()) as StorefrontData;
+        const payload = await fetchStorefrontClient();
         if (!alive) return;
         setStorefront(payload);
         setError("");
@@ -50,8 +85,30 @@ export function ProductRouteClient() {
     return storefront.products.find((item) => item.id === productId) || null;
   }, [storefront, productId]);
 
+  useEffect(() => {
+    if (!product || typeof window === "undefined") return;
+
+    const siteName = "CheatParadise";
+    const siteUrl = window.location.origin;
+    const canonicalUrl = `${siteUrl}/products?id=${product.id}`;
+    const description =
+      product.description ||
+      `Buy ${product.name} with instant delivery and secure checkout on ${siteName}.`;
+
+    document.title = `${product.name} | ${siteName}`;
+    upsertMeta({ key: "name", value: "description" }, description);
+    upsertMeta({ key: "property", value: "og:title" }, `${product.name} | ${siteName}`);
+    upsertMeta({ key: "property", value: "og:description" }, description);
+    upsertMeta({ key: "property", value: "og:url" }, canonicalUrl);
+    if (product.image) {
+      upsertMeta({ key: "property", value: "og:image" }, product.image);
+      upsertMeta({ key: "name", value: "twitter:image" }, product.image);
+    }
+    upsertCanonical(canonicalUrl);
+  }, [product]);
+
   if (loading) {
-    return <p className="state-message" style={{ padding: "20px" }}>Loading product...</p>;
+    return <SubpageSkeleton rows={5} />;
   }
 
   if (error) {

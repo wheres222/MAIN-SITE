@@ -107,8 +107,10 @@
 .rowRight {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .statusPill {
@@ -144,6 +146,24 @@
   color: #62abff;
   border-color: rgba(44, 105, 196, 0.5);
   background: rgba(21, 54, 102, 0.5);
+}
+
+.detected {
+  color: #ff8a9f;
+  border-color: rgba(179, 64, 94, 0.48);
+  background: rgba(92, 24, 41, 0.45);
+}
+
+.stockIn {
+  color: #b5c9e9;
+  border-color: rgba(71, 88, 118, 0.52);
+  background: rgba(23, 32, 50, 0.62);
+}
+
+.stockOut {
+  color: #e0b7bf;
+  border-color: rgba(124, 72, 82, 0.54);
+  background: rgba(54, 24, 31, 0.62);
 }
 
 .purchaseBtn {

@@ -10,11 +10,14 @@ import type {
 } from "@/types/sellauth";
 import styles from "@/components/product-status-board.module.css";
 
-type StatusKind = "undetected" | "testing";
+type StatusKind = "undetected" | "testing" | "detected";
+type StockKind = "stocked" | "empty";
 
 interface ProductStatusMeta {
   kind: StatusKind;
   label: string;
+  stockKind: StockKind;
+  stockLabel: string;
 }
 
 interface GroupedProductEntry {
@@ -71,11 +74,37 @@ function categoryLogoForName(groupName: string): string {
 }
 
 function inferStatus(product: SellAuthProduct): ProductStatusMeta {
-  if (typeof product.stock === "number" && product.stock <= 0) {
-    return { kind: "testing", label: "TESTING" };
+  const operationalText = normalized(
+    `${product.name} ${product.description} ${product.variants.map((variant) => variant.name).join(" ")}`
+  );
+
+  const stockKind: StockKind =
+    typeof product.stock === "number" && product.stock <= 0 ? "empty" : "stocked";
+
+  if (/(detected|disabled|offline|down|banned|unsafe)/i.test(operationalText)) {
+    return {
+      kind: "detected",
+      label: "DETECTED",
+      stockKind,
+      stockLabel: stockKind === "stocked" ? "IN STOCK" : "OUT OF STOCK",
+    };
   }
 
-  return { kind: "undetected", label: "UNDETECTED" };
+  if (/(updating|testing|maintenance|patching|investigating|beta)/i.test(operationalText)) {
+    return {
+      kind: "testing",
+      label: "TESTING",
+      stockKind,
+      stockLabel: stockKind === "stocked" ? "IN STOCK" : "OUT OF STOCK",
+    };
+  }
+
+  return {
+    kind: "undetected",
+    label: "UNDETECTED",
+    stockKind,
+    stockLabel: stockKind === "stocked" ? "IN STOCK" : "OUT OF STOCK",
+  };
 }
 
 function pickCategoryName(
@@ -186,11 +215,23 @@ export function ProductStatusBoard({
                     <div className={styles.rowRight}>
                       <span
                         className={`${styles.statusPill} ${
-                          status.kind === "undetected" ? styles.undetected : styles.testing
+                          status.kind === "undetected"
+                            ? styles.undetected
+                            : status.kind === "detected"
+                              ? styles.detected
+                              : styles.testing
                         }`}
                       >
                         <span className={styles.dot} aria-hidden="true" />
                         {status.label}
+                      </span>
+
+                      <span
+                        className={`${styles.statusPill} ${
+                          status.stockKind === "stocked" ? styles.stockIn : styles.stockOut
+                        }`}
+                      >
+                        {status.stockLabel}
                       </span>
 
                       <Link href={`/products?id=${product.id}`} className={styles.purchaseBtn}>

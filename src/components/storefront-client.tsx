@@ -5,7 +5,10 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { toGameSlug } from "@/lib/game-slug";
+import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import type { SellAuthGroup, SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
 function normalized(value: string): string {
@@ -92,8 +95,7 @@ export function StorefrontClient() {
 
     (async () => {
       try {
-        const response = await fetch("/api/storefront");
-        const data = (await response.json()) as StorefrontData;
+        const data = await fetchStorefrontClient();
         if (!active) return;
         setStorefront(data);
       } catch (requestError) {
@@ -227,6 +229,11 @@ export function StorefrontClient() {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [activeGroup, storefront]);
 
+  const warningMessages = useMemo(
+    () => formatStorefrontWarnings(storefront?.warnings || []),
+    [storefront?.warnings]
+  );
+
   useEffect(() => {
     if (activeGroupId === null) return;
 
@@ -281,11 +288,11 @@ export function StorefrontClient() {
             <p>Find the perfect undetected cheat for your favorite game.</p>
           </div>
 
-          {isLoading && <p className="state-message">Loading storefront data...</p>}
+          {isLoading ? <SubpageSkeleton rows={6} /> : null}
           {!isLoading && error && <p className="state-message error">{error}</p>}
-          {!isLoading && storefront?.warnings.length ? (
+          {!isLoading && warningMessages.length ? (
             <div className="warn-box">
-              {storefront.warnings.map((warning) => (
+              {warningMessages.map((warning) => (
                 <p key={warning}>{warning}</p>
               ))}
             </div>

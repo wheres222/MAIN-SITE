@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ProductStatusBoard } from "@/components/product-status-board";
+import { SubpageSkeleton } from "@/components/subpage-skeleton";
+import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import type { StorefrontData } from "@/types/sellauth";
 
 export function StatusRouteClient() {
@@ -16,8 +19,7 @@ export function StatusRouteClient() {
 
     async function run() {
       try {
-        const response = await fetch("/api/storefront");
-        const payload = (await response.json()) as StorefrontData;
+        const payload = await fetchStorefrontClient();
         if (!alive) return;
         setData(payload);
         setError("");
@@ -41,16 +43,21 @@ export function StatusRouteClient() {
     };
   }, []);
 
+  const warningMessages = useMemo(
+    () => formatStorefrontWarnings(data?.warnings || []),
+    [data?.warnings]
+  );
+
   return (
     <div className="marketplace-page">
       <SiteHeader activeTab="status" />
       <main className="shell subpage-wrap">
-        {loading ? <p className="state-message">Loading status...</p> : null}
+        {loading ? <SubpageSkeleton rows={5} /> : null}
         {error ? <p className="state-message error">{error}</p> : null}
 
-        {data?.warnings?.length ? (
+        {warningMessages.length ? (
           <section className="catalog warn-box">
-            {data.warnings.map((warning) => (
+            {warningMessages.map((warning) => (
               <p key={warning}>{warning}</p>
             ))}
           </section>

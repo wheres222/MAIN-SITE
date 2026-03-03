@@ -8,7 +8,7 @@ import { CartDrawer } from "@/components/cart-drawer";
 import { GlobalSearch } from "@/components/global-search";
 import { getDiscordUrl } from "@/lib/links";
 
-export type NavTab = "store" | "status" | "reviews" | "support";
+export type NavTab = "store" | "status" | "reviews" | "support" | "none";
 
 interface SiteHeaderProps {
   activeTab: NavTab;

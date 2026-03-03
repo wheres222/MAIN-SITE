@@ -244,6 +244,12 @@
   transform: translateY(-1px);
 }
 
+.optionCardSelected {
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.36),
+    0 8px 18px rgba(18, 57, 129, 0.5);
+}
+
 .optionCard:disabled {
   opacity: 0.72;
   cursor: not-allowed;
@@ -267,6 +273,44 @@
   color: #ffffff;
   letter-spacing: 0.02em;
   text-shadow: 0 1px 0 rgba(9, 31, 84, 0.62);
+}
+
+.actionRow {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.addToCartBtn,
+.checkoutNowBtn {
+  min-height: 42px;
+  border-radius: 8px;
+  border: 1px solid #2d4f86;
+  color: #f1f6ff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.addToCartBtn {
+  background: #0f1e3d;
+}
+
+.checkoutNowBtn {
+  border: 0;
+  background: var(--themed-blue-gradient);
+}
+
+.checkoutNowBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.cartHint {
+  margin: 8px 0 0;
+  color: #8ca3cb;
+  font-size: 0.8rem;
 }
 
 .stock {
@@ -512,7 +556,8 @@
   }
 
   .optionsGrid,
-  .featureGrid {
+  .featureGrid,
+  .actionRow {
     grid-template-columns: 1fr;
   }
 

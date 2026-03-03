@@ -28,14 +28,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .map((group) => toGameSlug(group.name))
       .filter(Boolean)
       .map((slug) => ({
-        url: `${siteUrl}/categories/${slug}`,
+        url: `${siteUrl}/categories?slug=${encodeURIComponent(slug)}`,
         lastModified: now,
         changeFrequency: "daily" as const,
         priority: 0.8,
       }));
 
     const productEntries = storefront.products.map((product) => ({
-      url: `${siteUrl}/products/${product.id}`,
+      url: `${siteUrl}/products?id=${product.id}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.75,

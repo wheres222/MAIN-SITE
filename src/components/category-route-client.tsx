@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { GameCatalogPage } from "@/components/game-catalog-page";
+import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { isSameGameSlug } from "@/lib/game-slug";
+import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { SellAuthGroup, StorefrontData } from "@/types/sellauth";
 
 function titleCaseFromSlug(slug: string): string {
@@ -28,8 +30,7 @@ export function CategoryRouteClient() {
 
     async function run() {
       try {
-        const response = await fetch("/api/storefront");
-        const payload = (await response.json()) as StorefrontData;
+        const payload = await fetchStorefrontClient();
         if (!alive) return;
         setStorefront(payload);
         setError("");
@@ -88,7 +89,7 @@ export function CategoryRouteClient() {
   }, [slug, storefront]);
 
   if (loading) {
-    return <p className="state-message" style={{ padding: "20px" }}>Loading category...</p>;
+    return <SubpageSkeleton rows={6} />;
   }
 
   if (error) {

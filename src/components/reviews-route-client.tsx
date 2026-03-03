@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ReviewsBoard } from "@/components/reviews-board";
+import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { createMockReviewsFromProducts } from "@/lib/reviews";
+import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
 
 export function ReviewsRouteClient() {
@@ -17,8 +19,7 @@ export function ReviewsRouteClient() {
 
     async function run() {
       try {
-        const response = await fetch("/api/storefront");
-        const payload = (await response.json()) as StorefrontData;
+        const payload = await fetchStorefrontClient();
         if (!alive) return;
         setData(payload);
         setError("");
@@ -51,7 +52,7 @@ export function ReviewsRouteClient() {
     <div className="marketplace-page">
       <SiteHeader activeTab="reviews" />
       <main className="shell subpage-wrap">
-        {loading ? <p className="state-message">Loading reviews...</p> : null}
+        {loading ? <SubpageSkeleton rows={8} /> : null}
         {error ? <p className="state-message error">{error}</p> : null}
         {data ? <ReviewsBoard reviews={reviews} /> : null}
       </main>
