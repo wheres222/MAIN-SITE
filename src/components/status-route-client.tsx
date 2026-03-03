@@ -56,7 +56,13 @@ export function StatusRouteClient() {
           </section>
         ) : null}
 
-        {data ? <ProductStatusBoard products={data.products} /> : null}
+        {data ? (
+          <ProductStatusBoard
+            products={data.products}
+            groups={data.groups}
+            categories={data.categories}
+          />
+        ) : null}
       </main>
       <SiteFooter />
     </div>

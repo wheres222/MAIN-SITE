@@ -2,50 +2,58 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import type { SellAuthProduct } from "@/types/sellauth";
+import { useMemo } from "react";
+import type {
+  SellAuthCategory,
+  SellAuthGroup,
+  SellAuthProduct,
+} from "@/types/sellauth";
 import styles from "@/components/product-status-board.module.css";
 
-type PrimaryStatus = "safe" | "updating";
-type FreshnessStatus = "upToDate" | "needsUpdate";
+type StatusKind = "undetected" | "testing";
 
 interface ProductStatusMeta {
-  primary: PrimaryStatus;
-  primaryLabel: string;
-  freshness: FreshnessStatus;
-  freshnessLabel: string;
+  kind: StatusKind;
+  label: string;
+}
+
+interface GroupedProductEntry {
+  key: string;
+  product: SellAuthProduct;
+}
+
+interface GroupedCategory {
+  key: string;
+  name: string;
+  logo: string;
+  items: GroupedProductEntry[];
 }
 
 interface ProductStatusBoardProps {
   products: SellAuthProduct[];
-}
-
-function inferStatus(product: SellAuthProduct): ProductStatusMeta {
-  if (typeof product.stock === "number" && product.stock <= 0) {
-    return {
-      primary: "updating",
-      primaryLabel: "Updating",
-      freshness: "needsUpdate",
-      freshnessLabel: "Needs Update",
-    };
-  }
-
-  return {
-    primary: "safe",
-    primaryLabel: "Safe",
-    freshness: "upToDate",
-    freshnessLabel: "Up To Date",
-  };
+  groups?: SellAuthGroup[];
+  categories?: SellAuthCategory[];
 }
 
 function normalized(value: string): string {
   return value.toLowerCase().trim();
 }
 
+function cleanLabel(value: string): string {
+  return value.replace(/\s+/g, " ").trim();
+}
+
+function categoryKey(value: string): string {
+  const cleaned = normalized(cleanLabel(value)).replace(/[^a-z0-9]+/g, " ").trim();
+  return cleaned || "other";
+}
+
 function categoryLogoForName(groupName: string): string {
   const source = normalized(groupName);
 
   if (source.includes("apex")) return "/pd/apex.png";
+  if (source.includes("arc")) return "/pd/arc-raiders.png";
+  if (source.includes("battlefield") || source.includes("bf")) return "/pd/call-of-duty.png";
   if (source.includes("valorant") || source.includes("val")) return "/pd/valorant.png";
   if (source.includes("rust")) return "/pd/rust.png";
   if (source.includes("rainbow") || source.includes("r6")) return "/pd/rainbow-six-siege.png";
@@ -62,116 +70,140 @@ function categoryLogoForName(groupName: string): string {
   return "/pd/misc.svg";
 }
 
-interface GroupedCategory {
-  name: string;
-  logo: string;
-  items: SellAuthProduct[];
+function inferStatus(product: SellAuthProduct): ProductStatusMeta {
+  if (typeof product.stock === "number" && product.stock <= 0) {
+    return { kind: "testing", label: "TESTING" };
+  }
+
+  return { kind: "undetected", label: "UNDETECTED" };
 }
 
-export function ProductStatusBoard({ products }: ProductStatusBoardProps) {
-  const [query, setQuery] = useState("");
+function pickCategoryName(
+  product: SellAuthProduct,
+  groupsById: Map<number, string>,
+  categoriesById: Map<number, string>
+): string {
+  const nameFromGroupId =
+    typeof product.groupId === "number" ? groupsById.get(product.groupId) || "" : "";
+  const nameFromCategoryId =
+    typeof product.categoryId === "number"
+      ? categoriesById.get(product.categoryId) || ""
+      : "";
 
+  const groupName = cleanLabel(product.groupName || "");
+  const categoryName = cleanLabel(product.categoryName || "");
+
+  return (
+    cleanLabel(nameFromGroupId) ||
+    cleanLabel(nameFromCategoryId) ||
+    groupName ||
+    categoryName ||
+    "Other"
+  );
+}
+
+export function ProductStatusBoard({
+  products,
+  groups = [],
+  categories = [],
+}: ProductStatusBoardProps) {
   const grouped = useMemo<GroupedCategory[]>(() => {
-    const keyword = normalized(query);
-    const groupedMap = new Map<string, SellAuthProduct[]>();
+    const groupsById = new Map<number, string>(
+      groups
+        .map((group) => [group.id, cleanLabel(group.name)] as const)
+        .filter(([, name]) => Boolean(name))
+    );
 
-    for (const product of products) {
-      const categoryName = product.groupName || product.categoryName || "Other";
+    const categoriesById = new Map<number, string>(
+      categories
+        .map((category) => [category.id, cleanLabel(category.name)] as const)
+        .filter(([, name]) => Boolean(name))
+    );
 
-      const haystack = normalized(
-        `${categoryName} ${product.categoryName} ${product.name} ${product.description}`
-      );
+    const groupedMap = new Map<string, GroupedCategory>();
 
-      if (keyword && !haystack.includes(keyword)) continue;
+    products.forEach((product, index) => {
+      const resolvedCategoryName = pickCategoryName(product, groupsById, categoriesById);
+      const key = categoryKey(resolvedCategoryName);
 
-      const existing = groupedMap.get(categoryName) || [];
-      existing.push(product);
-      groupedMap.set(categoryName, existing);
-    }
+      const existing = groupedMap.get(key);
+      if (existing) {
+        if (resolvedCategoryName.length > existing.name.length) {
+          existing.name = resolvedCategoryName;
+          existing.logo = categoryLogoForName(resolvedCategoryName);
+        }
+        existing.items.push({ key: `${product.id}-${index}`, product });
+        return;
+      }
 
-    return [...groupedMap.entries()]
-      .map(([name, items]) => ({
-        name,
-        logo: categoryLogoForName(name),
-        items: [...items].sort((a, b) => a.name.localeCompare(b.name)),
+      groupedMap.set(key, {
+        key,
+        name: resolvedCategoryName,
+        logo: categoryLogoForName(resolvedCategoryName),
+        items: [{ key: `${product.id}-${index}`, product }],
+      });
+    });
+
+    return [...groupedMap.values()]
+      .map((group) => ({
+        ...group,
+        items: [...group.items].sort((a, b) => a.product.name.localeCompare(b.product.name)),
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [products, query]);
+  }, [products, groups, categories]);
+
+  if (!grouped.length) {
+    return <div className={styles.empty}>No products available right now.</div>;
+  }
 
   return (
     <section className={styles.statusPage}>
-      <header className={styles.hero}>
-        <h1>Status</h1>
-        <p>Real-time status. Perfectly simple.</p>
-      </header>
+      <div className={styles.board}>
+        {grouped.map((category) => (
+          <section key={category.key} className={styles.categoryCard}>
+            <header className={styles.categoryHeader}>
+              <span className={styles.categoryLogoBox} aria-hidden="true">
+                <img src={category.logo} alt="" className={styles.categoryLogo} loading="lazy" />
+              </span>
 
-      <label className={styles.searchWrap} aria-label="Search status list">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.6" />
-          <path d="m16 16 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search products..."
-        />
-      </label>
+              <h2 className={styles.categoryTitle}>{category.name}</h2>
 
-      {!grouped.length && <div className={styles.empty}>No products matched your search query.</div>}
+              <span className={styles.countChip}>
+                {category.items.length} {category.items.length === 1 ? "product" : "products"}
+              </span>
+            </header>
 
-      {grouped.length ? (
-        <div className={styles.categoryGrid}>
-          {grouped.map((category) => (
-            <section key={category.name} className={styles.categoryCard}>
-              <header className={styles.categoryHeader}>
-                <span className={styles.categoryLogoBox} aria-hidden="true">
-                  <img src={category.logo} alt="" className={styles.categoryLogo} loading="lazy" />
-                </span>
+            <ul className={styles.productList}>
+              {category.items.map(({ key, product }) => {
+                const status = inferStatus(product);
 
-                <h2 className={styles.categoryTitle}>{category.name}</h2>
+                return (
+                  <li key={key} className={styles.productRow}>
+                    <p className={styles.name}>
+                      <Link href={`/products?id=${product.id}`}>{product.name}</Link>
+                    </p>
 
-                <span className={styles.countChip}>
-                  {category.items.length} {category.items.length === 1 ? "product" : "products"}
-                </span>
-              </header>
+                    <div className={styles.rowRight}>
+                      <span
+                        className={`${styles.statusPill} ${
+                          status.kind === "undetected" ? styles.undetected : styles.testing
+                        }`}
+                      >
+                        <span className={styles.dot} aria-hidden="true" />
+                        {status.label}
+                      </span>
 
-              <ul className={styles.productList}>
-                {category.items.map((product) => {
-                  const status = inferStatus(product);
-
-                  return (
-                    <li key={product.id} className={styles.productRow}>
-                      <p className={styles.name}>
-                        <Link href={`/products?id=${product.id}`}>{product.name}</Link>
-                      </p>
-
-                      <div className={styles.rowBadges}>
-                        <span
-                          className={`${styles.inlineBadge} ${
-                            status.primary === "safe" ? styles.pillSafe : styles.pillUpdating
-                          }`}
-                        >
-                          {status.primaryLabel}
-                        </span>
-
-                        <span
-                          className={`${styles.inlineBadge} ${
-                            status.freshness === "upToDate"
-                              ? styles.pillUpToDate
-                              : styles.pillNeedsUpdate
-                          }`}
-                        >
-                          {status.freshnessLabel}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ))}
-        </div>
-      ) : null}
+                      <Link href={`/products?id=${product.id}`} className={styles.purchaseBtn}>
+                        Purchase Now
+                      </Link>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
     </section>
   );
 }
