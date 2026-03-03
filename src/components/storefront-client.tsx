@@ -84,19 +84,68 @@ export function StorefrontClient() {
   }, []);
 
   const filteredGroups = useMemo(() => {
-    const groups = storefront?.groups || [];
-    if (groups.length > 0) {
-      return [...groups].sort((a, b) => a.name.localeCompare(b.name));
+    const baseGroups = storefront?.groups || [];
+    const categories = storefront?.categories || [];
+
+    const groups =
+      baseGroups.length > 0
+        ? baseGroups
+        : categories.map((category) => ({
+            id: category.id,
+            name: category.name,
+            description: category.description,
+            image: category.image,
+          }));
+
+    const productCountBySlug = new Map<string, number>();
+    for (const product of storefront?.products || []) {
+      const groupSlug = canonicalGroupSlug(product.groupName || "");
+      const categorySlug = canonicalGroupSlug(product.categoryName || "");
+      if (groupSlug) {
+        productCountBySlug.set(groupSlug, (productCountBySlug.get(groupSlug) || 0) + 1);
+      }
+      if (categorySlug) {
+        productCountBySlug.set(categorySlug, (productCountBySlug.get(categorySlug) || 0) + 1);
+      }
     }
 
-    const categories = storefront?.categories || [];
-    return categories
-      .map((category) => ({
-        id: category.id,
-        name: category.name,
-        description: category.description,
-        image: category.image,
-      }))
+    const bestBySlug = new Map<string, (typeof groups)[number]>();
+    const bestImageBySlug = new Map<string, string>();
+
+    for (const group of groups) {
+      const slug = canonicalGroupSlug(group.name);
+      if (!slug) continue;
+
+      if (group.image?.url && !bestImageBySlug.has(slug)) {
+        bestImageBySlug.set(slug, group.image.url);
+      }
+
+      const productCount = productCountBySlug.get(slug) || 0;
+      const hasImage = Boolean(group.image?.url);
+      const score = productCount * 100 + (hasImage ? 10 : 0);
+
+      const existing = bestBySlug.get(slug);
+      if (!existing) {
+        bestBySlug.set(slug, group);
+        continue;
+      }
+
+      const existingCount = productCountBySlug.get(canonicalGroupSlug(existing.name)) || 0;
+      const existingHasImage = Boolean(existing.image?.url);
+      const existingScore = existingCount * 100 + (existingHasImage ? 10 : 0);
+
+      if (score > existingScore) {
+        bestBySlug.set(slug, group);
+      }
+    }
+
+    return [...bestBySlug.values()]
+      .map((group) => {
+        const slug = canonicalGroupSlug(group.name);
+        if (group.image?.url) return group;
+        const familyImage = bestImageBySlug.get(slug);
+        return familyImage ? { ...group, image: { url: familyImage } } : group;
+      })
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [storefront]);
 
