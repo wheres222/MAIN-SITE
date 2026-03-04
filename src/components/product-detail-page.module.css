@@ -292,11 +292,11 @@
 
 .buyNowBtn,
 .addToCartBtn {
-  min-height: 58px;
+  min-height: 54px;
   border-radius: 12px;
   border: 1px solid #252a35;
   color: #f1f6ff;
-  font-size: 1.75rem;
+  font-size: 1.6rem;
   line-height: 1;
   font-weight: 700;
   cursor: pointer;
@@ -393,8 +393,8 @@
 }
 
 .requirementMiniIcon {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 9px;
   border: 1px solid #275774;
   background: #0f3d51;
@@ -405,8 +405,8 @@
 }
 
 .requirementMiniIcon svg {
-  width: 17px;
-  height: 17px;
+  width: 19px;
+  height: 19px;
   display: block;
 }
 
@@ -468,8 +468,8 @@
 }
 
 .featureTabIcon {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
   border: 1px solid #275774;
   background: #0f3d51;
@@ -481,8 +481,8 @@
 }
 
 .featureTabIcon svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   display: block;
 }
 

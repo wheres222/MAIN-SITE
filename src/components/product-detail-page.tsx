@@ -644,6 +644,11 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                         <rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
                         <path d="M9.8 3.8v2.4M14.2 3.8v2.4M9.8 17.8v2.4M14.2 17.8v2.4M3.8 9.8h2.4M17.8 9.8h2.4M3.8 14.2h2.4M17.8 14.2h2.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
                       </svg>
+                    ) : item.label.toLowerCase().includes("os") ||
+                      item.label.toLowerCase().includes("windows") ? (
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M3.8 4.8 10.7 3.9v8.2H3.8V4.8Zm7.9-1 8.5-1.1v9.4h-8.5V3.8ZM3.8 12.9h6.9v8.3L3.8 20.3v-7.4Zm7.9 0h8.5v9.4l-8.5-1.1v-8.3Z" fill="currentColor" />
+                      </svg>
                     ) : (
                       <svg viewBox="0 0 24 24" fill="none">
                         <path d="M4.8 5.4h14.4v13.2H4.8z" stroke="currentColor" strokeWidth="1.6" />
