@@ -116,10 +116,18 @@ export async function GET() {
   }
 
   try {
-    const [productsRaw, categoriesRaw, groupsRaw] = await Promise.all([
+    const [productsRaw, categoriesRaw, groupsRaw, paginationProbeRaw] = await Promise.all([
       fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/products`),
       fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/categories`),
       fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/groups`),
+      Promise.allSettled([
+        fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/products?page=1`),
+        fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/products?page=2`),
+        fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/products?page=1&perPage=100&per_page=100`),
+        fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/products?page=2&perPage=100&per_page=100`),
+        fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/products?page=1&perPage=100&per_page=100&all=1`),
+        fetchSellAuth(`/v1/shops/${SELLAUTH_SHOP_ID}/products?page=2&perPage=100&per_page=100&all=1`),
+      ]),
     ]);
 
     const products = unwrapCollection(productsRaw, ["products", "items", "data"]).map(summarizeRecord);
@@ -146,6 +154,41 @@ export async function GET() {
       return name.includes("account") || name.includes("misc") || name.includes("vpn");
     });
 
+    const probeLabels = [
+      "page1-default",
+      "page2-default",
+      "page1-per100",
+      "page2-per100",
+      "page1-per100-all",
+      "page2-per100-all",
+    ];
+
+    const paginationProbe = paginationProbeRaw.map((entry, index) => {
+      if (entry.status !== "fulfilled") {
+        return {
+          label: probeLabels[index],
+          ok: false,
+          message: entry.reason instanceof Error ? entry.reason.message : "request failed",
+        };
+      }
+
+      const root = asRecord(entry.value);
+      const items = unwrapCollection(entry.value, ["products", "items", "data"]);
+      return {
+        label: probeLabels[index],
+        ok: true,
+        current_page: root.current_page,
+        last_page: root.last_page,
+        per_page: root.per_page,
+        total: root.total,
+        count: items.length,
+        sampleIds: items
+          .slice(0, 5)
+          .map((item) => asRecord(item).id)
+          .filter(Boolean),
+      };
+    });
+
     return NextResponse.json({
       success: true,
       totals: {
@@ -153,6 +196,7 @@ export async function GET() {
         categories: categories.length,
         groups: groups.length,
       },
+      paginationProbe,
       focus: {
         products: focusProducts,
         categories: focusCategories,
