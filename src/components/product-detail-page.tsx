@@ -477,53 +477,6 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               </div>
             </article>
 
-            <div className={styles.supportPills}>
-              <article>
-                <span className={styles.supportIcon} aria-hidden>
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 3.2 5.4 5.8v5.3c0 4.3 2.7 7.7 6.6 9.7 3.9-2 6.6-5.4 6.6-9.7V5.8L12 3.2Z"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinejoin="round"
-                    />
-                    <path d="m9.3 12.2 1.8 1.9 3.6-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-                <strong>Secure</strong>
-                <span>Checkout</span>
-              </article>
-              <article>
-                <span className={styles.supportIcon} aria-hidden>
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M13.2 2.8 5.9 13h4.9L9.9 21.2 18.1 10h-5l.1-7.2Z"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-                <strong>Instant</strong>
-                <span>Delivery</span>
-              </article>
-              <article>
-                <span className={styles.supportIcon} aria-hidden>
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="6.3" r="2.4" stroke="currentColor" strokeWidth="1.7" />
-                    <path
-                      d="M7.9 20.2v-3.9c0-1.7 1.4-3.1 3.1-3.1h2c1.7 0 3.1 1.4 3.1 3.1v3.9M12 13.2v7"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
-                <strong>24/7</strong>
-                <span>Support</span>
-              </article>
-            </div>
           </div>
 
           <article className={styles.buyColumn}>
