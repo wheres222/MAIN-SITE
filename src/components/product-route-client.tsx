@@ -57,7 +57,9 @@ export function ProductRouteClient() {
   const params = useParams<{ slug?: string | string[] }>();
 
   const productIdRaw = (searchParams.get("id") || "").trim();
-  const productId = productIdRaw ? Number(productIdRaw) : Number.NaN;
+  const productIdLooksNumeric = /^\d+$/.test(productIdRaw);
+  const productId = productIdLooksNumeric ? Number(productIdRaw) : Number.NaN;
+  const slugFromIdQuery = productIdRaw && !productIdLooksNumeric ? productIdRaw : "";
 
   const slugFromParams =
     typeof params?.slug === "string"
@@ -73,7 +75,13 @@ export function ProductRouteClient() {
   })();
 
   const requestedSlug = safeDecoded(
-    (slugFromParams || slugFromPathname || searchParams.get("slug") || "").trim()
+    (
+      slugFromParams ||
+      slugFromPathname ||
+      searchParams.get("slug") ||
+      slugFromIdQuery ||
+      ""
+    ).trim()
   );
 
   const [loading, setLoading] = useState(true);
