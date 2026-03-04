@@ -287,12 +287,12 @@ export function StorefrontClient() {
           <div className="shell hero-content">
             <div className="hero-copy">
               <h1 className="hero-title">
-                <span className="hero-title-row hero-line-primary">Upgrade Your</span>
-                <span className="hero-title-row hero-line-accent">Gameplay</span>
+                <span className="hero-title-row hero-line-primary">Your #1 Marketplace</span>
+                <span className="hero-title-row hero-line-accent">for your unfair advantage</span>
               </h1>
               <p className="hero-subtext">
                 <span>
-                  Access Custom Mods, Tools, and Enhancements for a Better Experience.
+                  Access high quality cheats, accounts, and tools to gain the edge.
                 </span>
               </p>
             </div>
