@@ -261,6 +261,53 @@ function canonicalCategorySlug(name: string): string {
   return CANONICAL_CATEGORY_ALIASES[slug] || CANONICAL_CATEGORY_ALIASES[compact] || slug;
 }
 
+const CATEGORY_LABEL_BY_SLUG: Record<string, string> = {
+  rust: "Rust",
+  "arc-raiders": "Arc-raiders",
+  fortnite: "Fortnite",
+  apex: "Apex-legends",
+  "counter-strike-2": "CS2",
+  "rainbow-six-siege": "Rainbow Six Siege",
+  "call-of-duty": "COD",
+  fivem: "Fivem",
+  dayz: "Dayz",
+  roblox: "Roblox",
+  valorant: "Valorant",
+  pubg: "PUBG",
+  "hwid-spoofers": "HWID Spoofers",
+  accounts: "Accounts",
+  vpns: "VPNS",
+  "league-of-legends": "League of Legends",
+};
+
+function labelForCategorySlug(slug: string): string {
+  return CATEGORY_LABEL_BY_SLUG[slug] || slug;
+}
+
+function inferCategoryNameFromProduct(product: SellAuthProduct): string {
+  const text = `${product.name} ${product.description} ${product.variants
+    .map((variant) => variant.name)
+    .join(" ")}`.toLowerCase();
+
+  if (/(\bnitro\b|\bmail\b|\baccount\b)/i.test(text)) return "Accounts";
+  if (/(\bvpn\b|ip vanish|cyberghost)/i.test(text)) return "VPNS";
+  if (/(\bhwid\b|\bspoofer\b)/i.test(text)) return "HWID Spoofers";
+  if (/\br6\b|rainbow\s*six/i.test(text)) return "Rainbow Six Siege";
+  if (/counter\s*strike|\bcs2\b/i.test(text)) return "CS2";
+  if (/call\s*of\s*duty|\bcod\b|warzone/i.test(text)) return "COD";
+  if (/apex/i.test(text)) return "Apex-legends";
+  if (/fortnite/i.test(text)) return "Fortnite";
+  if (/arc\s*raiders/i.test(text)) return "Arc-raiders";
+  if (/rust/i.test(text)) return "Rust";
+  if (/dayz/i.test(text)) return "Dayz";
+  if (/fivem/i.test(text)) return "Fivem";
+  if (/roblox/i.test(text)) return "Roblox";
+  if (/valorant/i.test(text)) return "Valorant";
+  if (/\bpubg\b/i.test(text)) return "PUBG";
+
+  return "";
+}
+
 async function fetchSellAuth<T>(
   path: string,
   init?: RequestInit
@@ -782,7 +829,57 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       return category;
     });
 
-    const productsClean = products.map((product) => {
+    const groupById = new Map(groupsClean.map((group) => [group.id, group] as const));
+    const categoryById = new Map(
+      categoriesClean.map((category) => [category.id, category] as const)
+    );
+
+    const productsResolved = products.map((product) => {
+      let groupName = product.groupName.trim();
+      let categoryName = product.categoryName.trim();
+
+      if (!groupName && product.groupId !== null) {
+        groupName = groupById.get(product.groupId)?.name || "";
+      }
+
+      if (!categoryName && product.categoryId !== null) {
+        categoryName = categoryById.get(product.categoryId)?.name || "";
+      }
+
+      if (!groupName && categoryName) {
+        const categorySlug = canonicalCategorySlug(categoryName);
+        groupName =
+          groupsClean.find((group) => canonicalCategorySlug(group.name) === categorySlug)?.name ||
+          labelForCategorySlug(categorySlug);
+      }
+
+      if (!categoryName && groupName) {
+        const groupSlug = canonicalCategorySlug(groupName);
+        categoryName =
+          categoriesClean.find(
+            (category) => canonicalCategorySlug(category.name) === groupSlug
+          )?.name || labelForCategorySlug(groupSlug);
+      }
+
+      if (!groupName || !categoryName) {
+        const inferred = inferCategoryNameFromProduct(product);
+        if (inferred) {
+          if (!groupName) groupName = inferred;
+          if (!categoryName) categoryName = inferred;
+        }
+      }
+
+      if (!groupName && categoryName) groupName = categoryName;
+      if (!categoryName && groupName) categoryName = groupName;
+
+      return {
+        ...product,
+        groupName,
+        categoryName,
+      };
+    });
+
+    const productsClean = productsResolved.map((product) => {
       const slug = canonicalCategorySlug(product.groupName || product.categoryName || "");
       const baselineImage = baselineImageBySlug.get(slug);
       if (baselineImage && (!product.image || product.image.startsWith("/games/"))) {
@@ -792,6 +889,9 @@ export async function getStorefrontData(): Promise<StorefrontData> {
     });
 
     const productsFinal = await enrichMissingProductImages(productsClean);
+
+    const productDerivedGroups = ensureGroupsFromProducts(productsFinal);
+    const productDerivedCategories = ensureCategoriesFromProducts(productsFinal);
 
     const categoryGroups: SellAuthGroup[] = categoriesClean.map((category) => ({
       id: category.id,
@@ -812,7 +912,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       }
     }
 
-    const combinedGroups = [...groupsClean, ...categoryGroups];
+    const combinedGroups = [...groupsClean, ...categoryGroups, ...productDerivedGroups];
     const bestGroupBySlug = new Map<string, SellAuthGroup>();
     for (const group of combinedGroups) {
       const slug = canonicalCategorySlug(group.name);
@@ -839,7 +939,10 @@ export async function getStorefrontData(): Promise<StorefrontData> {
     }
 
     const mergedGroups = mergeBySlug([...bestGroupBySlug.values()], baselineGroups);
-    const mergedCategories = mergeBySlug(categoriesClean, baselineCategories);
+    const mergedCategories = mergeBySlug(
+      [...categoriesClean, ...productDerivedCategories],
+      baselineCategories
+    );
 
     if (groupsResult.status !== "fulfilled") {
       warnings.push("Could not fetch groups from SellAuth.");
