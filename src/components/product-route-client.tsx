@@ -56,10 +56,19 @@ export function ProductRouteClient() {
   const pathname = usePathname();
   const params = useParams<{ slug?: string | string[] }>();
 
-  const productIdRaw = (searchParams.get("id") || "").trim();
-  const productIdLooksNumeric = /^\d+$/.test(productIdRaw);
-  const productId = productIdLooksNumeric ? Number(productIdRaw) : Number.NaN;
-  const slugFromIdQuery = productIdRaw && !productIdLooksNumeric ? productIdRaw : "";
+  const pidRaw = (searchParams.get("pid") || "").trim();
+  const idRaw = (searchParams.get("id") || "").trim();
+
+  const pidLooksNumeric = /^\d+$/.test(pidRaw);
+  const idLooksNumeric = /^\d+$/.test(idRaw);
+
+  const productId = pidLooksNumeric
+    ? Number(pidRaw)
+    : idLooksNumeric
+      ? Number(idRaw)
+      : Number.NaN;
+
+  const slugFromIdQuery = idRaw && !idLooksNumeric ? idRaw : "";
 
   const slugFromParams =
     typeof params?.slug === "string"
@@ -139,7 +148,7 @@ export function ProductRouteClient() {
 
     const siteName = "Cheat Paradise";
     const siteUrl = window.location.origin;
-    const canonicalUrl = `${siteUrl}${productHref(product)}`;
+    const canonicalUrl = `${siteUrl}${productHref(product, { includePidQuery: false })}`;
     const description =
       product.description ||
       `Buy ${product.name} with instant delivery and secure checkout on ${siteName}.`;
@@ -187,7 +196,7 @@ export function ProductRouteClient() {
     process.env.NEXT_PUBLIC_SITE_URL ||
     "https://cheatparadise.com";
 
-  const productUrl = `${siteUrl}${productHref(product)}`;
+  const productUrl = `${siteUrl}${productHref(product, { includePidQuery: false })}`;
 
   const productJsonLd = {
     "@context": "https://schema.org",
