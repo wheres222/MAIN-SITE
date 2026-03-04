@@ -38,6 +38,22 @@ export function canonicalGameSlug(value: string): string {
     return "call-of-duty";
   }
 
+  if (compact === "dayz") {
+    return "dayz";
+  }
+
+  if (compact === "fivem") {
+    return "fivem";
+  }
+
+  if (compact.includes("hwidspoofer")) {
+    return "hwid-spoofers";
+  }
+
+  if (compact === "vpn" || compact === "vpns") {
+    return "vpns";
+  }
+
   return slug;
 }
 

@@ -245,15 +245,21 @@ const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
   counterstrike2: "counter-strike-2",
   "counter-strike2": "counter-strike-2",
   r6: "rainbow-six-siege",
+  r6s: "rainbow-six-siege",
   "r6-siege": "rainbow-six-siege",
   "rainbow-6-siege": "rainbow-six-siege",
   rainbow6siege: "rainbow-six-siege",
   rainbowsixsiege: "rainbow-six-siege",
+  rainbowsixseige: "rainbow-six-siege",
   callofduty: "call-of-duty",
   cod: "call-of-duty",
   lol: "league-of-legends",
   leagueoflegends: "league-of-legends",
   arcraiders: "arc-raiders",
+  dayz: "dayz",
+  fivem: "fivem",
+  hwidspoofers: "hwid-spoofers",
+  vpn: "vpns",
 };
 
 function canonicalCategorySlug(name: string): string {
@@ -343,7 +349,7 @@ async function fetchSellAuth<T>(
 
 function withPageParams(path: string, page: number, perPage: number): string {
   const joiner = path.includes("?") ? "&" : "?";
-  return `${path}${joiner}page=${page}&per_page=${perPage}`;
+  return `${path}${joiner}page=${page}&perPage=${perPage}&per_page=${perPage}`;
 }
 
 function recordKey(value: unknown): string {
