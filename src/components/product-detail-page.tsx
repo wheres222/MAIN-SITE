@@ -1,7 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -47,6 +46,32 @@ function cleanDescription(value: string): string {
     .replace(/&nbsp;/gi, " ")
     .replace(/\r/g, "")
     .trim();
+}
+
+function parseGalleryImages(product: SellAuthProduct): string[] {
+  const urls = new Set<string>();
+
+  if (product.image?.trim()) {
+    urls.add(product.image.trim());
+  }
+
+  const description = product.description || "";
+
+  const markdownImageRegex = /!\[[^\]]*\]\((https?:\/\/[^\s)]+\.(?:png|jpe?g|webp|gif))\)/gi;
+  let markdownMatch: RegExpExecArray | null;
+  while ((markdownMatch = markdownImageRegex.exec(description))) {
+    const found = markdownMatch[1]?.trim();
+    if (found) urls.add(found);
+  }
+
+  const plainImageRegex = /(https?:\/\/[^\s"'<>]+\.(?:png|jpe?g|webp|gif))/gi;
+  let plainMatch: RegExpExecArray | null;
+  while ((plainMatch = plainImageRegex.exec(description))) {
+    const found = plainMatch[1]?.trim();
+    if (found) urls.add(found);
+  }
+
+  return [...urls];
 }
 
 function normalizeLabel(value: string): string {
@@ -297,11 +322,17 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
   const [notice, setNotice] = useState("");
 
   const detailContent = useMemo(() => parseDetailContent(product), [product]);
+  const galleryImages = useMemo(() => parseGalleryImages(product), [product]);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [openTabs, setOpenTabs] = useState<string[]>([]);
 
   useEffect(() => {
     setOpenTabs(detailContent.featureTabs.slice(0, 3).map((tab) => tab.title));
   }, [detailContent.featureTabs, product.id]);
+
+  useEffect(() => {
+    setActiveImageIndex(0);
+  }, [product.id]);
 
   const variantMinQuantity = variants.reduce<number>((max, variant) => {
     const value = typeof variant.minQuantity === "number" ? variant.minQuantity : 1;
@@ -460,23 +491,67 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
       <SiteHeader activeTab="store" />
 
       <main className={styles.shell}>
-        <div className={styles.breadcrumbs}>
-          <Link href="/">Home</Link>
-          <span>&gt;</span>
-          <Link href="/">Products</Link>
-          <span>&gt;</span>
-          <strong>{product.name}</strong>
-        </div>
-
         <section className={styles.topGrid}>
           <div>
             <article className={styles.imagePanel}>
-              <span className={styles.deliveryBadge}>Instant Delivery</span>
-              <div className={styles.imageWrap}>
-                <img src={product.image} alt={product.name} />
+              <div className={styles.imageViewport}>
+                <div
+                  className={styles.imageTrack}
+                  style={{ transform: `translateX(-${activeImageIndex * 100}%)` }}
+                >
+                  {galleryImages.map((src, index) => (
+                    <div key={`${src}-${index}`} className={styles.imageSlide}>
+                      <img src={src} alt={`${product.name} preview ${index + 1}`} />
+                    </div>
+                  ))}
+                </div>
+
+                {galleryImages.length > 1 ? (
+                  <>
+                    <button
+                      type="button"
+                      className={`${styles.imageNavBtn} ${styles.imageNavPrev}`}
+                      onClick={() =>
+                        setActiveImageIndex((value) =>
+                          value <= 0 ? galleryImages.length - 1 : value - 1
+                        )
+                      }
+                      aria-label="Previous image"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.imageNavBtn} ${styles.imageNavNext}`}
+                      onClick={() =>
+                        setActiveImageIndex((value) =>
+                          value >= galleryImages.length - 1 ? 0 : value + 1
+                        )
+                      }
+                      aria-label="Next image"
+                    >
+                      ›
+                    </button>
+                  </>
+                ) : null}
+              </div>
+
+              <div className={styles.thumbRow}>
+                {galleryImages.map((src, index) => (
+                  <button
+                    key={`thumb-${src}-${index}`}
+                    type="button"
+                    className={`${styles.thumbBtn} ${
+                      index === activeImageIndex ? styles.thumbBtnActive : ""
+                    }`}
+                    onClick={() => setActiveImageIndex(index)}
+                    aria-label={`Open image ${index + 1}`}
+                  >
+                    <img src={src} alt="" aria-hidden="true" />
+                  </button>
+                ))}
               </div>
             </article>
-
           </div>
 
           <article className={styles.buyColumn}>
@@ -522,11 +597,6 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                   +
                 </button>
               </div>
-
-              <p className={styles.stockInline}>
-                <span className={styles.stockDot} aria-hidden />
-                {(selectedVariant?.stock ?? product.stock ?? 1) > 0 ? "In stock" : "Out of stock"}
-              </p>
             </div>
 
             {minQuantity > 1 ? (
