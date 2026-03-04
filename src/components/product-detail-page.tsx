@@ -610,14 +610,13 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                 onClick={checkoutNow}
                 disabled={isCheckingOut}
               >
-                ⚡ {isCheckingOut ? "Processing..." : "Buy Now"}
+                {isCheckingOut ? "Processing..." : "Buy Now"}
               </button>
               <button type="button" className={styles.addToCartBtn} onClick={addToCart}>
                 Add to Cart
               </button>
             </div>
 
-            <p className={styles.cartHint}>Cart persists if you close and reopen your tab.</p>
             {notice ? <p className={styles.notice}>{notice}</p> : null}
           </article>
         </section>
