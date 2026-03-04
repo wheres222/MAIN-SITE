@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  background: #05080f;
+  background: rgb(13, 13, 13);
   color: #eef3ff;
   font-family:
     var(--font-body),
@@ -135,7 +135,7 @@
 }
 
 .buyColumn h1 {
-  margin: 10px 0 0;
+  margin: 4px 0 0;
   font-family:
     var(--font-body),
     -apple-system,
@@ -145,109 +145,63 @@
     "Helvetica Neue",
     Arial,
     sans-serif;
-  font-size: 48px;
-  line-height: 48px;
-  font-weight: 600;
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  line-height: 1.02;
+  font-weight: 700;
   color: #ffffff;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .price {
-  margin: 8px 0 0;
-  font-size: 36px;
-  line-height: 40px;
-  font-weight: 600;
+  margin: 6px 0 0;
+  font-size: clamp(2rem, 3.7vw, 3rem);
+  line-height: 1;
+  font-weight: 700;
   color: #f3f7ff;
 }
 
-.quantityWrap {
-  margin-top: 14px;
-  display: grid;
-  gap: 8px;
-}
-
-.quantityLabel {
-  color: #9ab0d8;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.quantityRow {
-  display: grid;
-  gap: 8px;
-}
-
-.quantityRow input {
-  width: 100%;
-  border: 1px solid #25467c;
-  background: #0a1328;
-  color: #e9f1ff;
-  border-radius: 8px;
-  padding: 10px 12px;
-}
-
-.quantityPresets {
-  display: flex;
-  gap: 8px;
-}
-
-.quantityPresetBtn {
-  border: 1px solid #28477e;
-  background: #0c1730;
-  color: #b8caea;
-  border-radius: 7px;
-  padding: 7px 10px;
-  min-width: 60px;
-  cursor: pointer;
-}
-
-.quantityPresetBtnActive,
-.quantityPresetBtn:hover {
-  border-color: #4f8eff;
-  background: #11264c;
-  color: #f1f6ff;
-}
-
 .optionLabel {
-  margin: 18px 0 11px;
-  color: #a2b5d8;
-  font-size: 1.02rem;
-  letter-spacing: 0.04em;
+  margin: 28px 0 12px;
+  color: #8f9bb4;
+  font-size: 0.95rem;
+  letter-spacing: 0.07em;
+  font-weight: 600;
 }
 
 .optionsGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .optionCard {
-  border: 0;
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, #4f9bff 0%, #2d6ed7 62%, #1548aa 100%);
-  text-align: center;
-  padding: 10px 16px;
+  border: 1px solid #1f2430;
+  border-radius: 12px;
+  background: #111217;
+  text-align: left;
+  padding: 14px 16px;
   color: #ffffff;
-  transition: box-shadow 0.2s ease, filter 0.2s ease, transform 0.15s ease;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease, transform 0.14s ease;
   position: relative;
-  min-height: 48px;
+  min-height: 84px;
   cursor: pointer;
   outline: none;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.32),
-    0 6px 14px rgba(10, 34, 88, 0.46);
+  display: grid;
+  align-content: center;
+  gap: 6px;
 }
 
 .optionCard:hover {
-  filter: brightness(1.04);
+  border-color: #2b3550;
   transform: translateY(-1px);
 }
 
 .optionCardSelected {
+  border-color: #2f6fff;
   box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.36),
-    0 8px 18px rgba(18, 57, 129, 0.5);
+    inset 0 0 0 1px rgba(87, 148, 255, 0.5),
+    0 0 0 1px rgba(33, 91, 211, 0.4),
+    0 10px 20px rgba(7, 22, 53, 0.42);
 }
 
 .optionCard:disabled {
@@ -256,68 +210,78 @@
   transform: none;
 }
 
-.optionLine {
+.optionName {
   display: block;
-  font-family:
-    var(--font-body),
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
-  font-size: 20px;
-  line-height: 26px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.02em;
-  text-shadow: 0 1px 0 rgba(9, 31, 84, 0.62);
-}
-
-.actionRow {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.addToCartBtn,
-.checkoutNowBtn {
-  min-height: 42px;
-  border-radius: 8px;
-  border: 1px solid #2d4f86;
-  color: #f1f6ff;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.addToCartBtn {
-  background: #0f1e3d;
-}
-
-.checkoutNowBtn {
-  border: 0;
-  background: var(--themed-blue-gradient);
-}
-
-.checkoutNowBtn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.cartHint {
-  margin: 8px 0 0;
-  color: #8ca3cb;
-  font-size: 0.8rem;
-}
-
-.stock {
-  margin: 0;
-  color: #9fc4ff;
-  font-size: 0.9rem;
+  font-size: 1.65rem;
+  line-height: 1;
   font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.optionPrice {
+  display: block;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: #6c7488;
+  font-weight: 600;
+}
+
+.optionCheck {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  color: #6aa8ff;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.qtyStockRow {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.qtyStepper {
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid #252a35;
+  background: #12141a;
+  display: inline-grid;
+  grid-template-columns: 40px minmax(40px, auto) 40px;
+  align-items: center;
+  overflow: hidden;
+}
+
+.qtyStepper button {
+  border: 0;
+  background: transparent;
+  color: #c8d3ea;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.qtyStepper button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.qtyStepper span {
+  min-width: 40px;
+  text-align: center;
+  font-size: 1.04rem;
+  font-weight: 600;
+  color: #f2f6ff;
+}
+
+.stockInline {
+  margin: 0;
+  color: #41d882;
+  font-size: 1.2rem;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -327,9 +291,60 @@
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: #6aa8ff;
-  box-shadow: 0 0 10px rgba(106, 168, 255, 0.75);
+  background: #41d882;
+  box-shadow: 0 0 8px rgba(65, 216, 130, 0.6);
   display: inline-block;
+}
+
+.minimumHint {
+  margin: 8px 0 0;
+  color: #6e7790;
+  font-size: 0.82rem;
+}
+
+.actionRow {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.buyNowBtn,
+.addToCartBtn {
+  min-height: 58px;
+  border-radius: 12px;
+  border: 1px solid #252a35;
+  color: #f1f6ff;
+  font-size: 1.75rem;
+  line-height: 1;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.buyNowBtn {
+  border: 0;
+  background: var(--themed-blue-gradient);
+  box-shadow: 0 8px 18px rgba(37, 96, 210, 0.42);
+}
+
+.buyNowBtn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.addToCartBtn {
+  background: #14161d;
+}
+
+.addToCartBtn:hover,
+.buyNowBtn:hover {
+  filter: brightness(1.04);
+}
+
+.cartHint {
+  margin: 9px 0 0;
+  color: #737e97;
+  font-size: 0.8rem;
 }
 
 .notice {

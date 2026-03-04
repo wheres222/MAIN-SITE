@@ -480,47 +480,8 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           </div>
 
           <article className={styles.buyColumn}>
-            <p className={styles.stock}>
-              <span className={styles.stockDot} aria-hidden />
-              {(selectedVariant?.stock ?? product.stock ?? 1) > 0 ? "In stock" : "Out of stock"}
-            </p>
             <h1>{product.name}</h1>
             <p className={styles.price}>{money(selectedUnitPrice, product.currency)}</p>
-
-            {minQuantity > 1 ? (
-              <div className={styles.quantityWrap}>
-                <label htmlFor="detail-quantity" className={styles.quantityLabel}>
-                  Quantity (minimum {minQuantity})
-                </label>
-                <div className={styles.quantityRow}>
-                  <input
-                    id="detail-quantity"
-                    type="number"
-                    min={minQuantity}
-                    value={quantity}
-                    onChange={(event) =>
-                      setQuantity(
-                        Math.max(minQuantity, Number(event.target.value) || minQuantity)
-                      )
-                    }
-                  />
-                  <div className={styles.quantityPresets}>
-                    {[minQuantity, minQuantity * 2, minQuantity * 4].map((value) => (
-                      <button
-                        key={value}
-                        type="button"
-                        className={`${styles.quantityPresetBtn} ${
-                          quantity === value ? styles.quantityPresetBtnActive : ""
-                        }`}
-                        onClick={() => setQuantity(value)}
-                      >
-                        {value}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ) : null}
 
             <h3 className={styles.optionLabel}>SELECT OPTION</h3>
             <div className={styles.optionsGrid}>
@@ -533,25 +494,56 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                     onClick={() => setSelectedVariantId(variant.id)}
                     disabled={isCheckingOut}
                   >
-                    <strong className={styles.optionLine}>
-                      {`${variant.name} - ${money(variant.price, product.currency)}`}
-                    </strong>
+                    <span className={styles.optionName}>{variant.name}</span>
+                    <span className={styles.optionPrice}>
+                      {money(variant.price, product.currency)}
+                    </span>
+                    {isSelected ? <span className={styles.optionCheck}>✓</span> : null}
                   </button>
                 );
               })}
             </div>
 
+            <div className={styles.qtyStockRow}>
+              <div className={styles.qtyStepper}>
+                <button
+                  type="button"
+                  aria-label="Decrease quantity"
+                  onClick={() => setQuantity((value) => Math.max(minQuantity, value - 1))}
+                >
+                  −
+                </button>
+                <span>{quantity}</span>
+                <button
+                  type="button"
+                  aria-label="Increase quantity"
+                  onClick={() => setQuantity((value) => value + 1)}
+                >
+                  +
+                </button>
+              </div>
+
+              <p className={styles.stockInline}>
+                <span className={styles.stockDot} aria-hidden />
+                {(selectedVariant?.stock ?? product.stock ?? 1) > 0 ? "In stock" : "Out of stock"}
+              </p>
+            </div>
+
+            {minQuantity > 1 ? (
+              <p className={styles.minimumHint}>Minimum quantity for this product: {minQuantity}</p>
+            ) : null}
+
             <div className={styles.actionRow}>
-              <button type="button" className={styles.addToCartBtn} onClick={addToCart}>
-                Add To Cart
-              </button>
               <button
                 type="button"
-                className={styles.checkoutNowBtn}
+                className={styles.buyNowBtn}
                 onClick={checkoutNow}
                 disabled={isCheckingOut}
               >
-                {isCheckingOut ? "Processing..." : "Checkout Now"}
+                ⚡ {isCheckingOut ? "Processing..." : "Buy Now"}
+              </button>
+              <button type="button" className={styles.addToCartBtn} onClick={addToCart}>
+                Add to Cart
               </button>
             </div>
 
