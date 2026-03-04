@@ -39,6 +39,8 @@ const SELLAUTH_SHOP_ID = process.env.SELLAUTH_SHOP_ID?.trim() || "";
 const SELLAUTH_API_KEY = process.env.SELLAUTH_API_KEY?.trim() || "";
 const PRODUCT_IMAGE_PLACEHOLDER = "/placeholders/product-image-not-added.svg";
 const STOREFRONT_CACHE_TTL_MS = 25_000;
+const SELLAUTH_PAGE_SIZE = 100;
+const SELLAUTH_MAX_PAGES = 40;
 
 let storefrontCache:
   | {
@@ -337,6 +339,69 @@ async function fetchSellAuth<T>(
     ...body,
     data: body as unknown as T,
   };
+}
+
+function withPageParams(path: string, page: number, perPage: number): string {
+  const joiner = path.includes("?") ? "&" : "?";
+  return `${path}${joiner}page=${page}&per_page=${perPage}`;
+}
+
+function recordKey(value: unknown): string {
+  const record = asRecord(value);
+  const id = record.id ?? record.product_id ?? record.category_id ?? record.group_id;
+  if (id !== null && id !== undefined) {
+    return `id:${String(id)}`;
+  }
+
+  const name = record.name ?? record.slug ?? record.path;
+  if (name !== null && name !== undefined) {
+    return `name:${String(name)}`;
+  }
+
+  return `raw:${JSON.stringify(value)}`;
+}
+
+async function fetchSellAuthCollection(
+  path: string,
+  keys: string[]
+): Promise<unknown[]> {
+  const results: unknown[] = [];
+  const seenItemKeys = new Set<string>();
+  const seenPageSignatures = new Set<string>();
+
+  for (let page = 1; page <= SELLAUTH_MAX_PAGES; page += 1) {
+    let response: ApiEnvelope<unknown>;
+
+    try {
+      response = await fetchSellAuth<unknown>(
+        withPageParams(path, page, SELLAUTH_PAGE_SIZE)
+      );
+    } catch (error) {
+      if (page === 1) throw error;
+      break;
+    }
+
+    const pageItems = unwrapCollection(response.data, keys);
+    if (pageItems.length === 0) break;
+
+    const signature = pageItems.slice(0, 5).map(recordKey).join("|");
+    if (seenPageSignatures.has(signature)) break;
+    seenPageSignatures.add(signature);
+
+    let uniqueCountForPage = 0;
+    for (const item of pageItems) {
+      const key = recordKey(item);
+      if (seenItemKeys.has(key)) continue;
+      seenItemKeys.add(key);
+      uniqueCountForPage += 1;
+      results.push(item);
+    }
+
+    if (pageItems.length < SELLAUTH_PAGE_SIZE) break;
+    if (uniqueCountForPage === 0) break;
+  }
+
+  return results;
 }
 
 function parseVariant(rawVariant: unknown): SellAuthVariant | null {
@@ -752,21 +817,35 @@ export async function getStorefrontData(): Promise<StorefrontData> {
   try {
     const [productsResult, groupsResult, categoriesResult, methodsResult] =
       await Promise.allSettled([
-        fetchSellAuth<unknown[]>(`/v1/shops/${SELLAUTH_SHOP_ID}/products`),
-        fetchSellAuth<unknown[]>(`/v1/shops/${SELLAUTH_SHOP_ID}/groups`),
-        fetchSellAuth<unknown[]>(`/v1/shops/${SELLAUTH_SHOP_ID}/categories`),
-        fetchSellAuth<unknown[]>(`/v1/shops/${SELLAUTH_SHOP_ID}/payment-methods`),
+        fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/products`, [
+          "products",
+          "items",
+          "data",
+        ]),
+        fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/groups`, [
+          "groups",
+          "items",
+          "data",
+        ]),
+        fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/categories`, [
+          "categories",
+          "items",
+          "data",
+        ]),
+        fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/payment-methods`, [
+          "payment_methods",
+          "paymentMethods",
+          "methods",
+          "items",
+          "data",
+        ]),
       ]);
 
     if (productsResult.status !== "fulfilled") {
       throw new Error(productsResult.reason?.message || "Failed to fetch products");
     }
 
-    const products = unwrapCollection(productsResult.value.data, [
-      "products",
-      "items",
-      "data",
-    ])
+    const products = productsResult.value
       .map(parseProduct)
       .filter((item): item is SellAuthProduct => Boolean(item));
 
@@ -776,31 +855,21 @@ export async function getStorefrontData(): Promise<StorefrontData> {
 
     const groupsFromSellAuth =
       groupsResult.status === "fulfilled"
-        ? unwrapCollection(groupsResult.value.data, ["groups", "items", "data"])
+        ? groupsResult.value
             .map(parseGroup)
             .filter((item): item is SellAuthGroup => Boolean(item))
         : [];
 
     const categoriesFromSellAuth =
       categoriesResult.status === "fulfilled"
-        ? unwrapCollection(categoriesResult.value.data, [
-            "categories",
-            "items",
-            "data",
-          ])
+        ? categoriesResult.value
             .map(parseCategory)
             .filter((item): item is SellAuthCategory => Boolean(item))
         : [];
 
     const paymentMethods =
       methodsResult.status === "fulfilled"
-        ? unwrapCollection(methodsResult.value.data, [
-            "payment_methods",
-            "paymentMethods",
-            "methods",
-            "items",
-            "data",
-          ])
+        ? methodsResult.value
             .map(parsePaymentMethod)
             .filter(
               (item): item is SellAuthPaymentMethod => Boolean(item && item.enabled)
