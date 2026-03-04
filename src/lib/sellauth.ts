@@ -347,9 +347,23 @@ async function fetchSellAuth<T>(
   };
 }
 
-function withPageParams(path: string, page: number, perPage: number): string {
+function withPageParams(
+  path: string,
+  page: number,
+  perPage: number,
+  extraParams?: Record<string, string>
+): string {
+  const query = new URLSearchParams();
+  query.set("page", String(page));
+  query.set("perPage", String(perPage));
+  query.set("per_page", String(perPage));
+
+  for (const [key, value] of Object.entries(extraParams || {})) {
+    query.set(key, value);
+  }
+
   const joiner = path.includes("?") ? "&" : "?";
-  return `${path}${joiner}page=${page}&perPage=${perPage}&per_page=${perPage}`;
+  return `${path}${joiner}${query.toString()}`;
 }
 
 function recordKey(value: unknown): string {
@@ -369,7 +383,8 @@ function recordKey(value: unknown): string {
 
 async function fetchSellAuthCollection(
   path: string,
-  keys: string[]
+  keys: string[],
+  extraParams?: Record<string, string>
 ): Promise<unknown[]> {
   const results: unknown[] = [];
   const seenItemKeys = new Set<string>();
@@ -380,7 +395,7 @@ async function fetchSellAuthCollection(
 
     try {
       response = await fetchSellAuth<unknown>(
-        withPageParams(path, page, SELLAUTH_PAGE_SIZE)
+        withPageParams(path, page, SELLAUTH_PAGE_SIZE, extraParams)
       );
     } catch (error) {
       if (page === 1) throw error;
@@ -823,11 +838,11 @@ export async function getStorefrontData(): Promise<StorefrontData> {
   try {
     const [productsResult, groupsResult, categoriesResult, methodsResult] =
       await Promise.allSettled([
-        fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/products`, [
-          "products",
-          "items",
-          "data",
-        ]),
+        fetchSellAuthCollection(
+          `/v1/shops/${SELLAUTH_SHOP_ID}/products`,
+          ["products", "items", "data"],
+          { all: "1" }
+        ),
         fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/groups`, [
           "groups",
           "items",
