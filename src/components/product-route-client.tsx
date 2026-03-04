@@ -148,7 +148,7 @@ export function ProductRouteClient() {
 
     const siteName = "Cheat Paradise";
     const siteUrl = window.location.origin;
-    const canonicalUrl = `${siteUrl}${productHref(product, { includePidQuery: false })}`;
+    const canonicalUrl = `${siteUrl}${productHref(product)}`;
     const description =
       product.description ||
       `Buy ${product.name} with instant delivery and secure checkout on ${siteName}.`;
@@ -196,7 +196,7 @@ export function ProductRouteClient() {
     process.env.NEXT_PUBLIC_SITE_URL ||
     "https://cheatparadise.com";
 
-  const productUrl = `${siteUrl}${productHref(product, { includePidQuery: false })}`;
+  const productUrl = `${siteUrl}${productHref(product)}`;
 
   const productJsonLd = {
     "@context": "https://schema.org",
