@@ -184,7 +184,7 @@
   text-align: left;
   padding: 14px 16px;
   color: #ffffff;
-  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+  transition: none;
   position: relative;
   min-height: 84px;
   cursor: pointer;
@@ -211,18 +211,18 @@
 
 .optionName {
   display: block;
-  font-size: 1.65rem;
-  line-height: 1;
+  font-size: 16px;
+  line-height: 24px;
   font-weight: 600;
   color: #ffffff;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
 }
 
 .optionPrice {
   display: block;
-  font-size: 1.4rem;
-  line-height: 1;
-  color: #6c7488;
+  font-size: 14px;
+  line-height: 20px;
+  color: #71717a;
   font-weight: 600;
 }
 
