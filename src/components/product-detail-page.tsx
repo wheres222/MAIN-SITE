@@ -225,44 +225,28 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
     { label: "Supported CPU", value: "AMD / Intel" },
   ];
 
-  const fallbackFeatureTabs: FeatureTab[] = [
-    {
-      title: "Aimbot",
-      items: [
-        "Field Of View",
-        "Smoothness",
-        "Bone Selection",
-        "Max Distance",
-        "FOV Circle",
-        "Ignore Invisible",
-        "Aim Line",
-        "Aim Cross",
-        "Perfect Prediction",
-      ],
-    },
-    {
-      title: "Player ESP",
-      items: [
-        "Player Name",
-        "Distance",
-        "Box",
-        "Corner Box",
-        "Skeleton",
-        "Health Bars",
-        "Shield Bars (Color Based)",
-        "OOF Arrow",
-        "Look Direction",
-      ],
-    },
-    {
-      title: "Radar",
-      items: ["Show Players", "Aimline", "Distance"],
-    },
-    {
-      title: "Misc",
-      items: ["Extra utility options can be configured from SellAuth description tabs."],
-    },
-  ];
+  const fallbackFeatureTabs: FeatureTab[] = [];
+
+  if (descriptionParagraphs.length > 0) {
+    fallbackFeatureTabs.push({
+      title: "Overview",
+      items: descriptionParagraphs.slice(0, 6),
+    });
+  }
+
+  if (product.variants.length > 0) {
+    fallbackFeatureTabs.push({
+      title: "Available Options",
+      items: product.variants.slice(0, 8).map((variant) => variant.name),
+    });
+  }
+
+  if (fallbackFeatureTabs.length === 0) {
+    fallbackFeatureTabs.push({
+      title: "Details",
+      items: [`${product.name} details will be updated soon.`],
+    });
+  }
 
   return {
     descriptionParagraphs,
