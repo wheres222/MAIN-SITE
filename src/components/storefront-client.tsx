@@ -31,7 +31,13 @@ function canonicalGroupSlug(value: string): string {
   return canonicalGameSlug(value || "");
 }
 
-const HIDDEN_GROUP_SLUGS = new Set(["valorant", "pubg"]);
+const HIDDEN_GROUP_SLUGS = new Set([
+  "valorant",
+  "pubg",
+  "fivem",
+  "call-of-duty",
+  "roblox",
+]);
 
 const PRIORITY_GROUP_ORDER = [
   "rust",
