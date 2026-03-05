@@ -431,49 +431,55 @@
 }
 
 .featureTabCard {
-  border: 1px solid var(--global-outline, #1f1f21);
+  border: 1px solid #242932;
   border-radius: 10px;
-  background: rgb(21, 21, 21);
+  background: #171a20;
   overflow: hidden;
 }
 
 .featureTabHeader {
   width: 100%;
-  min-height: 58px;
+  min-height: 62px;
   border: 0;
   background: transparent;
   color: #eef4ff;
   cursor: pointer;
-  padding: 12px 13px;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
 
+.featureTabHeader:hover {
+  background: #1b1f27;
+}
+
 .featureTabHeaderLeft {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   min-width: 0;
 }
 
 .featureTabHeaderLeft strong {
-  font-size: 1.05rem;
-  line-height: 1.1;
+  font-size: 1.04rem;
+  line-height: 1.2;
   font-weight: 700;
+  color: #f2f6ff;
+  letter-spacing: -0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .featureTabIcon {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  border: 1px solid #275774;
-  background: #0f3d51;
-  color: #4dc5f8;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 1px solid #2a6681;
+  background: #114760;
+  color: #2fc2f8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -481,15 +487,15 @@
 }
 
 .featureTabIcon svg {
-  width: 18px;
-  height: 18px;
+  width: 19px;
+  height: 19px;
   display: block;
 }
 
 .featureTabChevron {
-  width: 22px;
-  height: 22px;
-  color: #76839e;
+  width: 20px;
+  height: 20px;
+  color: #8691a8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -498,14 +504,14 @@
 }
 
 .featureTabChevron svg {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   display: block;
 }
 
 .featureTabChevronOpen {
   transform: rotate(180deg);
-  color: #dbe9ff;
+  color: #dce7fc;
 }
 
 .featureTabBody {

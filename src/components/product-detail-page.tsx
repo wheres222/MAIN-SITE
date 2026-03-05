@@ -367,7 +367,26 @@ function featureIconSvg(title: string) {
     );
   }
 
-  if (value.includes("esp") || value.includes("player")) {
+  if (value.includes("weapon")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5.1 11.3h6.6l2.1-2.1h3.6l1.5 1.5-1.5 1.6h-3.6l-2.1 2.1H8.9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M6 11.3V9.6M7.7 11.3V9.6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("player exploit")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="9.2" cy="9" r="2.2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M5.6 16.4c1-1.8 2.2-2.6 3.6-2.6s2.6.8 3.6 2.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="m16.2 7.5 1.2 2.2 2.5.3-1.8 1.8.5 2.6-2.4-1.1-2.2 1.2.3-2.6-1.9-1.7 2.5-.5 1.3-2.2Z" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (value.includes("player esp") || value.includes("player")) {
     return (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle cx="8.1" cy="10" r="2.1" stroke="currentColor" strokeWidth="1.6" />
@@ -378,12 +397,111 @@ function featureIconSvg(title: string) {
     );
   }
 
+  if (value.includes("entity")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="7.2" cy="9.2" r="1.6" fill="currentColor" />
+        <circle cx="11.2" cy="7.3" r="1.6" fill="currentColor" />
+        <circle cx="15.1" cy="7.9" r="1.6" fill="currentColor" />
+        <circle cx="17.4" cy="11.4" r="1.6" fill="currentColor" />
+        <path d="M6.5 15c1.5-1.6 3.1-2.4 5-2.4 1.8 0 3.5.8 5 2.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("resource")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="m7.2 16.6 6.6-6.6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="m12.8 7.8 3.6-3.6 2.2 2.2-3.6 3.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5.6 18.2 8.8 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
   if (value.includes("radar")) {
     return (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.7" />
         <path d="M12 12 16.5 7.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
         <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (value.includes("loot")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="5.1" y="7.5" width="13.8" height="9.6" rx="2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M10.2 10.4h3.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("vehicle")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5.1 13.6h13.8l-1.4-4.6H6.5l-1.4 4.6Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <circle cx="8.3" cy="15.9" r="1.5" fill="currentColor" />
+        <circle cx="15.7" cy="15.9" r="1.5" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (value.includes("food")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 7.3c2.9 0 5.2 2.2 5.2 5.2 0 3.2-2.3 5.8-5.2 5.8s-5.2-2.6-5.2-5.8c0-3 2.3-5.2 5.2-5.2Z" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M12 7.3c0-1.6.9-2.9 2.4-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("trap")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="6.8" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M12 8.6v4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+        <circle cx="12" cy="15.8" r="1" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (value.includes("item")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="m12 4.9 6.1 3.4V15L12 18.5 5.9 15V8.3L12 4.9Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <path d="M12 4.9v6.4m0 0 6.1-3m-6.1 3-6.1-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("movement")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="14.4" cy="6.8" r="1.5" fill="currentColor" />
+        <path d="m9.4 12.5 2.9-2.1 2.4 1.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="m8.1 16.8 2.8-2.3 2.2 1.2M12.9 13.4l2.7 3.2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("config")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M12 4.8v2M12 17.2v2M19.2 12h-2M6.8 12h-2M17.1 6.9l-1.4 1.4M8.3 15.7l-1.4 1.4M17.1 17.1l-1.4-1.4M8.3 8.3 6.9 6.9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("setting")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 6.7h12M6 12h12M6 17.3h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <circle cx="9" cy="6.7" r="1.4" fill="currentColor" />
+        <circle cx="14.7" cy="12" r="1.4" fill="currentColor" />
+        <circle cx="10.8" cy="17.3" r="1.4" fill="currentColor" />
       </svg>
     );
   }
