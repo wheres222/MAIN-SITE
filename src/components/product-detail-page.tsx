@@ -277,7 +277,11 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
   const parsedRequirements = uniqueByLabel([
     ...requirements,
     ...requirementsFromProductTabs,
-  ]).filter((item) => !isPostPaymentOnlyCopy(`${item.label} ${item.value}`));
+  ]).filter(
+    (item) =>
+      !isPostPaymentOnlyCopy(`${item.label} ${item.value}`) &&
+      normalizeLabel(item.label) !== "requirement"
+  );
 
   const mergedTabsByTitle = new Map<string, FeatureTab>();
 
@@ -301,6 +305,24 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
   const fallbackRequirements: RequirementItem[] = [
     { label: "Supported OS", value: "Windows 10/11" },
     { label: "Supported CPU", value: "AMD / Intel" },
+  ];
+
+  const detectedOs = parsedRequirements.find((item) =>
+    /(supported )?os|operating system|windows|linux|mac/.test(normalizeLabel(item.label))
+  );
+  const detectedCpu = parsedRequirements.find((item) =>
+    /(supported )?cpu|processor/.test(normalizeLabel(item.label))
+  );
+
+  const resolvedRequirements: RequirementItem[] = [
+    {
+      label: "Supported OS",
+      value: detectedOs?.value || fallbackRequirements[0].value,
+    },
+    {
+      label: "Supported CPU",
+      value: detectedCpu?.value || fallbackRequirements[1].value,
+    },
   ];
 
   const fallbackFeatureTabs: FeatureTab[] = [];
@@ -328,7 +350,7 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
 
   return {
     descriptionParagraphs,
-    requirements: parsedRequirements.length ? parsedRequirements : fallbackRequirements,
+    requirements: resolvedRequirements,
     featureTabs: resolvedFeatureTabs.length ? resolvedFeatureTabs : fallbackFeatureTabs,
   };
 }
