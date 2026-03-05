@@ -130,7 +130,12 @@ function parseTabHeading(line: string): string | null {
   for (const match of headingMatches) {
     if (match?.[1]) {
       const title = match[1].trim();
-      if (title && !/^requirements?$/i.test(title) && !/^features?$/i.test(title)) {
+      if (
+        title &&
+        !/^requirements?$/i.test(title) &&
+        !/^features?$/i.test(title) &&
+        !/^descriptions?$/i.test(title)
+      ) {
         return title;
       }
     }
@@ -246,7 +251,11 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
       ),
     }))
     .filter(
-      (tab) => tab.title && tab.items.length > 0 && !isPostPaymentOnlyCopy(tab.title)
+      (tab) =>
+        tab.title &&
+        tab.items.length > 0 &&
+        !isPostPaymentOnlyCopy(tab.title) &&
+        !/^descriptions?$/i.test(tab.title)
     );
 
   const requirementsFromProductTabs: RequirementItem[] = [];
@@ -326,13 +335,6 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
   ];
 
   const fallbackFeatureTabs: FeatureTab[] = [];
-
-  if (descriptionParagraphs.length > 0) {
-    fallbackFeatureTabs.push({
-      title: "Overview",
-      items: descriptionParagraphs.slice(0, 6),
-    });
-  }
 
   if (product.variants.length > 0) {
     fallbackFeatureTabs.push({
@@ -824,17 +826,6 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
         </section>
 
         <section className={styles.detailsStack}>
-          {detailContent.descriptionParagraphs.length ? (
-            <section className={styles.detailBlock}>
-              <h2 className={styles.detailBlockTitle}>Description</h2>
-              {detailContent.descriptionParagraphs.map((line, index) => (
-                <p key={`${product.id}-description-${index}`} className={styles.descriptionText}>
-                  {line}
-                </p>
-              ))}
-            </section>
-          ) : null}
-
           <section className={styles.detailBlock}>
             <h2 className={styles.detailBlockTitle}>Requirements</h2>
             <div className={styles.requirementsRow}>

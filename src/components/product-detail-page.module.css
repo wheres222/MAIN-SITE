@@ -350,9 +350,9 @@
 }
 
 .detailBlock {
-  border: 1px solid var(--global-outline, #1f1f21);
+  border: 1px solid #232732;
   border-radius: 10px;
-  background: rgb(21, 21, 21);
+  background: #12151b;
   padding: 18px;
 }
 
@@ -382,10 +382,10 @@
 }
 
 .requirementMini {
-  border: 1px solid var(--global-outline, #1f1f21);
+  border: 1px solid #2a2f3a;
   border-radius: 10px;
-  background: rgb(21, 21, 21);
-  min-height: 92px;
+  background: linear-gradient(180deg, #1c1f26 0%, #181b22 100%);
+  min-height: 94px;
   padding: 12px 13px;
   display: grid;
   align-content: center;
@@ -396,9 +396,9 @@
   width: 36px;
   height: 36px;
   border-radius: 9px;
-  border: 1px solid #275774;
-  background: #0f3d51;
-  color: #4dc5f8;
+  border: 1px solid #2a6681;
+  background: #114760;
+  color: #2fc2f8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -411,15 +411,15 @@
 }
 
 .requirementMiniLabel {
-  color: #8f9ab2;
-  font-size: 0.88rem;
-  line-height: 1;
+  color: #8f99ae;
+  font-size: 0.96rem;
+  line-height: 1.1;
 }
 
 .requirementMiniValue {
   color: #f5f8ff;
-  font-size: 1.3rem;
-  line-height: 1.1;
+  font-size: 1.45rem;
+  line-height: 1.08;
   font-weight: 700;
 }
 
