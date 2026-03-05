@@ -414,7 +414,7 @@ export function StorefrontClient() {
             </div>
             <div className="discord-join-art" aria-hidden="true">
               <Image
-                src="/social/discord-join.png"
+                src="/social/discord-join-clean.png"
                 alt=""
                 width={720}
                 height={720}
