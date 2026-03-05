@@ -11,6 +11,7 @@ import type {
   SellAuthGroup,
   SellAuthPaymentMethod,
   SellAuthProduct,
+  SellAuthProductTab,
   SellAuthVariant,
   StorefrontData,
 } from "@/types/sellauth";
@@ -50,6 +51,7 @@ let storefrontCache:
   | null = null;
 
 const productImageCache = new Map<number, string>();
+const productDetailCache = new Map<number, Partial<SellAuthProduct>>();
 
 function isSellAuthConfigured(): boolean {
   return Boolean(SELLAUTH_SHOP_ID && SELLAUTH_API_KEY);
@@ -61,6 +63,7 @@ function cloneStorefront(data: StorefrontData): StorefrontData {
     products: data.products.map((product) => ({
       ...product,
       variants: product.variants.map((variant) => ({ ...variant })),
+      tabs: product.tabs?.map((tab) => ({ ...tab, items: [...tab.items] })) || [],
     })),
     groups: data.groups.map((group) => ({
       ...group,
@@ -425,6 +428,215 @@ async function fetchSellAuthCollection(
   return results;
 }
 
+function toText(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  return "";
+}
+
+function decodeRichText(value: string): string {
+  return value
+    .replace(/<br\s*\/?\s*>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\r/g, "")
+    .trim();
+}
+
+function splitItems(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    const output: string[] = [];
+    for (const entry of value) {
+      output.push(...splitItems(entry));
+    }
+    return [...new Set(output.map((item) => item.trim()).filter(Boolean))];
+  }
+
+  if (typeof value === "object" && value !== null) {
+    const record = value as GenericRecord;
+    const nested =
+      record.items ??
+      record.features ??
+      record.lines ??
+      record.values ??
+      record.content ??
+      record.description ??
+      record.body ??
+      record.text ??
+      record.value;
+
+    if (nested !== undefined) {
+      const nestedItems = splitItems(nested);
+      if (nestedItems.length > 0) return nestedItems;
+    }
+
+    const kvItems = Object.entries(record)
+      .filter(([key]) => !/(title|name|label|tab|id|order)/i.test(key))
+      .flatMap(([key, entry]) => {
+        const text = splitItems(entry).join(", ");
+        if (!text) return [];
+        return [`${key.replace(/[_-]+/g, " ")}: ${text}`];
+      });
+
+    return [...new Set(kvItems.map((item) => item.trim()).filter(Boolean))];
+  }
+
+  const text = decodeRichText(toText(value));
+  if (!text) return [];
+
+  const lines = text
+    .split("\n")
+    .map((line) => line.replace(/^(?:[-*•]|\d+[.)])\s*/, "").trim())
+    .filter(Boolean);
+
+  if (lines.length > 1) return [...new Set(lines)];
+
+  const comma = text
+    .split(/[|,]/)
+    .map((part) => part.replace(/^(?:[-*•]|\d+[.)])\s*/, "").trim())
+    .filter(Boolean);
+
+  return comma.length > 1 ? [...new Set(comma)] : lines;
+}
+
+function humanizeKey(value: string): string {
+  return value
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (match) => match.toUpperCase());
+}
+
+function parseProductTabs(value: unknown): SellAuthProductTab[] {
+  const parseAny = (input: unknown): SellAuthProductTab[] => {
+    if (typeof input === "string") {
+      const trimmed = input.trim();
+      if (!trimmed) return [];
+
+      if (
+        (trimmed.startsWith("[") && trimmed.endsWith("]")) ||
+        (trimmed.startsWith("{") && trimmed.endsWith("}"))
+      ) {
+        try {
+          return parseAny(JSON.parse(trimmed));
+        } catch {
+          // Not valid JSON, fall through to plain text handling.
+        }
+      }
+
+      const plainItems = splitItems(trimmed);
+      return plainItems.length > 0
+        ? [{ title: "Features", items: plainItems.slice(0, 20) }]
+        : [];
+    }
+
+    if (Array.isArray(input)) {
+      const tabs: SellAuthProductTab[] = [];
+
+      input.forEach((entry, index) => {
+        if (typeof entry === "string") {
+          const items = splitItems(entry);
+          if (items.length > 0) {
+            tabs.push({ title: `Tab ${index + 1}`, items: items.slice(0, 20) });
+          }
+          return;
+        }
+
+        const record = asRecord(entry);
+        if (Object.keys(record).length === 0) return;
+
+        const title =
+          asString(record.title) ||
+          asString(record.name) ||
+          asString(record.label) ||
+          asString(record.tab_title) ||
+          asString(record.heading) ||
+          `Tab ${index + 1}`;
+
+        const items = splitItems(
+          record.items ??
+            record.features ??
+            record.lines ??
+            record.values ??
+            record.content ??
+            record.description ??
+            record.body ??
+            record.text ??
+            record.value
+        );
+
+        if (items.length > 0) {
+          tabs.push({ title: title.trim(), items: items.slice(0, 20) });
+        }
+      });
+
+      return tabs;
+    }
+
+    if (typeof input === "object" && input !== null) {
+      const record = asRecord(input);
+
+      const directTitle =
+        asString(record.title) || asString(record.name) || asString(record.label);
+      const directItems = splitItems(
+        record.items ??
+          record.features ??
+          record.lines ??
+          record.values ??
+          record.content ??
+          record.description ??
+          record.body ??
+          record.text ??
+          record.value
+      );
+
+      if (directTitle && directItems.length > 0) {
+        return [{ title: directTitle.trim(), items: directItems.slice(0, 20) }];
+      }
+
+      const tabs = Object.entries(record)
+        .filter(([key]) => !/(id|order|created|updated|shop|product)/i.test(key))
+        .flatMap(([key, raw]) => {
+          const items = splitItems(raw);
+          if (items.length === 0) return [];
+          return [{ title: humanizeKey(key), items: items.slice(0, 20) } satisfies SellAuthProductTab];
+        });
+
+      return tabs;
+    }
+
+    return [];
+  };
+
+  const root = asRecord(value);
+  const candidates = [
+    root.product_tabs,
+    root.productTabs,
+    root.tabs,
+    root.features,
+    root.feature_tabs,
+    root.featureTabs,
+  ];
+
+  const parsed = candidates.flatMap((candidate) => parseAny(candidate));
+  const byTitle = new Map<string, SellAuthProductTab>();
+
+  for (const tab of parsed) {
+    const key = toGameSlug(tab.title || "");
+    if (!key || tab.items.length === 0) continue;
+    if (!byTitle.has(key)) {
+      byTitle.set(key, { title: tab.title.trim(), items: [...new Set(tab.items)] });
+      continue;
+    }
+
+    const existing = byTitle.get(key) as SellAuthProductTab;
+    existing.items = [...new Set([...existing.items, ...tab.items])].slice(0, 24);
+  }
+
+  return [...byTitle.values()];
+}
+
 function parseVariant(rawVariant: unknown): SellAuthVariant | null {
   const variant = asRecord(rawVariant);
   const id = asNumber(variant.id);
@@ -550,6 +762,7 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
   const parsedVariants = variantsRaw
     .map(parseVariant)
     .filter((variant): variant is SellAuthVariant => Boolean(variant));
+  const parsedTabs = parseProductTabs(product);
 
   const productMinQuantity =
     asNumber(product.min_quantity) ??
@@ -608,6 +821,7 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
     categoryId,
     categoryName,
     variants: parsedVariants,
+    tabs: parsedTabs,
   };
 }
 
@@ -639,56 +853,144 @@ async function fetchProductDetailRecord(productId: number): Promise<GenericRecor
   return null;
 }
 
-async function enrichMissingProductImages(
-  products: SellAuthProduct[]
-): Promise<SellAuthProduct[]> {
-  const missing = products.filter((product) => product.image === PRODUCT_IMAGE_PLACEHOLDER);
-  if (missing.length === 0) return products;
+function extractDescriptionCandidate(record: GenericRecord): string {
+  const candidates = [
+    asString(record.description),
+    asString(record.long_description),
+    asString(record.longDescription),
+    asString(record.product_description),
+    asString(record.productDescription),
+    asString(record.instructions),
+    asString(record.content),
+  ].map((value) => value.trim());
 
-  const map = new Map<number, string>();
+  return candidates.find((value) => value.length > 0) || "";
+}
 
-  // Pull from in-memory cache first.
-  for (const product of missing) {
-    const cached = productImageCache.get(product.id);
-    if (cached) {
-      map.set(product.id, cached);
-    }
+function buildProductPatchFromDetail(detail: GenericRecord): Partial<SellAuthProduct> {
+  const groupRecord = asRecord(detail.group ?? detail.shop_group);
+  const categoryRecord = asRecord(detail.category ?? detail.shop_category);
+
+  const patch: Partial<SellAuthProduct> = {};
+
+  const detailImage =
+    extractImageCandidate(detail.image) ||
+    extractImageCandidate(detail.image_url) ||
+    extractImageCandidate(detail.imageUrl) ||
+    extractImageCandidate(detail.thumbnail) ||
+    extractImageCandidate(detail.thumbnail_url) ||
+    extractImageCandidate(detail.photo) ||
+    extractImageCandidate(detail.preview) ||
+    extractImageCandidate(detail.gallery) ||
+    extractImageCandidate(detail.media) ||
+    extractImageCandidate(detail.assets) ||
+    extractImageCandidate(detail.images) ||
+    extractImageCandidate(detail.variants);
+
+  if (detailImage) {
+    patch.image = detailImage;
   }
 
-  // Enrich only a few uncached items per request to avoid SellAuth rate limits.
-  const uncachedMissing = missing
-    .filter((product) => !map.has(product.id))
-    .slice(0, 6);
+  const description = extractDescriptionCandidate(detail);
+  if (description) {
+    patch.description = description;
+  }
+
+  const tabs = parseProductTabs(detail);
+  if (tabs.length > 0) {
+    patch.tabs = tabs;
+  }
+
+  const groupId =
+    asNumber(detail.group_id) ??
+    asNumber(detail.groupId) ??
+    asNumber(detail.shop_group_id) ??
+    asNumber(detail.shopGroupId) ??
+    asNumber(groupRecord.id);
+  const categoryId =
+    asNumber(detail.category_id) ??
+    asNumber(detail.categoryId) ??
+    asNumber(detail.shop_category_id) ??
+    asNumber(detail.shopCategoryId) ??
+    asNumber(categoryRecord.id);
+
+  const groupName =
+    asString(groupRecord.name) ||
+    asString(detail.group_name) ||
+    asString(detail.groupName) ||
+    (typeof detail.group === "string" ? asString(detail.group) : "");
+  const categoryName =
+    asString(categoryRecord.name) ||
+    asString(detail.category_name) ||
+    asString(detail.categoryName) ||
+    (typeof detail.category === "string" ? asString(detail.category) : "");
+
+  if (groupId !== null) patch.groupId = groupId;
+  if (categoryId !== null) patch.categoryId = categoryId;
+  if (groupName) patch.groupName = groupName;
+  if (categoryName) patch.categoryName = categoryName;
+
+  return patch;
+}
+
+async function enrichProductsFromDetails(
+  products: SellAuthProduct[]
+): Promise<SellAuthProduct[]> {
+  if (products.length === 0) return products;
+
+  const patched = products.map((product) => {
+    const cached = productDetailCache.get(product.id);
+    if (!cached) return product;
+    return {
+      ...product,
+      ...cached,
+      variants: product.variants,
+      tabs: cached.tabs || product.tabs || [],
+    };
+  });
+
+  const targets = patched.filter((product) => {
+    const needsImage = product.image === PRODUCT_IMAGE_PLACEHOLDER;
+    const needsDescription = (product.description || "").trim().length < 8;
+    const needsTabs = (product.tabs || []).length === 0;
+    const needsCategoryName = !(product.categoryName || "").trim();
+    const needsGroupName = !(product.groupName || "").trim();
+    return needsImage || needsDescription || needsTabs || needsCategoryName || needsGroupName;
+  });
+
+  if (targets.length === 0) return patched;
+
+  const workerCount = 4;
+  const queue = [...targets];
 
   await Promise.all(
-    uncachedMissing.map(async (product) => {
-      const detail = await fetchProductDetailRecord(product.id);
-      if (!detail) return;
+    Array.from({ length: workerCount }, async () => {
+      while (queue.length > 0) {
+        const product = queue.shift();
+        if (!product) return;
 
-      const detailImage =
-        extractImageCandidate(detail.image) ||
-        extractImageCandidate(detail.image_url) ||
-        extractImageCandidate(detail.imageUrl) ||
-        extractImageCandidate(detail.thumbnail) ||
-        extractImageCandidate(detail.thumbnail_url) ||
-        extractImageCandidate(detail.photo) ||
-        extractImageCandidate(detail.preview) ||
-        extractImageCandidate(detail.gallery) ||
-        extractImageCandidate(detail.media) ||
-        extractImageCandidate(detail.assets) ||
-        extractImageCandidate(detail.variants);
+        const detail = await fetchProductDetailRecord(product.id);
+        if (!detail) continue;
 
-      if (detailImage) {
-        map.set(product.id, detailImage);
-        productImageCache.set(product.id, detailImage);
+        const patch = buildProductPatchFromDetail(detail);
+        if (Object.keys(patch).length === 0) continue;
+
+        productDetailCache.set(product.id, patch);
+        if (patch.image) productImageCache.set(product.id, patch.image);
       }
     })
   );
 
-  if (map.size === 0) return products;
-  return products.map((product) =>
-    map.has(product.id) ? { ...product, image: map.get(product.id) as string } : product
-  );
+  return patched.map((product) => {
+    const cached = productDetailCache.get(product.id);
+    if (!cached) return product;
+    return {
+      ...product,
+      ...cached,
+      variants: product.variants,
+      tabs: cached.tabs || product.tabs || [],
+    };
+  });
 }
 
 function parsePaymentMethod(rawMethod: unknown): SellAuthPaymentMethod | null {
@@ -978,7 +1280,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       return product;
     });
 
-    const productsFinal = await enrichMissingProductImages(productsClean);
+    const productsFinal = await enrichProductsFromDetails(productsClean);
 
     const productDerivedGroups = ensureGroupsFromProducts(productsFinal);
     const productDerivedCategories = ensureCategoriesFromProducts(productsFinal);

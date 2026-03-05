@@ -220,6 +220,32 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
     .map((tab) => ({ ...tab, items: [...new Set(tab.items)] }))
     .filter((tab) => tab.title && tab.items.length > 0);
 
+  const tabsFromProduct = (product.tabs || [])
+    .map((tab) => ({
+      title: tab.title?.trim() || "",
+      items: [...new Set((tab.items || []).map((item) => item.trim()).filter(Boolean))],
+    }))
+    .filter((tab) => tab.title && tab.items.length > 0);
+
+  const mergedTabsByTitle = new Map<string, FeatureTab>();
+
+  for (const tab of tabsFromProduct) {
+    mergedTabsByTitle.set(normalizeLabel(tab.title), tab);
+  }
+
+  for (const tab of featureTabs) {
+    const key = normalizeLabel(tab.title);
+    if (!mergedTabsByTitle.has(key)) {
+      mergedTabsByTitle.set(key, tab);
+      continue;
+    }
+
+    const existing = mergedTabsByTitle.get(key) as FeatureTab;
+    existing.items = [...new Set([...existing.items, ...tab.items])];
+  }
+
+  const resolvedFeatureTabs = [...mergedTabsByTitle.values()];
+
   const fallbackRequirements: RequirementItem[] = [
     { label: "Supported OS", value: "Windows 10/11" },
     { label: "Supported CPU", value: "AMD / Intel" },
@@ -251,7 +277,7 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
   return {
     descriptionParagraphs,
     requirements: parsedRequirements.length ? parsedRequirements : fallbackRequirements,
-    featureTabs: featureTabs.length ? featureTabs : fallbackFeatureTabs,
+    featureTabs: resolvedFeatureTabs.length ? resolvedFeatureTabs : fallbackFeatureTabs,
   };
 }
 

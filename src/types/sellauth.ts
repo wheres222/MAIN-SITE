@@ -26,6 +26,11 @@ export interface SellAuthCategory {
   image: SellAuthImage | null;
 }
 
+export interface SellAuthProductTab {
+  title: string;
+  items: string[];
+}
+
 export interface SellAuthProduct {
   id: number;
   name: string;
@@ -40,6 +45,7 @@ export interface SellAuthProduct {
   categoryId: number | null;
   categoryName: string;
   variants: SellAuthVariant[];
+  tabs?: SellAuthProductTab[];
 }
 
 export interface SellAuthPaymentMethod {
