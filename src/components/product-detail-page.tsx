@@ -78,6 +78,11 @@ function normalizeLabel(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
 
+function isPostPaymentOnlyCopy(value: string): boolean {
+  const normalized = normalizeLabel(value);
+  return /\bloader\b/.test(normalized) || /\binstructions?\b/.test(normalized);
+}
+
 function parseRequirementLine(line: string): RequirementItem | null {
   const match = line.match(/^([^:]{2,40})\s*:\s*(.+)$/);
   if (!match) return null;
@@ -85,6 +90,7 @@ function parseRequirementLine(line: string): RequirementItem | null {
   const rawLabel = match[1].trim();
   const value = match[2].trim();
   if (!rawLabel || !value) return null;
+  if (isPostPaymentOnlyCopy(`${rawLabel} ${value}`)) return null;
 
   const normalized = normalizeLabel(rawLabel);
 
@@ -212,28 +218,39 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
       }
     }
 
-    descriptionParagraphs.push(line);
+    if (!isPostPaymentOnlyCopy(line)) {
+      descriptionParagraphs.push(line);
+    }
   }
 
   const featureTabs = tabs
-    .map((tab) => ({ ...tab, items: [...new Set(tab.items)] }))
-    .filter((tab) => tab.title && tab.items.length > 0);
+    .map((tab) => ({
+      ...tab,
+      items: [...new Set(tab.items)].filter((item) => !isPostPaymentOnlyCopy(item)),
+    }))
+    .filter(
+      (tab) => tab.title && tab.items.length > 0 && !isPostPaymentOnlyCopy(tab.title)
+    );
 
   const tabsFromProduct = (product.tabs || [])
     .map((tab) => ({
       title: tab.title?.trim() || "",
-      items: [...new Set((tab.items || []).map((item) => item.trim()).filter(Boolean))],
+      items: [...new Set((tab.items || []).map((item) => item.trim()).filter(Boolean))].filter(
+        (item) => !isPostPaymentOnlyCopy(item)
+      ),
     }))
-    .filter((tab) => tab.title && tab.items.length > 0);
+    .filter(
+      (tab) => tab.title && tab.items.length > 0 && !isPostPaymentOnlyCopy(tab.title)
+    );
 
   const requirementsFromProductTabs: RequirementItem[] = [];
 
   for (const tab of tabsFromProduct) {
     const titleNorm = normalizeLabel(tab.title);
     const looksLikeRequirementTab =
-      /requirement|system|loader|instruction|setup|compat|support/.test(titleNorm);
+      /requirement|system|setup|compat|support/.test(titleNorm);
 
-    if (!looksLikeRequirementTab) continue;
+    if (!looksLikeRequirementTab || isPostPaymentOnlyCopy(tab.title)) continue;
 
     for (const item of tab.items) {
       const parsed = parseRequirementLine(item);
@@ -243,21 +260,7 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
       }
 
       const trimmed = item.trim();
-      if (!trimmed) continue;
-
-      if (/loader/.test(titleNorm) || /^loader\b/i.test(trimmed)) {
-        const value = trimmed.replace(/^loader\s*[:\-]?\s*/i, "").trim() || trimmed;
-        requirementsFromProductTabs.push({ label: "Loader", value });
-        continue;
-      }
-
-      if (/instruction|setup|guide/.test(titleNorm) || /^(instructions?|setup|guide)\b/i.test(trimmed)) {
-        const value =
-          trimmed.replace(/^(instructions?|setup|guide)\s*[:\-]?\s*/i, "").trim() ||
-          trimmed;
-        requirementsFromProductTabs.push({ label: "Instructions", value });
-        continue;
-      }
+      if (!trimmed || isPostPaymentOnlyCopy(trimmed)) continue;
 
       if (/^requirements?$/.test(titleNorm) || /system/.test(titleNorm)) {
         requirementsFromProductTabs.push({ label: "Requirement", value: trimmed });
@@ -265,7 +268,10 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
     }
   }
 
-  const parsedRequirements = uniqueByLabel([...requirements, ...requirementsFromProductTabs]);
+  const parsedRequirements = uniqueByLabel([
+    ...requirements,
+    ...requirementsFromProductTabs,
+  ]).filter((item) => !isPostPaymentOnlyCopy(`${item.label} ${item.value}`));
 
   const mergedTabsByTitle = new Map<string, FeatureTab>();
 
