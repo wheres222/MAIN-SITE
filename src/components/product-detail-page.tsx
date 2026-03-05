@@ -80,7 +80,9 @@ function normalizeLabel(value: string): string {
 
 function isPostPaymentOnlyCopy(value: string): boolean {
   const normalized = normalizeLabel(value);
-  return /\bloader\b/.test(normalized) || /\binstructions?\b/.test(normalized);
+  return /(\bloader\b|\binstructions?\b|\bsetup\b|\bguide\b|\binstall\b|\blaunch\b|\binject\b)/.test(
+    normalized
+  );
 }
 
 function parseRequirementLine(line: string): RequirementItem | null {
@@ -93,6 +95,10 @@ function parseRequirementLine(line: string): RequirementItem | null {
   if (isPostPaymentOnlyCopy(`${rawLabel} ${value}`)) return null;
 
   const normalized = normalizeLabel(rawLabel);
+
+  if (isPostPaymentOnlyCopy(`${rawLabel} ${value}`) || /(setup|guide|install|launch|inject)/.test(normalized)) {
+    return null;
+  }
 
   if (/(supported )?os|operating system|windows|linux|mac/.test(normalized)) {
     return { label: "Supported OS", value };
@@ -248,7 +254,7 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
   for (const tab of tabsFromProduct) {
     const titleNorm = normalizeLabel(tab.title);
     const looksLikeRequirementTab =
-      /requirement|system|setup|compat|support/.test(titleNorm);
+      /requirement|system|compat|support/.test(titleNorm);
 
     if (!looksLikeRequirementTab || isPostPaymentOnlyCopy(tab.title)) continue;
 
