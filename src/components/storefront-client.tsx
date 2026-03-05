@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { canonicalGameSlug } from "@/lib/game-slug";
+import { getDiscordUrl } from "@/lib/links";
 import { productHref } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
@@ -87,6 +88,7 @@ export function StorefrontClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeGroupSlug, setActiveGroupSlug] = useState<string | null>(null);
+  const discordUrl = getDiscordUrl();
 
   useEffect(() => {
     let active = true;
@@ -396,6 +398,31 @@ export function StorefrontClient() {
           {!isLoading && filteredGroups.length === 0 && (
             <p className="state-message">No categories are available yet.</p>
           )}
+        </section>
+
+        <section className="shell discord-join-wrap" aria-label="Join Discord">
+          <a
+            className="discord-join-banner"
+            href={discordUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <div className="discord-join-copy">
+              <h3>Join Your Discord</h3>
+              <p>Connect with our community for support, updates, and exclusive offers.</p>
+              <span className="discord-join-cta">Join Now</span>
+            </div>
+            <div className="discord-join-art" aria-hidden="true">
+              <Image
+                src="/social/discord-join.png"
+                alt=""
+                width={720}
+                height={720}
+                sizes="(max-width: 900px) 42vw, 280px"
+                unoptimized
+              />
+            </div>
+          </a>
         </section>
 
         {activeGroup ? (
