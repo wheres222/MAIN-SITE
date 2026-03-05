@@ -215,7 +215,6 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
     descriptionParagraphs.push(line);
   }
 
-  const parsedRequirements = uniqueByLabel(requirements);
   const featureTabs = tabs
     .map((tab) => ({ ...tab, items: [...new Set(tab.items)] }))
     .filter((tab) => tab.title && tab.items.length > 0);
@@ -226,6 +225,47 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
       items: [...new Set((tab.items || []).map((item) => item.trim()).filter(Boolean))],
     }))
     .filter((tab) => tab.title && tab.items.length > 0);
+
+  const requirementsFromProductTabs: RequirementItem[] = [];
+
+  for (const tab of tabsFromProduct) {
+    const titleNorm = normalizeLabel(tab.title);
+    const looksLikeRequirementTab =
+      /requirement|system|loader|instruction|setup|compat|support/.test(titleNorm);
+
+    if (!looksLikeRequirementTab) continue;
+
+    for (const item of tab.items) {
+      const parsed = parseRequirementLine(item);
+      if (parsed) {
+        requirementsFromProductTabs.push(parsed);
+        continue;
+      }
+
+      const trimmed = item.trim();
+      if (!trimmed) continue;
+
+      if (/loader/.test(titleNorm) || /^loader\b/i.test(trimmed)) {
+        const value = trimmed.replace(/^loader\s*[:\-]?\s*/i, "").trim() || trimmed;
+        requirementsFromProductTabs.push({ label: "Loader", value });
+        continue;
+      }
+
+      if (/instruction|setup|guide/.test(titleNorm) || /^(instructions?|setup|guide)\b/i.test(trimmed)) {
+        const value =
+          trimmed.replace(/^(instructions?|setup|guide)\s*[:\-]?\s*/i, "").trim() ||
+          trimmed;
+        requirementsFromProductTabs.push({ label: "Instructions", value });
+        continue;
+      }
+
+      if (/^requirements?$/.test(titleNorm) || /system/.test(titleNorm)) {
+        requirementsFromProductTabs.push({ label: "Requirement", value: trimmed });
+      }
+    }
+  }
+
+  const parsedRequirements = uniqueByLabel([...requirements, ...requirementsFromProductTabs]);
 
   const mergedTabsByTitle = new Map<string, FeatureTab>();
 
@@ -246,10 +286,7 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
 
   const resolvedFeatureTabs = [...mergedTabsByTitle.values()];
 
-  const fallbackRequirements: RequirementItem[] = [
-    { label: "Supported OS", value: "Windows 10/11" },
-    { label: "Supported CPU", value: "AMD / Intel" },
-  ];
+  const fallbackRequirements: RequirementItem[] = [];
 
   const fallbackFeatureTabs: FeatureTab[] = [];
 
@@ -646,30 +683,43 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           <section className={styles.detailBlock}>
             <h2 className={styles.detailBlockTitle}>Requirements</h2>
             <div className={styles.requirementsRow}>
-              {detailContent.requirements.map((item) => (
-                <article key={`${item.label}-${item.value}`} className={styles.requirementMini}>
+              {detailContent.requirements.length ? (
+                detailContent.requirements.map((item) => (
+                  <article key={`${item.label}-${item.value}`} className={styles.requirementMini}>
+                    <span className={styles.requirementMiniIcon} aria-hidden>
+                      {item.label.toLowerCase().includes("cpu") ? (
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
+                          <path d="M9.8 3.8v2.4M14.2 3.8v2.4M9.8 17.8v2.4M14.2 17.8v2.4M3.8 9.8h2.4M17.8 9.8h2.4M3.8 14.2h2.4M17.8 14.2h2.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                        </svg>
+                      ) : item.label.toLowerCase().includes("os") ||
+                        item.label.toLowerCase().includes("windows") ? (
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <path d="M3.8 4.8 10.7 3.9v8.2H3.8V4.8Zm7.9-1 8.5-1.1v9.4h-8.5V3.8ZM3.8 12.9h6.9v8.3L3.8 20.3v-7.4Zm7.9 0h8.5v9.4l-8.5-1.1v-8.3Z" fill="currentColor" />
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <path d="M4.8 5.4h14.4v13.2H4.8z" stroke="currentColor" strokeWidth="1.6" />
+                          <path d="M9.2 8.5v6.8M12 8.5v6.8M14.8 8.5v6.8" stroke="currentColor" strokeWidth="1.4" />
+                        </svg>
+                      )}
+                    </span>
+                    <span className={styles.requirementMiniLabel}>{item.label}</span>
+                    <strong className={styles.requirementMiniValue}>{item.value}</strong>
+                  </article>
+                ))
+              ) : (
+                <article className={styles.requirementMini}>
                   <span className={styles.requirementMiniIcon} aria-hidden>
-                    {item.label.toLowerCase().includes("cpu") ? (
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
-                        <path d="M9.8 3.8v2.4M14.2 3.8v2.4M9.8 17.8v2.4M14.2 17.8v2.4M3.8 9.8h2.4M17.8 9.8h2.4M3.8 14.2h2.4M17.8 14.2h2.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                      </svg>
-                    ) : item.label.toLowerCase().includes("os") ||
-                      item.label.toLowerCase().includes("windows") ? (
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M3.8 4.8 10.7 3.9v8.2H3.8V4.8Zm7.9-1 8.5-1.1v9.4h-8.5V3.8ZM3.8 12.9h6.9v8.3L3.8 20.3v-7.4Zm7.9 0h8.5v9.4l-8.5-1.1v-8.3Z" fill="currentColor" />
-                      </svg>
-                    ) : (
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M4.8 5.4h14.4v13.2H4.8z" stroke="currentColor" strokeWidth="1.6" />
-                        <path d="M9.2 8.5v6.8M12 8.5v6.8M14.8 8.5v6.8" stroke="currentColor" strokeWidth="1.4" />
-                      </svg>
-                    )}
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M4.8 5.4h14.4v13.2H4.8z" stroke="currentColor" strokeWidth="1.6" />
+                      <path d="M9.2 8.5v6.8M12 8.5v6.8M14.8 8.5v6.8" stroke="currentColor" strokeWidth="1.4" />
+                    </svg>
                   </span>
-                  <span className={styles.requirementMiniLabel}>{item.label}</span>
-                  <strong className={styles.requirementMiniValue}>{item.value}</strong>
+                  <span className={styles.requirementMiniLabel}>Requirements</span>
+                  <strong className={styles.requirementMiniValue}>Check feature tabs</strong>
                 </article>
-              ))}
+              )}
             </div>
           </section>
 
