@@ -299,11 +299,6 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
 
   const resolvedFeatureTabs = [...mergedTabsByTitle.values()];
 
-  const fallbackRequirements: RequirementItem[] = [
-    { label: "Supported OS", value: "Windows 10/11" },
-    { label: "Supported CPU", value: "AMD / Intel" },
-  ];
-
   const detectedOs = parsedRequirements.find((item) =>
     /(supported )?os|operating system|windows|linux|mac/.test(normalizeLabel(item.label))
   );
@@ -311,37 +306,27 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
     /(supported )?cpu|processor/.test(normalizeLabel(item.label))
   );
 
-  const resolvedRequirements: RequirementItem[] = [
-    {
-      label: "Supported OS",
-      value: detectedOs?.value || fallbackRequirements[0].value,
-    },
-    {
-      label: "Supported CPU",
-      value: detectedCpu?.value || fallbackRequirements[1].value,
-    },
-  ];
+  const resolvedRequirements: RequirementItem[] = [];
 
-  const fallbackFeatureTabs: FeatureTab[] = [];
-
-  if (product.variants.length > 0) {
-    fallbackFeatureTabs.push({
-      title: "Available Options",
-      items: product.variants.slice(0, 8).map((variant) => variant.name),
-    });
+  if (detectedOs) {
+    resolvedRequirements.push({ label: "Supported OS", value: detectedOs.value });
   }
 
-  if (fallbackFeatureTabs.length === 0) {
-    fallbackFeatureTabs.push({
-      title: "Details",
-      items: [`${product.name} details will be updated soon.`],
-    });
+  if (detectedCpu) {
+    resolvedRequirements.push({ label: "Supported CPU", value: detectedCpu.value });
+  }
+
+  for (const item of parsedRequirements) {
+    const key = normalizeLabel(item.label);
+    if (key === "supported os" || key === "supported cpu") continue;
+    if (resolvedRequirements.some((existing) => normalizeLabel(existing.label) === key)) continue;
+    resolvedRequirements.push(item);
   }
 
   return {
     descriptionParagraphs,
     requirements: resolvedRequirements,
-    featureTabs: resolvedFeatureTabs.length ? resolvedFeatureTabs : fallbackFeatureTabs,
+    featureTabs: resolvedFeatureTabs,
   };
 }
 
@@ -818,11 +803,13 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           </article>
         </section>
 
-        <section className={styles.detailsStack}>
-          <section className={styles.detailBlock}>
-            <h2 className={styles.detailBlockTitle}>Requirements</h2>
-            <div className={styles.requirementsRow}>
-              {detailContent.requirements.map((item) => (
+        {detailContent.requirements.length > 0 || detailContent.featureTabs.length > 0 ? (
+          <section className={styles.detailsStack}>
+            {detailContent.requirements.length > 0 ? (
+              <section className={styles.detailBlock}>
+                <h2 className={styles.detailBlockTitle}>Requirements</h2>
+                <div className={styles.requirementsRow}>
+                  {detailContent.requirements.map((item) => (
                 <article key={`${item.label}-${item.value}`} className={styles.requirementMini}>
                   <span className={styles.requirementMiniIcon} aria-hidden>
                     {item.label.toLowerCase().includes("cpu") ? (
@@ -846,59 +833,63 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                   <strong className={styles.requirementMiniValue}>{item.value}</strong>
                 </article>
               ))}
-            </div>
+                </div>
+              </section>
+            ) : null}
+
+            {detailContent.featureTabs.length > 0 ? (
+              <section className={styles.detailBlock}>
+                <h2 className={styles.detailBlockTitle}>Features</h2>
+                <div className={styles.featuresGrid}>
+                  {detailContent.featureTabs.map((tab) => {
+                    const isOpen = openTabs.includes(tab.title);
+                    const maxHeight = Math.max(78, tab.items.length * 30 + 18);
+
+                    return (
+                      <article key={tab.title} className={styles.featureTabCard}>
+                        <button
+                          type="button"
+                          className={styles.featureTabHeader}
+                          onClick={() => toggleTab(tab.title)}
+                          aria-expanded={isOpen}
+                        >
+                          <span className={styles.featureTabHeaderLeft}>
+                            <span className={styles.featureTabIcon}>{featureIconSvg(tab.title)}</span>
+                            <strong>{tab.title}</strong>
+                          </span>
+
+                          <span
+                            className={`${styles.featureTabChevron} ${
+                              isOpen ? styles.featureTabChevronOpen : ""
+                            }`}
+                            aria-hidden
+                          >
+                            <svg viewBox="0 0 24 24" fill="none">
+                              <path d="m8.5 10.5 3.5 3.5 3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </span>
+                        </button>
+
+                        <div
+                          className={`${styles.featureTabBody} ${isOpen ? styles.featureTabBodyOpen : ""}`}
+                          style={{
+                            ["--feature-max-height" as string]: `${maxHeight}px`,
+                          }}
+                        >
+                          <ul className={styles.featureList}>
+                            {tab.items.map((item) => (
+                              <li key={`${tab.title}-${item}`}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
           </section>
-
-          <section className={styles.detailBlock}>
-            <h2 className={styles.detailBlockTitle}>Features</h2>
-            <div className={styles.featuresGrid}>
-              {detailContent.featureTabs.map((tab) => {
-                const isOpen = openTabs.includes(tab.title);
-                const maxHeight = Math.max(78, tab.items.length * 30 + 18);
-
-                return (
-                  <article key={tab.title} className={styles.featureTabCard}>
-                    <button
-                      type="button"
-                      className={styles.featureTabHeader}
-                      onClick={() => toggleTab(tab.title)}
-                      aria-expanded={isOpen}
-                    >
-                      <span className={styles.featureTabHeaderLeft}>
-                        <span className={styles.featureTabIcon}>{featureIconSvg(tab.title)}</span>
-                        <strong>{tab.title}</strong>
-                      </span>
-
-                      <span
-                        className={`${styles.featureTabChevron} ${
-                          isOpen ? styles.featureTabChevronOpen : ""
-                        }`}
-                        aria-hidden
-                      >
-                        <svg viewBox="0 0 24 24" fill="none">
-                          <path d="m8.5 10.5 3.5 3.5 3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </span>
-                    </button>
-
-                    <div
-                      className={`${styles.featureTabBody} ${isOpen ? styles.featureTabBodyOpen : ""}`}
-                      style={{
-                        ["--feature-max-height" as string]: `${maxHeight}px`,
-                      }}
-                    >
-                      <ul className={styles.featureList}>
-                        {tab.items.map((item) => (
-                          <li key={`${tab.title}-${item}`}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </section>
-        </section>
+        ) : null}
       </main>
 
       <SiteFooter />
