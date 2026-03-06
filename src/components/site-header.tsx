@@ -25,30 +25,28 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
 
   return (
     <>
-      <header className="top-header">
-        <div className="shell top-header-inner">
-          <Link className="brand" href="/">
-            <img
-              src="/branding/cp-logo.png"
-              alt="CheatParadise logo"
-              className="brand-mark"
-            />
-            <span className="brand-text">
-              <span className="brand-word brand-word-cheat">cheat</span>
-              <span className="brand-word brand-word-paradise">paradise</span>
-              <span className="brand-word brand-word-domain">.com</span>
-            </span>
-          </Link>
-          <a className="discord-btn" href={discordLink} target="_blank" rel="noreferrer">
-            <img src="/social/discord.png" alt="" aria-hidden="true" className="btn-icon" />
-            Discord
-          </a>
-        </div>
-      </header>
-
       <div className="nav-row">
         <div className="shell nav-row-inner">
-          <nav className="site-nav">
+          <div className="nav-row-left">
+            <Link className="brand" href="/">
+              <img
+                src="/branding/cp-logo.png"
+                alt="CheatParadise logo"
+                className="brand-mark"
+              />
+              <span className="brand-text">
+                <span className="brand-word brand-word-cheat">cheat</span>
+                <span className="brand-word brand-word-paradise">paradise</span>
+                <span className="brand-word brand-word-domain">.com</span>
+              </span>
+            </Link>
+
+            <a className="discord-btn" href={discordLink} target="_blank" rel="noreferrer">
+              <img src="/social/discord.png" alt="" aria-hidden="true" className="btn-icon" />
+              Discord
+            </a>
+
+            <nav className="site-nav">
             <Link className={activeClass(activeTab, "store")} href="/">
               <span className="nav-icon" aria-hidden>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -92,7 +90,8 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
               </span>
               Support
             </Link>
-          </nav>
+            </nav>
+          </div>
 
           <div className="nav-row-actions">
             {searchSlot || <GlobalSearch />}
