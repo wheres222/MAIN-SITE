@@ -725,7 +725,7 @@ select::-ms-expand { display: none; }
   border-radius: 12px;
   overflow: hidden;
   background: #0b0e14;
-  min-height: 468px;
+  min-height: 452px;
   text-decoration: none;
   transition: border-color 0.16s ease;
 }
@@ -735,8 +735,8 @@ select::-ms-expand { display: none; }
 .category-modal-product-image {
   display: grid;
   place-items: end center;
-  height: 248px;
-  padding: 12px 10px 0;
+  height: 236px;
+  padding: 8px 8px 0;
   background:
     linear-gradient(180deg, rgba(7, 13, 19, 0.24) 0%, rgba(2, 9, 14, 0.82) 100%),
     radial-gradient(78% 130% at 50% 100%, rgba(32, 173, 151, 0.26) 0%, rgba(32, 173, 151, 0) 72%);
@@ -751,16 +751,16 @@ select::-ms-expand { display: none; }
 }
 .category-modal-product-image img {
   width: auto;
-  height: auto;
-  max-width: min(68%, 212px);
-  max-height: 232px;
+  height: 100%;
+  max-width: 100%;
+  max-height: none;
   object-fit: contain;
   object-position: center bottom;
   display: block;
   filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.46));
 }
 .category-modal-product-body {
-  padding: 13px 13px 12px;
+  padding: 11px 12px 12px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -769,11 +769,11 @@ select::-ms-expand { display: none; }
 }
 .category-modal-product-top {
   display: block;
-  min-height: 90px;
+  min-height: 80px;
 }
 .category-modal-product-top h4 {
   margin: 0;
-  font-size: clamp(1.15rem, 1.1vw, 1.5rem);
+  font-size: clamp(1.12rem, 1.04vw, 1.42rem);
   line-height: 1.16;
   color: #f3f6ff;
   font-weight: 700;
@@ -785,7 +785,7 @@ select::-ms-expand { display: none; }
   -webkit-line-clamp: 3;
 }
 .category-modal-meta {
-  margin-top: 1px;
+  margin-top: 0;
   display: flex;
 }
 .category-modal-meta-box {
@@ -795,8 +795,8 @@ select::-ms-expand { display: none; }
   min-height: 0;
   padding: 0;
   display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  align-items: stretch;
+  gap: 0;
 }
 .category-modal-meta-box span {
   color: #7a8599;
@@ -804,38 +804,45 @@ select::-ms-expand { display: none; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border: 1px solid #1f2430;
-  border-radius: 6px;
+  border-radius: 6px 0 0 6px;
   background: #131721;
-  padding: 7px 9px;
+  min-height: 36px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
 }
 .category-modal-meta-box strong {
   color: #dfffdf;
-  font-size: 1.2rem;
+  font-size: 1.16rem;
   line-height: 1;
-  background: linear-gradient(180deg, #30ca65 0%, #21ab4f 100%);
-  border: 1px solid #37c668;
-  border-radius: 6px;
-  padding: 8px 10px;
+  background: linear-gradient(180deg, rgba(48, 202, 101, 0.78) 0%, rgba(33, 171, 79, 0.78) 100%);
+  border: 1px solid rgba(55, 198, 104, 0.78);
+  border-left: 0;
+  border-radius: 0 6px 6px 0;
+  min-height: 36px;
+  padding: 0 11px;
+  display: inline-flex;
+  align-items: center;
   letter-spacing: -0.01em;
 }
 .category-modal-buy-now {
-  margin-top: auto;
+  margin-top: 8px;
   border: 1px solid #1f2430;
   border-radius: 9px;
   background: #11151e;
-  min-height: 47px;
+  min-height: 45px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   color: #c3c9d8;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   line-height: 1;
   font-weight: 700;
 }
 .category-modal-buy-now svg {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   color: #99a5bb;
   display: block;
 }
@@ -1328,9 +1335,9 @@ select::-ms-expand { display: none; }
   .category-modal { width: min(1140px, calc(100% - 4px)); }
   .category-modal-grid { grid-template-columns: 1fr; padding: 12px; }
   .category-modal-product { min-height: 0; }
-  .category-modal-product-image { height: 236px; }
-  .category-modal-product-image img { max-width: min(62%, 198px); max-height: 214px; }
-  .category-modal-meta-box strong { font-size: 1.1rem; }
+  .category-modal-product-image { height: 220px; }
+  .category-modal-product-image img { height: 100%; max-width: 100%; }
+  .category-modal-meta-box strong { font-size: 1.08rem; }
   .support-option-grid { grid-template-columns: 1fr; }
   .support-option-card { min-height: 0; }
   .footer-columns { grid-template-columns: 1fr; gap: 22px; }
