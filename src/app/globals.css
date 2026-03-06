@@ -513,7 +513,7 @@ select::-ms-expand { display: none; }
 .discord-join-banner {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 1fr;
   align-items: center;
   min-height: 214px;
   max-width: 1180px;
@@ -523,7 +523,7 @@ select::-ms-expand { display: none; }
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(6, 11, 18, 0.58) 0%, rgba(4, 8, 14, 0.86) 62%, rgba(3, 7, 12, 0.97) 100%),
-    url("/hero/hero-scene-upscaled.png") center/cover no-repeat;
+    url("/social/discord-join-banner.jpg") center/cover no-repeat;
   box-shadow:
     inset 0 0 0 1px rgba(127, 228, 255, 0.22),
     0 0 0 1px rgba(25, 156, 211, 0.25),
@@ -590,34 +590,6 @@ select::-ms-expand { display: none; }
   line-height: 1;
   font-weight: 700;
   box-shadow: 0 8px 20px rgba(41, 194, 247, 0.3);
-}
-
-.discord-join-art {
-  position: relative;
-  z-index: 1;
-  margin-right: clamp(8px, 1.2vw, 24px);
-  width: clamp(152px, 14.2vw, 232px);
-  border-radius: clamp(20px, 1.9vw, 32px);
-  overflow: hidden;
-  transform: perspective(900px) rotateX(11deg) rotateY(-13deg) rotateZ(-7deg);
-  transform-origin: center;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.34);
-}
-
-.discord-join-art::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(145deg, rgba(228, 230, 236, 0.18) 0%, rgba(228, 230, 236, 0.04) 42%, rgba(228, 230, 236, 0) 100%);
-}
-
-.discord-join-art img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: inherit;
 }
 
 .warn-box { border: 1px solid var(--global-outline); background: rgba(124,196,255,0.08); color: #cfe5ff; border-radius: 6px; padding: 10px 12px; margin-bottom: 14px; }
@@ -1324,12 +1296,6 @@ select::-ms-expand { display: none; }
   }
   .discord-join-copy h3 { font-size: clamp(2rem, 8.3vw, 2.9rem); }
   .discord-join-copy p { max-width: none; }
-  .discord-join-art {
-    margin-right: 0;
-    justify-self: end;
-    width: clamp(142px, 40vw, 216px);
-    transform: perspective(820px) rotateX(9deg) rotateY(-10deg) rotateZ(-6deg);
-  }
   .category-modal-overlay { padding: 14px 10px; }
   .category-modal { width: min(1140px, calc(100% - 4px)); }
   .category-modal-grid { grid-template-columns: 1fr; padding: 12px; }
@@ -1353,10 +1319,6 @@ select::-ms-expand { display: none; }
   .discord-join-copy h3 { margin-bottom: 8px; }
   .discord-join-copy p { font-size: 0.94rem; }
   .discord-join-cta { min-height: 41px; padding: 0 18px; font-size: 0.9rem; }
-  .discord-join-art {
-    width: clamp(132px, 44vw, 182px);
-    transform: perspective(760px) rotateX(8deg) rotateY(-8deg) rotateZ(-5deg);
-  }
 }
 
 /* Minimal footer variant (reference-style layout with CP branding) */

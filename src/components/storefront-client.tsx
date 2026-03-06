@@ -412,16 +412,6 @@ export function StorefrontClient() {
               <p>Connect with our community for support, updates, and exclusive offers.</p>
               <span className="discord-join-cta">Join Now</span>
             </div>
-            <div className="discord-join-art" aria-hidden="true">
-              <Image
-                src="/social/discord-join-clean.png"
-                alt=""
-                width={720}
-                height={720}
-                sizes="(max-width: 900px) 42vw, 280px"
-                unoptimized
-              />
-            </div>
           </a>
         </section>
 
