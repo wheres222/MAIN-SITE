@@ -36,6 +36,7 @@ export interface SellAuthProduct {
   name: string;
   description: string;
   image: string;
+  images: string[];
   price: number | null;
   currency: string;
   stock: number | null;

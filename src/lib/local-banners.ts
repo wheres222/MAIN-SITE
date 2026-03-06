@@ -109,6 +109,7 @@ export function createExampleProductsForBanner(
       name: `${banner.name} ${tier.label}`,
       description: descriptionFor(banner.name, tier.label),
       image: banner.imageUrl,
+      images: [banner.imageUrl],
       price,
       currency: "USD",
       stock: tier.stock - tierIndex * 10,

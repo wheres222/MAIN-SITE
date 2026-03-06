@@ -55,6 +55,11 @@ function parseGalleryImages(product: SellAuthProduct): string[] {
     urls.add(product.image.trim());
   }
 
+  for (const image of product.images || []) {
+    const trimmed = image?.trim();
+    if (trimmed) urls.add(trimmed);
+  }
+
   const description = product.description || "";
 
   const markdownImageRegex = /!\[[^\]]*\]\((https?:\/\/[^\s)]+\.(?:png|jpe?g|webp|gif))\)/gi;

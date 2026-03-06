@@ -62,6 +62,7 @@ function cloneStorefront(data: StorefrontData): StorefrontData {
     ...data,
     products: data.products.map((product) => ({
       ...product,
+      images: [...(product.images || [])],
       variants: product.variants.map((variant) => ({ ...variant })),
       tabs: product.tabs?.map((tab) => ({ ...tab, items: [...tab.items] })) || [],
     })),
@@ -178,6 +179,36 @@ function normalizeImageUrl(value: string): string {
   return "";
 }
 
+const IMAGE_PREFERRED_KEYS = [
+  "url",
+  "src",
+  "image",
+  "image_url",
+  "imageUrl",
+  "product_image",
+  "productImage",
+  "featured_image",
+  "featuredImage",
+  "main_image",
+  "mainImage",
+  "cover",
+  "banner",
+  "thumbnail",
+  "thumbnail_url",
+  "thumb",
+  "preview",
+  "preview_image",
+  "photo",
+  "media_url",
+  "asset_url",
+  "icon",
+  "avatar",
+  "filename",
+  "file",
+  "path",
+  "cdn_url",
+];
+
 function extractImageCandidate(value: unknown, depth = 0): string {
   if (depth > 4 || value === null || value === undefined) return "";
 
@@ -196,38 +227,9 @@ function extractImageCandidate(value: unknown, depth = 0): string {
   if (typeof value !== "object") return "";
 
   const record = value as GenericRecord;
-  const preferredKeys = [
-    "url",
-    "src",
-    "image",
-    "image_url",
-    "imageUrl",
-    "product_image",
-    "productImage",
-    "featured_image",
-    "featuredImage",
-    "main_image",
-    "mainImage",
-    "cover",
-    "banner",
-    "thumbnail",
-    "thumbnail_url",
-    "thumb",
-    "preview",
-    "preview_image",
-    "photo",
-    "media_url",
-    "asset_url",
-    "icon",
-    "avatar",
-    "filename",
-    "file",
-    "path",
-    "cdn_url",
-  ];
 
   // First pass: known common image keys.
-  for (const key of preferredKeys) {
+  for (const key of IMAGE_PREFERRED_KEYS) {
     const found = extractImageCandidate(record[key], depth + 1);
     if (found) return found;
   }
@@ -239,6 +241,37 @@ function extractImageCandidate(value: unknown, depth = 0): string {
   }
 
   return "";
+}
+
+function extractImageCandidates(value: unknown, depth = 0, seen = new Set<string>()): string[] {
+  if (depth > 4 || value === null || value === undefined) return [...seen];
+
+  if (typeof value === "string") {
+    const normalized = normalizeImageUrl(value);
+    if (normalized) seen.add(normalized);
+    return [...seen];
+  }
+
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      extractImageCandidates(entry, depth + 1, seen);
+    }
+    return [...seen];
+  }
+
+  if (typeof value !== "object") return [...seen];
+
+  const record = value as GenericRecord;
+
+  for (const key of IMAGE_PREFERRED_KEYS) {
+    extractImageCandidates(record[key], depth + 1, seen);
+  }
+
+  for (const entry of Object.values(record)) {
+    extractImageCandidates(entry, depth + 1, seen);
+  }
+
+  return [...seen];
 }
 
 const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
@@ -744,20 +777,30 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
     (typeof product.category === "string" ? asString(product.category) : "");
   const name = asString(product.name, `Product ${id}`);
 
-  const image =
-    extractImageCandidate(imageRecord) ||
-    extractImageCandidate(product.image) ||
-    extractImageCandidate(product.images) ||
-    extractImageCandidate(product.image_url) ||
-    extractImageCandidate(product.imageUrl) ||
-    extractImageCandidate(product.thumbnail) ||
-    extractImageCandidate(product.thumbnail_url) ||
-    extractImageCandidate(product.photo) ||
-    extractImageCandidate(product.preview) ||
-    extractImageCandidate(product.gallery) ||
-    extractImageCandidate(variantsRaw) ||
-    productImageCache.get(id) ||
-    PRODUCT_IMAGE_PLACEHOLDER;
+  const imageCandidates = [
+    ...extractImageCandidates(imageRecord),
+    ...extractImageCandidates(product.image),
+    ...extractImageCandidates(product.images),
+    ...extractImageCandidates(product.image_url),
+    ...extractImageCandidates(product.imageUrl),
+    ...extractImageCandidates(product.thumbnail),
+    ...extractImageCandidates(product.thumbnail_url),
+    ...extractImageCandidates(product.photo),
+    ...extractImageCandidates(product.preview),
+    ...extractImageCandidates(product.gallery),
+    ...extractImageCandidates(product.media),
+    ...extractImageCandidates(product.assets),
+    ...extractImageCandidates(variantsRaw),
+  ];
+
+  const uniqueImages = [...new Set(imageCandidates)];
+  const cachedImage = productImageCache.get(id);
+  if (cachedImage && !uniqueImages.includes(cachedImage)) {
+    uniqueImages.unshift(cachedImage);
+  }
+
+  const image = uniqueImages[0] || PRODUCT_IMAGE_PLACEHOLDER;
+  const images = image === PRODUCT_IMAGE_PLACEHOLDER ? [] : uniqueImages;
 
   const parsedVariants = variantsRaw
     .map(parseVariant)
@@ -803,6 +846,7 @@ function parseProduct(rawProduct: unknown): SellAuthProduct | null {
     name,
     description: asString(product.description, ""),
     image,
+    images,
     price:
       asNumber(product.price) ??
       asNumber(product.sale_price) ??
@@ -873,22 +917,27 @@ function buildProductPatchFromDetail(detail: GenericRecord): Partial<SellAuthPro
 
   const patch: Partial<SellAuthProduct> = {};
 
-  const detailImage =
-    extractImageCandidate(detail.image) ||
-    extractImageCandidate(detail.image_url) ||
-    extractImageCandidate(detail.imageUrl) ||
-    extractImageCandidate(detail.thumbnail) ||
-    extractImageCandidate(detail.thumbnail_url) ||
-    extractImageCandidate(detail.photo) ||
-    extractImageCandidate(detail.preview) ||
-    extractImageCandidate(detail.gallery) ||
-    extractImageCandidate(detail.media) ||
-    extractImageCandidate(detail.assets) ||
-    extractImageCandidate(detail.images) ||
-    extractImageCandidate(detail.variants);
+  const detailImageCandidates = [
+    ...extractImageCandidates(detail.image),
+    ...extractImageCandidates(detail.image_url),
+    ...extractImageCandidates(detail.imageUrl),
+    ...extractImageCandidates(detail.thumbnail),
+    ...extractImageCandidates(detail.thumbnail_url),
+    ...extractImageCandidates(detail.photo),
+    ...extractImageCandidates(detail.preview),
+    ...extractImageCandidates(detail.gallery),
+    ...extractImageCandidates(detail.media),
+    ...extractImageCandidates(detail.assets),
+    ...extractImageCandidates(detail.images),
+    ...extractImageCandidates(detail.variants),
+  ];
+
+  const uniqueDetailImages = [...new Set(detailImageCandidates)];
+  const detailImage = uniqueDetailImages[0] || "";
 
   if (detailImage) {
     patch.image = detailImage;
+    patch.images = uniqueDetailImages;
   }
 
   const description = extractDescriptionCandidate(detail);
@@ -941,16 +990,27 @@ async function enrichProductsFromDetails(
   const patched = products.map((product) => {
     const cached = productDetailCache.get(product.id);
     if (!cached) return product;
+
+    const mergedImages = [...new Set([
+      ...(cached.images || []),
+      ...(product.images || []),
+      cached.image || "",
+      product.image || "",
+    ].filter((value): value is string => Boolean(value)))];
+
     return {
       ...product,
       ...cached,
+      image: cached.image || product.image,
+      images: mergedImages,
       variants: product.variants,
       tabs: cached.tabs || product.tabs || [],
     };
   });
 
   const targets = patched.filter((product) => {
-    const needsImage = product.image === PRODUCT_IMAGE_PLACEHOLDER;
+    const needsImage =
+      product.image === PRODUCT_IMAGE_PLACEHOLDER || (product.images || []).length < 2;
     const needsDescription = (product.description || "").trim().length < 8;
     const needsTabs = (product.tabs || []).length === 0;
     const needsCategoryName = !(product.categoryName || "").trim();
@@ -984,9 +1044,19 @@ async function enrichProductsFromDetails(
   return patched.map((product) => {
     const cached = productDetailCache.get(product.id);
     if (!cached) return product;
+
+    const mergedImages = [...new Set([
+      ...(cached.images || []),
+      ...(product.images || []),
+      cached.image || "",
+      product.image || "",
+    ].filter((value): value is string => Boolean(value)))];
+
     return {
       ...product,
       ...cached,
+      image: cached.image || product.image,
+      images: mergedImages,
       variants: product.variants,
       tabs: cached.tabs || product.tabs || [],
     };
