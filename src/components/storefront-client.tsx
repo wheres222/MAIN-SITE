@@ -471,22 +471,21 @@ export function StorefrontClient() {
                         onClick={() => setActiveGroupSlug(null)}
                       >
                         <span className="category-modal-product-image">
-                          <Image
-                            src={productImage}
-                            alt={product.name}
-                            width={640}
-                            height={360}
-                            sizes="(max-width: 900px) 100vw, 33vw"
-                            unoptimized
-                          />
+                          <span className="category-modal-product-image-wrap">
+                            <Image
+                              src={productImage}
+                              alt={product.name}
+                              width={640}
+                              height={800}
+                              sizes="(max-width: 900px) 100vw, 33vw"
+                              unoptimized
+                            />
+                          </span>
                         </span>
 
                         <span className="category-modal-product-body">
                           <span className="category-modal-product-top">
                             <h4>{product.name}</h4>
-                            <span className="category-modal-status category-modal-status-ok">
-                              Operational
-                            </span>
                           </span>
 
                           <span className="category-modal-meta">
@@ -494,6 +493,14 @@ export function StorefrontClient() {
                               <span>From</span>
                               <strong>{money(price, product.currency || "USD")}</strong>
                             </span>
+                          </span>
+
+                          <span className="category-modal-buy-now">
+                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                              <path d="M5.4 7.8h13.2l-1.2 9.8H6.6L5.4 7.8Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+                              <path d="M9.1 7.8V6.7a2.9 2.9 0 1 1 5.8 0v1.1" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                            </svg>
+                            Buy now
                           </span>
                         </span>
                       </Link>
