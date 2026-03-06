@@ -6,7 +6,6 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { CartDrawer } from "@/components/cart-drawer";
 import { GlobalSearch } from "@/components/global-search";
-import { getDiscordUrl } from "@/lib/links";
 
 export type NavTab = "store" | "status" | "reviews" | "support" | "none";
 
@@ -20,33 +19,13 @@ function activeClass(current: NavTab, target: NavTab): string {
 }
 
 export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
-  const discordLink = getDiscordUrl();
   const [cartOpen, setCartOpen] = useState(false);
 
   return (
     <>
       <div className="nav-row">
         <div className="shell nav-row-inner">
-          <div className="nav-row-left">
-            <Link className="brand" href="/">
-              <img
-                src="/branding/cp-logo.png"
-                alt="CheatParadise logo"
-                className="brand-mark"
-              />
-              <span className="brand-text">
-                <span className="brand-word brand-word-cheat">cheat</span>
-                <span className="brand-word brand-word-paradise">paradise</span>
-                <span className="brand-word brand-word-domain">.com</span>
-              </span>
-            </Link>
-
-            <a className="discord-btn" href={discordLink} target="_blank" rel="noreferrer">
-              <img src="/social/discord.png" alt="" aria-hidden="true" className="btn-icon" />
-              Discord
-            </a>
-
-            <nav className="site-nav">
+          <nav className="site-nav">
             <Link className={activeClass(activeTab, "store")} href="/">
               <span className="nav-icon" aria-hidden>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -90,8 +69,7 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
               </span>
               Support
             </Link>
-            </nav>
-          </div>
+          </nav>
 
           <div className="nav-row-actions">
             {searchSlot || <GlobalSearch />}
