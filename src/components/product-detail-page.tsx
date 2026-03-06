@@ -49,34 +49,17 @@ function cleanDescription(value: string): string {
 }
 
 function parseGalleryImages(product: SellAuthProduct): string[] {
-  const urls = new Set<string>();
+  const sellAuthImages = [...new Set((product.images || []).map((image) => image.trim()).filter(Boolean))];
+
+  if (sellAuthImages.length > 0) {
+    return sellAuthImages;
+  }
 
   if (product.image?.trim()) {
-    urls.add(product.image.trim());
+    return [product.image.trim()];
   }
 
-  for (const image of product.images || []) {
-    const trimmed = image?.trim();
-    if (trimmed) urls.add(trimmed);
-  }
-
-  const description = product.description || "";
-
-  const markdownImageRegex = /!\[[^\]]*\]\((https?:\/\/[^\s)]+\.(?:png|jpe?g|webp|gif))\)/gi;
-  let markdownMatch: RegExpExecArray | null;
-  while ((markdownMatch = markdownImageRegex.exec(description))) {
-    const found = markdownMatch[1]?.trim();
-    if (found) urls.add(found);
-  }
-
-  const plainImageRegex = /(https?:\/\/[^\s"'<>]+\.(?:png|jpe?g|webp|gif))/gi;
-  let plainMatch: RegExpExecArray | null;
-  while ((plainMatch = plainImageRegex.exec(description))) {
-    const found = plainMatch[1]?.trim();
-    if (found) urls.add(found);
-  }
-
-  return [...urls];
+  return [];
 }
 
 function normalizeLabel(value: string): string {
