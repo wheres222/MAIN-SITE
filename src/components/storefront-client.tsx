@@ -475,8 +475,8 @@ export function StorefrontClient() {
                             <Image
                               src={productImage}
                               alt={product.name}
-                              width={640}
-                              height={800}
+                              width={600}
+                              height={600}
                               sizes="(max-width: 900px) 100vw, 33vw"
                               unoptimized
                             />
