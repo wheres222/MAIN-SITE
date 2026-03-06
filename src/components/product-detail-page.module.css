@@ -159,7 +159,7 @@
 
 .price {
   margin: 6px 0 0;
-  font-size: clamp(2rem, 3.7vw, 3rem);
+  font-size: clamp(1.86rem, 3.25vw, 2.7rem);
   line-height: 1;
   font-weight: 700;
   color: #f3f7ff;
@@ -180,7 +180,7 @@
 }
 
 .optionCard {
-  border: 1px solid #1f2430;
+  border: 1px solid #252b38;
   border-radius: 12px;
   background: #111217;
   text-align: left;
@@ -197,12 +197,19 @@
 }
 
 .optionCard:hover {
-  border-color: #56607a;
+  border-color: #4d5a74;
+  background: #1a202a;
 }
 
 .optionCardSelected {
-  border-color: #2f6fff;
-  box-shadow: inset 0 0 0 1px rgba(87, 148, 255, 0.35);
+  border-color: #628dff;
+  background: #1a2435;
+  box-shadow: inset 0 0 0 1px rgba(112, 160, 255, 0.32);
+}
+
+.optionCardSelected:hover {
+  border-color: #739bff;
+  background: #1d2940;
 }
 
 .optionCard:disabled {
@@ -222,8 +229,8 @@
 
 .optionPrice {
   display: block;
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 18px;
   color: #71717a;
   font-weight: 600;
 }
@@ -292,11 +299,11 @@
 
 .buyNowBtn,
 .addToCartBtn {
-  min-height: 54px;
+  min-height: 50px;
   border-radius: 12px;
   border: 1px solid #252a35;
   color: #f1f6ff;
-  font-size: 1.6rem;
+  font-size: 1.42rem;
   line-height: 1;
   font-weight: 700;
   cursor: pointer;
@@ -315,6 +322,17 @@
 
 .addToCartBtn {
   background: #14161d;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.addToCartBtn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  color: #aebad2;
 }
 
 .addToCartBtn:hover,
@@ -350,9 +368,9 @@
 }
 
 .detailBlock {
-  border: 1px solid #232732;
+  border: 1px solid var(--global-outline, #1f1f21);
   border-radius: 10px;
-  background: #12151b;
+  background: rgb(21, 21, 21);
   padding: 18px;
 }
 
@@ -382,9 +400,9 @@
 }
 
 .requirementMini {
-  border: 1px solid #2a2f3a;
+  border: 1px solid var(--global-outline, #1f1f21);
   border-radius: 10px;
-  background: linear-gradient(180deg, #1c1f26 0%, #181b22 100%);
+  background: rgb(21, 21, 21);
   min-height: 94px;
   padding: 12px 13px;
   display: grid;
@@ -431,9 +449,9 @@
 }
 
 .featureTabCard {
-  border: 1px solid #242932;
+  border: 1px solid var(--global-outline, #1f1f21);
   border-radius: 10px;
-  background: #171a20;
+  background: rgb(21, 21, 21);
   overflow: hidden;
 }
 
@@ -452,7 +470,7 @@
 }
 
 .featureTabHeader:hover {
-  background: #1b1f27;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .featureTabHeaderLeft {

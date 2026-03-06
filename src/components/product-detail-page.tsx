@@ -817,6 +817,11 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                 {isCheckingOut ? "Processing..." : "Buy Now"}
               </button>
               <button type="button" className={styles.addToCartBtn} onClick={addToCart}>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4.7 6h2.1l1.7 8.2h8.5l1.6-6.1H8.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="10.1" cy="18.2" r="1.2" fill="currentColor" />
+                  <circle cx="16.5" cy="18.2" r="1.2" fill="currentColor" />
+                </svg>
                 Add to Cart
               </button>
             </div>
