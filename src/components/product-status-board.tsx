@@ -120,6 +120,11 @@ function pickCategoryName(
   );
 }
 
+function shouldHideStatusCategory(name: string, key: string): boolean {
+  const source = `${normalized(name)} ${normalized(key)}`;
+  return /\baccounts?\b/.test(source) || /\bvpns?\b/.test(source);
+}
+
 export function ProductStatusBoard({
   products,
   groups = [],
@@ -163,6 +168,7 @@ export function ProductStatusBoard({
     });
 
     return [...groupedMap.values()]
+      .filter((group) => !shouldHideStatusCategory(group.name, group.key))
       .map((group) => ({
         ...group,
         items: [...group.items].sort((a, b) => a.product.name.localeCompare(b.product.name)),
