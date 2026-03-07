@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { CartDrawer } from "@/components/cart-drawer";
 import { GlobalSearch } from "@/components/global-search";
+import { getDiscordUrl } from "@/lib/links";
 
 export type NavTab = "store" | "status" | "reviews" | "support" | "none";
 
@@ -20,6 +21,7 @@ function activeClass(current: NavTab, target: NavTab): string {
 
 export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
   const [cartOpen, setCartOpen] = useState(false);
+  const discordLink = getDiscordUrl();
 
   return (
     <>
@@ -89,6 +91,15 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
               </span>
               Cart
             </button>
+
+            <a className="nav-discord-btn" href={discordLink} target="_blank" rel="noreferrer">
+              <img src="/social/discord.png" alt="" aria-hidden="true" className="btn-icon" />
+              Discord
+            </a>
+
+            <Link className="nav-right-logo" href="/" aria-label="CheatParadise home">
+              <img src="/branding/cp-logo.png" alt="CheatParadise logo" className="nav-right-logo-mark" />
+            </Link>
           </div>
         </div>
       </div>
