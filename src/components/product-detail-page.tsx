@@ -515,11 +515,71 @@ function featureIconSvg(title: string) {
     );
   }
 
+  if (value.includes("trigger")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="6.8" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M12 7.6v2.4M12 14v2.4M7.6 12H10M14 12h2.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (value.includes("npc")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="7" y="6.5" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.6" />
+        <circle cx="10" cy="10.4" r="1" fill="currentColor" />
+        <circle cx="14" cy="10.4" r="1" fill="currentColor" />
+        <path d="M9.2 17.4h5.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("world")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M4.8 12h14.4M12 4.8c1.9 2 1.9 12.4 0 14.4M12 4.8c-1.9 2-1.9 12.4 0 14.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("visual") || value === "esp" || value.endsWith(" esp")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3.8 12s2.9-4.6 8.2-4.6 8.2 4.6 8.2 4.6-2.9 4.6-8.2 4.6S3.8 12 3.8 12Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <circle cx="12" cy="12" r="2" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (value.includes("misc") || value.includes("other")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="5.2" y="7" width="13.6" height="10.4" rx="2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M8.4 7V5.6h7.2V7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        <path d="M9.3 11.1h5.4M9.3 13.9h3.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (value.includes("info") || value.includes("general")) {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.6" />
+        <circle cx="12" cy="9" r="1" fill="currentColor" />
+        <path d="M12 11.6v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="6" cy="12" r="1.8" fill="currentColor" />
-      <circle cx="12" cy="12" r="1.8" fill="currentColor" />
-      <circle cx="18" cy="12" r="1.8" fill="currentColor" />
+      <rect x="5.2" y="5.2" width="5.4" height="5.4" rx="1" fill="currentColor" />
+      <rect x="13.4" y="5.2" width="5.4" height="5.4" rx="1" fill="currentColor" />
+      <rect x="5.2" y="13.4" width="5.4" height="5.4" rx="1" fill="currentColor" />
+      <rect x="13.4" y="13.4" width="5.4" height="5.4" rx="1" fill="currentColor" />
     </svg>
   );
 }
