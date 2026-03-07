@@ -48,18 +48,52 @@ function cleanDescription(value: string): string {
     .trim();
 }
 
+function isDisplayImageUrl(value: string): boolean {
+  const source = value.trim();
+  if (!source) return false;
+
+  const normalized = source.toLowerCase();
+
+  // Filter known non-image SellAuth/variant key endpoints that create empty thumbnail boxes.
+  if (
+    normalized.includes("/desync/api/seller/keys/") ||
+    normalized.includes("/seller/keys/") ||
+    normalized.includes("promos.discord.gg")
+  ) {
+    return false;
+  }
+
+  if (/\.(png|jpe?g|webp|gif|avif|svg)(\?|#|$)/i.test(normalized)) {
+    return true;
+  }
+
+  // Allow known image storage paths even when extension may be omitted.
+  if (normalized.includes("/storage/images/") || normalized.includes("/uploads/")) {
+    return true;
+  }
+
+  // Allow local static assets.
+  if (normalized.startsWith("/")) {
+    return true;
+  }
+
+  return false;
+}
+
 function parseGalleryImages(product: SellAuthProduct): string[] {
-  const sellAuthImages = [...new Set((product.images || []).map((image) => image.trim()).filter(Boolean))];
+  const sellAuthImages = [...new Set((product.images || []).map((image) => image.trim()).filter(Boolean))]
+    .filter(isDisplayImageUrl);
 
   if (sellAuthImages.length > 0) {
     return sellAuthImages;
   }
 
-  if (product.image?.trim()) {
-    return [product.image.trim()];
+  const fallbackImage = product.image?.trim() || "";
+  if (fallbackImage && isDisplayImageUrl(fallbackImage)) {
+    return [fallbackImage];
   }
 
-  return [];
+  return ["/placeholders/product-image-not-added.svg"];
 }
 
 function normalizeLabel(value: string): string {
