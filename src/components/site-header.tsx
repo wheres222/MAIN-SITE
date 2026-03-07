@@ -27,7 +27,12 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
     <>
       <div className="nav-row">
         <div className="shell nav-row-inner">
-          <nav className="site-nav">
+          <div className="nav-row-left">
+            <Link className="nav-left-logo" href="/" aria-label="CheatParadise home">
+              <img src="/branding/cp-logo.png" alt="CheatParadise logo" className="nav-left-logo-mark" />
+            </Link>
+
+            <nav className="site-nav">
             <Link className={activeClass(activeTab, "store")} href="/">
               <span className="nav-icon" aria-hidden>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -71,7 +76,8 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
               </span>
               Support
             </Link>
-          </nav>
+            </nav>
+          </div>
 
           <div className="nav-row-actions">
             {searchSlot || <GlobalSearch />}
@@ -97,9 +103,6 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
               Discord
             </a>
 
-            <Link className="nav-right-logo" href="/" aria-label="CheatParadise home">
-              <img src="/branding/cp-logo.png" alt="CheatParadise logo" className="nav-right-logo-mark" />
-            </Link>
           </div>
         </div>
       </div>
