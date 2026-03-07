@@ -171,16 +171,12 @@ select::-ms-expand { display: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  border: 1px solid var(--ui-border-strong);
-  background: rgb(21, 21, 21);
   flex: 0 0 auto;
+  margin-left: -10px;
 }
 .nav-left-logo-mark {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   display: block;
 }
@@ -192,20 +188,22 @@ select::-ms-expand { display: none; }
 .nav-discord-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  min-height: 44px;
-  padding: 0 14px;
-  border-radius: 8px;
+  min-height: 46px;
+  min-width: 132px;
+  padding: 0 20px;
+  border-radius: 12px;
   border: 1px solid #5b73e6;
   background: #5b73e6;
   color: #ffffff;
   font-size: 0.88rem;
-  line-height: 1;
+  line-height: 1.08;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   text-decoration: none;
-  transform: translateY(-1px);
+  white-space: nowrap;
 }
 .nav-discord-btn .btn-icon {
   width: 17px;
