@@ -408,7 +408,7 @@ export function StorefrontClient() {
             rel="noreferrer"
           >
             <div className="discord-join-copy">
-              <h3>Join Your Discord</h3>
+              <h3>Join Our Discord</h3>
               <p>Connect with our community for support, updates, and exclusive offers.</p>
               <span className="discord-join-cta">Join Now</span>
             </div>
