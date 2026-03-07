@@ -976,6 +976,10 @@ select::-ms-expand { display: none; }
   height: 16px;
   flex: 0 0 auto;
 }
+.support-cta-icon-discord {
+  width: 20px;
+  height: 20px;
+}
 .support-option-cta-secondary { background: var(--page-body-surface); }
 .support-option-cta-primary {
   background: var(--themed-blue-gradient);
