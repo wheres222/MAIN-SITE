@@ -147,7 +147,7 @@ select::-ms-expand { display: none; }
 .discord-btn .btn-icon { filter: brightness(0) invert(1); }
 
 .nav-row {
-  background: rgb(21, 21, 21);
+  background: rgb(13, 13, 13);
   border-top: 1px solid var(--nav-separator);
   border-bottom: 1px solid var(--nav-separator);
   backdrop-filter: none;
@@ -172,11 +172,11 @@ select::-ms-expand { display: none; }
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  margin-left: -10px;
+  margin-left: -18px;
 }
 .nav-left-logo-mark {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   object-fit: contain;
   display: block;
 }
