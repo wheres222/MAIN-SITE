@@ -775,7 +775,7 @@ select::-ms-expand { display: none; }
   display: block;
 }
 .category-modal-product-body {
-  padding: 11px 12px 12px;
+  padding: 12px 12px 12px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -784,15 +784,15 @@ select::-ms-expand { display: none; }
 }
 .category-modal-product-top {
   display: block;
-  min-height: 80px;
+  min-height: 76px;
 }
 .category-modal-product-top h4 {
   margin: 0;
   font-size: clamp(1.12rem, 1.04vw, 1.42rem);
-  line-height: 1.16;
+  line-height: 1.15;
   color: #f3f6ff;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: -0.01em;
   overflow: hidden;
   display: -webkit-box;
@@ -800,8 +800,11 @@ select::-ms-expand { display: none; }
   -webkit-line-clamp: 3;
 }
 .category-modal-meta {
-  margin-top: 0;
+  margin-top: 2px;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 .category-modal-meta-box {
   border: 0;
@@ -814,34 +817,73 @@ select::-ms-expand { display: none; }
   gap: 0;
 }
 .category-modal-meta-box span {
-  color: #7a8599;
+  color: #7e8aa0;
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border: 1px solid #1f2430;
   border-radius: 6px 0 0 6px;
-  background: #131721;
-  min-height: 36px;
-  padding: 0 10px;
+  background: #121621;
+  min-height: 38px;
+  padding: 0 12px;
   display: inline-flex;
   align-items: center;
+  line-height: 1;
 }
 .category-modal-meta-box strong {
   color: #dfffdf;
   font-size: 1.16rem;
   line-height: 1;
-  background: linear-gradient(180deg, rgba(48, 202, 101, 0.78) 0%, rgba(33, 171, 79, 0.78) 100%);
+  background: linear-gradient(180deg, rgba(44, 201, 98, 0.86) 0%, rgba(34, 171, 79, 0.86) 100%);
   border: 1px solid rgba(55, 198, 104, 0.78);
   border-left: 0;
   border-radius: 0 6px 6px 0;
-  min-height: 36px;
-  padding: 0 11px;
+  min-height: 38px;
+  padding: 0 12px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   letter-spacing: -0.01em;
 }
+.category-modal-status-pill {
+  min-height: 38px;
+  border-radius: 8px;
+  border: 1px solid #2d8f7d;
+  background: rgba(12, 71, 63, 0.45);
+  color: #50d6b2;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.93rem;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.category-modal-status-pill svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+.category-modal-status-pill-undetected {
+  border-color: rgba(67, 187, 164, 0.72);
+  background: rgba(16, 82, 72, 0.44);
+  color: #4ad0ae;
+}
+.category-modal-status-pill-testing {
+  border-color: rgba(219, 162, 79, 0.7);
+  background: rgba(99, 71, 28, 0.4);
+  color: #efc279;
+}
+.category-modal-status-pill-detected {
+  border-color: rgba(220, 90, 95, 0.72);
+  background: rgba(92, 32, 37, 0.44);
+  color: #ff8c8f;
+}
 .category-modal-buy-now {
-  margin-top: 8px;
+  margin-top: 10px;
   border: 1px solid #1f2430;
   border-radius: 9px;
   background: #11151e;
@@ -1399,6 +1441,11 @@ select::-ms-expand { display: none; }
   .category-modal-product { min-height: 0; }
   .category-modal-product-image { height: 220px; }
   .category-modal-product-image img { height: 100%; max-width: 100%; }
+  .category-modal-meta {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .category-modal-status-pill { min-height: 36px; }
   .category-modal-meta-box strong { font-size: 1.08rem; }
   .support-option-grid { grid-template-columns: 1fr; }
   .support-option-card { min-height: 0; }

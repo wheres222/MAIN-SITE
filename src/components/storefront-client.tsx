@@ -83,6 +83,26 @@ function money(value: number | null, currency = "USD"): string {
   }).format(value);
 }
 
+function productCardStatus(product: SellAuthProduct): "undetected" | "testing" | "detected" {
+  const source = `${product.name} ${product.description} ${product.variants
+    .map((variant) => variant.name)
+    .join(" ")}`.toLowerCase();
+
+  if (/(detected|disabled|offline|down|banned|unsafe)/i.test(source)) {
+    return "detected";
+  }
+  if (/(updating|testing|maintenance|patching|investigating|beta)/i.test(source)) {
+    return "testing";
+  }
+  return "undetected";
+}
+
+function productCardStatusLabel(status: "undetected" | "testing" | "detected"): string {
+  if (status === "detected") return "Detected";
+  if (status === "testing") return "Testing";
+  return "Undetected";
+}
+
 export function StorefrontClient() {
   const [storefront, setStorefront] = useState<StorefrontData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -448,6 +468,7 @@ export function StorefrontClient() {
                 <div className="category-modal-grid">
                   {activeGroupProducts.map((product) => {
                     const price = productLowestPrice(product);
+                    const status = productCardStatus(product);
                     const productImage = withVersion(
                       product.image || "/placeholders/product-image-not-added.svg",
                       storefront?.fetchedAt || "modal-v1"
@@ -482,6 +503,17 @@ export function StorefrontClient() {
                             <span className="category-modal-meta-box">
                               <span>From</span>
                               <strong>{money(price, product.currency || "USD")}</strong>
+                            </span>
+
+                            <span
+                              className={`category-modal-status-pill category-modal-status-pill-${status}`}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <circle cx="12" cy="12" r="8.2" stroke="currentColor" strokeWidth="1.8" />
+                                <path d="M12 8.6v3.9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                                <circle cx="12" cy="16" r="1" fill="currentColor" />
+                              </svg>
+                              {productCardStatusLabel(status)}
                             </span>
                           </span>
 
