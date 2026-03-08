@@ -9,7 +9,10 @@
     "lint": "eslint",
     "fulfillment:start": "node fulfillment/src/server.js",
     "fulfillment:dev": "node --watch fulfillment/src/server.js",
-    "fulfillment:test": "bash ./scripts/fulfillment-test.sh"
+    "fulfillment:test": "bash ./scripts/fulfillment-test.sh",
+    "security:scan": "python3 scripts/scan-secrets.py",
+    "security:scan:staged": "python3 scripts/scan-secrets.py --staged",
+    "security:install-hook": "bash scripts/install-security-hook.sh"
   },
   "dependencies": {
     "next": "16.1.6",
