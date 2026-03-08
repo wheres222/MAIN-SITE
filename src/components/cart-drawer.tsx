@@ -104,9 +104,21 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     setIsBusy(true);
 
     try {
+      const idempotencyKey = [
+        paymentMethod.trim().toLowerCase(),
+        email.trim().toLowerCase(),
+        couponCode.trim().toLowerCase(),
+        ...lines
+          .map((line) => `${line.productId}:${line.variantId || 0}:${line.quantity}`)
+          .sort(),
+      ].join("|");
+
       const response = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-idempotency-key": idempotencyKey,
+        },
         body: JSON.stringify({
           paymentMethod,
           email: email.trim() || undefined,

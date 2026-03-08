@@ -75,9 +75,21 @@ export function ProductPurchasePanel({
     const checkoutVariantId = selectedVariant?.isSynthetic ? undefined : variantId;
 
     try {
+      const idempotencyKey = [
+        paymentMethod.trim().toLowerCase(),
+        email.trim().toLowerCase(),
+        couponCode.trim().toLowerCase(),
+        String(product.id),
+        String(checkoutVariantId || 0),
+        String(quantity),
+      ].join("|");
+
       const response = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-idempotency-key": idempotencyKey,
+        },
         body: JSON.stringify({
           paymentMethod,
           email: email.trim() || undefined,

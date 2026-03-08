@@ -781,9 +781,19 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     setIsCheckingOut(true);
     try {
       for (let attempt = 0; attempt < 2; attempt += 1) {
+        const idempotencyKey = [
+          paymentMethod.trim().toLowerCase(),
+          String(product.id),
+          String(checkoutVariantId || 0),
+          String(checkoutQuantity),
+        ].join("|");
+
         const response = await fetch("/api/checkout", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "x-idempotency-key": idempotencyKey,
+          },
           body: JSON.stringify({
             paymentMethod,
             items: [
