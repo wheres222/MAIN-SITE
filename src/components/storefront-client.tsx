@@ -103,6 +103,10 @@ function productCardStatusLabel(status: "undetected" | "testing" | "detected"): 
   return "Undetected";
 }
 
+function shouldContainCategoryImage(slug: string): boolean {
+  return slug === "accounts" || slug === "vpns" || slug === "vpn";
+}
+
 export function StorefrontClient() {
   const [storefront, setStorefront] = useState<StorefrontData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -352,17 +356,19 @@ export function StorefrontClient() {
 
           <div className="game-grid frontpage-products-grid">
             {filteredGroups.map((group) => {
+              const groupSlug = canonicalGroupSlug(group.name);
               const baseSrcRaw = group.image?.url?.trim() || "";
               const hasImage = Boolean(baseSrcRaw);
               const hoverSrcRaw = hasImage ? hoverImageFor(baseSrcRaw) : "";
               const version = storefront?.fetchedAt || "category-v2";
               const baseSrc = hasImage ? withVersion(baseSrcRaw, version) : "";
               const hoverSrc = hasImage ? withVersion(hoverSrcRaw, version) : "";
+              const containImage = shouldContainCategoryImage(groupSlug);
 
               return (
                 <Link
                   key={group.id}
-                  href={`/categories?slug=${encodeURIComponent(canonicalGroupSlug(group.name))}`}
+                  href={`/categories?slug=${encodeURIComponent(groupSlug)}`}
                   className="game-card"
                   aria-haspopup="dialog"
                   onClick={(event) => {
@@ -375,7 +381,7 @@ export function StorefrontClient() {
                       return;
                     }
                     event.preventDefault();
-                    setActiveGroupSlug(canonicalGroupSlug(group.name));
+                    setActiveGroupSlug(groupSlug);
                   }}
                 >
                   <div className="game-card-media">
@@ -389,7 +395,9 @@ export function StorefrontClient() {
                           sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
                           priority={false}
                           unoptimized
-                          className="game-card-image game-card-image--base"
+                          className={`game-card-image game-card-image--base ${
+                            containImage ? "game-card-image--contain" : ""
+                          }`}
                         />
                         <Image
                           src={hoverSrc}
@@ -400,7 +408,9 @@ export function StorefrontClient() {
                           sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
                           priority={false}
                           unoptimized
-                          className="game-card-image game-card-image--hover"
+                          className={`game-card-image game-card-image--hover ${
+                            containImage ? "game-card-image--contain" : ""
+                          }`}
                         />
                       </>
                     ) : (
