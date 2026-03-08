@@ -37,6 +37,11 @@ interface ProductVideoPreview {
 }
 
 const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {
+  638033: {
+    url: "https://www.youtube.com/watch?v=bo1rVhgk0mk",
+    title: "Rust External Preview",
+    description: "Live test preview for Division Rust External.",
+  },
   // Example:
   // 637803: {
   //   url: "https://cdn.example.com/previews/rust-mek.mp4",
