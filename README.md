@@ -68,29 +68,6 @@ Open:
   - Validates current SellAuth env credentials against your shop
   - Use this first when checkout/storefront calls return `401 Unauthenticated`
 
-- `GET /api/fulfillment/order?orderId=<id>`
-  - Proxies to your VPS fulfillment service (if configured)
-  - Requires `FULFILLMENT_API_URL` and optional `FULFILLMENT_API_TOKEN`
-
-- `POST /api/webhooks/sellauth`
-  - Forwards SellAuth paid-order webhooks to the VPS fulfillment worker
-  - Uses `FULFILLMENT_API_URL` and optional `FULFILLMENT_WEBHOOK_SECRET`
-
-## Fulfillment worker (VPS)
-
-A 24/7 provider automation scaffold is included in `fulfillment/`.
-
-Quick start:
-
-```bash
-npm run fulfillment:start
-```
-
-Docs and setup:
-
-- `fulfillment/README.md`
-- `fulfillment/config/providers.example.json`
-
 ## Notes
 
 - Without SellAuth env vars, UI remains fully interactive in demo mode.

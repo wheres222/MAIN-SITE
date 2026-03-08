@@ -75,52 +75,17 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
   useEffect(() => {
     if (mockData) return;
 
-    let alive = true;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
-    async function run() {
-      try {
-        const response = await fetch(
-          `/api/fulfillment/order?orderId=${encodeURIComponent(orderId)}`,
-          {
-            cache: "no-store",
-          }
-        );
-        const payload = (await response.json()) as OrderPayload;
-
-        if (!alive) return;
-
-        if (!response.ok || !payload.success || !payload.order) {
-          setError(payload.message || "Order not found yet.");
-          setOrder(null);
-        } else {
-          setError("");
-          setOrder(payload.order);
-        }
-      } catch (requestError) {
-        if (!alive) return;
-        setError(
-          requestError instanceof Error
-            ? requestError.message
-            : "Unable to fetch order status."
-        );
-      } finally {
-        if (!alive) return;
-        setLoading(false);
-
-        if (order?.status !== "fulfilled" && order?.status !== "failed") {
-          timer = setTimeout(run, 3000);
-        }
-      }
-    }
-
-    run();
-
-    return () => {
-      alive = false;
-      if (timer) clearTimeout(timer);
-    };
-  }, [mockData, order?.status, orderId]);
+    setOrder({
+      orderId,
+      status: "processing",
+      updatedAt: new Date().toISOString(),
+      licenseKeys: [],
+    });
+    setError(
+      "Live fulfillment tracking is currently disabled. Check your SellAuth checkout confirmation for delivery status."
+    );
+    setLoading(false);
+  }, [mockData, orderId]);
 
   const items = useMemo(
     () =>
