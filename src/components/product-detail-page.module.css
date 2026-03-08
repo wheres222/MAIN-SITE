@@ -576,6 +576,52 @@
   flex: 0 0 7px;
 }
 
+.videoPreviewBlock {
+  padding: 20px;
+}
+
+.videoPreviewLayout {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(360px, 1.35fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.videoPreviewCopy {
+  min-width: 0;
+}
+
+.videoPreviewTitle {
+  margin: 0;
+  font-size: clamp(1.65rem, 2.2vw, 2.3rem);
+  line-height: 1.05;
+  font-weight: 700;
+  color: #f3f7ff;
+}
+
+.videoPreviewCopy p {
+  margin: 12px 0 0;
+  color: #97a7c4;
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
+.videoPreviewFrame {
+  border: 1px solid var(--global-outline, #1f1f21);
+  border-radius: 10px;
+  background: #101115;
+  overflow: hidden;
+  min-height: 260px;
+}
+
+.videoPreviewEmbed {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  background: #0f1117;
+}
+
 @media (max-width: 1080px) {
   .featuresGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -594,6 +640,11 @@
   .featuresGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .videoPreviewLayout {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
 }
 
 @media (max-width: 640px) {
@@ -606,6 +657,10 @@
   .requirementsRow,
   .featuresGrid {
     grid-template-columns: 1fr;
+  }
+
+  .videoPreviewBlock {
+    padding: 14px;
   }
 
   .imageViewport,

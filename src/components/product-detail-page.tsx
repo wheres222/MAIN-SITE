@@ -29,6 +29,27 @@ interface ParsedDetailContent {
   featureTabs: FeatureTab[];
 }
 
+interface ProductVideoPreview {
+  url: string;
+  title: string;
+  description: string;
+  poster?: string;
+}
+
+const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {
+  // Example:
+  // 637803: {
+  //   url: "https://cdn.example.com/previews/rust-mek.mp4",
+  //   title: "See It In Action",
+  //   description: "Rust gameplay preview for MEK external.",
+  //   poster: "https://cdn.example.com/previews/rust-mek-poster.jpg",
+  // },
+};
+
+const PRODUCT_VIDEO_PREVIEW_BY_GROUP: Record<string, ProductVideoPreview> = {
+  // Optional fallback by group/category slug key (e.g. rust, apex-legends).
+};
+
 function money(value: number | null, code = "USD"): string {
   if (value === null) return "N/A";
   return new Intl.NumberFormat("en-US", {
@@ -98,6 +119,52 @@ function parseGalleryImages(product: SellAuthProduct): string[] {
 
 function normalizeLabel(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function slugify(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function youtubeEmbedUrl(rawUrl: string): string | null {
+  const value = rawUrl.trim();
+  if (!value) return null;
+
+  try {
+    const parsed = new URL(value);
+
+    if (parsed.hostname.includes("youtu.be")) {
+      const id = parsed.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+
+    if (parsed.hostname.includes("youtube.com")) {
+      if (parsed.pathname === "/watch") {
+        const id = parsed.searchParams.get("v") || "";
+        return id ? `https://www.youtube.com/embed/${id}` : null;
+      }
+
+      const pathParts = parsed.pathname.split("/").filter(Boolean);
+      if (pathParts[0] === "embed" && pathParts[1]) {
+        return `https://www.youtube.com/embed/${pathParts[1]}`;
+      }
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function resolveProductVideoPreview(product: SellAuthProduct): ProductVideoPreview | null {
+  const byId = PRODUCT_VIDEO_PREVIEW_BY_ID[product.id];
+  if (byId?.url) return byId;
+
+  const groupKey = slugify(product.groupName || product.categoryName || "");
+  if (groupKey && PRODUCT_VIDEO_PREVIEW_BY_GROUP[groupKey]?.url) {
+    return PRODUCT_VIDEO_PREVIEW_BY_GROUP[groupKey];
+  }
+
+  return null;
 }
 
 function isPostPaymentOnlyCopy(value: string): boolean {
@@ -594,8 +661,18 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
   const detailContent = useMemo(() => parseDetailContent(product), [product]);
   const galleryImages = useMemo(() => parseGalleryImages(product), [product]);
+  const videoPreview = useMemo(() => resolveProductVideoPreview(product), [product]);
+  const videoPreviewEmbed = useMemo(
+    () => (videoPreview ? youtubeEmbedUrl(videoPreview.url) : null),
+    [videoPreview]
+  );
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [openTabs, setOpenTabs] = useState<string[]>([]);
+
+  const hasDetailSections =
+    detailContent.requirements.length > 0 ||
+    detailContent.featureTabs.length > 0 ||
+    Boolean(videoPreview);
 
   useEffect(() => {
     setOpenTabs([]);
@@ -897,7 +974,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           </article>
         </section>
 
-        {detailContent.requirements.length > 0 || detailContent.featureTabs.length > 0 ? (
+        {hasDetailSections ? (
           <section className={styles.detailsStack}>
             {detailContent.requirements.length > 0 ? (
               <section className={styles.detailBlock}>
@@ -979,6 +1056,44 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                       </article>
                     );
                   })}
+                </div>
+              </section>
+            ) : null}
+
+            {videoPreview ? (
+              <section className={`${styles.detailBlock} ${styles.videoPreviewBlock}`}>
+                <div className={styles.videoPreviewLayout}>
+                  <div className={styles.videoPreviewCopy}>
+                    <h2 className={styles.videoPreviewTitle}>{videoPreview.title || "See It In Action"}</h2>
+                    <p>
+                      {videoPreview.description ||
+                        `${product.name} showcase preview so customers can see real gameplay behavior before checkout.`}
+                    </p>
+                  </div>
+
+                  <div className={styles.videoPreviewFrame}>
+                    {videoPreviewEmbed ? (
+                      <iframe
+                        src={videoPreviewEmbed}
+                        title={`${product.name} video preview`}
+                        className={styles.videoPreviewEmbed}
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <video
+                        className={styles.videoPreviewEmbed}
+                        controls
+                        preload="metadata"
+                        playsInline
+                        poster={videoPreview.poster || product.image}
+                      >
+                        <source src={videoPreview.url} />
+                      </video>
+                    )}
+                  </div>
                 </div>
               </section>
             ) : null}
