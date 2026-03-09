@@ -270,6 +270,23 @@ export function StorefrontClient() {
     [storefront?.warnings]
   );
 
+  const [bendooProgress, setBendooProgress] = useState(25);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setBendooProgress((previous) => (previous >= 95 ? 20 : previous + 5));
+    }, 1200);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const bendooProgressStroke = useMemo(() => {
+    const radius = 78;
+    const circumference = 2 * Math.PI * radius;
+    const filled = (bendooProgress / 100) * circumference;
+    return `${filled.toFixed(1)} ${circumference.toFixed(1)}`;
+  }, [bendooProgress]);
+
   useEffect(() => {
     if (activeGroupSlug === null) return;
 
@@ -418,17 +435,21 @@ export function StorefrontClient() {
 
           <div className="bendoo-cards-list">
             <article className="bendoo-card bendoo-card-support">
-              <div className="bendoo-support-rings" aria-hidden="true" />
-              <div className="bendoo-support-icon-wrap" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M12 3.2 5.7 5.8v5.3c0 4.2 2.3 7.8 6.3 9.7 4-1.9 6.3-5.5 6.3-9.7V5.8L12 3.2Z"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinejoin="round"
-                  />
-                  <path d="m9.2 12.2 1.8 1.8 3.8-3.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+              <div className="bendoo-support-hero" aria-hidden="true">
+                <span className="bendoo-support-pulse bendoo-support-pulse-a" />
+                <span className="bendoo-support-pulse bendoo-support-pulse-b" />
+                <span className="bendoo-support-pulse bendoo-support-pulse-c" />
+                <div className="bendoo-support-icon-wrap">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M12 3.2 5.7 5.8v5.3c0 4.2 2.3 7.8 6.3 9.7 4-1.9 6.3-5.5 6.3-9.7V5.8L12 3.2Z"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      strokeLinejoin="round"
+                    />
+                    <path d="m9.2 12.2 1.8 1.8 3.8-3.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
               </div>
               <div className="bendoo-card-copy">
                 <h3>Division Supports You</h3>
@@ -502,13 +523,13 @@ export function StorefrontClient() {
                     cy="110"
                     r="78"
                     className="bendoo-progress-value"
-                    style={{ strokeDasharray: "102.9 490.1" }}
+                    style={{ strokeDasharray: bendooProgressStroke }}
                     transform="rotate(-90 110 110)"
                   />
                 </svg>
                 <div className="bendoo-progress-inner">
                   <span>Updating Cheat...</span>
-                  <strong>21%</strong>
+                  <strong>{bendooProgress}%</strong>
                 </div>
               </div>
               <div className="bendoo-card-copy">

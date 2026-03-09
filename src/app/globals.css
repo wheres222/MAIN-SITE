@@ -630,28 +630,35 @@ select::-ms-expand { display: none; }
   padding-top: 28px;
 }
 
-.bendoo-support-rings {
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  top: -72px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  background: repeating-radial-gradient(
-    circle at center,
-    rgba(56, 189, 248, 0.1) 0,
-    rgba(56, 189, 248, 0.1) 2px,
-    transparent 2px,
-    transparent 30px
-  );
-  opacity: 0.55;
-  pointer-events: none;
+.bendoo-support-hero {
+  position: relative;
+  width: 190px;
+  height: 146px;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
 }
+
+.bendoo-support-pulse {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  transform: translate(-50%, -50%) scale(0.72);
+  opacity: 0;
+  animation: bendooRadarPulse 4.8s ease-out infinite;
+}
+
+.bendoo-support-pulse-a { animation-delay: 0s; }
+.bendoo-support-pulse-b { animation-delay: 1.6s; }
+.bendoo-support-pulse-c { animation-delay: 3.2s; }
 
 .bendoo-support-icon-wrap {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 110px;
   height: 110px;
   margin: 8px auto 14px;
@@ -758,8 +765,8 @@ select::-ms-expand { display: none; }
 }
 
 .bendoo-progress-wrap {
-  width: 200px;
-  height: 200px;
+  width: 210px;
+  height: 210px;
   margin: 0 auto;
   position: relative;
 }
@@ -783,6 +790,7 @@ select::-ms-expand { display: none; }
 .bendoo-progress-value {
   stroke: #38bdf8;
   stroke-linecap: round;
+  transition: stroke-dasharray 0.55s ease;
 }
 
 .bendoo-progress-inner {
@@ -795,12 +803,12 @@ select::-ms-expand { display: none; }
 }
 
 .bendoo-progress-inner span {
-  font-size: 14px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.65);
 }
 
 .bendoo-progress-inner strong {
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 600;
   color: #ffffff;
   line-height: 1;
@@ -835,6 +843,20 @@ select::-ms-expand { display: none; }
   box-shadow: 0 12px 24px rgba(56, 189, 248, 0.3);
 }
 
+.bendoo-access-button::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  right: 20px;
+  bottom: 12px;
+  border-radius: 999px;
+  background: rgba(8, 12, 20, 0.32);
+  box-shadow: 0 0 0 0 rgba(8, 12, 20, 0.22);
+  opacity: 0;
+  animation: bendooClickPulse 4.8s ease-in-out infinite;
+}
+
 .bendoo-access-button span {
   font-size: 28px;
   font-weight: 700;
@@ -848,6 +870,8 @@ select::-ms-expand { display: none; }
   width: 58px;
   height: 58px;
   filter: drop-shadow(0 7px 10px rgba(0, 0, 0, 0.42));
+  transform-origin: 38% 28%;
+  animation: bendooCursorPath 4.8s ease-in-out infinite;
 }
 
 .bendoo-media-box-stream {
@@ -873,6 +897,70 @@ select::-ms-expand { display: none; }
   width: 24px;
   height: 24px;
   display: block;
+}
+
+@keyframes bendooRadarPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.7);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.38;
+  }
+  75% {
+    opacity: 0.12;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.55);
+    opacity: 0;
+  }
+}
+
+@keyframes bendooCursorPath {
+  0% {
+    transform: translate(175px, -48px) scale(1);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  42% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  48% {
+    transform: translate(1px, 2px) scale(0.87);
+    opacity: 1;
+  }
+  56% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  84% {
+    transform: translate(10px, 82px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(14px, 138px) scale(0.94);
+    opacity: 0;
+  }
+}
+
+@keyframes bendooClickPulse {
+  0%,
+  38%,
+  100% {
+    opacity: 0;
+    box-shadow: 0 0 0 0 rgba(8, 12, 20, 0);
+  }
+  45% {
+    opacity: 0.75;
+    box-shadow: 0 0 0 0 rgba(8, 12, 20, 0.38);
+  }
+  60% {
+    opacity: 0;
+    box-shadow: 0 0 0 15px rgba(8, 12, 20, 0);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -965,8 +1053,8 @@ select::-ms-expand { display: none; }
   }
 
   .bendoo-progress-wrap {
-    width: 150px;
-    height: 150px;
+    width: 168px;
+    height: 168px;
   }
 
   .bendoo-access-button {
@@ -1012,8 +1100,8 @@ select::-ms-expand { display: none; }
   }
 
   .bendoo-progress-wrap {
-    width: 180px;
-    height: 180px;
+    width: 190px;
+    height: 190px;
   }
 }
 
