@@ -573,7 +573,7 @@ select::-ms-expand { display: none; }
   background: rgba(20, 22, 28, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 24px;
+  padding: 24px 24px 0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -583,9 +583,22 @@ select::-ms-expand { display: none; }
   gap: 18px;
 }
 
+.bendoo-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+
 .bendoo-card-copy {
   display: grid;
   gap: 9px;
+  margin: 2px -24px 0;
+  padding: 18px 24px 22px;
+  background: linear-gradient(180deg, rgba(9, 12, 17, 0.8) 0%, rgba(6, 9, 13, 0.9) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .bendoo-card-copy h3 {
@@ -604,9 +617,17 @@ select::-ms-expand { display: none; }
   line-height: 1.5;
 }
 
+.bendoo-card-safety .bendoo-card-copy,
+.bendoo-card-updates .bendoo-card-copy,
+.bendoo-card-access .bendoo-card-copy,
+.bendoo-card-streamproof .bendoo-card-copy {
+  background:
+    radial-gradient(120% 140% at 50% 120%, rgba(28, 112, 188, 0.26) 0%, rgba(9, 12, 17, 0) 58%),
+    linear-gradient(180deg, rgba(9, 12, 17, 0.82) 0%, rgba(6, 9, 13, 0.92) 100%);
+}
+
 .bendoo-card-support {
-  align-items: center;
-  text-align: center;
+  align-items: stretch;
   padding-top: 28px;
 }
 
@@ -634,6 +655,7 @@ select::-ms-expand { display: none; }
   z-index: 1;
   width: 110px;
   height: 110px;
+  margin: 8px auto 14px;
   border-radius: 999px;
   background: #38bdf8;
   box-shadow: 0 0 40px rgba(56, 189, 248, 0.35);
@@ -700,8 +722,7 @@ select::-ms-expand { display: none; }
 }
 
 .bendoo-card-community {
-  align-items: center;
-  text-align: center;
+  align-items: stretch;
   padding-top: 26px;
 }
 
@@ -747,6 +768,7 @@ select::-ms-expand { display: none; }
   z-index: 1;
   width: 110px;
   height: 110px;
+  margin: 8px auto 14px;
   border-radius: 24px;
   background: #5865f2;
   display: inline-flex;
@@ -859,12 +881,11 @@ select::-ms-expand { display: none; }
 
 .bendoo-access-cursor {
   position: absolute;
-  right: 11px;
-  bottom: 8px;
-  width: 26px;
-  height: 26px;
-  color: #ffffff;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  right: -8px;
+  bottom: -10px;
+  width: 58px;
+  height: 58px;
+  filter: drop-shadow(0 7px 10px rgba(0, 0, 0, 0.42));
 }
 
 .bendoo-media-box-stream {
@@ -878,6 +899,7 @@ select::-ms-expand { display: none; }
   width: 46px;
   height: 46px;
   border-radius: 999px;
+  border: 1px solid rgba(239, 68, 68, 0.28);
   background: rgba(0, 0, 0, 0.65);
   color: #ef4444;
   display: inline-flex;
@@ -905,7 +927,13 @@ select::-ms-expand { display: none; }
 
 @media (max-width: 900px) {
   .bendoo-card {
-    padding: 20px;
+    padding: 20px 20px 0;
+  }
+
+  .bendoo-card-copy {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding: 16px 20px 20px;
   }
 
   .bendoo-card-copy h3 {

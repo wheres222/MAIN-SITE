@@ -525,7 +525,13 @@ export function StorefrontClient() {
               <div className="bendoo-access-button" aria-hidden="true">
                 <span>ACCESS</span>
                 <svg viewBox="0 0 24 24" fill="none" className="bendoo-access-cursor">
-                  <path d="M5.5 3.8 17 11.9l-4.6.8 1.9 5.6-2.4.8-2-5.8-3.7 2.9L5.5 3.8Z" fill="currentColor" />
+                  <path
+                    d="M5.5 3.8 17 11.9l-4.6.8 1.9 5.6-2.4.8-2-5.8-3.7 2.9L5.5 3.8Z"
+                    fill="#05080E"
+                    stroke="#FFFFFF"
+                    strokeWidth="1.9"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
               <div className="bendoo-card-copy">
