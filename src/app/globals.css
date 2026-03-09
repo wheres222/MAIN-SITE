@@ -790,7 +790,7 @@ select::-ms-expand { display: none; }
 }
 .category-modal-product-top {
   display: block;
-  min-height: 76px;
+  min-height: 68px;
 }
 .category-modal-product-top h4 {
   margin: 0;
@@ -806,7 +806,7 @@ select::-ms-expand { display: none; }
   -webkit-line-clamp: 3;
 }
 .category-modal-meta {
-  margin-top: 2px;
+  margin-top: -5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -837,11 +837,11 @@ select::-ms-expand { display: none; }
   line-height: 1;
 }
 .category-modal-meta-box strong {
-  color: #dfffdf;
+  color: #e8ffe9;
   font-size: 1.16rem;
   line-height: 1;
-  background: linear-gradient(180deg, rgba(44, 201, 98, 0.86) 0%, rgba(34, 171, 79, 0.86) 100%);
-  border: 1px solid rgba(55, 198, 104, 0.78);
+  background: linear-gradient(180deg, rgba(59, 220, 114, 0.62) 0%, rgba(40, 184, 90, 0.58) 100%);
+  border: 1px solid rgba(72, 209, 123, 0.56);
   border-left: 0;
   border-radius: 0 6px 6px 0;
   min-height: 38px;
@@ -850,6 +850,9 @@ select::-ms-expand { display: none; }
   align-items: center;
   justify-content: center;
   letter-spacing: -0.01em;
+  text-shadow: 0 1px 10px rgba(18, 70, 34, 0.32);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 .category-modal-buy-now {
   margin-top: 10px;
