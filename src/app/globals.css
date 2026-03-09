@@ -560,6 +560,10 @@ select::-ms-expand { display: none; }
   margin-bottom: 8px;
 }
 
+.bendoo-cards-heading {
+  display: none;
+}
+
 .bendoo-cards-list {
   width: 100%;
   max-width: 720px;
@@ -570,7 +574,7 @@ select::-ms-expand { display: none; }
 
 .bendoo-card {
   position: relative;
-  background: rgba(20, 22, 28, 0.85);
+  background: rgb(21, 21, 21);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   padding: 24px 24px 0;
@@ -581,6 +585,7 @@ select::-ms-expand { display: none; }
   display: flex;
   flex-direction: column;
   gap: 18px;
+  font-family: "Gilroy-Light", "Gilroy", var(--font-body), sans-serif;
 }
 
 .bendoo-card::before {
@@ -597,7 +602,7 @@ select::-ms-expand { display: none; }
   gap: 9px;
   margin: 2px -24px 0;
   padding: 18px 24px 22px;
-  background: linear-gradient(180deg, rgba(9, 12, 17, 0.8) 0%, rgba(6, 9, 13, 0.9) 100%);
+  background: rgba(14, 14, 14, 0.92);
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
@@ -605,9 +610,10 @@ select::-ms-expand { display: none; }
   margin: 0;
   color: #ffffff;
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.01em;
+  font-family: "Gilroy-Bold", "Gilroy", var(--font-heading), sans-serif;
 }
 
 .bendoo-card-copy p {
@@ -615,15 +621,8 @@ select::-ms-expand { display: none; }
   color: rgba(255, 255, 255, 0.7);
   font-size: 15px;
   line-height: 1.5;
-}
-
-.bendoo-card-safety .bendoo-card-copy,
-.bendoo-card-updates .bendoo-card-copy,
-.bendoo-card-access .bendoo-card-copy,
-.bendoo-card-streamproof .bendoo-card-copy {
-  background:
-    radial-gradient(120% 140% at 50% 120%, rgba(28, 112, 188, 0.26) 0%, rgba(9, 12, 17, 0) 58%),
-    linear-gradient(180deg, rgba(9, 12, 17, 0.82) 0%, rgba(6, 9, 13, 0.92) 100%);
+  font-weight: 300;
+  font-family: "Gilroy-Light", "Gilroy", var(--font-body), sans-serif;
 }
 
 .bendoo-card-support {
@@ -726,43 +725,6 @@ select::-ms-expand { display: none; }
   padding-top: 26px;
 }
 
-.bendoo-network {
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 260px;
-  height: 60px;
-  pointer-events: none;
-  opacity: 0.55;
-}
-
-.bendoo-network::before,
-.bendoo-network::after {
-  content: "";
-  position: absolute;
-  left: 18%;
-  right: 18%;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.35) 50%, transparent 100%);
-}
-
-.bendoo-network::before { top: 19px; }
-.bendoo-network::after { top: 38px; }
-
-.bendoo-network span {
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: rgba(56, 189, 248, 0.6);
-  box-shadow: 0 0 0 5px rgba(56, 189, 248, 0.12);
-}
-
-.bendoo-network span:nth-child(1) { top: 16px; left: 20%; }
-.bendoo-network span:nth-child(2) { top: 35px; left: 49%; }
-.bendoo-network span:nth-child(3) { top: 16px; right: 20%; }
-
 .bendoo-discord-icon-wrap {
   position: relative;
   z-index: 1;
@@ -770,17 +732,17 @@ select::-ms-expand { display: none; }
   height: 110px;
   margin: 8px auto 14px;
   border-radius: 24px;
-  background: #5865f2;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 30px rgba(88, 101, 242, 0.45);
 }
 
 .bendoo-discord-icon {
-  width: 50px;
-  height: 50px;
-  object-fit: contain;
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  display: block;
 }
 
 .bendoo-card-updates {
@@ -913,15 +875,116 @@ select::-ms-expand { display: none; }
   display: block;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1024px) {
+  .bendoo-cards-heading {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    margin: 0 auto 18px;
+    gap: 6px;
+  }
+
+  .bendoo-cards-heading h2 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 44px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    font-family: "Gilroy-Bold", "Gilroy", var(--font-heading), sans-serif;
+  }
+
+  .bendoo-cards-heading p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+    line-height: 1.4;
+    font-family: "Gilroy-Light", "Gilroy", var(--font-body), sans-serif;
+  }
+
+  .bendoo-cards-list {
+    max-width: 1060px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .bendoo-card {
+    min-height: 262px;
+    gap: 12px;
+  }
+
+  .bendoo-card-access {
+    grid-column: 1 / span 2;
+    grid-row: 1;
+  }
+
+  .bendoo-card-streamproof {
+    grid-column: 3 / span 1;
+    grid-row: 1;
+  }
+
+  .bendoo-card-community {
+    grid-column: 4 / span 1;
+    grid-row: 1;
+  }
+
+  .bendoo-card-updates {
+    grid-column: 1 / span 1;
+    grid-row: 2;
+  }
+
+  .bendoo-card-support {
+    grid-column: 2 / span 1;
+    grid-row: 2;
+  }
+
+  .bendoo-card-safety {
+    grid-column: 3 / span 2;
+    grid-row: 2;
+  }
+
   .bendoo-media-box {
-    height: 200px;
+    height: 132px;
+    margin-top: 0;
   }
 
   .bendoo-support-icon-wrap,
   .bendoo-discord-icon-wrap {
     width: 120px;
     height: 120px;
+    margin-top: 0;
+    margin-bottom: 2px;
+  }
+
+  .bendoo-discord-icon {
+    width: 120px;
+    height: 120px;
+  }
+
+  .bendoo-progress-wrap {
+    width: 170px;
+    height: 170px;
+  }
+
+  .bendoo-access-button {
+    width: 260px;
+    margin-top: 6px;
+  }
+
+  .bendoo-card-copy {
+    gap: 6px;
+    margin-top: 0;
+    padding-top: 12px;
+    padding-bottom: 14px;
+  }
+
+  .bendoo-card-copy h3 {
+    font-size: 20px;
+  }
+
+  .bendoo-card-copy p {
+    font-size: 14px;
+    line-height: 1.35;
   }
 }
 

@@ -411,6 +411,11 @@ export function StorefrontClient() {
         </section>
 
         <section className="shell bendoo-cards-wrap" aria-label="Why choose Division">
+          <header className="bendoo-cards-heading" aria-hidden="true">
+            <h2>You&apos;ll Choose Us.</h2>
+            <p>Because your Cheats should feel this good.</p>
+          </header>
+
           <div className="bendoo-cards-list">
             <article className="bendoo-card bendoo-card-support">
               <div className="bendoo-support-rings" aria-hidden="true" />
@@ -469,17 +474,12 @@ export function StorefrontClient() {
             </article>
 
             <article className="bendoo-card bendoo-card-community">
-              <div className="bendoo-network" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
               <div className="bendoo-discord-icon-wrap" aria-hidden="true">
                 <Image
-                  src="/social/discord.png"
+                  src="/social/discord-card-icon.jpg"
                   alt="Discord"
-                  width={56}
-                  height={56}
+                  width={110}
+                  height={110}
                   className="bendoo-discord-icon"
                 />
               </div>
