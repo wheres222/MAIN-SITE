@@ -6,13 +6,20 @@ export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 const CHECKOUT_DEDUPE_WINDOW_MS = 45_000;
-const CHECKOUT_ENABLED = process.env.CHECKOUT_ENABLED === "true";
+const CHECKOUT_RATE_LIMIT_WINDOW_MS = 60_000;
+const CHECKOUT_RATE_LIMIT_MAX = 6;
+const CHECKOUT_ENABLED = process.env.CHECKOUT_FORCE_DISABLE !== "true";
 
 type CheckoutLockState = {
   status: "pending" | "ready";
   updatedAt: number;
   redirectUrl: string | null;
   raw?: unknown;
+};
+
+type CheckoutRateState = {
+  count: number;
+  updatedAt: number;
 };
 
 function lockStore(): Map<string, CheckoutLockState> {
@@ -27,12 +34,52 @@ function lockStore(): Map<string, CheckoutLockState> {
   return scoped.__checkoutDedupeStore;
 }
 
+function rateStore(): Map<string, CheckoutRateState> {
+  const scoped = globalThis as typeof globalThis & {
+    __checkoutRateStore?: Map<string, CheckoutRateState>;
+  };
+
+  if (!scoped.__checkoutRateStore) {
+    scoped.__checkoutRateStore = new Map<string, CheckoutRateState>();
+  }
+
+  return scoped.__checkoutRateStore;
+}
+
+function clientIpFromRequest(request: Request): string {
+  const forwardedFor = request.headers.get("x-forwarded-for") || "";
+  return forwardedFor.split(",")[0]?.trim() || "unknown";
+}
+
 function cleanupLocks(store: Map<string, CheckoutLockState>, now: number) {
   for (const [key, value] of store.entries()) {
     if (now - value.updatedAt > CHECKOUT_DEDUPE_WINDOW_MS * 2) {
       store.delete(key);
     }
   }
+}
+
+function cleanupRates(store: Map<string, CheckoutRateState>, now: number) {
+  for (const [key, value] of store.entries()) {
+    if (now - value.updatedAt > CHECKOUT_RATE_LIMIT_WINDOW_MS * 2) {
+      store.delete(key);
+    }
+  }
+}
+
+function isRateLimited(store: Map<string, CheckoutRateState>, key: string, now: number): boolean {
+  const existing = store.get(key);
+
+  if (!existing || now - existing.updatedAt > CHECKOUT_RATE_LIMIT_WINDOW_MS) {
+    store.set(key, { count: 1, updatedAt: now });
+    return false;
+  }
+
+  existing.count += 1;
+  existing.updatedAt = now;
+  store.set(key, existing);
+
+  return existing.count > CHECKOUT_RATE_LIMIT_MAX;
 }
 
 async function sha256(input: string): Promise<string> {
@@ -48,8 +95,7 @@ async function checkoutFingerprint(
   body: Partial<CheckoutRequestInput>,
   sanitizedItems: Array<{ productId: number; quantity: number; variantId?: number }>
 ): Promise<string> {
-  const forwardedFor = request.headers.get("x-forwarded-for") || "";
-  const clientIp = forwardedFor.split(",")[0]?.trim() || "unknown";
+  const clientIp = clientIpFromRequest(request);
   const userAgent = (request.headers.get("user-agent") || "unknown").slice(0, 180);
   const idempotencyKey = (request.headers.get("x-idempotency-key") || "").trim();
 
@@ -90,8 +136,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: false,
-        message:
-          "Checkout is temporarily disabled while payment delivery security checks are in progress.",
+        message: "Checkout is currently paused by security policy.",
       },
       { status: 503 }
     );
@@ -99,6 +144,7 @@ export async function POST(request: Request) {
 
   let dedupeKey = "";
   const store = lockStore();
+  const checkoutRates = rateStore();
 
   try {
     const body = (await request.json()) as Partial<CheckoutRequestInput>;
@@ -133,6 +179,21 @@ export async function POST(request: Request) {
 
     const now = Date.now();
     cleanupLocks(store, now);
+    cleanupRates(checkoutRates, now);
+
+    const rateKey = await sha256(
+      `${clientIpFromRequest(request)}|${(request.headers.get("user-agent") || "").slice(0, 120)}`
+    );
+    if (isRateLimited(checkoutRates, rateKey, now)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Too many checkout attempts. Please wait a minute and try again.",
+        },
+        { status: 429 }
+      );
+    }
+
     const existing = store.get(dedupeKey);
 
     if (existing && now - existing.updatedAt < CHECKOUT_DEDUPE_WINDOW_MS) {
