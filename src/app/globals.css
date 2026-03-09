@@ -735,6 +735,7 @@ select::-ms-expand { display: none; }
 
 .bendoo-card-safety .bendoo-media-box,
 .bendoo-card-streamproof .bendoo-media-box {
+  margin-top: 0;
   margin-left: -24px;
   margin-right: -24px;
   width: calc(100% + 48px);
@@ -1080,19 +1081,26 @@ select::-ms-expand { display: none; }
 
   .bendoo-card-copy {
     gap: 5px;
-    margin-top: 0;
-    min-height: 108px;
+    margin-top: auto;
+    min-height: 124px;
+    height: 124px;
     padding-top: 10px;
     padding-bottom: 12px;
+    overflow: hidden;
   }
 
   .bendoo-card-copy h3 {
-    font-size: 20px;
+    font-size: 19px;
+    line-height: 1.18;
   }
 
   .bendoo-card-copy p {
     font-size: 14px;
     line-height: 1.33;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
 
