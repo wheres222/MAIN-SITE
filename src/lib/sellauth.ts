@@ -34,10 +34,29 @@ export class SellAuthRequestError extends Error {
   }
 }
 
+function normalizeEnvSecret(value: string | undefined): string {
+  if (!value) return "";
+
+  let normalized = value.trim();
+
+  // Accept accidental quoted values in dashboard env editors.
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+
+  // Accept escaped pipe from copy/paste attempts.
+  normalized = normalized.replace(/\\\|/g, "|");
+
+  return normalized;
+}
+
 const SELLAUTH_BASE_URL =
-  process.env.SELLAUTH_API_BASE_URL?.trim() || "https://api.sellauth.com";
-const SELLAUTH_SHOP_ID = process.env.SELLAUTH_SHOP_ID?.trim() || "";
-const SELLAUTH_API_KEY = process.env.SELLAUTH_API_KEY?.trim() || "";
+  normalizeEnvSecret(process.env.SELLAUTH_API_BASE_URL) || "https://api.sellauth.com";
+const SELLAUTH_SHOP_ID = normalizeEnvSecret(process.env.SELLAUTH_SHOP_ID) || "";
+const SELLAUTH_API_KEY = normalizeEnvSecret(process.env.SELLAUTH_API_KEY) || "";
 const PRODUCT_IMAGE_PLACEHOLDER = "/placeholders/product-image-not-added.svg";
 const STOREFRONT_CACHE_TTL_MS = 25_000;
 const SELLAUTH_PAGE_SIZE = 100;

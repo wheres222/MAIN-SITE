@@ -3,10 +3,27 @@ import { NextResponse } from "next/server";
 export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
+function normalizeEnvSecret(value: string | undefined): string {
+  if (!value) return "";
+
+  let normalized = value.trim();
+
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+
+  normalized = normalized.replace(/\\\|/g, "|");
+
+  return normalized;
+}
+
 const SELLAUTH_BASE_URL =
-  process.env.SELLAUTH_API_BASE_URL?.trim() || "https://api.sellauth.com";
-const SELLAUTH_SHOP_ID = process.env.SELLAUTH_SHOP_ID?.trim() || "";
-const SELLAUTH_API_KEY = process.env.SELLAUTH_API_KEY?.trim() || "";
+  normalizeEnvSecret(process.env.SELLAUTH_API_BASE_URL) || "https://api.sellauth.com";
+const SELLAUTH_SHOP_ID = normalizeEnvSecret(process.env.SELLAUTH_SHOP_ID) || "";
+const SELLAUTH_API_KEY = normalizeEnvSecret(process.env.SELLAUTH_API_KEY) || "";
 
 export async function GET() {
   const configured = Boolean(SELLAUTH_SHOP_ID && SELLAUTH_API_KEY);
