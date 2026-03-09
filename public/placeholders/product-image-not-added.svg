@@ -1,12 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Product image not added">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-label="Product preview placeholder">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#10141d"/>
-      <stop offset="100%" stop-color="#171f2f"/>
+      <stop offset="0%" stop-color="#10151f"/>
+      <stop offset="52%" stop-color="#111d2a"/>
+      <stop offset="100%" stop-color="#0b1119"/>
     </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.82" r="0.62">
+      <stop offset="0%" stop-color="#2d9eea" stop-opacity="0.34"/>
+      <stop offset="56%" stop-color="#2d9eea" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#2d9eea" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#88a3d8" stroke-opacity="0.09" stroke-width="1"/>
+    </pattern>
   </defs>
+
   <rect width="1200" height="675" fill="url(#bg)"/>
-  <rect x="110" y="90" width="980" height="495" rx="20" fill="none" stroke="#2b3a59" stroke-width="4"/>
-  <text x="600" y="315" text-anchor="middle" fill="#d9e6ff" font-size="44" font-family="Inter,Segoe UI,Arial,sans-serif" font-weight="700">Product image not added</text>
-  <text x="600" y="365" text-anchor="middle" fill="#92a7ce" font-size="24" font-family="Inter,Segoe UI,Arial,sans-serif">Upload an image in SellAuth product settings</text>
+  <rect width="1200" height="675" fill="url(#grid)" opacity="0.45"/>
+  <rect width="1200" height="675" fill="url(#glow)"/>
+  <circle cx="600" cy="344" r="120" fill="#38bdf8" fill-opacity="0.1"/>
+  <circle cx="600" cy="344" r="46" fill="#38bdf8" fill-opacity="0.62"/>
+  <path d="M600 314l-27 11v23c0 18 10 34 27 42 17-8 27-24 27-42v-23l-27-11z" fill="none" stroke="#eaf6ff" stroke-width="6" stroke-linejoin="round"/>
 </svg>
