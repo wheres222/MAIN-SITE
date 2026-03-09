@@ -66,7 +66,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
 
   const error = mockData
     ? ""
-    : "Live fulfillment tracking is currently disabled. Keys and setup instructions are shown only after payment is completed and verified by your delivery provider.";
+    : "Live fulfillment tracking is currently disabled. Please check your checkout confirmation and contact support if needed.";
 
   const items = useMemo(
     () =>
@@ -97,7 +97,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
     ? "We couldn't complete this payment. Please contact support."
     : canShowDelivery
       ? "Payment verified. Your delivery details are ready below."
-      : "We only display keys and setup instructions after payment is completed and verified.";
+      : "Your payment is being processed.";
 
   async function copyKey(value: string) {
     try {
@@ -198,9 +198,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
                   </a>
                 </div>
               </>
-            ) : (
-              <p className="state-message">No keys are shown until payment completion is verified.</p>
-            )}
+            ) : null}
 
             {copiedKey === "copy-failed" ? (
               <p className="state-message error">Copy failed on this device.</p>
