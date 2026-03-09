@@ -6,6 +6,7 @@ export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 const CHECKOUT_DEDUPE_WINDOW_MS = 45_000;
+const CHECKOUT_ENABLED = process.env.CHECKOUT_ENABLED === "true";
 
 type CheckoutLockState = {
   status: "pending" | "ready";
@@ -85,6 +86,17 @@ function invalid(message: string, status = 400) {
 }
 
 export async function POST(request: Request) {
+  if (!CHECKOUT_ENABLED) {
+    return NextResponse.json(
+      {
+        success: false,
+        message:
+          "Checkout is temporarily disabled while payment delivery security checks are in progress.",
+      },
+      { status: 503 }
+    );
+  }
+
   let dedupeKey = "";
   const store = lockStore();
 

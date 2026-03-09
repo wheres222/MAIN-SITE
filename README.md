@@ -21,6 +21,7 @@ Set:
 - `SELLAUTH_SHOP_ID`
 - `SELLAUTH_API_KEY`
 - Optional: `SELLAUTH_API_BASE_URL` (default: `https://api.sellauth.com`)
+- Required for live payments: `CHECKOUT_ENABLED=true` (default is disabled for safety)
 - Optional: `NEXT_PUBLIC_DISCORD_URL`
 - Optional: `NEXT_PUBLIC_SUPPORT_URL`
 - Optional: `NEXT_IMAGE_REMOTE_HOSTS` (comma-separated HTTPS hostnames for external images)
