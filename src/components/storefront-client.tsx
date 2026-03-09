@@ -410,6 +410,160 @@ export function StorefrontClient() {
           )}
         </section>
 
+        <section className="shell bendoo-cards-wrap" aria-label="Why choose Division">
+          <div className="bendoo-cards-list">
+            <article className="bendoo-card bendoo-card-support">
+              <div className="bendoo-support-rings" aria-hidden="true" />
+              <div className="bendoo-support-icon-wrap" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 3.2 5.7 5.8v5.3c0 4.2 2.3 7.8 6.3 9.7 4-1.9 6.3-5.5 6.3-9.7V5.8L12 3.2Z"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinejoin="round"
+                  />
+                  <path d="m9.2 12.2 1.8 1.8 3.8-3.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div className="bendoo-card-copy">
+                <h3>Division Supports You</h3>
+                <p>
+                  No bots. No waiting days. You get real support, anytime. Our 24/7 team is ready
+                  to help you instantly—whether it&apos;s setup or troubleshooting.
+                </p>
+              </div>
+            </article>
+
+            <article className="bendoo-card bendoo-card-safety">
+              <div className="bendoo-badge-row">
+                <span className="bendoo-badge bendoo-badge-safe">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 3.6 6.3 6v4.9c0 3.8 2.2 7 5.7 8.8 3.5-1.8 5.7-5 5.7-8.8V6L12 3.6Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+                    <path d="m9.5 11.8 1.6 1.6 3.4-3.4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Safe
+                </span>
+                <span className="bendoo-badge bendoo-badge-streamproof">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="4.4" y="6.5" width="15.2" height="10.8" rx="2" stroke="currentColor" strokeWidth="1.7" />
+                    <path d="M4 20 20 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                  Streamproof
+                </span>
+              </div>
+              <div className="bendoo-media-box" aria-hidden="true">
+                <Image
+                  src="/placeholders/product-image-not-added.svg"
+                  alt="Safety preview placeholder"
+                  width={1200}
+                  height={600}
+                  className="bendoo-media-image"
+                />
+              </div>
+              <div className="bendoo-card-copy">
+                <h3>Your Safety Is Our Priority</h3>
+                <p>
+                  We prioritize cheat security with regular improvements to protect you at all times.
+                </p>
+              </div>
+            </article>
+
+            <article className="bendoo-card bendoo-card-community">
+              <div className="bendoo-network" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="bendoo-discord-icon-wrap" aria-hidden="true">
+                <Image
+                  src="/social/discord.png"
+                  alt="Discord"
+                  width={56}
+                  height={56}
+                  className="bendoo-discord-icon"
+                />
+              </div>
+              <div className="bendoo-card-copy">
+                <h3>You&apos;re Never Alone</h3>
+                <p>
+                  Join players like you. Our Discord community is packed with people sharing tips,
+                  clips, and ways to level up your game.
+                </p>
+              </div>
+            </article>
+
+            <article className="bendoo-card bendoo-card-updates">
+              <div className="bendoo-dots-pattern" aria-hidden="true" />
+              <div className="bendoo-progress-wrap" aria-hidden="true">
+                <svg viewBox="0 0 220 220" className="bendoo-progress-ring">
+                  <circle cx="110" cy="110" r="78" className="bendoo-progress-track" />
+                  <circle
+                    cx="110"
+                    cy="110"
+                    r="78"
+                    className="bendoo-progress-value"
+                    style={{ strokeDasharray: "102.9 490.1" }}
+                    transform="rotate(-90 110 110)"
+                  />
+                </svg>
+                <div className="bendoo-progress-inner">
+                  <span>Updating Cheat...</span>
+                  <strong>21%</strong>
+                </div>
+              </div>
+              <div className="bendoo-card-copy">
+                <h3>Instant Cheat Updates</h3>
+                <p>
+                  Every time the game updates, we&apos;ve got your back. Your cheats are updated fast
+                  to keep you winning.
+                </p>
+              </div>
+            </article>
+
+            <article className="bendoo-card bendoo-card-access">
+              <div className="bendoo-grid-pattern" aria-hidden="true" />
+              <div className="bendoo-access-button" aria-hidden="true">
+                <span>ACCESS</span>
+                <svg viewBox="0 0 24 24" fill="none" className="bendoo-access-cursor">
+                  <path d="M5.5 3.8 17 11.9l-4.6.8 1.9 5.6-2.4.8-2-5.8-3.7 2.9L5.5 3.8Z" fill="currentColor" />
+                </svg>
+              </div>
+              <div className="bendoo-card-copy">
+                <h3>Instant Cheat Access</h3>
+                <p>
+                  The moment you check out, you&apos;re in. No delays. No waiting. Just your cheat,
+                  activated and ready to dominate.
+                </p>
+              </div>
+            </article>
+
+            <article className="bendoo-card bendoo-card-streamproof">
+              <div className="bendoo-media-box bendoo-media-box-stream" aria-hidden="true">
+                <Image
+                  src="/placeholders/product-image-not-added.svg"
+                  alt="Streamproof preview placeholder"
+                  width={1200}
+                  height={600}
+                  className="bendoo-media-image"
+                />
+                <span className="bendoo-streamproof-overlay">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="4.4" y="6.4" width="15.2" height="10.8" rx="2" stroke="currentColor" strokeWidth="1.7" />
+                    <path d="M4 20 20 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  </svg>
+                </span>
+              </div>
+              <div className="bendoo-card-copy">
+                <h3>Streamproof &amp; External</h3>
+                <p>
+                  Our cheats are fully external and kernel-based—built to be safe and completely
+                  stream-proof.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+
         <section className="shell discord-join-wrap" aria-label="Join Discord">
           <a
             className="discord-join-banner"

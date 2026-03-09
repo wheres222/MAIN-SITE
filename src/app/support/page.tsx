@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getDiscordUrl } from "@/lib/links";
@@ -56,19 +57,14 @@ function SupportCtaIcon({ type }: { type: SupportIcon }) {
 
   if (type === "discord") {
     return (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
+      <Image
+        src="/social/discord.png"
+        alt=""
         aria-hidden="true"
+        width={28}
+        height={28}
         className="support-cta-icon support-cta-icon-discord"
-      >
-        <path
-          d="M8 7.8a14.3 14.3 0 0 0-2.2.8A14 14 0 0 0 4 16.7a13.9 13.9 0 0 0 4.3 2.2l.8-1.3a9.4 9.4 0 0 1-1.9-.9l.4-.3c2.6 1.2 5.3 1.2 7.9 0l.4.3a9.4 9.4 0 0 1-1.9.9l.8 1.3A13.9 13.9 0 0 0 20 16.7a14 14 0 0 0-1.8-8.1 14.3 14.3 0 0 0-2.2-.8l-.3.6c-2-.3-3.4-.3-5.4 0L8 7.8Z"
-          fill="currentColor"
-        />
-        <circle cx="9.5" cy="12.6" r="1.1" fill="#111216" />
-        <circle cx="14.5" cy="12.6" r="1.1" fill="#111216" />
-      </svg>
+      />
     );
   }
 
@@ -169,8 +165,8 @@ export default function SupportPage() {
             </p>
           </header>
           <div className="faq-list">
-            {faqs.map((faq, idx) => (
-              <details key={faq.q} className="faq-item" open={idx === 0}>
+            {faqs.map((faq) => (
+              <details key={faq.q} className="faq-item">
                 <summary>
                   <span className="faq-question">{faq.q}</span>
                   <span className="faq-chevron" aria-hidden="true">
