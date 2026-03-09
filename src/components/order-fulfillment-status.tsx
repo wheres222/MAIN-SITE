@@ -1,20 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 type OrderStatus = "queued" | "processing" | "fulfilled" | "failed" | string;
-
-interface OrderPayload {
-  success?: boolean;
-  message?: string;
-  order?: {
-    orderId: string;
-    status: OrderStatus;
-    updatedAt?: string;
-    licenseKeys?: string[];
-    lastError?: string;
-  };
-}
 
 interface OrderItemView {
   name: string;
@@ -57,9 +45,9 @@ function formatStatus(status: OrderStatus): string {
 }
 
 export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
-  const [loading, setLoading] = useState(!mockData);
-  const [error, setError] = useState("");
-  const [order, setOrder] = useState<OrderPayload["order"] | null>(
+  const [copiedKey, setCopiedKey] = useState("");
+
+  const order =
     mockData
       ? {
           orderId: mockData.orderId,
@@ -68,24 +56,17 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
           licenseKeys: mockData.licenseKeys,
           lastError: mockData.lastError,
         }
-      : null
-  );
-  const [copiedKey, setCopiedKey] = useState("");
+      : {
+          orderId,
+          status: "processing",
+          updatedAt: new Date().toISOString(),
+          licenseKeys: [] as string[],
+          lastError: undefined,
+        };
 
-  useEffect(() => {
-    if (mockData) return;
-
-    setOrder({
-      orderId,
-      status: "processing",
-      updatedAt: new Date().toISOString(),
-      licenseKeys: [],
-    });
-    setError(
-      "Live fulfillment tracking is currently disabled. Check your SellAuth checkout confirmation for delivery status."
-    );
-    setLoading(false);
-  }, [mockData, orderId]);
+  const error = mockData
+    ? ""
+    : "Live fulfillment tracking is currently disabled. Keys and setup instructions are shown only after payment is completed and verified by your delivery provider.";
 
   const items = useMemo(
     () =>
@@ -99,12 +80,12 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
     [mockData?.items]
   );
 
-  const keys = order?.licenseKeys || [];
-  const primaryKey = keys[0] || "Pending delivery...";
+  const keys = order.licenseKeys || [];
   const primaryItem = items[0];
 
-  const isFailed = order?.status === "failed";
-  const isPaid = order?.status === "fulfilled";
+  const isFailed = order.status === "failed";
+  const isPaid = order.status === "fulfilled";
+  const canShowDelivery = isPaid && keys.length > 0;
 
   const successTitle = isFailed
     ? "Payment failed"
@@ -114,9 +95,9 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
 
   const successMessage = isFailed
     ? "We couldn't complete this payment. Please contact support."
-    : isPaid
-      ? "Thank you for your purchase. Your order is being delivered automatically."
-      : "Thanks for your payment. We are currently processing your order delivery.";
+    : canShowDelivery
+      ? "Payment verified. Your delivery details are ready below."
+      : "We only display keys and setup instructions after payment is completed and verified.";
 
   async function copyKey(value: string) {
     try {
@@ -150,7 +131,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
               </div>
               <div>
                 <dt>Order:</dt>
-                <dd>{order?.orderId || orderId}</dd>
+                <dd>{order.orderId || orderId}</dd>
               </div>
               <div>
                 <dt>Total:</dt>
@@ -158,7 +139,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
               </div>
               <div>
                 <dt>Time of purchase:</dt>
-                <dd>{order?.updatedAt ? new Date(order.updatedAt).toLocaleString() : "Pending"}</dd>
+                <dd>{order.updatedAt ? new Date(order.updatedAt).toLocaleString() : "Pending"}</dd>
               </div>
               <div>
                 <dt>Email:</dt>
@@ -170,7 +151,7 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
               </div>
               <div>
                 <dt>Status:</dt>
-                <dd className="postpay-status-inline">{formatStatus(order?.status || "processing")}</dd>
+                <dd className="postpay-status-inline">{formatStatus(order.status || "processing")}</dd>
               </div>
               {mockData?.transactionId ? (
                 <div>
@@ -184,36 +165,42 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
           <article className="postpay-block">
             <h3>Your keys</h3>
 
-            <div className="postpay-primary-key">
-              <span>{primaryKey}</span>
-              <button type="button" onClick={() => copyKey(primaryKey)}>
-                {copiedKey === primaryKey ? "Copied" : "Copy"}
-              </button>
-            </div>
+            {canShowDelivery ? (
+              <>
+                <div className="postpay-primary-key">
+                  <span>{keys[0]}</span>
+                  <button type="button" onClick={() => copyKey(keys[0])}>
+                    {copiedKey === keys[0] ? "Copied" : "Copy"}
+                  </button>
+                </div>
 
-            {keys.length > 1 ? (
-              <ul className="postpay-key-list">
-                {keys.slice(1).map((key) => (
-                  <li key={key}>
-                    <span>{key}</span>
-                    <button type="button" onClick={() => copyKey(key)}>
-                      {copiedKey === key ? "Copied" : "Copy"}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+                {keys.length > 1 ? (
+                  <ul className="postpay-key-list">
+                    {keys.slice(1).map((key) => (
+                      <li key={key}>
+                        <span>{key}</span>
+                        <button type="button" onClick={() => copyKey(key)}>
+                          {copiedKey === key ? "Copied" : "Copy"}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
 
-            <div className="postpay-actions">
-              <a href="#">Instructions and loader</a>
-              <a
-                href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Help
-              </a>
-            </div>
+                <div className="postpay-actions">
+                  <a href="#">Instructions and loader</a>
+                  <a
+                    href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Help
+                  </a>
+                </div>
+              </>
+            ) : (
+              <p className="state-message">No keys are shown until payment completion is verified.</p>
+            )}
 
             {copiedKey === "copy-failed" ? (
               <p className="state-message error">Copy failed on this device.</p>
@@ -221,9 +208,8 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
           </article>
         </div>
 
-        {loading ? <p className="state-message">Loading order status...</p> : null}
         {error ? <p className="state-message error">{error}</p> : null}
-        {order?.status === "failed" && order.lastError ? (
+        {order.status === "failed" && order.lastError ? (
           <p className="state-message error">{order.lastError}</p>
         ) : null}
       </div>
