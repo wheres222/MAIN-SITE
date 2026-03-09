@@ -452,7 +452,7 @@ export function StorefrontClient() {
                 </div>
               </div>
               <div className="bendoo-card-copy">
-                <h3>Division Supports You</h3>
+                <h3>Active Support</h3>
                 <p>
                   No bots. No waiting days. You get real support, anytime. Our 24/7 team is ready
                   to help you instantly—whether it&apos;s setup or troubleshooting.
