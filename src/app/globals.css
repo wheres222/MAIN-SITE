@@ -906,11 +906,14 @@ select::-ms-expand { display: none; }
     max-width: 1060px;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
+    grid-auto-rows: 1fr;
+    align-items: stretch;
   }
 
   .bendoo-card {
-    min-height: 262px;
-    gap: 12px;
+    height: 242px;
+    min-height: 0;
+    gap: 10px;
   }
 
   .bendoo-card-access {
@@ -944,26 +947,26 @@ select::-ms-expand { display: none; }
   }
 
   .bendoo-media-box {
-    height: 132px;
+    height: 118px;
     margin-top: 0;
   }
 
   .bendoo-support-icon-wrap,
   .bendoo-discord-icon-wrap {
-    width: 120px;
-    height: 120px;
+    width: 104px;
+    height: 104px;
     margin-top: 0;
-    margin-bottom: 2px;
+    margin-bottom: 0;
   }
 
   .bendoo-discord-icon {
-    width: 120px;
-    height: 120px;
+    width: 104px;
+    height: 104px;
   }
 
   .bendoo-progress-wrap {
-    width: 170px;
-    height: 170px;
+    width: 150px;
+    height: 150px;
   }
 
   .bendoo-access-button {
@@ -972,10 +975,11 @@ select::-ms-expand { display: none; }
   }
 
   .bendoo-card-copy {
-    gap: 6px;
+    gap: 5px;
     margin-top: 0;
-    padding-top: 12px;
-    padding-bottom: 14px;
+    min-height: 96px;
+    padding-top: 10px;
+    padding-bottom: 12px;
   }
 
   .bendoo-card-copy h3 {
@@ -984,7 +988,11 @@ select::-ms-expand { display: none; }
 
   .bendoo-card-copy p {
     font-size: 14px;
-    line-height: 1.35;
+    line-height: 1.33;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
 
