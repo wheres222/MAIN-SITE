@@ -815,7 +815,7 @@ select::-ms-expand { display: none; }
 
 .bendoo-progress-inner {
   position: absolute;
-  inset: 24px;
+  inset: 28px;
   display: grid;
   place-content: center;
   text-align: center;
@@ -1018,11 +1018,12 @@ select::-ms-expand { display: none; }
     max-width: 1060px;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 12px;
-    grid-auto-rows: 314px;
+    grid-auto-rows: 352px;
     align-items: stretch;
   }
 
   .bendoo-card {
+    --bendoo-bar-h: 146px;
     min-height: 0;
     height: 100%;
     gap: 10px;
@@ -1059,8 +1060,13 @@ select::-ms-expand { display: none; }
   }
 
   .bendoo-media-box {
-    height: 118px;
+    height: 132px;
     margin-top: 0;
+  }
+
+  .bendoo-card-safety .bendoo-media-box,
+  .bendoo-card-streamproof .bendoo-media-box {
+    margin-bottom: calc(-1 * var(--bendoo-bar-h));
   }
 
   .bendoo-support-icon-wrap,
@@ -1089,9 +1095,9 @@ select::-ms-expand { display: none; }
   .bendoo-card-copy {
     gap: 5px;
     margin-top: auto;
-    min-height: 132px;
-    height: 132px;
-    padding-top: 10px;
+    min-height: var(--bendoo-bar-h);
+    height: var(--bendoo-bar-h);
+    padding-top: 11px;
     padding-bottom: 12px;
     overflow: hidden;
   }
@@ -1103,10 +1109,7 @@ select::-ms-expand { display: none; }
 
   .bendoo-card-copy p {
     font-size: 14px;
-    line-height: 1.33;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
+    line-height: 1.32;
     overflow: hidden;
   }
 }

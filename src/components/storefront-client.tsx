@@ -7,7 +7,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { canonicalGameSlug } from "@/lib/game-slug";
-import { getDiscordUrl } from "@/lib/links";
 import { productHref } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
@@ -92,7 +91,6 @@ export function StorefrontClient() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeGroupSlug, setActiveGroupSlug] = useState<string | null>(null);
-  const discordUrl = getDiscordUrl();
 
   useEffect(() => {
     let active = true;
@@ -270,11 +268,11 @@ export function StorefrontClient() {
     [storefront?.warnings]
   );
 
-  const [bendooProgress, setBendooProgress] = useState(25);
+  const [bendooProgress, setBendooProgress] = useState(0);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setBendooProgress((previous) => (previous >= 95 ? 20 : previous + 5));
+      setBendooProgress((previous) => (previous >= 100 ? 0 : previous + 5));
     }, 1200);
 
     return () => window.clearInterval(timer);
@@ -589,21 +587,6 @@ export function StorefrontClient() {
               </div>
             </article>
           </div>
-        </section>
-
-        <section className="shell discord-join-wrap" aria-label="Join Discord">
-          <a
-            className="discord-join-banner"
-            href={discordUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <div className="discord-join-copy">
-              <h3>Join Our Discord</h3>
-              <p>Connect with our community for support, updates, and exclusive offers.</p>
-              <span className="discord-join-cta">Join Now</span>
-            </div>
-          </a>
         </section>
 
         {activeGroup ? (
