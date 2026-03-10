@@ -483,7 +483,7 @@ export function StorefrontClient() {
                   muted
                   playsInline
                   preload="auto"
-                  poster="/placeholders/product-image-not-added.svg"
+                  poster="/placeholders/bendoo-media-poster.jpg"
                 >
                   <source src="/placeholders/bendoo-safety-loop.mp4" type="video/mp4" />
                 </video>
@@ -575,7 +575,7 @@ export function StorefrontClient() {
                   muted
                   playsInline
                   preload="auto"
-                  poster="/placeholders/product-image-not-added.svg"
+                  poster="/placeholders/bendoo-media-poster.jpg"
                 >
                   <source src="/placeholders/bendoo-streamproof-loop.mp4" type="video/mp4" />
                 </video>
