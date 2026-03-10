@@ -485,7 +485,7 @@ export function StorefrontClient() {
                   preload="auto"
                   poster="/placeholders/bendoo-media-poster.jpg"
                 >
-                  <source src="/placeholders/bendoo-safety-loop.mp4" type="video/mp4" />
+                  <source src="/placeholders/bendoo-card2-loop.mp4" type="video/mp4" />
                 </video>
               </div>
               <div className="bendoo-card-copy">
@@ -568,17 +568,13 @@ export function StorefrontClient() {
 
             <article className="bendoo-card bendoo-card-streamproof">
               <div className="bendoo-media-box bendoo-media-box-stream" aria-hidden="true">
-                <video
-                  className="bendoo-media-video"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                  poster="/placeholders/bendoo-media-poster.jpg"
-                >
-                  <source src="/placeholders/bendoo-streamproof-loop.mp4" type="video/mp4" />
-                </video>
+                <Image
+                  src="/placeholders/bendoo-media-poster.jpg"
+                  alt="Streamproof preview"
+                  width={1200}
+                  height={600}
+                  className="bendoo-media-image"
+                />
                 <span className="bendoo-streamproof-overlay">
                   <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect x="4.4" y="6.4" width="15.2" height="10.8" rx="2" stroke="currentColor" strokeWidth="1.7" />
