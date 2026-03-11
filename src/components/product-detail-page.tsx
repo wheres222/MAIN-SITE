@@ -130,6 +130,18 @@ function slugify(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+function isAccountsOrVpnProduct(product: SellAuthProduct): boolean {
+  const haystack = [
+    product.groupName || "",
+    product.categoryName || "",
+    product.name || "",
+  ]
+    .map((value) => slugify(value))
+    .join(" ");
+
+  return /\baccount(s)?\b|\bvpn(s)?\b/.test(haystack);
+}
+
 function youtubeEmbedUrl(rawUrl: string): string | null {
   const value = rawUrl.trim();
   if (!value) return null;
@@ -697,8 +709,11 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [openTabs, setOpenTabs] = useState<string[]>([]);
 
+  const showRequirements =
+    detailContent.requirements.length > 0 && !isAccountsOrVpnProduct(product);
+
   const hasDetailSections =
-    detailContent.requirements.length > 0 ||
+    showRequirements ||
     detailContent.featureTabs.length > 0 ||
     Boolean(videoPreview);
 
@@ -1014,7 +1029,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
         {hasDetailSections ? (
           <section className={styles.detailsStack}>
-            {detailContent.requirements.length > 0 ? (
+            {showRequirements ? (
               <section className={styles.detailBlock}>
                 <h2 className={styles.detailBlockTitle}>Requirements</h2>
                 <div className={styles.requirementsRow}>
