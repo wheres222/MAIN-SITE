@@ -371,9 +371,32 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
       const trimmed = item.trim();
       if (!trimmed || isPostPaymentOnlyCopy(trimmed)) continue;
 
+      if (/(supported )?os|operating system|windows|linux|mac/.test(titleNorm)) {
+        requirementsFromProductTabs.push({ label: "Supported OS", value: trimmed });
+        continue;
+      }
+
+      if (/(supported )?cpu|processor/.test(titleNorm)) {
+        requirementsFromProductTabs.push({ label: "Supported CPU", value: trimmed });
+        continue;
+      }
+
+      if (/(supported )?gpu|graphics/.test(titleNorm)) {
+        requirementsFromProductTabs.push({ label: "Supported GPU", value: trimmed });
+        continue;
+      }
+
+      if (/ram|memory/.test(titleNorm)) {
+        requirementsFromProductTabs.push({ label: "RAM", value: trimmed });
+        continue;
+      }
+
       if (/^requirements?$/.test(titleNorm) || /system/.test(titleNorm)) {
         requirementsFromProductTabs.push({ label: "Requirement", value: trimmed });
+        continue;
       }
+
+      requirementsFromProductTabs.push({ label: tab.title, value: trimmed });
     }
   }
 

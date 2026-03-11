@@ -42,30 +42,32 @@
   border-radius: 12px;
   background: #101115;
   overflow: hidden;
-  min-height: 300px;
+  aspect-ratio: 16 / 10;
+  min-height: 320px;
 }
 
 .imageTrack {
   display: flex;
   width: 100%;
+  height: 100%;
   transition: transform 0.42s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .imageSlide {
   flex: 0 0 100%;
   min-width: 100%;
-  min-height: 300px;
+  height: 100%;
   display: grid;
   place-items: center;
-  padding: 18px;
+  padding: 10px;
 }
 
 .imageSlide img {
-  max-width: 320px;
-  width: 82%;
-  max-height: 240px;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.45));
+  object-position: center;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.4));
 }
 
 .imageNavBtn {
@@ -400,14 +402,14 @@
 }
 
 .requirementMini {
-  border: 1px solid var(--global-outline, #1f1f21);
+  border: 1px solid #242833;
   border-radius: 10px;
-  background: rgb(21, 21, 21);
-  min-height: 94px;
-  padding: 12px 13px;
+  background: linear-gradient(135deg, #1a1d25 0%, #12141b 100%);
+  min-height: 108px;
+  padding: 14px;
   display: grid;
   align-content: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .requirementMiniIcon {
@@ -430,13 +432,13 @@
 
 .requirementMiniLabel {
   color: #8f99ae;
-  font-size: 0.96rem;
+  font-size: 0.88rem;
   line-height: 1.1;
 }
 
 .requirementMiniValue {
   color: #f5f8ff;
-  font-size: 1.45rem;
+  font-size: 1.62rem;
   line-height: 1.08;
   font-weight: 700;
 }
