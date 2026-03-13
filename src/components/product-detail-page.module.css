@@ -404,7 +404,7 @@
 .requirementMini {
   border: 1px solid #242833;
   border-radius: 10px;
-  background: linear-gradient(135deg, #1a1d25 0%, #12141b 100%);
+  background: rgb(31, 31, 31);
   min-height: 108px;
   padding: 14px;
   display: grid;
@@ -453,7 +453,7 @@
 .featureTabCard {
   border: 1px solid var(--global-outline, #1f1f21);
   border-radius: 10px;
-  background: rgb(21, 21, 21);
+  background: rgb(31, 31, 31);
   overflow: hidden;
 }
 
