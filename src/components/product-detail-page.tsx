@@ -361,7 +361,8 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
         tab.title &&
         tab.items.length > 0 &&
         !isPostPaymentOnlyCopy(tab.title) &&
-        !/^descriptions?$/i.test(tab.title)
+        !/^descriptions?$/i.test(tab.title) &&
+        !/(requirements?|system|supported\s+os|supported\s+cpu|motherboard|bios)/i.test(tab.title)
     );
 
   const requirementsFromProductTabs: RequirementItem[] = [];
@@ -709,8 +710,14 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [openTabs, setOpenTabs] = useState<string[]>([]);
 
-  const showRequirements =
-    detailContent.requirements.length > 0 && !isAccountsOrVpnProduct(product);
+  const showRequirements = !isAccountsOrVpnProduct(product);
+
+  const displayRequirements = showRequirements
+    ? [
+        { label: "Supported OS", value: "Windows 10/11" },
+        { label: "Supported CPU", value: "Intel / AMD" },
+      ]
+    : [];
 
   const hasDetailSections =
     showRequirements ||
@@ -1033,7 +1040,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               <section className={styles.detailBlock}>
                 <h2 className={styles.detailBlockTitle}>Requirements</h2>
                 <div className={styles.requirementsRow}>
-                  {detailContent.requirements.map((item) => (
+                  {displayRequirements.map((item) => (
                 <article key={`${item.label}-${item.value}`} className={styles.requirementMini}>
                   <span className={styles.requirementMiniIcon} aria-hidden>
                     {item.label.toLowerCase().includes("cpu") ? (
