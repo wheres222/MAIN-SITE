@@ -308,6 +308,10 @@ const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
   rainbowsixseige: "rainbow-six-siege",
   callofduty: "call-of-duty",
   cod: "call-of-duty",
+  b07: "call-of-duty",
+  wz: "call-of-duty",
+  wzexternal: "call-of-duty",
+  b07wzexternal: "call-of-duty",
   lol: "league-of-legends",
   leagueoflegends: "league-of-legends",
   arcraiders: "arc-raiders",
@@ -357,7 +361,8 @@ function inferCategoryNameFromProduct(product: SellAuthProduct): string {
   if (/(\bhwid\b|\bspoofer\b)/i.test(text)) return "HWID Spoofers";
   if (/\br6\b|rainbow\s*six/i.test(text)) return "Rainbow Six Siege";
   if (/counter\s*strike|\bcs2\b/i.test(text)) return "CS2";
-  if (/call\s*of\s*duty|\bcod\b|warzone/i.test(text)) return "COD";
+  if (/call\s*of\s*duty|\bcod\b|warzone|\bb0?7\b|\bwz\b/i.test(text)) return "COD";
+  if (/^\s*(?:b0?7\s*)?(?:wz\s*)?(?:internal|external)\s*$/i.test(product.name)) return "COD";
   if (/apex/i.test(text)) return "Apex-legends";
   if (/fortnite/i.test(text)) return "Fortnite";
   if (/arc\s*raiders/i.test(text)) return "Arc-raiders";
@@ -1318,6 +1323,15 @@ export async function getStorefrontData(): Promise<StorefrontData> {
     const productsResolved = products.map((product) => {
       let groupName = product.groupName.trim();
       let categoryName = product.categoryName.trim();
+
+      const groupSlug = canonicalCategorySlug(groupName);
+      const categorySlug = canonicalCategorySlug(categoryName);
+      if (groupSlug && groupSlug !== toGameSlug(groupName)) {
+        groupName = labelForCategorySlug(groupSlug);
+      }
+      if (categorySlug && categorySlug !== toGameSlug(categoryName)) {
+        categoryName = labelForCategorySlug(categorySlug);
+      }
 
       if (!groupName && product.groupId !== null) {
         groupName = groupById.get(product.groupId)?.name || "";
