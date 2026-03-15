@@ -35,7 +35,6 @@ const HIDDEN_GROUP_SLUGS = new Set([
   "valorant",
   "pubg",
   "fivem",
-  "call-of-duty",
   "roblox",
 ]);
 
