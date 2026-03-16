@@ -27,6 +27,10 @@ function withVersion(source: string, version: string): string {
   return `${source}${joiner}v=${encodeURIComponent(version)}`;
 }
 
+function isProductLikeCategoryLabel(value: string): boolean {
+  return /^\s*(?:b0?7\s*)?(?:wz\s*)?(?:internal|external)\s*$/i.test(value || "");
+}
+
 function canonicalGroupSlug(value: string): string {
   const raw = value || "";
   if (/^\s*(?:b0?7\s*)?(?:wz\s*)?(?:internal|external)\s*$/i.test(raw)) {
@@ -168,10 +172,13 @@ export function StorefrontClient() {
         description: category.description,
         image: category.image,
       })),
-    ].map((group) => ({
-      ...group,
-      name: normalizeGroupTileName(group.name),
-    }));
+    ]
+      // Defensive guard: raw product labels should never be rendered as category tiles.
+      .filter((group) => !isProductLikeCategoryLabel(group.name))
+      .map((group) => ({
+        ...group,
+        name: normalizeGroupTileName(group.name),
+      }));
 
     const productCountBySlug = new Map<string, number>();
     const directProductCountByGroupId = new Map<number, number>();
@@ -300,6 +307,12 @@ export function StorefrontClient() {
         if (product.categoryId !== null && relatedGroupIds.has(product.categoryId)) return true;
         if (canonicalGroupSlug(product.groupName || "") === activeGroupSlug) return true;
         if (canonicalGroupSlug(product.categoryName || "") === activeGroupSlug) return true;
+        if (
+          activeGroupSlug === "call-of-duty" &&
+          isProductLikeCategoryLabel(product.name || "")
+        ) {
+          return true;
+        }
         return false;
       })
       .sort((a, b) => a.name.localeCompare(b.name));

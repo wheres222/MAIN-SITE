@@ -1152,7 +1152,8 @@ function syntheticIdFromName(name: string, base: number): number {
 function ensureGroupsFromProducts(products: SellAuthProduct[]): SellAuthGroup[] {
   const map = new Map<number, SellAuthGroup>();
   for (const product of products) {
-    const name = product.groupName || product.categoryName || product.name;
+    const rawName = product.groupName || product.categoryName || product.name;
+    const name = isProductLikeCategoryLabel(rawName) ? "COD" : rawName;
     const id = product.groupId ?? (name ? syntheticIdFromName(name, 700000) : null);
     if (!id || map.has(id)) continue;
 
@@ -1171,7 +1172,8 @@ function ensureCategoriesFromProducts(
 ): SellAuthCategory[] {
   const map = new Map<number, SellAuthCategory>();
   for (const product of products) {
-    const name = product.categoryName || product.groupName || product.name;
+    const rawName = product.categoryName || product.groupName || product.name;
+    const name = isProductLikeCategoryLabel(rawName) ? "COD" : rawName;
     const id = product.categoryId ?? (name ? syntheticIdFromName(name, 800000) : null);
     if (!id || map.has(id)) continue;
 
@@ -1307,19 +1309,23 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       baselineBanners.map((banner) => [canonicalCategorySlug(banner.name), banner.imageUrl])
     );
 
-    const groupsClean = groupsFromSellAuth.map((group) => {
-      const slug = canonicalCategorySlug(group.name);
-      const baselineImage = baselineImageBySlug.get(slug);
-      if (baselineImage) return { ...group, image: { url: baselineImage } };
-      return group;
-    });
+    const groupsClean = groupsFromSellAuth
+      .filter((group) => !isProductLikeCategoryLabel(group.name))
+      .map((group) => {
+        const slug = canonicalCategorySlug(group.name);
+        const baselineImage = baselineImageBySlug.get(slug);
+        if (baselineImage) return { ...group, image: { url: baselineImage } };
+        return group;
+      });
 
-    const categoriesClean = categoriesFromSellAuth.map((category) => {
-      const slug = canonicalCategorySlug(category.name);
-      const baselineImage = baselineImageBySlug.get(slug);
-      if (baselineImage) return { ...category, image: { url: baselineImage } };
-      return category;
-    });
+    const categoriesClean = categoriesFromSellAuth
+      .filter((category) => !isProductLikeCategoryLabel(category.name))
+      .map((category) => {
+        const slug = canonicalCategorySlug(category.name);
+        const baselineImage = baselineImageBySlug.get(slug);
+        if (baselineImage) return { ...category, image: { url: baselineImage } };
+        return category;
+      });
 
     const groupById = new Map(groupsClean.map((group) => [group.id, group] as const));
     const categoryById = new Map(

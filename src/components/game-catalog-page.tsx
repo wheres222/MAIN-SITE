@@ -224,7 +224,7 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
                     >
                       <div className={styles.productThumb}>
                         <Image
-                          src={product.image}
+                          src={product.image || "/placeholders/product-image-not-added.svg"}
                           alt={product.name}
                           width={62}
                           height={62}
