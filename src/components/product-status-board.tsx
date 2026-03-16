@@ -52,21 +52,21 @@ function categoryKey(value: string): string {
 function categoryLogoForName(groupName: string): string {
   const source = normalized(groupName);
 
-  if (source.includes("apex")) return "/pd/apex.png";
-  if (source.includes("arc")) return "/pd/arc-raiders.png";
+  if (source.includes("apex")) return "/status-icons/apex.png";
+  if (source.includes("arc")) return "/status-icons/arc-raiders.png";
   if (source.includes("battlefield") || source.includes("bf")) return "/pd/call-of-duty.png";
   if (source.includes("valorant") || source.includes("val")) return "/pd/valorant.png";
-  if (source.includes("rust")) return "/pd/rust.png";
-  if (source.includes("rainbow") || source.includes("r6")) return "/pd/rainbow-six-siege.png";
+  if (source.includes("rust")) return "/status-icons/rust.png";
+  if (source.includes("rainbow") || source.includes("r6")) return "/status-icons/rainbow-six-siege.png";
   if (source.includes("call of duty") || source.includes("cod")) return "/pd/call-of-duty.png";
-  if (source.includes("fortnite")) return "/pd/fortnite.png";
-  if (source.includes("counter") || source.includes("cs2")) return "/pd/counter-strike-2.png";
-  if (source.includes("dayz")) return "/pd/dayz.png";
+  if (source.includes("fortnite")) return "/status-icons/fortnite.png";
+  if (source.includes("counter") || source.includes("cs2")) return "/status-icons/counter-strike-2.png";
+  if (source.includes("dayz")) return "/status-icons/dayz.png";
   if (source.includes("fivem")) return "/pd/fivem.png";
   if (source.includes("roblox")) return "/pd/roblox.png";
   if (source.includes("pubg")) return "/pd/pubg.png";
   if (source.includes("league") || source.includes("lol")) return "/pd/lol.png";
-  if (source.includes("hwid")) return "/pd/hwid-spoofers.png";
+  if (source.includes("hwid")) return "/status-icons/hwid-spoofers.png";
 
   return "/pd/misc.svg";
 }
