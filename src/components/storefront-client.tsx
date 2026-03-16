@@ -6,7 +6,7 @@ import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
-import { canonicalGameSlug } from "@/lib/game-slug";
+import { canonicalGameSlug, toGameSlug } from "@/lib/game-slug";
 import { productHref } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
@@ -28,7 +28,47 @@ function withVersion(source: string, version: string): string {
 }
 
 function canonicalGroupSlug(value: string): string {
-  return canonicalGameSlug(value || "");
+  const raw = value || "";
+  if (/^\s*(?:b0?7\s*)?(?:wz\s*)?(?:internal|external)\s*$/i.test(raw)) {
+    return "call-of-duty";
+  }
+
+  const slug = canonicalGameSlug(raw);
+  const compact = slug.replace(/-/g, "");
+  if (
+    compact === "b07" ||
+    compact === "wz" ||
+    compact === "wzexternal" ||
+    compact === "wzinternal" ||
+    compact === "b07wzexternal" ||
+    compact === "b07wzinternal"
+  ) {
+    return "call-of-duty";
+  }
+
+  return slug;
+}
+
+function groupLabelForSlug(slug: string): string {
+  if (slug === "call-of-duty") return "COD";
+  if (slug === "counter-strike-2") return "CS2";
+  if (slug === "rainbow-six-siege") return "Rainbow Six Siege";
+  if (slug === "vpns") return "VPNS";
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function normalizeGroupTileName(name: string): string {
+  const slug = canonicalGroupSlug(name);
+  if (!slug) return name;
+  const rawSlug = toGameSlug(name || "");
+  if (slug !== rawSlug) {
+    return groupLabelForSlug(slug);
+  }
+  return name;
 }
 
 const HIDDEN_GROUP_SLUGS = new Set([
@@ -128,7 +168,10 @@ export function StorefrontClient() {
         description: category.description,
         image: category.image,
       })),
-    ];
+    ].map((group) => ({
+      ...group,
+      name: normalizeGroupTileName(group.name),
+    }));
 
     const productCountBySlug = new Map<string, number>();
     const directProductCountByGroupId = new Map<number, number>();

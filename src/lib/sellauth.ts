@@ -311,7 +311,9 @@ const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
   b07: "call-of-duty",
   wz: "call-of-duty",
   wzexternal: "call-of-duty",
+  wzinternal: "call-of-duty",
   b07wzexternal: "call-of-duty",
+  b07wzinternal: "call-of-duty",
   lol: "league-of-legends",
   leagueoflegends: "league-of-legends",
   arcraiders: "arc-raiders",
@@ -349,6 +351,10 @@ const CATEGORY_LABEL_BY_SLUG: Record<string, string> = {
 
 function labelForCategorySlug(slug: string): string {
   return CATEGORY_LABEL_BY_SLUG[slug] || slug;
+}
+
+function isProductLikeCategoryLabel(value: string): boolean {
+  return /^\s*(?:b0?7\s*)?(?:wz\s*)?(?:internal|external)\s*$/i.test(value || "");
 }
 
 function inferCategoryNameFromProduct(product: SellAuthProduct): string {
@@ -1331,6 +1337,14 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       }
       if (categorySlug && categorySlug !== toGameSlug(categoryName)) {
         categoryName = labelForCategorySlug(categorySlug);
+      }
+
+      if (isProductLikeCategoryLabel(groupName) || isProductLikeCategoryLabel(categoryName)) {
+        const inferred = inferCategoryNameFromProduct(product);
+        if (inferred) {
+          groupName = inferred;
+          categoryName = inferred;
+        }
       }
 
       if (!groupName && product.groupId !== null) {
