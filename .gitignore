@@ -27,3 +27,6 @@ fulfillment/tunnel.env
 
 # Editor
 .vscode/
+
+# Claude Code local settings
+.claude/settings.local.json
