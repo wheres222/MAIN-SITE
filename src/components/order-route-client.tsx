@@ -8,13 +8,14 @@ import { useSearchParams } from "next/navigation";
 export function OrderRouteClient() {
   const searchParams = useSearchParams();
   const orderId = (searchParams.get("orderId") || "").trim();
+  const token = (searchParams.get("token") || "").trim();
 
   return (
     <div className="marketplace-page order-page-layout">
       <SiteHeader activeTab="store" />
       <main className="shell order-page-main">
         {orderId ? (
-          <OrderFulfillmentStatus orderId={orderId} />
+          <OrderFulfillmentStatus orderId={orderId} token={token} />
         ) : (
           <section className="postpay-shell">
             <div className="postpay-card">

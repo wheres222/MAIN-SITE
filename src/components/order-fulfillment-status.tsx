@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type OrderStatus = "queued" | "processing" | "fulfilled" | "failed" | string;
 
@@ -26,6 +26,7 @@ interface MockOrderData {
 
 interface Props {
   orderId: string;
+  token?: string;
   mockData?: MockOrderData;
 }
 
@@ -44,8 +45,60 @@ function formatStatus(status: OrderStatus): string {
   }
 }
 
-export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
+const POLL_INTERVAL_MS = 3_000;
+const POLL_TIMEOUT_MS = 10 * 60 * 1_000; // stop polling after 10 minutes
+
+export function OrderFulfillmentStatus({ orderId, token, mockData }: Props) {
   const [copiedKey, setCopiedKey] = useState("");
+  const [liveStatus, setLiveStatus] = useState<"pending" | "processing" | "ready" | "failed" | null>(null);
+  const [pollError, setPollError] = useState("");
+  const pollStartRef = useRef(Date.now());
+
+  useEffect(() => {
+    // Only poll when we have a real orderId and token — skip for mock/demo data.
+    if (mockData || !orderId || !token) return;
+
+    pollStartRef.current = Date.now();
+    let timer: ReturnType<typeof setTimeout>;
+
+    async function poll() {
+      try {
+        const res = await fetch(`/api/order/${encodeURIComponent(orderId)}?token=${encodeURIComponent(token!)}`);
+        if (!res.ok) {
+          setPollError("Could not reach order status. Please contact support.");
+          return;
+        }
+        const json = (await res.json()) as { status: string; error?: string };
+        if (json.status === "ready") {
+          setLiveStatus("ready");
+          return; // stop polling
+        }
+        if (json.status === "failed") {
+          setLiveStatus("failed");
+          setPollError(json.error || "Delivery failed. Please contact support.");
+          return; // stop polling
+        }
+        if (json.status === "processing") {
+          setLiveStatus("processing");
+        } else {
+          setLiveStatus("pending");
+        }
+      } catch {
+        // Network hiccup — keep polling silently.
+      }
+
+      if (Date.now() - pollStartRef.current < POLL_TIMEOUT_MS) {
+        timer = setTimeout(poll, POLL_INTERVAL_MS);
+      } else {
+        setPollError("Order is taking longer than expected. Please contact support.");
+      }
+    }
+
+    // Start first poll immediately.
+    void poll();
+
+    return () => clearTimeout(timer);
+  }, [orderId, token, mockData]);
 
   const order =
     mockData
@@ -58,15 +111,15 @@ export function OrderFulfillmentStatus({ orderId, mockData }: Props) {
         }
       : {
           orderId,
-          status: "processing",
+          status: liveStatus === "ready" ? "fulfilled" : liveStatus === "failed" ? "failed" : "processing",
           updatedAt: new Date().toISOString(),
           licenseKeys: [] as string[],
-          lastError: undefined,
+          lastError: pollError || undefined,
         };
 
-  const error = mockData
-    ? ""
-    : "Live fulfillment tracking is currently disabled. Please check your checkout confirmation and contact support if needed.";
+  const error = (!mockData && !token)
+    ? "Order tracking link is missing a token. Please open this page from your checkout confirmation link."
+    : pollError;
 
   const items = useMemo(
     () =>
