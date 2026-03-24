@@ -22,9 +22,9 @@ function dedupeStore(): Map<string, DeliveryRecord> {
 
 export async function GET(
   request: Request,
-  { params }: { params: { orderId: string } }
+  { params }: { params: Promise<{ orderId: string }> }
 ) {
-  const { orderId } = params;
+  const { orderId } = await params;
   const url = new URL(request.url);
   const token = url.searchParams.get("token") || "";
 
