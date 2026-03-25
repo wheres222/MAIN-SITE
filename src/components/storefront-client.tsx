@@ -255,7 +255,7 @@ export function StorefrontClient() {
       .filter((group) => {
         const slug = canonicalGroupSlug(group.name);
         if (!slug) return false;
-        if (slug === "league-of-legends") return false;
+        if (slug === "league-of-legends" || slug === "dayz") return false;
         if (HIDDEN_GROUP_SLUGS.has(slug) && (productCountBySlug.get(slug) || 0) === 0) {
           return false;
         }
