@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Manrope, Montserrat, Outfit, Plus_Jakarta_Sans, Sora } from "next/font/google";
+import { Montserrat, Plus_Jakarta_Sans, Sora } from "next/font/google";
 import "./globals.css";
 
 const headingFont = Plus_Jakarta_Sans({
@@ -20,18 +20,6 @@ const brandFont = Montserrat({
   subsets: ["latin"],
 });
 
-const heroFontManrope = Manrope({
-  variable: "--font-hero-manrope",
-  weight: ["400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
-const heroFontOutfit = Outfit({
-  variable: "--font-hero-outfit",
-  weight: ["400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
 const heroFontSora = Sora({
   variable: "--font-hero-sora",
   weight: ["400", "500", "600", "700", "800"],
@@ -47,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | Cheat Paradise",
   },
   description:
-    "The #1 cheat marketplace access custom cheats, tools, and enhancements for a better gaming experience",
+    "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
   alternates: {
     canonical: "/",
   },
@@ -59,7 +47,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Cheat Paradise",
     description:
-      "The #1 cheat marketplace access custom cheats, tools, and enhancements for a better gaming experience",
+      "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
     url: siteUrl,
     siteName: "Cheat Paradise",
     type: "website",
@@ -69,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cheat Paradise",
     description:
-      "The #1 cheat marketplace access custom cheats, tools, and enhancements for a better gaming experience",
+      "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
     images: ["/branding/site-icon.jpg"],
   },
   robots: {
@@ -106,7 +94,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${headingFont.variable} ${bodyFont.variable} ${brandFont.variable} ${heroFontManrope.variable} ${heroFontOutfit.variable} ${heroFontSora.variable} antialiased`}
+        className={`${headingFont.variable} ${bodyFont.variable} ${brandFont.variable} ${heroFontSora.variable} antialiased`}
       >
         <script
           type="application/ld+json"

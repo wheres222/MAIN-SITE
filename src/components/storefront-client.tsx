@@ -88,7 +88,6 @@ const PRIORITY_GROUP_ORDER = [
   "call-of-duty",
   "fortnite",
   "fivem",
-  "dayz",
   "roblox",
   "counter-strike-2",
   "rainbow-six-siege",
@@ -444,7 +443,7 @@ export function StorefrontClient() {
                           height={600}
                           sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
                           priority={false}
-                          unoptimized
+
                           className={`game-card-image game-card-image--base ${
                             containImage ? "game-card-image--contain" : ""
                           }`}
@@ -457,7 +456,7 @@ export function StorefrontClient() {
                           height={600}
                           sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
                           priority={false}
-                          unoptimized
+
                           className={`game-card-image game-card-image--hover ${
                             containImage ? "game-card-image--contain" : ""
                           }`}
@@ -701,7 +700,7 @@ export function StorefrontClient() {
                               width={600}
                               height={600}
                               sizes="(max-width: 900px) 100vw, 33vw"
-                              unoptimized
+    
                             />
                           </span>
                         </span>

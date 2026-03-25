@@ -38,8 +38,8 @@ export function canonicalGameSlug(value: string): string {
     return "call-of-duty";
   }
 
-  if (compact === "dayz") {
-    return "dayz";
+  if (compact === "rocketleague" || compact === "rl") {
+    return "rocket-league";
   }
 
   if (compact === "fivem") {

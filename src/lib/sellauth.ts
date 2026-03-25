@@ -317,7 +317,8 @@ const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
   lol: "league-of-legends",
   leagueoflegends: "league-of-legends",
   arcraiders: "arc-raiders",
-  dayz: "dayz",
+  rocketleague: "rocket-league",
+  rl: "rocket-league",
   fivem: "fivem",
   hwidspoofers: "hwid-spoofers",
   vpn: "vpns",
@@ -339,7 +340,7 @@ const CATEGORY_LABEL_BY_SLUG: Record<string, string> = {
   "rainbow-six-siege": "Rainbow Six Siege",
   "call-of-duty": "COD",
   fivem: "Fivem",
-  dayz: "Dayz",
+  "rocket-league": "Rocket League",
   roblox: "Roblox",
   valorant: "Valorant",
   pubg: "PUBG",
@@ -373,7 +374,7 @@ function inferCategoryNameFromProduct(product: SellAuthProduct): string {
   if (/fortnite/i.test(text)) return "Fortnite";
   if (/arc\s*raiders/i.test(text)) return "Arc-raiders";
   if (/rust/i.test(text)) return "Rust";
-  if (/dayz/i.test(text)) return "Dayz";
+  if (/rocket\s*league/i.test(text)) return "Rocket League";
   if (/fivem/i.test(text)) return "Fivem";
   if (/roblox/i.test(text)) return "Roblox";
   if (/valorant/i.test(text)) return "Valorant";

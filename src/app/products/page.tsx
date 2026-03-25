@@ -5,7 +5,7 @@ import { ProductRouteClient } from "@/components/product-route-client";
 export const metadata: Metadata = {
   title: "Products",
   description:
-    "Shop gaming products with instant delivery, secure checkout, and active support.",
+    "Browse game cheats and hacks for Rust, Valorant, Fortnite, COD, CS2, Apex, R6, and more. Instant delivery, secure checkout, and 24/7 support.",
   alternates: { canonical: "/products" },
 };
 

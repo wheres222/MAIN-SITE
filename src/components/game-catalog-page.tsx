@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { toGameSlug } from "@/lib/game-slug";
@@ -156,6 +157,13 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
       <SiteHeader activeTab="store" />
 
       <main className={styles.pageShell}>
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Categories", href: "/#games" },
+            { label: group.name },
+          ]}
+        />
         <section className={styles.hero}>
           <div
             className={styles.heroBackdrop}

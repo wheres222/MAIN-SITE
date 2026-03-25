@@ -39,7 +39,7 @@ function cleanupStore(store: Map<string, DeliveryRecord>, now: number) {
 // Set SELLAUTH_WEBHOOK_SECRET in your env (and in the SellAuth dashboard) to enable.
 async function verifySignature(request: Request, rawBody: string): Promise<boolean> {
   const secret = (process.env.SELLAUTH_WEBHOOK_SECRET || "").trim();
-  if (!secret) return true; // skip if not configured
+  if (!secret) return false; // reject if secret is not configured
 
   const signature = request.headers.get("x-sellauth-signature") || "";
   if (!signature) return false;

@@ -61,7 +61,7 @@ function categoryLogoForName(groupName: string): string {
   if (source.includes("call of duty") || source.includes("cod")) return "/pd/call-of-duty.png";
   if (source.includes("fortnite")) return "/status-icons/fortnite.png";
   if (source.includes("counter") || source.includes("cs2")) return "/status-icons/counter-strike-2.png";
-  if (source.includes("dayz")) return "/status-icons/dayz.png";
+  if (source.includes("rocket") && source.includes("league")) return "/pd/rocket-league.png";
   if (source.includes("fivem")) return "/pd/fivem.png";
   if (source.includes("roblox")) return "/pd/roblox.png";
   if (source.includes("pubg")) return "/pd/pubg.png";

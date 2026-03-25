@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useMemo, useState } from "react";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { lineId, readCart, variantsFor, writeCart } from "@/lib/cart";
@@ -899,6 +900,14 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
       <SiteHeader activeTab="store" />
 
       <main className={styles.shell}>
+        <Breadcrumb
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Store", href: "/#games" },
+            { label: product.groupName || product.categoryName || "Products", href: product.groupName ? `/categories?slug=${encodeURIComponent(product.groupName.toLowerCase().replace(/\s+/g, "-"))}` : "/categories" },
+            { label: product.name },
+          ]}
+        />
         <section className={styles.topGrid}>
           <div>
             <article className={styles.imagePanel}>

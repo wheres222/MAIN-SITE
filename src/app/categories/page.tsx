@@ -5,7 +5,7 @@ import { CategoryRouteClient } from "@/components/category-route-client";
 export const metadata: Metadata = {
   title: "Game Categories",
   description:
-    "Browse cheap gaming categories and find tools, accounts, and enhancements with fast delivery.",
+    "Browse cheat categories by game — Rust, Valorant, Fortnite, COD, CS2, Apex, Rainbow Six Siege, PUBG, Roblox, and more. Instant delivery.",
   alternates: { canonical: "/categories" },
 };
 

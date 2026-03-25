@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getDiscordUrl } from "@/lib/links";
+
+export const metadata: Metadata = {
+  title: "Support & FAQ",
+  description:
+    "Get help with Cheat Paradise orders, delivery, setup, and account issues. Browse FAQ or open a support ticket via Discord.",
+  alternates: { canonical: "/support" },
+};
 
 const faqs = [
   {
@@ -64,6 +72,7 @@ function SupportCtaIcon({ type }: { type: SupportIcon }) {
         width={28}
         height={28}
         className="support-cta-icon support-cta-icon-discord"
+        style={{ filter: "brightness(0) invert(1)" }}
       />
     );
   }
@@ -107,8 +116,25 @@ export default function SupportPage() {
     },
   ];
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a,
+      },
+    })),
+  };
+
   return (
     <div className="marketplace-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <SiteHeader activeTab="support" />
 
       <main className="shell subpage-wrap support-page">

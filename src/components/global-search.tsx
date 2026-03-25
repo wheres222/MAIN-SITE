@@ -140,7 +140,6 @@ export function GlobalSearch() {
                       width={160}
                       height={90}
                       sizes="72px"
-                      unoptimized
                     />
                   </span>
                   <span className="search-suggestion-copy">

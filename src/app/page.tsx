@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     absolute: "Cheat Paradise",
   },
   description:
-    "The #1 cheat marketplace access custom cheats, tools, and enhancements for a better gaming experience",
+    "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
   alternates: {
     canonical: "/",
   },
