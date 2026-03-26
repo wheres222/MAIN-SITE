@@ -58,10 +58,7 @@ export async function POST(request: Request) {
   }
 
   // Spawn deploy script in background — don't await it
-  exec("bash /root/.openclaw/workspace/MAIN-SITE/scripts/deploy.sh", {
-    detached: true,
-    stdio: "ignore" as unknown as undefined,
-  });
+  exec("bash /root/.openclaw/workspace/MAIN-SITE/scripts/deploy.sh");
 
   return NextResponse.json({ deploying: true });
 }
