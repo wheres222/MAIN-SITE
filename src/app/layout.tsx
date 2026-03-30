@@ -10,7 +10,7 @@ const mainFont = Plus_Jakarta_Sans({
 
 const brandFont = Montserrat({
   variable: "--font-brand",
-  weight: ["800"],
+  weight: ["600", "700"],
   subsets: ["latin"],
 });
 
@@ -40,9 +40,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
-    shortcut: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
-    apple: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
+    icon: [{ url: "/branding/cp-logo.png", type: "image/png" }],
+    shortcut: [{ url: "/branding/cp-logo.png", type: "image/png" }],
+    apple: [{ url: "/branding/cp-logo.png", type: "image/png" }],
   },
   openGraph: {
     title: "Cheat Paradise",

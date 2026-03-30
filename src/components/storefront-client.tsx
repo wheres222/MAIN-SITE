@@ -360,18 +360,62 @@ export function StorefrontClient() {
 
       <main id="top">
         <section className="hero">
-          <div className="hero-bg" />
+          <Image
+            src="/branding/hero.png"
+            alt=""
+            fill
+            priority
+            className="hero-bg"
+            sizes="100vw"
+            style={{ objectFit: "cover", objectPosition: "center center" }}
+          />
           <div className="shell hero-content">
             <div className="hero-copy">
               <h1 className="hero-title">
-                <span className="hero-title-row hero-line-primary">The #1 Marketplace</span>
-                <span className="hero-title-row hero-line-accent">for your unfair advantage</span>
+                <span className="hero-title-row hero-line-primary">The best</span>
+                <span className="hero-title-row">
+                  <span className="hero-line-accent">Legit </span><span className="hero-line-primary">and </span><span className="hero-line-accent">Secure</span>
+                </span>
+                <span className="hero-title-row hero-line-primary">cheats.</span>
               </h1>
               <p className="hero-subtext">
-                <span>
-                  Access high quality cheats, accounts, and tools to gain the edge.
-                </span>
+                Your #1 Trusted Cheat Provider, offering 24/7 support, reliable
+                and undetected products with amazing prices.
               </p>
+              <div className="hero-cta-row">
+                <a href="#store-section" className="hero-browse-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
+                    <path d="M3 6h18M16 10a4 4 0 0 1-8 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                  Browse Products
+                </a>
+                <a href="https://discord.gg/Qp5qrCAEry" target="_blank" rel="noreferrer" className="hero-discord-btn">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/social/discord.png" alt="" width={18} height={18} style={{ filter: "brightness(0) invert(1)" }} />
+                  Join Discord
+                </a>
+              </div>
+              <a
+                href="https://www.trustpilot.com/review/cheatparadise.com"
+                target="_blank"
+                rel="noreferrer"
+                className="hero-trustpilot"
+                aria-label="Rated 4.7 out of 5 on Trustpilot — Trusted by 30,000+"
+              >
+                <span className="hero-tp-stars" aria-hidden="true">
+                  {[1,2,3,4,5].map(i => (
+                    <span key={i} className="hero-tp-star">
+                      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/>
+                      </svg>
+                    </span>
+                  ))}
+                </span>
+                <span className="hero-tp-label">Rated <strong>4.7/5</strong></span>
+                <span className="hero-tp-sep" aria-hidden="true">|</span>
+                <span className="hero-tp-label">Trusted By <strong>30,000+</strong></span>
+              </a>
             </div>
           </div>
         </section>
