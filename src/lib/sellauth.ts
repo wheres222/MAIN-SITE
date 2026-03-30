@@ -1302,7 +1302,7 @@ export async function getStorefrontData(): Promise<StorefrontData> {
             )
         : [];
 
-    const baselineBanners = getLocalCategoryBanners(14);
+    const baselineBanners = getLocalCategoryBanners();
     const baselineGroups = bannersToGroups(baselineBanners);
     const baselineCategories = bannersToCategories(baselineBanners);
 

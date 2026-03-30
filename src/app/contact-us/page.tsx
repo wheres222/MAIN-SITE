@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { InfoPage } from "@/components/info-page";
 import { getDiscordUrl } from "@/lib/links";
+
+export const metadata: Metadata = {
+  title: "Contact Us",
+  description: "Get in touch with Cheat Paradise support via Discord or our support page. Fast response for order and product issues.",
+  alternates: { canonical: "/contact-us" },
+};
 
 export default function ContactUsPage() {
   const discordUrl = getDiscordUrl();

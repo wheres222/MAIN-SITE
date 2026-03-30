@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { InfoPage } from "@/components/info-page";
+
+export const metadata: Metadata = {
+  title: "FAQ",
+  description: "Frequently asked questions about Cheat Paradise — delivery, support, payments, and more.",
+  alternates: { canonical: "/faq" },
+};
 
 export default function FaqPage() {
   return (

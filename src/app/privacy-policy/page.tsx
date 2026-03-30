@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { InfoPage } from "@/components/info-page";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "Cheat Paradise privacy policy — how we collect, use, and protect your data during purchases and support.",
+  alternates: { canonical: "/privacy-policy" },
+};
 
 export default function PrivacyPolicyPage() {
   return (

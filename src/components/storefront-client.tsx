@@ -22,10 +22,6 @@ function hoverImageFor(source: string): string {
   return source;
 }
 
-function withVersion(source: string, version: string): string {
-  const joiner = source.includes("?") ? "&" : "?";
-  return `${source}${joiner}v=${encodeURIComponent(version)}`;
-}
 
 function isProductLikeCategoryLabel(value: string): boolean {
   return /^\s*(?:b0?7\s*)?(?:wz\s*)?(?:internal|external)\s*$/i.test(value || "");
@@ -125,7 +121,7 @@ function money(value: number | null, currency = "USD"): string {
 }
 
 function shouldContainCategoryImage(slug: string): boolean {
-  return slug === "accounts" || slug === "vpns" || slug === "vpn";
+  return false;
 }
 
 export function StorefrontClient() {
@@ -409,9 +405,8 @@ export function StorefrontClient() {
               const baseSrcRaw = group.image?.url?.trim() || "";
               const hasImage = Boolean(baseSrcRaw);
               const hoverSrcRaw = hasImage ? hoverImageFor(baseSrcRaw) : "";
-              const version = storefront?.fetchedAt || "category-v2";
-              const baseSrc = hasImage ? withVersion(baseSrcRaw, version) : "";
-              const hoverSrc = hasImage ? withVersion(hoverSrcRaw, version) : "";
+              const baseSrc = baseSrcRaw;
+              const hoverSrc = hoverSrcRaw;
               const containImage = shouldContainCategoryImage(groupSlug);
 
               return (
@@ -439,11 +434,10 @@ export function StorefrontClient() {
                         <Image
                           src={baseSrc}
                           alt={group.name}
-                          width={600}
-                          height={600}
-                          sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
+                          width={800}
+                          height={340}
+                          sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 25vw"
                           priority={false}
-
                           className={`game-card-image game-card-image--base ${
                             containImage ? "game-card-image--contain" : ""
                           }`}
@@ -452,11 +446,10 @@ export function StorefrontClient() {
                           src={hoverSrc}
                           alt=""
                           aria-hidden="true"
-                          width={600}
-                          height={600}
-                          sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 30vw"
+                          width={800}
+                          height={340}
+                          sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 25vw"
                           priority={false}
-
                           className={`game-card-image game-card-image--hover ${
                             containImage ? "game-card-image--contain" : ""
                           }`}
@@ -468,6 +461,9 @@ export function StorefrontClient() {
                         <p>Product image not added</p>
                       </div>
                     )}
+                  </div>
+                  <div className="game-card-label">
+                    <span>{group.name}</span>
                   </div>
                 </Link>
               );
@@ -680,10 +676,7 @@ export function StorefrontClient() {
                 <div className="category-modal-grid">
                   {activeGroupProducts.map((product) => {
                     const price = productLowestPrice(product);
-                    const productImage = withVersion(
-                      product.image || "/placeholders/product-image-not-added.svg",
-                      storefront?.fetchedAt || "modal-v1"
-                    );
+                    const productImage = product.image || "/placeholders/product-image-not-added.svg";
 
                     return (
                       <Link

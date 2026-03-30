@@ -6,37 +6,45 @@ const CATEGORY_ID_BASE = 62000;
 const SAMPLE_PRODUCT_ID_BASE = 920000;
 
 const ORDERED_BANNERS = [
-  { slug: "apex", name: "Apex" },
-  { slug: "arc-raiders", name: "Arc Raiders" },
-  { slug: "call-of-duty", name: "Call Of Duty" },
-  { slug: "counter-strike-2", name: "Counter Strike 2" },
+  { slug: "accounts", name: "Accounts" },
+  { slug: "apex", name: "Apex Legends" },
+  { slug: "arc-raiders", name: "ARC Raiders" },
+  { slug: "call-of-duty", name: "COD" },
+  { slug: "counter-strike-2", name: "CS2" },
+  { slug: "delta-force", name: "Delta Force" },
+  { slug: "escape-from-tarkov", name: "Escape From Tarkov" },
   { slug: "fivem", name: "FiveM" },
   { slug: "fortnite", name: "Fortnite" },
-  { slug: "hwid-spoofers", name: "HWID Spoofers" },
+  { slug: "hwid-spoofers", name: "HWID Spoofer" },
+  { slug: "lag-switches", name: "Lag Switches" },
   { slug: "lol", name: "League of Legends" },
-  { slug: "pubg", name: "PUBG" },
   { slug: "rainbow-six-siege", name: "Rainbow Six Siege" },
-  { slug: "rocket-league", name: "Rocket League" },
   { slug: "roblox", name: "Roblox" },
+  { slug: "rocket-league", name: "Rocket League" },
   { slug: "rust", name: "Rust" },
   { slug: "valorant", name: "Valorant" },
+  { slug: "vpns", name: "VPNs" },
 ] as const;
 
 const ALIASES_BY_SLUG: Record<string, string[]> = {
+  accounts: ["accounts", "account", "accs"],
   apex: ["apex", "apexlegends"],
   "arc-raiders": ["arc", "arcraiders", "ark", "arkraiders"],
   "call-of-duty": ["cod", "callofduty", "mw", "bo6", "bo7"],
   "counter-strike-2": ["cs2", "csgo", "counterstrike2", "counterstrike"],
+  "delta-force": ["deltaforce", "df", "hawkops"],
+  "escape-from-tarkov": ["eft", "tarkov", "escapefromtarkov"],
   fivem: ["5m", "five", "fivem"],
   fortnite: ["fortnite", "fn"],
+  "hwid-spoofers": ["hwid", "spoofer", "spoofers", "hwidspoofer", "hwidspoofers", "spoof"],
+  "lag-switches": ["lagswitch", "lagswitches", "lag"],
+  lol: ["lol", "league", "leagueoflegends"],
   "rainbow-six-siege": ["r6", "r6s", "rainbowsix", "siege"],
   roblox: ["roblox", "rbx"],
-  "hwid-spoofers": ["hwid", "spoofer", "spoofers", "hwidspoofer", "hwidspoofers", "spoof"],
-  lol: ["lol", "league", "leagueoflegends"],
-  pubg: ["pubg", "battlegrounds", "playerunknown"],
-  valorant: ["val", "valo", "valorant"],
   "rocket-league": ["rocketleague", "rl"],
   rust: ["rust"],
+  valorant: ["val", "valo", "valorant"],
+  vpns: ["vpn", "vpns"],
 };
 
 export interface LocalCategoryBanner {
@@ -70,11 +78,11 @@ export function aliasTokensForLabel(label: string): string[] {
   return [...tokens];
 }
 
-export function getLocalCategoryBanners(limit = 14): LocalCategoryBanner[] {
+export function getLocalCategoryBanners(limit = 18): LocalCategoryBanner[] {
   return ORDERED_BANNERS.slice(0, limit).map((item, index) => ({
     name: item.name,
     slug: item.slug,
-    imageUrl: `/pd/${item.slug}.png`,
+    imageUrl: `/pd/${item.slug}.${"ext" in item ? item.ext : "png"}`,
     groupId: GROUP_ID_BASE + index + 1,
     categoryId: CATEGORY_ID_BASE + index + 1,
   }));

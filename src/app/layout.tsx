@@ -1,15 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Plus_Jakarta_Sans, Sora } from "next/font/google";
 import "./globals.css";
 
-const headingFont = Plus_Jakarta_Sans({
-  variable: "--font-heading",
-  weight: ["500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
-const bodyFont = Plus_Jakarta_Sans({
-  variable: "--font-body",
+const mainFont = Plus_Jakarta_Sans({
+  variable: "--font-main",
   weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
 });
@@ -27,6 +21,12 @@ const heroFontSora = Sora({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0d0d0d",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -93,8 +93,12 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://api.sellauth.com" />
+        <link rel="dns-prefetch" href="https://api.sellauth.com" />
+      </head>
       <body
-        className={`${headingFont.variable} ${bodyFont.variable} ${brandFont.variable} ${heroFontSora.variable} antialiased`}
+        className={`${mainFont.variable} ${brandFont.variable} ${heroFontSora.variable} antialiased`}
       >
         <script
           type="application/ld+json"
