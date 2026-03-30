@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import type { Metadata } from "next";
 import { StatusRouteClient } from "@/components/status-route-client";
 

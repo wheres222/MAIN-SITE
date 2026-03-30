@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import type { Metadata } from "next";
 import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
