@@ -400,7 +400,7 @@ export function StorefrontClient() {
           ) : null}
 
           <div className="game-grid frontpage-products-grid">
-            {filteredGroups.map((group) => {
+            {filteredGroups.map((group, groupIndex) => {
               const groupSlug = canonicalGroupSlug(group.name);
               const baseSrcRaw = group.image?.url?.trim() || "";
               const hasImage = Boolean(baseSrcRaw);
@@ -408,6 +408,7 @@ export function StorefrontClient() {
               const baseSrc = baseSrcRaw;
               const hoverSrc = hoverSrcRaw;
               const containImage = shouldContainCategoryImage(groupSlug);
+              const isAboveFold = groupIndex < 4;
 
               return (
                 <Link
@@ -437,7 +438,7 @@ export function StorefrontClient() {
                           width={800}
                           height={340}
                           sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 25vw"
-                          priority={false}
+                          priority={isAboveFold}
                           className={`game-card-image game-card-image--base ${
                             containImage ? "game-card-image--contain" : ""
                           }`}

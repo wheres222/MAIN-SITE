@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { productHref } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
@@ -31,6 +32,7 @@ function productLowestPrice(product: SellAuthProduct): number | null {
 }
 
 export function GlobalSearch() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [storefront, setStorefront] = useState<StorefrontData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,7 +95,7 @@ export function GlobalSearch() {
 
     if (event.key === "Enter" && activeIndex >= 0 && suggestions[activeIndex]) {
       event.preventDefault();
-      window.location.href = productHref(suggestions[activeIndex]);
+      router.push(productHref(suggestions[activeIndex]));
     }
   }
 

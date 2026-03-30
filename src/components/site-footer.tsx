@@ -18,7 +18,7 @@ export function SiteFooter() {
         <div className="footer-minimal-row">
           <div className="footer-minimal-left">
             <div className="footer-minimal-brand">
-              <img src="/branding/cp-logo.png" alt="CheatParadise logo" className="footer-minimal-logo" />
+              <img src="/branding/cp-logo.png" alt="CheatParadise logo" className="footer-minimal-logo" loading="lazy" decoding="async" />
               <h3 className="footer-minimal-title">CheatParadise</h3>
             </div>
             <p>Copyright © CheatParadise 2026. All Rights Reserved</p>
@@ -33,7 +33,7 @@ export function SiteFooter() {
               ))}
             </nav>
             <a className="footer-minimal-discord" href={discordUrl} target="_blank" rel="noreferrer" aria-label="Discord">
-              <img src="/social/discord.png" alt="" aria-hidden="true" className="social-icon" />
+              <img src="/social/discord.png" alt="" aria-hidden="true" className="social-icon" loading="lazy" decoding="async" />
             </a>
           </div>
         </div>

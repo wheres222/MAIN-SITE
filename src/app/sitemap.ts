@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { toGameSlug } from "@/lib/game-slug";
 import { getStorefrontData } from "@/lib/sellauth";
+import { productSlugFromName } from "@/lib/product-route";
 
 export const runtime = "edge";
 
@@ -35,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
 
     const productEntries = storefront.products.map((product) => ({
-      url: `${siteUrl}/products?id=${product.id}`,
+      url: `${siteUrl}/products/${productSlugFromName(product.name, product.id)}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.75,

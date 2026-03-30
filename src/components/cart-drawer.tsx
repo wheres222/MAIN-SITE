@@ -170,7 +170,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             <article key={line.lineId} className="cart-line">
               {/* Product images may come from user-configured external hosts. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={line.image} alt={line.productName} />
+              <img src={line.image} alt={line.productName} loading="lazy" decoding="async" />
               <div>
                 <h4>{line.productName}</h4>
                 {line.variantName ? <p>{line.variantName}</p> : null}
