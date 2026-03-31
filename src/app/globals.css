@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+:root {
+  --font-main: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, sans-serif;
+  --font-brand: 'Montserrat', 'Plus Jakarta Sans', sans-serif;
+  --font-hero-sora: 'Sora', 'Plus Jakarta Sans', sans-serif;
+}
+
 @font-face {
   font-family: "Gilroy";
   src: url("/fonts/gilroy/Gilroy-Regular.ttf") format("truetype");

@@ -1,24 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat, Plus_Jakarta_Sans, Sora } from "next/font/google";
 import "./globals.css";
-
-const mainFont = Plus_Jakarta_Sans({
-  variable: "--font-main",
-  weight: ["400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
-const brandFont = Montserrat({
-  variable: "--font-brand",
-  weight: ["600", "700"],
-  subsets: ["latin"],
-});
-
-const heroFontSora = Sora({
-  variable: "--font-hero-sora",
-  weight: ["400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
@@ -94,12 +75,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@600;700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
       </head>
-      <body
-        className={`${mainFont.variable} ${brandFont.variable} ${heroFontSora.variable} antialiased`}
-      >
+      <body className="antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
