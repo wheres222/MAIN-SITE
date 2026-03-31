@@ -321,6 +321,15 @@ const CANONICAL_CATEGORY_ALIASES: Record<string, string> = {
   rl: "rocket-league",
   fivem: "fivem",
   hwidspoofers: "hwid-spoofers",
+  hwidspoofer: "hwid-spoofers",
+  spoofer: "hwid-spoofers",
+  spoofers: "hwid-spoofers",
+  "lag-switch": "lag-switches",
+  lagswitch: "lag-switches",
+  lagswitches: "lag-switches",
+  eft: "escape-from-tarkov",
+  tarkov: "escape-from-tarkov",
+  escapefromtarkov: "escape-from-tarkov",
   vpn: "vpns",
 };
 
@@ -345,6 +354,8 @@ const CATEGORY_LABEL_BY_SLUG: Record<string, string> = {
   valorant: "Valorant",
   pubg: "PUBG",
   "hwid-spoofers": "HWID Spoofers",
+  "lag-switches": "Lag Switches",
+  "escape-from-tarkov": "Escape From Tarkov",
   accounts: "Accounts",
   vpns: "VPNS",
   "league-of-legends": "League of Legends",
@@ -366,6 +377,8 @@ function inferCategoryNameFromProduct(product: SellAuthProduct): string {
   if (/(\bnitro\b|\bmail\b|\baccount\b)/i.test(text)) return "Accounts";
   if (/(\bvpn\b|ip vanish|cyberghost)/i.test(text)) return "VPNS";
   if (/(\bhwid\b|\bspoofer\b)/i.test(text)) return "HWID Spoofers";
+  if (/lag\s*switch/i.test(text)) return "Lag Switches";
+  if (/\beft\b|escape\s*from\s*tarkov|\btarkov\b/i.test(text)) return "Escape From Tarkov";
   if (/\br6\b|rainbow\s*six/i.test(text)) return "Rainbow Six Siege";
   if (/counter\s*strike|\bcs2\b/i.test(text)) return "CS2";
   if (/call\s*of\s*duty|\bcod\b|warzone|\bb0?7\b|\bwz\b/i.test(text)) return "COD";
