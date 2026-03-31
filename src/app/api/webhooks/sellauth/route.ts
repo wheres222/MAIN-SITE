@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { deliverOrder, isDeliveryConfigured } from "@/lib/delivery";
 
-export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 // How long to keep a "done" record before allowing re-delivery (24 hours).
