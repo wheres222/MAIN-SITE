@@ -4,9 +4,6 @@ import { ProductRouteClient } from "@/components/product-route-client";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { getStorefrontData } from "@/lib/sellauth";
 import { productSlugFromName } from "@/lib/product-route";
-
-export const runtime = "edge";
-
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
 export async function generateMetadata({
