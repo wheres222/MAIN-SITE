@@ -6,7 +6,7 @@ import {
 } from "@/lib/local-banners";
 import type { StorefrontData } from "@/types/sellauth";
 
-const localBanners = getLocalCategoryBanners(14);
+const localBanners = getLocalCategoryBanners();
 
 const generatedCatalog = {
   groups: bannersToGroups(localBanners),

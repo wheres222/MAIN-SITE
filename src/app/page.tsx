@@ -1,3 +1,5 @@
+export const runtime = "edge";
+
 import type { Metadata } from "next";
 import { StorefrontClient } from "@/components/storefront-client";
 

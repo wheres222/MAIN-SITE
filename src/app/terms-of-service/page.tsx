@@ -1,4 +1,13 @@
+export const runtime = "edge";
+
+import type { Metadata } from "next";
 import { InfoPage } from "@/components/info-page";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "Cheat Paradise terms of service — usage rules, order policies, and refund conditions for our storefront.",
+  alternates: { canonical: "/terms-of-service" },
+};
 
 export default function TermsPage() {
   return (

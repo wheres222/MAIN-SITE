@@ -918,7 +918,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                 >
                   {galleryImages.map((src, index) => (
                     <div key={`${src}-${index}`} className={styles.imageSlide}>
-                      <img src={src} alt={`${product.name} preview ${index + 1}`} />
+                      <img src={src} alt={`${product.name} preview ${index + 1}`} loading="lazy" decoding="async" />
                     </div>
                   ))}
                 </div>
@@ -964,7 +964,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                     onClick={() => setActiveImageIndex(index)}
                     aria-label={`Open image ${index + 1}`}
                   >
-                    <img src={src} alt="" aria-hidden="true" />
+                    <img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
                   </button>
                 ))}
               </div>

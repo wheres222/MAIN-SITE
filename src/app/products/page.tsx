@@ -1,6 +1,9 @@
+export const runtime = "edge";
+
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ProductRouteClient } from "@/components/product-route-client";
+import { SubpageSkeleton } from "@/components/subpage-skeleton";
 
 export const metadata: Metadata = {
   title: "Products",
@@ -11,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<p className="state-message" style={{ padding: "20px" }}>Loading product...</p>}>
+    <Suspense fallback={<SubpageSkeleton rows={5} />}>
       <ProductRouteClient />
     </Suspense>
   );

@@ -1,32 +1,13 @@
-import type { Metadata } from "next";
-import { Montserrat, Plus_Jakarta_Sans, Sora } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const headingFont = Plus_Jakarta_Sans({
-  variable: "--font-heading",
-  weight: ["500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
-const bodyFont = Plus_Jakarta_Sans({
-  variable: "--font-body",
-  weight: ["400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
-const brandFont = Montserrat({
-  variable: "--font-brand",
-  weight: ["800"],
-  subsets: ["latin"],
-});
-
-const heroFontSora = Sora({
-  variable: "--font-hero-sora",
-  weight: ["400", "500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0d0d0d",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -40,9 +21,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
-    shortcut: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
-    apple: [{ url: "/branding/site-icon.jpg", type: "image/jpeg" }],
+    icon: [{ url: "/branding/cp-logo.png", type: "image/png" }],
+    shortcut: [{ url: "/branding/cp-logo.png", type: "image/png" }],
+    apple: [{ url: "/branding/cp-logo.png", type: "image/png" }],
   },
   openGraph: {
     title: "Cheat Paradise",
@@ -51,7 +32,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "Cheat Paradise",
     type: "website",
-    images: [{ url: "/branding/site-icon.jpg" }],
+    images: [{ url: "/branding/site-icon.jpg", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
@@ -93,9 +74,14 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body
-        className={`${headingFont.variable} ${bodyFont.variable} ${brandFont.variable} ${heroFontSora.variable} antialiased`}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@600;700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://api.sellauth.com" />
+        <link rel="dns-prefetch" href="https://api.sellauth.com" />
+      </head>
+      <body className="antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

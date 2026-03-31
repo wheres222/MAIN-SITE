@@ -13,36 +13,22 @@ interface BreadcrumbProps {
 
 export function Breadcrumb({ items }: BreadcrumbProps) {
   return (
-    <nav
-      aria-label="Breadcrumb"
-      style={{
-        fontSize: "0.82rem",
-        color: "rgba(255,255,255,0.45)",
-        padding: "14px 0 0",
-        display: "flex",
-        alignItems: "center",
-        gap: "6px",
-        flexWrap: "wrap",
-      }}
-    >
+    <nav aria-label="Breadcrumb" className="breadcrumb-nav">
       {items.map((item, i) => {
         const isLast = i === items.length - 1;
         return (
-          <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+          <span key={i} className="breadcrumb-segment">
             {i > 0 && (
-              <span aria-hidden="true" style={{ opacity: 0.4 }}>
+              <span aria-hidden="true" className="breadcrumb-sep">
                 /
               </span>
             )}
             {item.href && !isLast ? (
-              <Link
-                href={item.href}
-                style={{ color: "rgba(255,255,255,0.55)", textDecoration: "none" }}
-              >
+              <Link href={item.href} className="breadcrumb-link">
                 {item.label}
               </Link>
             ) : (
-              <span style={{ color: "rgba(255,255,255,0.7)" }}>{item.label}</span>
+              <span className="breadcrumb-current">{item.label}</span>
             )}
           </span>
         );

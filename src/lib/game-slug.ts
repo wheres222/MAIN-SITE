@@ -46,6 +46,14 @@ export function canonicalGameSlug(value: string): string {
     return "fivem";
   }
 
+  if (compact.includes("deltaforce") || compact === "df" || compact.includes("hawkops")) {
+    return "delta-force";
+  }
+
+  if (compact === "eft" || compact.includes("escapefromtarkov") || compact.includes("tarkov")) {
+    return "escape-from-tarkov";
+  }
+
   if (compact.includes("hwidspoofer")) {
     return "hwid-spoofers";
   }
