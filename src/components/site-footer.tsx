@@ -58,7 +58,7 @@ export function SiteFooter() {
             <div className="footer-brand-social">
               {/* Discord join button */}
               <a
-                href="https://discord.gg/Qp5qrCAEry"
+                href={DISCORD_INVITE_URL}
                 target="_blank"
                 rel="noreferrer"
                 className="footer-discord-join"

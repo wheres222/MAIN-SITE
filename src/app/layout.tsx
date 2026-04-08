@@ -21,9 +21,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/branding/cp-logo.png", type: "image/png" }],
-    shortcut: [{ url: "/branding/cp-logo.png", type: "image/png" }],
-    apple: [{ url: "/branding/cp-logo.png", type: "image/png" }],
+    icon: [{ url: "/branding/cheatparadiselogo.webp", type: "image/webp" }],
+    shortcut: [{ url: "/branding/cheatparadiselogo.webp", type: "image/webp" }],
+    apple: [{ url: "/branding/cheatparadiselogo.webp", type: "image/webp" }],
   },
   openGraph: {
     title: "Cheat Paradise",
@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "Cheat Paradise",
     type: "website",
-    images: [{ url: "/branding/site-icon.jpg", width: 1200, height: 630 }],
+    images: [{ url: "/branding/cheatparadiselogo.webp", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Cheat Paradise",
     description:
       "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
-    images: ["/branding/site-icon.jpg"],
+    images: ["/branding/cheatparadiselogo.webp"],
   },
   robots: {
     index: true,

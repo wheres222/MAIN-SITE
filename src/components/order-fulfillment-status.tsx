@@ -243,7 +243,7 @@ export function OrderFulfillmentStatus({ orderId, token, mockData }: Props) {
                 <div className="postpay-actions">
                   <a href="#">Instructions and loader</a>
                   <a
-                    href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/yourserver"}
+                    href={process.env.NEXT_PUBLIC_SUPPORT_URL || "https://discord.gg/6yGEKZC8aX"}
                     target="_blank"
                     rel="noreferrer"
                   >

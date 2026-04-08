@@ -390,7 +390,7 @@ export function StorefrontClient() {
                   </svg>
                   Browse Products
                 </a>
-                <a href="https://discord.gg/Qp5qrCAEry" target="_blank" rel="noreferrer" className="hero-discord-btn">
+                <a href="https://discord.gg/6yGEKZC8aX" target="_blank" rel="noreferrer" className="hero-discord-btn">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/social/discord.png" alt="" width={18} height={18} style={{ filter: "brightness(0) invert(1)" }} />
                   Join Discord
