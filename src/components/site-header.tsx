@@ -2,9 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { useState } from "react";
 import type { ReactNode } from "react";
-import { CartDrawer } from "@/components/cart-drawer";
 import { GlobalSearch } from "@/components/global-search";
 import { getDiscordUrl } from "@/lib/links";
 
@@ -20,11 +18,9 @@ function activeClass(current: NavTab, target: NavTab): string {
 }
 
 export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
-  const [cartOpen, setCartOpen] = useState(false);
   const discordLink = getDiscordUrl();
 
   return (
-    <>
       <div className="nav-row">
         <div className="shell nav-row-inner">
           <div className="nav-row-left">
@@ -81,22 +77,6 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
 
           <div className="nav-row-actions">
             {searchSlot || <GlobalSearch />}
-            <button className="site-nav-cart" type="button" onClick={() => setCartOpen(true)}>
-              <span className="nav-icon" aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M3 5h2l1.6 8.1a2 2 0 0 0 2 1.6h8a2 2 0 0 0 2-1.6L20 8H7"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <circle cx="9" cy="19" r="1.5" fill="currentColor" />
-                  <circle cx="16" cy="19" r="1.5" fill="currentColor" />
-                </svg>
-              </span>
-              Cart
-            </button>
 
             <a className="nav-discord-btn" href={discordLink} target="_blank" rel="noreferrer">
               <img src="/social/discord.png" alt="" aria-hidden="true" className="btn-icon" />
@@ -106,7 +86,5 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
           </div>
         </div>
       </div>
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
-    </>
-  );
+    );
 }

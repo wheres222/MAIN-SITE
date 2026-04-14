@@ -1976,7 +1976,7 @@ select::-ms-expand { display: none; }
 .cart-status-row label { color: #b2bfd8; font-size: 0.86rem; }
 .cart-status-select { border: 1px solid var(--ui-border); background: rgb(21, 21, 21); color: #e6ecff; border-radius: 6px; padding: 6px 8px; font-size: 0.92rem; }
 
-.global-footer { margin-top: 50px; border-top: 1px solid var(--global-outline); background: rgb(21, 21, 21) url("/branding/footer-bg.png") center top / cover no-repeat; padding: clamp(24px, 2.6vw, 36px) 0 clamp(16px, 1.8vw, 24px); position: relative; }
+.global-footer { margin-top: 50px; border-top: 1px solid var(--global-outline); background: rgb(13, 13, 13); padding: clamp(24px, 2.6vw, 36px) 0 clamp(16px, 1.8vw, 24px); position: relative; }
 .footer-shell { width: min(1460px, calc(100% - 56px)); margin: 0 auto; }
 .footer-columns { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(280px, 1.3fr) minmax(180px, 0.85fr); gap: clamp(14px, 2vw, 28px); align-items: start; }
 .footer-columns article { min-width: 0; }
