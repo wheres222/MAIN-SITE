@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/favicon.ico?v=2", type: "image/x-icon" }],
+    icon: [{ url: "/favicon-v2.ico", type: "image/x-icon" }],
     shortcut: [{ url: "/branding/LOGO.webp", type: "image/webp" }],
     apple: [{ url: "/branding/LOGO.webp", type: "image/webp" }],
   },
@@ -80,7 +80,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Montserrat:wght@600;700&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
-        <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" />
+        <link rel="icon" href="/favicon-v2.ico" type="image/x-icon" />
         <link rel="icon" href="/branding/LOGO.webp" type="image/webp" />
         <link rel="shortcut icon" href="/branding/LOGO.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/branding/LOGO.webp" />
