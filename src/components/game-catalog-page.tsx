@@ -140,17 +140,6 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
             className={styles.heroBackdrop}
             style={{ backgroundImage: `url("${heroImage}")` }}
           />
-          <div className={styles.heroCenter}>
-            <div className={styles.gameBadge}>
-              <Image
-                src={heroImage}
-                alt={`${group.name} banner placeholder`}
-                width={92}
-                height={92}
-                sizes="92px"
-              />
-            </div>
-          </div>
         </section>
 
         <section className={styles.catalogSection}>
