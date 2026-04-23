@@ -37,28 +37,18 @@ interface ProductVideoPreview {
   poster?: string;
 }
 
-const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {
-  638033: {
-    url: "https://www.youtube.com/watch?v=bo1rVhgk0mk",
-    title: "Rust External Preview",
-    description: "Live test preview for Division Rust External.",
-  },
-  // Example:
-  // 637803: {
-  //   url: "https://cdn.example.com/previews/rust-mek.mp4",
-  //   title: "See It In Action",
-  //   description: "Rust gameplay preview for MEK external.",
-  //   poster: "https://cdn.example.com/previews/rust-mek-poster.jpg",
-  // },
-};
+// Add product-specific videos here by SellAuth product ID:
+// const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {
+//   638033: {
+//     url: "https://www.youtube.com/watch?v=XXXX",
+//     title: "Product Preview",
+//     description: "Live gameplay showcase.",
+//   },
+// };
+const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {};
 
-const PRODUCT_VIDEO_PREVIEW_BY_GROUP: Record<string, ProductVideoPreview> = {
-  rust: {
-    url: "https://odysee.com/Arc-Raiders-Cheat-Showcase:9?r=FVZ5k7b3fkgFTEhaHP4YJsvAEAkxdbAH",
-    title: "Rust Cheat Showcase",
-    description: "Live gameplay showcase.",
-  },
-};
+// Add group-wide videos here by slugified group/category name (e.g. "rust", "valorant"):
+const PRODUCT_VIDEO_PREVIEW_BY_GROUP: Record<string, ProductVideoPreview> = {};
 
 function money(value: number | null, code = "USD"): string {
   if (value === null) return "N/A";
