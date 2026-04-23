@@ -250,3 +250,146 @@
     margin-top: -30px;
   }
 }
+
+/* ─── Buy Now link wrapper ───────────────────────────────── */
+.buyButtonLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  margin-top: auto;
+}
+
+/* Selected card highlight */
+.productCardSelected {
+  outline: 2px solid rgba(0, 212, 170, 0.5);
+  outline-offset: -2px;
+}
+
+/* Description panel wrapper */
+.descPanel {
+  margin-top: 32px;
+  display: flex;
+  gap: 0;
+  background: #111214;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* INFORMATION column */
+.descInfoCol {
+  min-width: 280px;
+  max-width: 320px;
+  flex-shrink: 0;
+  padding: 28px 28px 32px;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  border-left: 3px solid #00d4aa;
+}
+
+.descInfoTitle {
+  margin: 0 0 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+}
+
+.descBullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.descBullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: #c8d3ea;
+  line-height: 1.4;
+}
+
+.descBullets li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00d4aa;
+  margin-top: 4px;
+}
+
+/* Feature tabs grid */
+.descTabsGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0;
+}
+
+.descTabCol {
+  padding: 28px 24px 32px;
+  border-left: 3px solid #00d4aa;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+
+.descTabCol:last-child {
+  border-right: none;
+}
+
+.descTabTitle {
+  margin: 0 0 16px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #ffffff;
+}
+
+.descTabItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.descTabItems li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #c8d3ea;
+  line-height: 1.4;
+}
+
+.descTabItems li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #00d4aa;
+  margin-top: 4px;
+}
+
+@media (max-width: 780px) {
+  .descPanel {
+    flex-direction: column;
+  }
+  .descInfoCol {
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .descTabsGrid {
+    grid-template-columns: 1fr;
+  }
+  .descTabCol {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+}
