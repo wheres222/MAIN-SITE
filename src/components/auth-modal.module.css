@@ -19,7 +19,7 @@
 .modal {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   background: rgb(18, 18, 21);
   border: 1px solid rgb(36, 36, 42);
   border-radius: 18px;
@@ -111,7 +111,7 @@
 }
 .discordBtn:hover:not(:disabled) { background: #4752c4; }
 .discordBtn:disabled { opacity: 0.6; cursor: not-allowed; }
-.discordIcon { width: 19px; height: 19px; flex: 0 0 auto; }
+.discordIcon { width: 22px; height: 22px; flex: 0 0 auto; }
 
 .divider {
   display: flex;
@@ -123,9 +123,40 @@
 .dividerText { font-size: 0.72rem; color: #4a5468; white-space: nowrap; }
 
 .form { display: flex; flex-direction: column; gap: 12px; }
-.twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .field { display: flex; flex-direction: column; gap: 5px; }
 .label { font-size: 0.78rem; font-weight: 600; color: #8a97b8; }
+
+.pwChecklist {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgb(36, 36, 44);
+  border-radius: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pwCheckPass,
+.pwCheckFail {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+.pwCheckPass { color: #4ade80; }
+.pwCheckFail { color: #6b7694; }
+
+.pwCheckIcon {
+  font-size: 0.7rem;
+  font-weight: 700;
+  width: 14px;
+  text-align: center;
+  flex: 0 0 auto;
+}
 
 .input {
   width: 100%;
@@ -174,8 +205,20 @@
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, opacity 0.15s;
   margin-top: 2px;
 }
 .submitBtn:hover:not(:disabled) { background: #a8d9ff; }
-.submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.submitBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Create Account — matches hero "Browse Products" gradient */
+.submitBtnRegister {
+  background: var(--themed-blue-gradient, linear-gradient(135deg, #1d65f5 0%, #4d3bff 100%));
+  color: #ffffff;
+  box-shadow: 0 4px 18px rgba(29, 101, 245, 0.38);
+  letter-spacing: 0.02em;
+}
+.submitBtnRegister:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2d75ff 0%, #5d4bff 100%);
+  box-shadow: 0 6px 22px rgba(29, 101, 245, 0.5);
+}
