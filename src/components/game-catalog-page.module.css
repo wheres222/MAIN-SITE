@@ -48,7 +48,8 @@
 .productCardsGrid {
   display: grid;
   gap: 14px;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: center;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -441,16 +442,8 @@
     width: min(1220px, calc(100% - 30px));
   }
 
-  .catalogGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .previewMedia video {
-    height: 280px;
-  }
-
-  .productList {
-    max-height: 460px;
+  .productCardsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -464,19 +457,10 @@
   }
 
   .catalogSection {
-    margin-top: 58px;
+    margin-top: 0;
   }
 
-  .catalogHighlights {
-    justify-content: flex-start;
-    gap: 10px 16px;
-  }
-
-  .productTopLine strong {
-    font-size: 1.42rem;
-  }
-
-  .previewMedia video {
-    height: 220px;
+  .productCardsGrid {
+    grid-template-columns: 1fr;
   }
 }
