@@ -37,7 +37,9 @@ export async function proxy(request: NextRequest) {
     }
 
     // Maintenance gate: redirect everyone without the preview cookie
-    if (MAINTENANCE_MODE && request.cookies.get(PREVIEW_COOKIE)?.value !== "1") {
+    // Skip in local dev so you can always see the site at localhost
+    const isDev = process.env.NODE_ENV === "development";
+    if (MAINTENANCE_MODE && !isDev && request.cookies.get(PREVIEW_COOKIE)?.value !== "1") {
       const url = request.nextUrl.clone();
       url.pathname = MAINTENANCE_PATH;
       return NextResponse.rewrite(url);
