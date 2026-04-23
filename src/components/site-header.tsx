@@ -2,9 +2,11 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { GlobalSearch } from "@/components/global-search";
-import { getDiscordUrl } from "@/lib/links";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import { AuthModal } from "@/components/auth-modal";
+import { DepositModal } from "@/components/deposit-modal";
 
 export type NavTab = "store" | "status" | "reviews" | "support" | "none";
 
@@ -17,10 +19,88 @@ function activeClass(current: NavTab, target: NavTab): string {
   return current === target ? "active" : "";
 }
 
-export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
-  const discordLink = getDiscordUrl();
+export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderProps) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState("");
+  const [balance, setBalance] = useState<number | null>(null);
+  const [modal, setModal] = useState<"login" | "register" | null>(null);
+  const [showDeposit, setShowDeposit] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      setIsLoggedIn(true);
+      setAvatarUrl(
+        user.user_metadata?.avatar_url ||
+        user.user_metadata?.picture ||
+        null
+      );
+      setDisplayName(
+        user.user_metadata?.full_name ||
+        user.user_metadata?.name ||
+        user.user_metadata?.username ||
+        user.email?.split("@")[0] ||
+        "Account"
+      );
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("balance, username")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        setBalance(profile.balance ?? 0);
+        if (profile.username) setDisplayName(profile.username);
+      }
+    }
+
+    loadUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        setIsLoggedIn(false);
+        setBalance(null);
+        setAvatarUrl(null);
+        setShowDropdown(false);
+      } else if (event === "SIGNED_IN") {
+        loadUser();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowDropdown(false);
+      }
+    }
+    if (showDropdown) document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [showDropdown]);
+
+  async function handleLogout() {
+    setShowDropdown(false);
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  }
+
+  const initials = displayName.slice(0, 2).toUpperCase();
 
   return (
+    <>
       <div className="nav-row">
         <div className="shell nav-row-inner">
           <div className="nav-row-left">
@@ -29,62 +109,135 @@ export function SiteHeader({ activeTab, searchSlot }: SiteHeaderProps) {
             </Link>
 
             <nav className="site-nav">
-            <Link className={activeClass(activeTab, "store")} href="/">
-              <span className="nav-icon" aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 7h14l-1 12H6L5 7Z" stroke="currentColor" strokeWidth="1.6" />
-                  <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.6" />
-                </svg>
-              </span>
-              Store
-            </Link>
-            <Link className={activeClass(activeTab, "status")} href="/status">
-              <span className="nav-icon" aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 16h3v4H5v-4Zm5-6h3v10h-3V10Zm5-5h3v15h-3V5Z" fill="currentColor" />
-                </svg>
-              </span>
-              Status
-            </Link>
-            <Link className={activeClass(activeTab, "reviews")} href="/reviews">
-              <span className="nav-icon nav-icon-reviews" aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="m12 4 2 4 4.5.6-3.4 3 1 4.6L12 14.8 7.9 16.2l1-4.6-3.4-3L10 8l2-4Z"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                  />
-                </svg>
-              </span>
-              Reviews
-            </Link>
-            <Link className={activeClass(activeTab, "support")} href="/support">
-              <span className="nav-icon nav-icon-support" aria-hidden>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="M4.8 13.2a7.2 7.2 0 1 1 14.4 0v4.1a2.2 2.2 0 0 1-2.2 2.2h-.6a2.2 2.2 0 0 1-2.2-2.2v-3a2.2 2.2 0 0 1 2.2-2.2h2.2M7.6 12.1H6.4a2.2 2.2 0 0 0-2.2 2.2v3a2.2 2.2 0 0 0 2.2 2.2h.6a2.2 2.2 0 0 0 2.2-2.2v-3a2.2 2.2 0 0 0-1.6-2.1Z"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-              Support
-            </Link>
+              <Link className={activeClass(activeTab, "store")} href="/">
+                <span className="nav-icon" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 7h14l-1 12H6L5 7Z" stroke="currentColor" strokeWidth="1.6" />
+                    <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.6" />
+                  </svg>
+                </span>
+                Store
+              </Link>
+              <Link className={activeClass(activeTab, "status")} href="/status">
+                <span className="nav-icon" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 16h3v4H5v-4Zm5-6h3v10h-3V10Zm5-5h3v15h-3V5Z" fill="currentColor" />
+                  </svg>
+                </span>
+                Status
+              </Link>
+              <Link className={activeClass(activeTab, "reviews")} href="/reviews">
+                <span className="nav-icon nav-icon-reviews" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="m12 4 2 4 4.5.6-3.4 3 1 4.6L12 14.8 7.9 16.2l1-4.6-3.4-3L10 8l2-4Z" stroke="currentColor" strokeWidth="1.3" />
+                  </svg>
+                </span>
+                Reviews
+              </Link>
+              <Link className={activeClass(activeTab, "support")} href="/support">
+                <span className="nav-icon nav-icon-support" aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M4.8 13.2a7.2 7.2 0 1 1 14.4 0v4.1a2.2 2.2 0 0 1-2.2 2.2h-.6a2.2 2.2 0 0 1-2.2-2.2v-3a2.2 2.2 0 0 1 2.2-2.2h2.2M7.6 12.1H6.4a2.2 2.2 0 0 0-2.2 2.2v3a2.2 2.2 0 0 0 2.2 2.2h.6a2.2 2.2 0 0 0 2.2-2.2v-3a2.2 2.2 0 0 0-1.6-2.1Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                Support
+              </Link>
             </nav>
           </div>
 
           <div className="nav-row-actions">
-            {searchSlot || <GlobalSearch />}
+            {isLoggedIn ? (
+              <div className="nav-user-group">
+                {/* Balance bar */}
+                <button
+                  type="button"
+                  className="nav-balance-btn"
+                  onClick={() => setShowDeposit(true)}
+                  title="Add balance"
+                >
+                  <span className="nav-balance-label">BALANCE</span>
+                  <span className="nav-balance-amount">${(balance ?? 0).toFixed(2)}</span>
+                  {/* Deposit plus icon */}
+                  <span className="nav-balance-add">
+                    <svg viewBox="0 0 24 24" fill="none" width="12" height="12" aria-hidden>
+                      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                </button>
 
-            <a className="nav-discord-btn" href={discordLink} target="_blank" rel="noreferrer">
-              <img src="/social/discord.png" alt="" aria-hidden="true" className="btn-icon" />
-              Discord
-            </a>
+                {/* Avatar dropdown */}
+                <div className="nav-avatar-wrap" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    className="nav-avatar-btn"
+                    onClick={() => setShowDropdown((v) => !v)}
+                    title={displayName}
+                    aria-expanded={showDropdown}
+                  >
+                    <span className="nav-avatar">
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={displayName} className="nav-avatar-img" />
+                      ) : (
+                        <span className="nav-avatar-initials">{initials}</span>
+                      )}
+                    </span>
+                  </button>
 
+                  {showDropdown && (
+                    <div className="nav-dropdown">
+                      <Link href="/account" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
+                        Account
+                      </Link>
+                      <Link href="/account/settings" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
+                        Settings
+                      </Link>
+                      <Link href="/account/balance" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
+                        Transactions
+                      </Link>
+                      <Link href="/account/referrals" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
+                        Affiliates
+                      </Link>
+                      <div className="nav-dropdown-item nav-dropdown-disabled">
+                        Live Support
+                        <span className="nav-dropdown-soon">Coming soon</span>
+                      </div>
+
+                      <div className="nav-dropdown-divider" />
+
+                      <button type="button" className="nav-dropdown-item nav-dropdown-logout" onClick={handleLogout}>
+                        <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden>
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <button type="button" className="nav-signin-btn" onClick={() => setModal("login")}>
+                  Login
+                </button>
+                <button type="button" className="nav-register-btn" onClick={() => setModal("register")}>
+                  Register
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
-    );
+
+      {modal && (
+        <AuthModal
+          defaultTab={modal}
+          onClose={() => setModal(null)}
+        />
+      )}
+
+      {showDeposit && (
+        <DepositModal onClose={() => setShowDeposit(false)} />
+      )}
+    </>
+  );
 }

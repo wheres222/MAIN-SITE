@@ -1,0 +1,181 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: rgb(18, 18, 21);
+  border: 1px solid rgb(36, 36, 42);
+  border-radius: 18px;
+  padding: 32px 30px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: slideUp 0.18s ease;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.closeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgb(40, 40, 46);
+  background: transparent;
+  color: #6b7694;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.closeBtn:hover { background: rgb(30, 30, 36); color: #f0f4ff; }
+
+.logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.logoImg {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgb(13, 13, 15);
+  border: 1px solid rgb(32, 32, 38);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 20px;
+}
+
+.tabBtn {
+  padding: 9px 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7694;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.tabBtnActive {
+  background: rgb(28, 28, 34);
+  color: #f0f4ff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.discordBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  background: #5865f2;
+  border: 1px solid #4752c4;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 16px;
+}
+.discordBtn:hover:not(:disabled) { background: #4752c4; }
+.discordBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.discordIcon { width: 19px; height: 19px; flex: 0 0 auto; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.dividerLine { flex: 1; height: 1px; background: rgb(32, 32, 38); }
+.dividerText { font-size: 0.72rem; color: #4a5468; white-space: nowrap; }
+
+.form { display: flex; flex-direction: column; gap: 12px; }
+.twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.label { font-size: 0.78rem; font-weight: 600; color: #8a97b8; }
+
+.input {
+  width: 100%;
+  min-height: 42px;
+  background: rgb(13, 13, 15);
+  border: 1px solid rgb(36, 36, 44);
+  border-radius: 8px;
+  padding: 0 12px;
+  color: #f0f4ff;
+  font-size: 0.88rem;
+  transition: border-color 0.15s;
+}
+.input:focus { outline: none; border-color: #7cc4ff; }
+.input::placeholder { color: #3a4460; }
+
+.error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: 7px;
+  color: #fca5a5;
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.successBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(74, 222, 128, 0.07);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+  border-radius: 10px;
+  color: #86efac;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  padding: 14px 16px;
+}
+
+.submitBtn {
+  width: 100%;
+  min-height: 44px;
+  background: #7cc4ff;
+  border: none;
+  border-radius: 10px;
+  color: #050d1a;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 2px;
+}
+.submitBtn:hover:not(:disabled) { background: #a8d9ff; }
+.submitBtn:disabled { opacity: 0.5; cursor: not-allowed; }

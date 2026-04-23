@@ -1,0 +1,477 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  padding: 20px;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 780px;
+  max-height: 95vh;
+  background: #18181d;
+  border: 1px solid #2a2a36;
+  border-radius: 18px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  animation: slideUp 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Close button ─────────────────────────────────────── */
+.closeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid #2a2a36;
+  border-radius: 8px;
+  color: #6b7280;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.12s, color 0.12s;
+}
+.closeBtn:hover { background: rgba(255,255,255,0.1); color: #e5e7eb; }
+
+/* ── Body ─────────────────────────────────────────────── */
+.body {
+  padding: 30px 28px 32px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #f0f4ff;
+  margin: 0 0 2px;
+  text-align: center;
+  letter-spacing: -0.01em;
+}
+
+/* ── Game skin row ────────────────────────────────────── */
+.gameGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.gameCard {
+  position: relative;
+  background: #111116;
+  border: 1px solid #2a2a36;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.12s;
+  min-height: 160px;
+}
+.gameCardActive { border-color: #2a2a36; }
+.gameCardActive:hover { border-color: rgba(88,101,242,0.5); }
+.gameCardDisabled { opacity: 0.55; cursor: default; }
+
+.gameImg {
+  flex: 1;
+  background: #0e0e12;
+  min-height: 112px;
+}
+
+.disabledLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #9ca3af;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.5);
+  padding: 3px 7px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.bonusBadge {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  background: #eab308;
+  color: #1a1200;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+
+.gameInfo {
+  padding: 9px 10px 10px;
+  border-top: 1px solid #1e1e26;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.gameName {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #f0f4ff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.gameProvider {
+  font-size: 0.68rem;
+  color: #4b5563;
+}
+
+/* ── Cash + Giftcards row ─────────────────────────────── */
+.cashRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.cashSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cashHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionLabel {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #d1d5db;
+}
+
+.freeCrateBadge {
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.58rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.cashCard {
+  position: relative;
+  background: #111116;
+  border: 1px solid #2a2a36;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+  min-height: 130px;
+  display: flex;
+  transition: border-color 0.12s;
+}
+.cashCardDisabled { opacity: 0.5; cursor: default; }
+
+.cashImg {
+  flex: 1;
+  background: #0e0e12;
+  min-height: 130px;
+}
+
+/* ── Crypto section ───────────────────────────────────── */
+.cryptoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bonusBadgeAlt {
+  background: rgba(234,179,8,0.15);
+  border: 1px solid rgba(234,179,8,0.3);
+  color: #eab308;
+  font-size: 0.64rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}
+
+.cryptoGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-top: -4px;
+}
+
+.cryptoCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 8px 14px;
+  background: #111116;
+  border: 1px solid #2a2a36;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.cryptoCard:hover {
+  border-color: rgba(88,101,242,0.45);
+  background: rgba(88,101,242,0.05);
+}
+
+.cryptoIcon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cryptoLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #d1d5db;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ── Steps 2 & 3 ──────────────────────────────────────── */
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid #2a2a36;
+  border-radius: 8px;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color 0.12s, border-color 0.12s;
+}
+.backBtn:hover { color: #e5e7eb; border-color: #5865f2; }
+
+.selectedCoinRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #111116;
+  border: 1px solid #2a2a36;
+  border-radius: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.input {
+  width: 100%;
+  min-height: 46px;
+  background: #0a0a0e;
+  border: 1px solid #2a2a36;
+  border-radius: 8px;
+  padding: 0 16px;
+  color: #e8eeff;
+  font-size: 1rem;
+  transition: border-color 0.12s;
+}
+.input:focus { outline: none; border-color: #5865f2; }
+.input::placeholder { color: #2a2a36; }
+
+.presetRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.presetBtn {
+  padding: 6px 16px;
+  background: #0a0a0e;
+  border: 1px solid #2a2a36;
+  border-radius: 6px;
+  color: #9ca3af;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+.presetBtn:hover { border-color: #5865f2; color: #818cf8; background: rgba(88,101,242,0.08); }
+
+.inputHint { font-size: 0.72rem; color: #374151; }
+
+.errorMsg {
+  padding: 10px 14px;
+  background: rgba(248,113,113,0.07);
+  border: 1px solid rgba(248,113,113,0.2);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #f87171;
+  margin: 0;
+}
+
+.primaryBtn {
+  width: 100%;
+  min-height: 48px;
+  background: #5865f2;
+  border: none;
+  border-radius: 9px;
+  color: #fff;
+  font-size: 0.96rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.14s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.primaryBtn:hover:not(:disabled) { background: #6875f5; }
+.primaryBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btnSpinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.paymentSummary {
+  background: #111116;
+  border: 1px solid #2a2a36;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 16px;
+  border-bottom: 1px solid #1e1e26;
+}
+.summaryRow:last-child { border-bottom: none; }
+.summaryLabel { font-size: 0.78rem; color: #6b7280; }
+.summaryValue { font-size: 0.88rem; font-weight: 600; color: #e5e7eb; }
+.summaryValueHighlight { font-size: 0.92rem; font-weight: 700; color: #4ade80; font-family: monospace; }
+.summaryValueWarn { font-size: 0.88rem; font-weight: 700; color: #fb923c; font-family: monospace; }
+
+.addressBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #0a0a0e;
+  border: 1px solid #2a2a36;
+  border-radius: 8px;
+  word-break: break-all;
+}
+.addressText {
+  flex: 1;
+  font-size: 0.8rem;
+  font-family: monospace;
+  color: #818cf8;
+  line-height: 1.5;
+}
+.copyAddrBtn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(88,101,242,0.1);
+  border: 1px solid rgba(88,101,242,0.25);
+  border-radius: 7px;
+  color: #818cf8;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.copyAddrBtn:hover { background: rgba(88,101,242,0.2); }
+
+.infoNote {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  background: rgba(88,101,242,0.06);
+  border: 1px solid rgba(88,101,242,0.18);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+.infoNote strong { color: #e5e7eb; }
+
+.waitingRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+.waitingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 620px) {
+  .gameGrid { grid-template-columns: repeat(2, 1fr); }
+  .cryptoGrid { grid-template-columns: repeat(3, 1fr); }
+  .cashRow { grid-template-columns: 1fr; }
+  .body { padding: 20px 16px 24px; }
+}

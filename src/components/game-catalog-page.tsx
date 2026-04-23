@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Breadcrumb } from "@/components/breadcrumb";
+import { useMemo, useState } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { toGameSlug } from "@/lib/game-slug";
@@ -111,8 +110,6 @@ function StarRow({ value }: { value: number }) {
 
 export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
   const [query, setQuery] = useState("");
-  const [selectedProductId, setSelectedProductId] = useState<number>(products[0]?.id || 0);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const filteredProducts = useMemo(() => {
     const keyword = normalized(query);
@@ -122,26 +119,7 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
     );
   }, [products, query]);
 
-  const activeProduct = useMemo(() => {
-    if (filteredProducts.length === 0) return null;
-    return (
-      filteredProducts.find((product) => product.id === selectedProductId) ||
-      filteredProducts[0]
-    );
-  }, [filteredProducts, selectedProductId]);
-
-  useEffect(() => {
-    if (!activeProduct || !videoRef.current) return;
-    const video = videoRef.current;
-    video.currentTime = 0;
-    const playback = video.play();
-    if (playback && typeof playback.catch === "function") {
-      playback.catch(() => {});
-    }
-  }, [activeProduct]);
-
-  const heroImage = group.image?.url || "/games/fortnite.svg";
-  const previewVideo = videoForGroup(group.name);
+  const heroImage = "/placeholders/category-banner-not-added.svg";
   const lowestPrice = useMemo(() => {
     if (products.length === 0) return null;
     return products.reduce<number | null>((min, product) => {
@@ -157,25 +135,16 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
       <SiteHeader activeTab="store" />
 
       <main className={styles.pageShell}>
-        <Breadcrumb
-          items={[
-            { label: "Home", href: "/" },
-            { label: "Categories", href: "/#games" },
-            { label: group.name },
-          ]}
-        />
         <section className={styles.hero}>
           <div
             className={styles.heroBackdrop}
-            style={{
-              backgroundImage: `url("${heroImage}")`,
-            }}
+            style={{ backgroundImage: `url("${heroImage}")` }}
           />
           <div className={styles.heroCenter}>
             <div className={styles.gameBadge}>
               <Image
                 src={heroImage}
-                alt={group.name}
+                alt={`${group.name} banner placeholder`}
                 width={92}
                 height={92}
                 sizes="92px"
@@ -185,128 +154,46 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
         </section>
 
         <section className={styles.catalogSection}>
-          <Link className={styles.catalogBackLink} href="/#store-section">
-            Games catalog
-          </Link>
+          <div className={styles.productCardsGrid}>
+            {filteredProducts.map((product) => {
+              const price = productPrice(product);
 
-          <header className={styles.catalogHeader}>
-            <h1>Cheats {group.name}</h1>
-            <div className={styles.catalogHighlights}>
-              <span>Private cheats</span>
-              <span>
-                Price for {group.name} cheats from{" "}
-                {lowestPrice === null ? "N/A" : money(lowestPrice, products[0]?.currency || "USD")}
-              </span>
-              <span>Best {group.name.toLowerCase()} cheats</span>
-            </div>
-          </header>
-
-          <label className={styles.searchWrap}>
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search"
-              aria-label={`Search ${group.name} products`}
-            />
-          </label>
-
-          <div className={styles.catalogGrid}>
-            <aside className={styles.productListPanel}>
-              <div className={styles.productList}>
-                {filteredProducts.map((product) => {
-                  const price = productPrice(product);
-                  const isActive = activeProduct?.id === product.id;
-                  const status = statusFor(product);
-                  let statusClass = styles.statusFrozen;
-                  if (status === "updated") statusClass = styles.statusUpdated;
-                  if (status === "updating") statusClass = styles.statusUpdating;
-                  return (
-                    <button
-                      key={product.id}
-                      className={`${styles.productListItem} ${
-                        isActive ? styles.productListItemActive : ""
-                      }`}
-                      onMouseEnter={() => setSelectedProductId(product.id)}
-                      onFocus={() => setSelectedProductId(product.id)}
-                      onClick={() => setSelectedProductId(product.id)}
-                    >
-                      <div className={styles.productThumb}>
-                        <Image
-                          src={product.image || "/placeholders/product-image-not-added.svg"}
-                          alt={product.name}
-                          width={62}
-                          height={62}
-                          sizes="62px"
-                        />
+              return (
+                <article key={product.id} className={styles.productCard}>
+                  <Link href={productHref(product)} className={styles.productCardLink}>
+                    <div className={styles.productCardMedia}>
+                      <Image
+                        src={product.image || "/placeholders/product-image-not-added.svg"}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 900px) 100vw, 33vw"
+                        className={styles.productCardImage}
+                      />
+                    </div>
+                    <div className={styles.productCardBody}>
+                      <div className={styles.productCardHeading}>
+                        <h2>{product.name}</h2>
+                        <span className={styles.productCardPrice}>FROM {money(price, product.currency || "USD")}</span>
                       </div>
-                      <div className={styles.productSummary}>
-                        <div className={styles.productTopLine}>
-                          <strong>{product.name}</strong>
-                          <span>
-                            from {money(price, product.currency)}
-                          </span>
-                        </div>
-                        <p className={styles.metrics}>
-                          Security: <StarRow value={securityStars(product)} />
-                        </p>
-                        <p className={styles.metrics}>
-                          Functional: <StarRow value={functionalityStars(product)} />
-                        </p>
-                        <p className={styles.tags}>
-                          <span className={`${styles.statusPill} ${statusClass}`}>
-                            {statusLabel(status)}
-                          </span>
-                        </p>
-                        <p className={styles.windowsVersion}>Windows 10 / 11</p>
-                      </div>
-                    </button>
-                  );
-                })}
-
-                {filteredProducts.length === 0 && (
-                  <p className={styles.emptyState}>
-                    No products found for this search.
-                  </p>
-                )}
-              </div>
-            </aside>
-
-            <article className={styles.previewCard}>
-              {activeProduct ? (
-                <>
-                  <h2>{activeProduct.name}</h2>
-                  <div className={styles.previewMedia}>
-                    <video
-                      key={activeProduct.id}
-                      ref={videoRef}
-                      autoPlay
-                      muted
-                      loop
-                      playsInline
-                      poster={activeProduct.image}
-                    >
-                      <source src={previewVideo} type="video/mp4" />
-                    </video>
-                  </div>
-
-                  <p className={styles.previewText}>
-                    {activeProduct.description ||
-                      `${activeProduct.name} is tuned for competitive play with stable updates and fast support.`}
-                  </p>
-
-                  <div className={styles.previewRating}>
-                    <StarRow value={starsFor(ratingFor(activeProduct))} />
-                    <span>(Rated: {Math.round(ratingFor(activeProduct) * 10)})</span>
-                  </div>
-
-                  <Link href={productHref(activeProduct)} className={styles.previewCta}>
-                    Learn more and buy
+                      <span className={styles.buyButton}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="9" cy="21" r="1" />
+                          <circle cx="20" cy="21" r="1" />
+                          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                        </svg>
+                        Buy Now
+                      </span>
+                    </div>
                   </Link>
-                </>
-              ) : (
-                <p className={styles.emptyState}>No products available in this game yet.</p>
-              )}
-            </article>
+                </article>
+              );
+            })}
+
+            {filteredProducts.length === 0 && (
+              <p className={styles.emptyState}>
+                No products found for this category.
+              </p>
+            )}
           </div>
         </section>
       </main>

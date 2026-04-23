@@ -53,7 +53,11 @@ const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {
 };
 
 const PRODUCT_VIDEO_PREVIEW_BY_GROUP: Record<string, ProductVideoPreview> = {
-  // Optional fallback by group/category slug key (e.g. rust, apex-legends).
+  rust: {
+    url: "https://odysee.com/Arc-Raiders-Cheat-Showcase:9?r=FVZ5k7b3fkgFTEhaHP4YJsvAEAkxdbAH",
+    title: "Rust Cheat Showcase",
+    description: "Live gameplay showcase.",
+  },
 };
 
 function money(value: number | null, code = "USD"): string {
@@ -143,7 +147,7 @@ function isAccountsOrVpnProduct(product: SellAuthProduct): boolean {
   return /\baccount(s)?\b|\bvpn(s)?\b/.test(haystack);
 }
 
-function youtubeEmbedUrl(rawUrl: string): string | null {
+function videoEmbedUrl(rawUrl: string): string | null {
   const value = rawUrl.trim();
   if (!value) return null;
 
@@ -160,10 +164,20 @@ function youtubeEmbedUrl(rawUrl: string): string | null {
         const id = parsed.searchParams.get("v") || "";
         return id ? `https://www.youtube.com/embed/${id}` : null;
       }
-
       const pathParts = parsed.pathname.split("/").filter(Boolean);
       if (pathParts[0] === "embed" && pathParts[1]) {
         return `https://www.youtube.com/embed/${pathParts[1]}`;
+      }
+    }
+
+    if (parsed.hostname.includes("odysee.com")) {
+      // Convert https://odysee.com/claim-name:id → https://odysee.com/$/embed/claim-name:id
+      const pathParts = parsed.pathname.split("/").filter(Boolean);
+      if (pathParts.length > 0 && pathParts[0] !== "$") {
+        return `https://odysee.com/$/embed/${pathParts[0]}`;
+      }
+      if (pathParts[0] === "$" && pathParts[1] === "embed" && pathParts[2]) {
+        return `https://odysee.com/$/embed/${pathParts[2]}`;
       }
     }
   } catch {
@@ -705,10 +719,12 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
   const galleryImages = useMemo(() => parseGalleryImages(product), [product]);
   const videoPreview = useMemo(() => resolveProductVideoPreview(product), [product]);
   const videoPreviewEmbed = useMemo(
-    () => (videoPreview ? youtubeEmbedUrl(videoPreview.url) : null),
+    () => (videoPreview ? videoEmbedUrl(videoPreview.url) : null),
     [videoPreview]
   );
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [openTabs, setOpenTabs] = useState<string[]>([]);
 
   const showRequirements = !isAccountsOrVpnProduct(product);
@@ -722,8 +738,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
   const hasDetailSections =
     showRequirements ||
-    detailContent.featureTabs.length > 0 ||
-    Boolean(videoPreview);
+    detailContent.featureTabs.length > 0;
 
   useEffect(() => {
     setOpenTabs([]);
@@ -731,7 +746,29 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
   useEffect(() => {
     setActiveImageIndex(0);
+    setLightboxOpen(false);
   }, [product.id]);
+
+  // Lightbox keyboard controls
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowRight") setLightboxIndex((i) => (i + 1) % galleryImages.length);
+      if (e.key === "ArrowLeft") setLightboxIndex((i) => (i - 1 + galleryImages.length) % galleryImages.length);
+    }
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [lightboxOpen, galleryImages.length]);
+
+  function openLightbox(index: number) {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  }
 
   const variantMinQuantity = variants.reduce<number>((max, variant) => {
     const value = typeof variant.minQuantity === "number" ? variant.minQuantity : 1;
@@ -908,95 +945,95 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
             { label: product.name },
           ]}
         />
+        <div className={styles.showreel}>
         <section className={styles.topGrid}>
           <div>
             <article className={styles.imagePanel}>
-              <div className={styles.imageViewport}>
-                <div
-                  className={styles.imageTrack}
-                  style={{ transform: `translateX(-${activeImageIndex * 100}%)` }}
-                >
-                  {galleryImages.map((src, index) => (
-                    <div key={`${src}-${index}`} className={styles.imageSlide}>
-                      <img src={src} alt={`${product.name} preview ${index + 1}`} loading="lazy" decoding="async" />
-                    </div>
-                  ))}
-                </div>
-
-                {galleryImages.length > 1 ? (
-                  <>
-                    <button
-                      type="button"
-                      className={`${styles.imageNavBtn} ${styles.imageNavPrev}`}
-                      onClick={() =>
-                        setActiveImageIndex((value) =>
-                          value <= 0 ? galleryImages.length - 1 : value - 1
-                        )
-                      }
-                      aria-label="Previous image"
-                    >
-                      ‹
-                    </button>
-                    <button
-                      type="button"
-                      className={`${styles.imageNavBtn} ${styles.imageNavNext}`}
-                      onClick={() =>
-                        setActiveImageIndex((value) =>
-                          value >= galleryImages.length - 1 ? 0 : value + 1
-                        )
-                      }
-                      aria-label="Next image"
-                    >
-                      ›
-                    </button>
-                  </>
+              {/* ── Main display: video or first image ── */}
+              <div className={styles.mainDisplay}>
+                {videoPreview && videoPreviewEmbed ? (
+                  <iframe
+                    src={videoPreviewEmbed}
+                    title={`${product.name} video preview`}
+                    className={styles.mainEmbed}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : videoPreview && !videoPreviewEmbed ? (
+                  <video
+                    className={styles.mainEmbed}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    poster={videoPreview.poster || product.image}
+                  >
+                    <source src={videoPreview.url} />
+                  </video>
+                ) : galleryImages.length > 0 ? (
+                  <button
+                    type="button"
+                    className={styles.mainImgBtn}
+                    onClick={() => openLightbox(0)}
+                    aria-label="View full size"
+                  >
+                    <img
+                      src={galleryImages[0]}
+                      alt={`${product.name} preview`}
+                      loading="eager"
+                      decoding="async"
+                      className={styles.mainImg}
+                    />
+                  </button>
                 ) : null}
               </div>
 
-              <div className={styles.thumbRow}>
-                {galleryImages.map((src, index) => (
-                  <button
-                    key={`thumb-${src}-${index}`}
-                    type="button"
-                    className={`${styles.thumbBtn} ${
-                      index === activeImageIndex ? styles.thumbBtnActive : ""
-                    }`}
-                    onClick={() => setActiveImageIndex(index)}
-                    aria-label={`Open image ${index + 1}`}
-                  >
-                    <img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
-                  </button>
-                ))}
-              </div>
+              {/* ── Thumbnail row ── */}
+              {(() => {
+                const thumbs = videoPreview ? galleryImages : galleryImages.slice(1);
+                if (thumbs.length === 0) return null;
+                return (
+                  <div className={styles.thumbGrid}>
+                    {thumbs.map((src, i) => {
+                      const actualIndex = videoPreview ? i : i + 1;
+                      return (
+                        <button
+                          key={`thumb-${src}-${i}`}
+                          type="button"
+                          className={styles.thumbCard}
+                          onClick={() => openLightbox(actualIndex)}
+                          aria-label={`View image ${i + 1}`}
+                        >
+                          <img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </article>
           </div>
 
           <article className={styles.buyColumn}>
             <h1>{product.name}</h1>
-            <p className={styles.price}>{money(selectedUnitPrice, product.currency)}</p>
 
-            <h3 className={styles.optionLabel}>SELECT OPTION</h3>
-            <div className={styles.optionsGrid}>
-              {variants.map((variant) => {
-                const isSelected = variant.id === selectedVariantId;
-                return (
-                  <button
-                    key={variant.id}
-                    className={`${styles.optionCard} ${isSelected ? styles.optionCardSelected : ""}`}
-                    onClick={() => setSelectedVariantId(variant.id)}
-                    disabled={isCheckingOut}
-                  >
-                    <span className={styles.optionName}>{variant.name}</span>
-                    <span className={styles.optionPrice}>
-                      {money(variant.price, product.currency)}
-                    </span>
-                    {isSelected ? <span className={styles.optionCheck}>✓</span> : null}
-                  </button>
-                );
-              })}
+            <div className={styles.badgeRow}>
+              <span className={styles.badgeInstant}>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+                </svg>
+                Instant Delivery
+              </span>
+              <span className={styles.badgeUndetected}>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Undetected (Working)
+              </span>
             </div>
 
-            <div className={styles.qtyStockRow}>
+            <div className={styles.priceQtyRow}>
+              <p className={styles.price}>{money(selectedUnitPrice, product.currency)}</p>
               <div className={styles.qtyStepper}>
                 <button
                   type="button"
@@ -1016,71 +1053,59 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               </div>
             </div>
 
+            <div className={styles.planGrid}>
+              {variants.map((variant) => {
+                const isSelected = variant.id === selectedVariantId;
+                const stock = typeof variant.stock === "number" && variant.stock >= 0 ? variant.stock : null;
+                return (
+                  <button
+                    key={variant.id}
+                    className={`${styles.planCard} ${isSelected ? styles.planCardSelected : ""}`}
+                    onClick={() => setSelectedVariantId(variant.id)}
+                    disabled={isCheckingOut}
+                  >
+                    <div className={styles.planTopRow}>
+                      <span className={styles.planName}>{variant.name}</span>
+                      <span className={styles.planStock}>
+                        IN STOCK{stock !== null ? ` (${stock})` : ""}
+                      </span>
+                    </div>
+                    <span className={styles.planPrice}>
+                      {money(variant.price, product.currency)}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
             {minQuantity > 1 ? (
               <p className={styles.minimumHint}>Minimum quantity for this product: {minQuantity}</p>
             ) : null}
 
             <div className={styles.actionRow}>
+              <button type="button" className={styles.addToCartBtn} onClick={addToCart}>
+                Add To Cart
+              </button>
               <button
                 type="button"
                 className={styles.buyNowBtn}
                 onClick={checkoutNow}
                 disabled={isCheckingOut}
               >
-                {isCheckingOut ? "Processing..." : "Buy Now"}
-              </button>
-              <button type="button" className={styles.addToCartBtn} onClick={addToCart}>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M4.7 6h2.1l1.7 8.2h8.5l1.6-6.1H8.2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-                  <circle cx="10.1" cy="18.2" r="1.2" fill="currentColor" />
-                  <circle cx="16.5" cy="18.2" r="1.2" fill="currentColor" />
-                </svg>
-                Add to Cart
+                {isCheckingOut ? "Processing…" : "Buy Now"}
               </button>
             </div>
 
             {notice ? <p className={styles.notice}>{notice}</p> : null}
           </article>
         </section>
+        </div>
 
-        {hasDetailSections ? (
+        {detailContent.featureTabs.length > 0 ? (
           <section className={styles.detailsStack}>
-            {showRequirements ? (
-              <section className={styles.detailBlock}>
-                <h2 className={styles.detailBlockTitle}>Requirements</h2>
-                <div className={styles.requirementsRow}>
-                  {displayRequirements.map((item) => (
-                <article key={`${item.label}-${item.value}`} className={styles.requirementMini}>
-                  <span className={styles.requirementMiniIcon} aria-hidden>
-                    {item.label.toLowerCase().includes("cpu") ? (
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
-                        <path d="M9.8 3.8v2.4M14.2 3.8v2.4M9.8 17.8v2.4M14.2 17.8v2.4M3.8 9.8h2.4M17.8 9.8h2.4M3.8 14.2h2.4M17.8 14.2h2.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                      </svg>
-                    ) : item.label.toLowerCase().includes("os") ||
-                      item.label.toLowerCase().includes("windows") ? (
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M3.8 4.8 10.7 3.9v8.2H3.8V4.8Zm7.9-1 8.5-1.1v9.4h-8.5V3.8ZM3.8 12.9h6.9v8.3L3.8 20.3v-7.4Zm7.9 0h8.5v9.4l-8.5-1.1v-8.3Z" fill="currentColor" />
-                      </svg>
-                    ) : (
-                      <svg viewBox="0 0 24 24" fill="none">
-                        <path d="M4.8 5.4h14.4v13.2H4.8z" stroke="currentColor" strokeWidth="1.6" />
-                        <path d="M9.2 8.5v6.8M12 8.5v6.8M14.8 8.5v6.8" stroke="currentColor" strokeWidth="1.4" />
-                      </svg>
-                    )}
-                  </span>
-                  <span className={styles.requirementMiniLabel}>{item.label}</span>
-                  <strong className={styles.requirementMiniValue}>{item.value}</strong>
-                </article>
-              ))}
-                </div>
-              </section>
-            ) : null}
-
-            {detailContent.featureTabs.length > 0 ? (
-              <section className={styles.detailBlock}>
-                <h2 className={styles.detailBlockTitle}>Features</h2>
-                <div className={styles.featuresGrid}>
+            <section className={styles.detailBlock}>
+              <h2 className={styles.detailBlockTitle}>Features</h2>
+              <div className={styles.featuresGrid}>
                   {detailContent.featureTabs.map((tab) => {
                     const isOpen = openTabs.includes(tab.title);
                     const maxHeight = Math.max(78, tab.items.length * 30 + 18);
@@ -1125,52 +1150,69 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                       </article>
                     );
                   })}
-                </div>
-              </section>
-            ) : null}
-
-            {videoPreview ? (
-              <section className={`${styles.detailBlock} ${styles.videoPreviewBlock}`}>
-                <div className={styles.videoPreviewLayout}>
-                  <div className={styles.videoPreviewCopy}>
-                    <h2 className={styles.videoPreviewTitle}>{videoPreview.title || "See It In Action"}</h2>
-                    <p>
-                      {videoPreview.description ||
-                        `${product.name} showcase preview so customers can see real gameplay behavior before checkout.`}
-                    </p>
-                  </div>
-
-                  <div className={styles.videoPreviewFrame}>
-                    {videoPreviewEmbed ? (
-                      <iframe
-                        src={videoPreviewEmbed}
-                        title={`${product.name} video preview`}
-                        className={styles.videoPreviewEmbed}
-                        loading="lazy"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        allowFullScreen
-                      />
-                    ) : (
-                      <video
-                        className={styles.videoPreviewEmbed}
-                        controls
-                        preload="metadata"
-                        playsInline
-                        poster={videoPreview.poster || product.image}
-                      >
-                        <source src={videoPreview.url} />
-                      </video>
-                    )}
-                  </div>
-                </div>
-              </section>
-            ) : null}
+              </div>
+            </section>
           </section>
         ) : null}
       </main>
 
       <SiteFooter />
+
+      {/* ── Lightbox ── */}
+      {lightboxOpen && (
+        <div
+          className={styles.lightbox}
+          onClick={() => setLightboxOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image viewer"
+        >
+          {/* Close */}
+          <button
+            type="button"
+            className={styles.lightboxClose}
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Close"
+          >
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18" aria-hidden>
+              <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          {/* Prev */}
+          {galleryImages.length > 1 && (
+            <button
+              type="button"
+              className={`${styles.lightboxArrow} ${styles.lightboxArrowLeft}`}
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex((i) => (i - 1 + galleryImages.length) % galleryImages.length); }}
+              aria-label="Previous image"
+            >
+              ‹
+            </button>
+          )}
+
+          {/* Image */}
+          <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
+            <img
+              src={galleryImages[lightboxIndex]}
+              alt={`${product.name} preview ${lightboxIndex + 1}`}
+              className={styles.lightboxImg}
+            />
+          </div>
+
+          {/* Next */}
+          {galleryImages.length > 1 && (
+            <button
+              type="button"
+              className={`${styles.lightboxArrow} ${styles.lightboxArrowRight}`}
+              onClick={(e) => { e.stopPropagation(); setLightboxIndex((i) => (i + 1) % galleryImages.length); }}
+              aria-label="Next image"
+            >
+              ›
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

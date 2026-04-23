@@ -128,7 +128,6 @@ export function StorefrontClient() {
   const [storefront, setStorefront] = useState<StorefrontData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeGroupSlug, setActiveGroupSlug] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -271,48 +270,6 @@ export function StorefrontClient() {
       });
   }, [storefront]);
 
-  const activeGroup = useMemo<SellAuthGroup | null>(() => {
-    if (!activeGroupSlug) return null;
-    return (
-      filteredGroups.find((group) => canonicalGroupSlug(group.name) === activeGroupSlug) ||
-      null
-    );
-  }, [activeGroupSlug, filteredGroups]);
-
-  const activeGroupProducts = useMemo(() => {
-    if (!storefront || !activeGroupSlug) return [];
-
-    const relatedGroupIds = new Set<number>();
-
-    for (const group of storefront.groups || []) {
-      if (canonicalGroupSlug(group.name) === activeGroupSlug) {
-        relatedGroupIds.add(group.id);
-      }
-    }
-
-    for (const category of storefront.categories || []) {
-      if (canonicalGroupSlug(category.name) === activeGroupSlug) {
-        relatedGroupIds.add(category.id);
-      }
-    }
-
-    return storefront.products
-      .filter((product) => {
-        if (product.groupId !== null && relatedGroupIds.has(product.groupId)) return true;
-        if (product.categoryId !== null && relatedGroupIds.has(product.categoryId)) return true;
-        if (canonicalGroupSlug(product.groupName || "") === activeGroupSlug) return true;
-        if (canonicalGroupSlug(product.categoryName || "") === activeGroupSlug) return true;
-        if (
-          activeGroupSlug === "call-of-duty" &&
-          isProductLikeCategoryLabel(product.name || "")
-        ) {
-          return true;
-        }
-        return false;
-      })
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [activeGroupSlug, storefront]);
-
   const warningMessages = useMemo(
     () => formatStorefrontWarnings(storefront?.warnings || []),
     [storefront?.warnings]
@@ -334,25 +291,6 @@ export function StorefrontClient() {
     const filled = (bendooProgress / 100) * circumference;
     return `${filled.toFixed(1)} ${circumference.toFixed(1)}`;
   }, [bendooProgress]);
-
-  useEffect(() => {
-    if (activeGroupSlug === null) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setActiveGroupSlug(null);
-      }
-    };
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [activeGroupSlug]);
 
   return (
     <div className="marketplace-page">
@@ -396,26 +334,6 @@ export function StorefrontClient() {
                   Join Discord
                 </a>
               </div>
-              <a
-                href="https://www.trustpilot.com/review/cheatparadise.com"
-                target="_blank"
-                rel="noreferrer"
-                className="hero-trustpilot"
-                aria-label="Rated 4.7 out of 5 on Trustpilot — Trusted by 30,000+"
-              >
-                <span className="hero-tp-stars" aria-hidden="true">
-                  {[1,2,3,4,5].map(i => (
-                    <span key={i} className="hero-tp-star">
-                      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2Z"/>
-                      </svg>
-                    </span>
-                  ))}
-                </span>
-                <span className="hero-tp-label">Rated <strong>4.7/5</strong></span>
-                <span className="hero-tp-sep" aria-hidden="true">|</span>
-                <span className="hero-tp-label">Trusted By <strong>30,000+</strong></span>
-              </a>
             </div>
           </div>
         </section>
@@ -459,19 +377,6 @@ export function StorefrontClient() {
                   key={group.id}
                   href={`/categories?slug=${encodeURIComponent(groupSlug)}`}
                   className="game-card"
-                  aria-haspopup="dialog"
-                  onClick={(event) => {
-                    if (
-                      event.metaKey ||
-                      event.ctrlKey ||
-                      event.shiftKey ||
-                      event.altKey
-                    ) {
-                      return;
-                    }
-                    event.preventDefault();
-                    setActiveGroupSlug(groupSlug);
-                  }}
                 >
                   <div className="game-card-media">
                     {hasImage ? (
@@ -688,93 +593,6 @@ export function StorefrontClient() {
           </div>
         </section>
 
-        {activeGroup ? (
-          <div
-            className="category-modal-overlay"
-            onClick={(event) => {
-              if (event.target === event.currentTarget) {
-                setActiveGroupSlug(null);
-              }
-            }}
-          >
-            <section
-              className="category-modal"
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby={`category-modal-title-${activeGroup.id}`}
-            >
-              <header className="category-modal-header">
-                <h3 id={`category-modal-title-${activeGroup.id}`}>
-                  {activeGroup.name} Products
-                </h3>
-                <button
-                  type="button"
-                  className="category-modal-close"
-                  aria-label="Close products popup"
-                  onClick={() => setActiveGroupSlug(null)}
-                >
-                  ×
-                </button>
-              </header>
-
-              {activeGroupProducts.length > 0 ? (
-                <div className="category-modal-grid">
-                  {activeGroupProducts.map((product) => {
-                    const price = productLowestPrice(product);
-                    const productImage = product.image || "/placeholders/product-image-not-added.svg";
-
-                    return (
-                      <Link
-                        key={product.id}
-                        href={productHref(product)}
-                        className="category-modal-product"
-                        onClick={() => setActiveGroupSlug(null)}
-                      >
-                        <span className="category-modal-product-image">
-                          <span className="category-modal-product-image-wrap">
-                            <Image
-                              src={productImage}
-                              alt={product.name}
-                              width={600}
-                              height={600}
-                              sizes="(max-width: 900px) 100vw, 33vw"
-    
-                            />
-                          </span>
-                        </span>
-
-                        <span className="category-modal-product-body">
-                          <span className="category-modal-product-top">
-                            <h4>{product.name}</h4>
-                          </span>
-
-                          <span className="category-modal-meta">
-                            <span className="category-modal-meta-box">
-                              <span>From</span>
-                              <strong>{money(price, product.currency || "USD")}</strong>
-                            </span>
-                          </span>
-
-                          <span className="category-modal-buy-now">
-                            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                              <path d="M5.4 7.8h13.2l-1.2 9.8H6.6L5.4 7.8Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-                              <path d="M9.1 7.8V6.7a2.9 2.9 0 1 1 5.8 0v1.1" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-                            </svg>
-                            Buy now
-                          </span>
-                        </span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p className="category-modal-empty">
-                  No products are available for this category yet.
-                </p>
-              )}
-            </section>
-          </div>
-        ) : null}
       </main>
 
       <SiteFooter />
