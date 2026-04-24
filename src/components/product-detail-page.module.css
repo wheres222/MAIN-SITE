@@ -873,133 +873,190 @@
   .lightboxClose { top: 10px; right: 10px; }
 }
 
-/* ─── Description panel (info + feature tabs) ─────────────── */
+/* ─── Description panel ──────────────────────────────────────── */
 .descPanel {
   margin-top: 32px;
   display: flex;
-  gap: 0;
-  background: #111214;
+  flex-direction: column;
+  background: #0f1012;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.descInfoCol {
-  min-width: 220px;
-  max-width: 260px;
-  flex-shrink: 0;
-  padding: 28px 24px 32px;
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
-  border-left: 3px solid #2563eb;
+/* ── INFORMATION strip — full width at top ── */
+.descInfoRow {
+  position: relative;
+  padding: 20px 28px 20px 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* Left blue accent line */
+.descInfoRow::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #2563eb;
 }
 
 .descInfoTitle {
-  margin: 0 0 18px;
-  font-size: 0.76rem;
+  margin: 0 0 13px;
+  font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: #ffffff;
 }
 
+/* Horizontal wrapping bullet list */
 .descBullets {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 9px 40px;
 }
 
 .descBullets li {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 0.85rem;
-  color: #c8d3ea;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.82rem;
+  color: #c0ccde;
   line-height: 1.45;
 }
 
+/* Dot — inline, not on the line (info is horizontal) */
 .descBullets li::before {
   content: '';
+  display: block;
   flex-shrink: 0;
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: #2563eb;
-  margin-top: 5px;
 }
 
+/* ── Feature tabs grid — max 4 per row, wraps ── */
 .descTabsGrid {
-  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 0;
 }
 
 .descTabCol {
-  padding: 28px 22px 32px;
-  border-left: 3px solid #2563eb;
+  position: relative;
+  /* padding-left must give room for: line (at 8px) + gap to text */
+  padding: 22px 18px 26px 28px;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* Remove right border from every 4th col and the last col */
+.descTabCol:nth-child(4n),
 .descTabCol:last-child {
   border-right: none;
 }
 
+/* Blue vertical line — inset 8px so overflow:hidden doesn't clip the dots */
+.descTabCol::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #2563eb;
+}
+
 .descTabTitle {
-  margin: 0 0 14px;
-  font-size: 0.74rem;
+  margin: 0 0 5px;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #ffffff;
 }
 
-.descTabItems {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.descTabItems li {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  font-size: 0.83rem;
-  color: #c8d3ea;
+.descTabSubtitle {
+  margin: 0 0 14px;
+  font-size: 0.73rem;
+  color: #4e5a6e;
   line-height: 1.4;
 }
 
-.descTabItems li::before {
-  content: '';
-  flex-shrink: 0;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #2563eb;
-  margin-top: 5px;
+.descTabItems {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-@media (max-width: 900px) {
-  .descPanel {
-    flex-direction: column;
-  }
-  .descInfoCol {
-    max-width: 100%;
-    border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  }
+.descTabItems li {
+  position: relative;
+  font-size: 0.81rem;
+  color: #c0ccde;
+  line-height: 1.4;
+}
+
+/*
+ * Dot ON the vertical line:
+ * Line sits at left: 8px (center = 9px) within .descTabCol.
+ * .descTabCol padding-left = 28px → li left edge = 28px from col left.
+ * Dot is 8px wide → left edge at 9 - 4 = 5px from col left.
+ * From li: 5 - 28 = -23px  →  left: -23px
+ */
+.descTabItems li::before {
+  content: '';
+  position: absolute;
+  left: -23px;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2563eb;
+  z-index: 1;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
   .descTabsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
+  /* reset 4n rule, apply 2n */
+  .descTabCol:nth-child(4n) {
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .descTabCol:nth-child(2n),
+  .descTabCol:last-child {
+    border-right: none;
+  }
+  /* add top border for rows 2+ */
+  .descTabCol:nth-child(n+3) {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
 }
 
-@media (max-width: 540px) {
+@media (max-width: 600px) {
   .descTabsGrid {
     grid-template-columns: 1fr;
+  }
+  .descBullets {
+    flex-direction: column;
+    gap: 9px;
+  }
+  .descTabCol,
+  .descTabCol:nth-child(4n),
+  .descTabCol:nth-child(2n) {
+    border-right: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .descTabCol:first-child {
+    border-top: none;
   }
 }

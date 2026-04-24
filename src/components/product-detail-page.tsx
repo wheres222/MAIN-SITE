@@ -1090,9 +1090,9 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
         {(detailContent.featureTabs.length > 0 || detailContent.requirements.length > 0 || showRequirements) && (
           <section className={styles.descPanel}>
-            {/* INFORMATION column */}
+            {/* INFORMATION — full-width strip at the top */}
             {(detailContent.requirements.length > 0 || showRequirements) && (
-              <div className={styles.descInfoCol}>
+              <div className={styles.descInfoRow}>
                 <h3 className={styles.descInfoTitle}>INFORMATION</h3>
                 <ul className={styles.descBullets}>
                   {(detailContent.requirements.length > 0 ? detailContent.requirements : displayRequirements).map((req, i) => (
@@ -1102,19 +1102,23 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               </div>
             )}
 
-            {/* Feature tab columns */}
+            {/* Feature tabs — max 4 per row, wrapping grid */}
             {detailContent.featureTabs.length > 0 && (
               <div className={styles.descTabsGrid}>
-                {detailContent.featureTabs.map((tab) => (
-                  <div key={tab.title} className={styles.descTabCol}>
-                    <h4 className={styles.descTabTitle}>{tab.title.toUpperCase()}</h4>
-                    <ul className={styles.descTabItems}>
-                      {tab.items.map((item, i) => (
-                        <li key={i}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                {detailContent.featureTabs.map((tab) => {
+                  const first = tab.items[0] ?? "";
+                  const hasSubtitle = first.length > 18 && first.endsWith(".");
+                  const bullets = hasSubtitle ? tab.items.slice(1) : tab.items;
+                  return (
+                    <div key={tab.title} className={styles.descTabCol}>
+                      <h4 className={styles.descTabTitle}>{tab.title.toUpperCase()}</h4>
+                      {hasSubtitle && <p className={styles.descTabSubtitle}>{first}</p>}
+                      <ul className={styles.descTabItems}>
+                        {bullets.map((item, i) => <li key={i}>{item}</li>)}
+                      </ul>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </section>
