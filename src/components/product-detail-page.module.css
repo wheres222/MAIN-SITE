@@ -299,9 +299,9 @@
 }
 .planCard:hover { background: #282b35; }
 .planCardSelected {
-  background: #10b981;
+  background: #2563eb;
 }
-.planCardSelected:hover { background: #0da872; }
+.planCardSelected:hover { background: #1d4ed8; }
 .planCard:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .planTopRow {
@@ -324,7 +324,7 @@
 .planStock {
   font-size: 0.62rem;
   font-weight: 700;
-  color: #10b981;
+  color: #60a5fa;
   letter-spacing: 0.05em;
   text-align: right;
   white-space: nowrap;
@@ -481,12 +481,12 @@
 }
 
 .qtyStepper button:last-child {
-  background: #10b981;
+  background: #2563eb;
   color: #ffffff;
 }
 
 .qtyStepper button:last-child:hover {
-  background: #0da872;
+  background: #1d4ed8;
 }
 
 .qtyStepper span {
@@ -539,7 +539,7 @@
   padding: 0 32px;
   border-radius: 8px;
   border: 0;
-  background: #10b981;
+  background: #2563eb;
   color: #ffffff;
   font-size: 0.92rem;
   line-height: 1;
@@ -550,7 +550,7 @@
   white-space: nowrap;
   transition: background 0.15s ease, transform 0.1s ease;
 }
-.buyNowBtn:hover { background: #0da872; }
+.buyNowBtn:hover { background: #1d4ed8; }
 .buyNowBtn:disabled { opacity: 0.65; cursor: not-allowed; }
 .buyNowBtn:active { transform: scale(0.99); }
 
