@@ -874,24 +874,27 @@
 }
 
 /* ─── Description panel ──────────────────────────────────────── */
+/*  Outer shell matches .showreel: same bg, same radius, same feel  */
 .descPanel {
-  margin-top: 32px;
+  margin-top: 24px;
+  background: #1a1b20;
+  border-radius: 20px;
+  padding: 22px 24px;
   display: flex;
   flex-direction: column;
-  background: #0f1012;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  gap: 14px;
 }
 
-/* ── INFORMATION strip — full width at top ── */
+/* ── INFORMATION widget ── */
 .descInfoRow {
   position: relative;
-  padding: 20px 28px 20px 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: #0f1012;
+  border-radius: 12px;
+  padding: 18px 22px 18px 22px;
+  overflow: hidden;
 }
 
-/* Left blue accent line */
+/* Left blue accent line — clipped to rounded corners by overflow:hidden */
 .descInfoRow::before {
   content: '';
   position: absolute;
@@ -903,8 +906,8 @@
 }
 
 .descInfoTitle {
-  margin: 0 0 13px;
-  font-size: 0.68rem;
+  margin: 0 0 12px;
+  font-size: 0.67rem;
   font-weight: 800;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -918,19 +921,18 @@
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 9px 40px;
+  gap: 8px 38px;
 }
 
 .descBullets li {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 0.82rem;
-  color: #c0ccde;
+  font-size: 0.81rem;
+  color: #b8c4d8;
   line-height: 1.45;
 }
 
-/* Dot — inline, not on the line (info is horizontal) */
 .descBullets li::before {
   content: '';
   display: block;
@@ -941,27 +943,28 @@
   background: #2563eb;
 }
 
-/* ── Feature tabs grid — max 4 per row, wraps ── */
+/* ── Feature tabs — 4-col grid of dark widgets ── */
 .descTabsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0;
+  gap: 12px;
 }
 
+/* Each tab is its own dark card widget */
 .descTabCol {
   position: relative;
-  /* padding-left must give room for: line (at 8px) + gap to text */
-  padding: 22px 18px 26px 28px;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: #0f1012;
+  border-radius: 12px;
+  padding: 18px 16px 20px 26px;
+  overflow: hidden;
 }
 
-/* Remove right border from every 4th col and the last col */
-.descTabCol:nth-child(4n),
-.descTabCol:last-child {
-  border-right: none;
-}
-
-/* Blue vertical line — inset 8px so overflow:hidden doesn't clip the dots */
+/*
+ * Blue vertical line at left: 8px (center = 9px from col left).
+ * overflow:hidden clips it to the border-radius shape — no sharp corners.
+ * Dot calc: col padding-left = 26px → li starts at 26px.
+ * Dot center = 9px → dot left edge = 5px → from li: 5 - 26 = -21px.
+ */
 .descTabCol::before {
   content: '';
   position: absolute;
@@ -973,8 +976,8 @@
 }
 
 .descTabTitle {
-  margin: 0 0 5px;
-  font-size: 0.72rem;
+  margin: 0 0 4px;
+  font-size: 0.71rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -982,39 +985,33 @@
 }
 
 .descTabSubtitle {
-  margin: 0 0 14px;
-  font-size: 0.73rem;
-  color: #4e5a6e;
+  margin: 0 0 13px;
+  font-size: 0.72rem;
+  color: #485060;
   line-height: 1.4;
 }
 
 .descTabItems {
   list-style: none;
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
 .descTabItems li {
   position: relative;
-  font-size: 0.81rem;
-  color: #c0ccde;
+  font-size: 0.8rem;
+  color: #b8c4d8;
   line-height: 1.4;
 }
 
-/*
- * Dot ON the vertical line:
- * Line sits at left: 8px (center = 9px) within .descTabCol.
- * .descTabCol padding-left = 28px → li left edge = 28px from col left.
- * Dot is 8px wide → left edge at 9 - 4 = 5px from col left.
- * From li: 5 - 28 = -23px  →  left: -23px
- */
+/* Dot ON the blue line */
 .descTabItems li::before {
   content: '';
   position: absolute;
-  left: -23px;
+  left: -21px;
   top: 4px;
   width: 8px;
   height: 8px;
@@ -1028,35 +1025,20 @@
   .descTabsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
-  /* reset 4n rule, apply 2n */
-  .descTabCol:nth-child(4n) {
-    border-right: 1px solid rgba(255, 255, 255, 0.06);
-  }
-  .descTabCol:nth-child(2n),
-  .descTabCol:last-child {
-    border-right: none;
-  }
-  /* add top border for rows 2+ */
-  .descTabCol:nth-child(n+3) {
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-  }
 }
 
 @media (max-width: 600px) {
+  .descPanel {
+    padding: 16px;
+    gap: 10px;
+    border-radius: 16px;
+  }
   .descTabsGrid {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
   .descBullets {
     flex-direction: column;
-    gap: 9px;
-  }
-  .descTabCol,
-  .descTabCol:nth-child(4n),
-  .descTabCol:nth-child(2n) {
-    border-right: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-  }
-  .descTabCol:first-child {
-    border-top: none;
+    gap: 8px;
   }
 }

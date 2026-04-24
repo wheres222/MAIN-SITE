@@ -477,6 +477,36 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
   };
 }
 
+const TAB_DESCRIPTIONS: Record<string, string> = {
+  aimbot:          "Adjustable targeting with hitbox control.",
+  triggerbot:      "Automatic firing with hitbox selection.",
+  esp:             "Customizable player awareness visuals.",
+  "player esp":    "Player box, skeleton and distance visuals.",
+  "entity esp":    "Entity detection and tracking visuals.",
+  radar:           "Real-time map awareness and player tracking.",
+  loot:            "Item and loot detection with distance readout.",
+  misc:            "Configuration management and overlay controls.",
+  movement:        "Enhanced movement and mobility options.",
+  vehicle:         "Vehicle detection and proximity awareness.",
+  "world esp":     "World object and item visibility.",
+  config:          "Profile saving and configuration management.",
+  settings:        "Adjustable feature settings and presets.",
+  npc:             "NPC detection and awareness options.",
+  weapon:          "Weapon and item detection visuals.",
+  "player exploit":"Advanced player interaction exploits.",
+  resource:        "Resource and material detection.",
+  food:            "Food and consumable item detection.",
+  trap:            "Trap and hazard proximity detection.",
+  item:            "Item and drop detection with distance.",
+  visual:          "Visual enhancement and overlay options.",
+  "aim assist":    "Smooth aim assistance with adjustable strength.",
+  "no recoil":     "Recoil control and weapon stability.",
+};
+
+function tabDescription(title: string): string {
+  return TAB_DESCRIPTIONS[title.toLowerCase().trim()] ?? "";
+}
+
 function featureIconSvg(title: string) {
   const value = normalizeLabel(title);
 
@@ -1107,12 +1137,13 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               <div className={styles.descTabsGrid}>
                 {detailContent.featureTabs.map((tab) => {
                   const first = tab.items[0] ?? "";
-                  const hasSubtitle = first.length > 18 && first.endsWith(".");
-                  const bullets = hasSubtitle ? tab.items.slice(1) : tab.items;
+                  const firstIsSubtitle = first.length > 18 && first.endsWith(".");
+                  const subtitle = firstIsSubtitle ? first : tabDescription(tab.title);
+                  const bullets = firstIsSubtitle ? tab.items.slice(1) : tab.items;
                   return (
                     <div key={tab.title} className={styles.descTabCol}>
                       <h4 className={styles.descTabTitle}>{tab.title.toUpperCase()}</h4>
-                      {hasSubtitle && <p className={styles.descTabSubtitle}>{first}</p>}
+                      {subtitle && <p className={styles.descTabSubtitle}>{subtitle}</p>}
                       <ul className={styles.descTabItems}>
                         {bullets.map((item, i) => <li key={i}>{item}</li>)}
                       </ul>
