@@ -3,7 +3,7 @@ import { StorefrontClient } from "@/components/storefront-client";
 import { getStorefrontData } from "@/lib/sellauth";
 import type { StorefrontData } from "@/types/sellauth";
 
-export const revalidate = 30;
+export const revalidate = 120;
 
 export const metadata: Metadata = {
   title: {
@@ -19,7 +19,10 @@ export const metadata: Metadata = {
 export default async function Home() {
   let initialData: StorefrontData | null = null;
   try {
-    initialData = await getStorefrontData();
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("timeout")), 800)
+    );
+    initialData = await Promise.race([getStorefrontData(), timeout]);
   } catch {
     // Fall through to client-side fetch on error
   }

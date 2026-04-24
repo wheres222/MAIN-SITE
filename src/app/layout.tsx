@@ -6,15 +6,17 @@ import { PostHogProvider } from "@/components/posthog-provider";
 const roboto = Roboto({
   subsets: ["latin"],
   weight: ["400", "500", "700"],
-  display: "swap",
+  display: "optional",
   variable: "--font-roboto",
+  preload: true,
 });
 
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["600", "700", "800"],
-  display: "swap",
+  display: "optional",
   variable: "--font-montserrat",
+  preload: true,
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
