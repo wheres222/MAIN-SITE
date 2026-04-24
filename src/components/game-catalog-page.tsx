@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { toGameSlug } from "@/lib/game-slug";
+import { canonicalGameSlug } from "@/lib/game-slug";
 import { productHref } from "@/lib/product-route";
 import type { SellAuthGroup, SellAuthProduct } from "@/types/sellauth";
 import styles from "./game-catalog-page.module.css";
@@ -15,12 +15,26 @@ interface GameCatalogPageProps {
   products: SellAuthProduct[];
 }
 
-const GROUP_VIDEO_BY_SLUG: Record<string, string> = {
-  fortnite: "https://samplelib.com/lib/preview/mp4/sample-10s.mp4",
-  rust: "https://samplelib.com/lib/preview/mp4/sample-15s.mp4",
-  "call-of-duty": "https://samplelib.com/lib/preview/mp4/sample-20s.mp4",
-  "hwid-spoofer": "https://samplelib.com/lib/preview/mp4/sample-5s.mp4",
-};
+const BANNER_SLUGS = new Set([
+  "apex",
+  "arc-raiders",
+  "call-of-duty",
+  "counter-strike-2",
+  "delta-force",
+  "escape-from-tarkov",
+  "rainbow-six-siege",
+  "rust",
+  "rocket-league",
+  "valorant",
+  "fortnite",
+  "hwid-spoofers",
+]);
+
+function heroBannerFor(groupName: string): string {
+  const slug = canonicalGameSlug(groupName);
+  if (BANNER_SLUGS.has(slug)) return `/banners/${slug}.webp`;
+  return "/placeholders/category-banner-not-added.svg";
+}
 
 function normalized(value: string): string {
   return value.toLowerCase().trim();
@@ -72,10 +86,6 @@ function functionalityStars(product: SellAuthProduct): number {
   return starsFor(scoreFromId(product.id, 23, 3.2, 5));
 }
 
-function videoForGroup(groupName: string): string {
-  const slug = toGameSlug(groupName);
-  return GROUP_VIDEO_BY_SLUG[slug] || "https://samplelib.com/lib/preview/mp4/sample-5s.mp4";
-}
 
 function StarRow({ value }: { value: number }) {
   return (
@@ -111,7 +121,7 @@ export function GameCatalogPage({ group, products }: GameCatalogPageProps) {
     );
   }, [products, query]);
 
-  const heroImage = "/placeholders/category-banner-not-added.svg";
+  const heroImage = heroBannerFor(group.name);
   const lowestPrice = useMemo(() => {
     if (products.length === 0) return null;
     return products.reduce<number | null>((min, product) => {
