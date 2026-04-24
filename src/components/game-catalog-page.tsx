@@ -54,16 +54,8 @@ function starsFor(score: number): number {
   return Math.max(1, Math.min(5, Math.round(score)));
 }
 
-function statusFor(product: SellAuthProduct): "updated" | "updating" | "frozen" {
-  if (typeof product.stock === "number") {
-    if (product.stock <= 0) return "frozen";
-    if (product.stock <= 20) return "updating";
-    return "updated";
-  }
-  const fallback = Math.abs(product.id) % 3;
-  if (fallback === 0) return "updated";
-  if (fallback === 1) return "updating";
-  return "frozen";
+function statusFor(_product: SellAuthProduct): "updated" | "updating" | "frozen" {
+  return "updated";
 }
 
 function statusLabel(status: "updated" | "updating" | "frozen"): string {
