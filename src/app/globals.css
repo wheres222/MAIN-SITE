@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --font-main: 'Roboto', 'Segoe UI', Tahoma, sans-serif;
-  --font-brand: 'Montserrat', 'Roboto', sans-serif;
-  --font-hero-sora: 'Roboto', sans-serif;
+  --font-main: var(--font-roboto), 'Segoe UI', Tahoma, sans-serif;
+  --font-brand: var(--font-montserrat), 'Roboto', sans-serif;
+  --font-hero-sora: var(--font-roboto), sans-serif;
 }
 
 @font-face {

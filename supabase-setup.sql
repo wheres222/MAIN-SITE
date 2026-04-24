@@ -145,6 +145,29 @@ begin
 end;
 $$;
 
+-- 6. DELIVERY LOGS (persistent deduplication for order delivery)
+create table if not exists public.delivery_logs (
+  order_id    text primary key,
+  state       text not null default 'pending',  -- pending | done | failed
+  delivery_id text,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+-- Service role only — no user-facing RLS needed
+alter table public.delivery_logs enable row level security;
+
+-- Auto-cleanup: purge records older than 48 hours
+create or replace function public.cleanup_old_delivery_logs()
+returns void
+language plpgsql
+security definer set search_path = public
+as $$
+begin
+  delete from public.delivery_logs where updated_at < now() - interval '48 hours';
+end;
+$$;
+
 -- ============================================================
 -- Done! Now configure Discord OAuth in Supabase:
 -- Authentication > Providers > Discord

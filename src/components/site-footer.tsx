@@ -27,6 +27,9 @@ const GAMES_COL_1 = SUPPORTED_GAMES.slice(0, gamesHalf);
 const GAMES_COL_2 = SUPPORTED_GAMES.slice(gamesHalf);
 
 const OTHER_LINKS = [
+  { label: "Setup Guide",       href: "/guide" },
+  { label: "Product Loaders",   href: "/loaders" },
+  { label: "Product Videos",    href: "/videos" },
   { label: "Customer Support",  href: DISCORD_INVITE_URL, external: true },
   { label: "Terms of Service",  href: "/terms-of-service" },
   { label: "Refund Policy",     href: "/refund-policy" },

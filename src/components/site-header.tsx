@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { AuthModal } from "@/components/auth-modal";
 import { DepositModal } from "@/components/deposit-modal";
 
-export type NavTab = "store" | "status" | "reviews" | "support" | "none";
+export type NavTab = "store" | "status" | "reviews" | "support" | "guide" | "loaders" | "videos" | "none";
 
 interface SiteHeaderProps {
   activeTab: NavTab;

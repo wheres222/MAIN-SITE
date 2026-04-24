@@ -1,6 +1,9 @@
-
 import type { Metadata } from "next";
 import { StorefrontClient } from "@/components/storefront-client";
+import { getStorefrontData } from "@/lib/sellauth";
+import type { StorefrontData } from "@/types/sellauth";
+
+export const revalidate = 30;
 
 export const metadata: Metadata = {
   title: {
@@ -13,6 +16,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
-  return <StorefrontClient />;
+export default async function Home() {
+  let initialData: StorefrontData | null = null;
+  try {
+    initialData = await getStorefrontData();
+  } catch {
+    // Fall through to client-side fetch on error
+  }
+  return <StorefrontClient initialData={initialData} />;
 }

@@ -1188,7 +1188,9 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               onClick={(e) => { e.stopPropagation(); setLightboxIndex((i) => (i - 1 + galleryImages.length) % galleryImages.length); }}
               aria-label="Previous image"
             >
-              ‹
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20" aria-hidden>
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
           )}
 
@@ -1209,7 +1211,9 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               onClick={(e) => { e.stopPropagation(); setLightboxIndex((i) => (i + 1) % galleryImages.length); }}
               aria-label="Next image"
             >
-              ›
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20" aria-hidden>
+                <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </button>
           )}
         </div>

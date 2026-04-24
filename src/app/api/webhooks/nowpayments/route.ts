@@ -1,6 +1,8 @@
 import { createHmac } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse, type NextRequest } from "next/server";
+import { sendDepositConfirmedEmail } from "@/lib/email";
+import { logger } from "@/lib/logger";
 
 const CONFIRMED_STATUSES = new Set(["finished", "confirmed", "partially_paid"]);
 
@@ -35,7 +37,7 @@ export async function POST(request: NextRequest) {
     .digest("hex");
 
   if (sigHeader !== expectedSig) {
-    console.warn("NOWPayments IPN: signature mismatch");
+    logger.warn("Signature mismatch.", { route: "webhook/nowpayments" });
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
@@ -65,7 +67,7 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (fetchErr || !deposit) {
-    console.warn("NOWPayments IPN: deposit not found for payment_id", nowpaymentsId);
+    logger.warn("Deposit not found for payment_id.", { route: "webhook/nowpayments", nowpaymentsId });
     return NextResponse.json({ ok: true });
   }
 
@@ -82,8 +84,7 @@ export async function POST(request: NextRequest) {
   });
 
   if (rpcErr) {
-    console.error("credit_user_balance RPC error", rpcErr);
-    // Return 500 so NOWPayments retries and we don't lose the payment
+    logger.error("credit_user_balance RPC error.", { route: "webhook/nowpayments", nowpaymentsId, err: String(rpcErr) });
     return NextResponse.json({ error: "Balance update failed" }, { status: 500 });
   }
 
@@ -97,6 +98,19 @@ export async function POST(request: NextRequest) {
     })
     .eq("id", deposit.id);
 
-  console.log(`Deposit confirmed: user=${deposit.user_id} +$${creditAmount}`);
+  logger.info("Deposit confirmed.", { route: "webhook/nowpayments", userId: deposit.user_id, creditAmount });
+
+  // Send confirmation email — fetch user's email from auth
+  try {
+    const { data: { user: authUser } } = await admin.auth.admin.getUserById(deposit.user_id);
+    if (authUser?.email) {
+      sendDepositConfirmedEmail(authUser.email, creditAmount).catch((err) =>
+        logger.error("Failed to send deposit email.", { route: "webhook/nowpayments", err: String(err) })
+      );
+    }
+  } catch {
+    // Non-fatal — don't fail the webhook if email lookup fails
+  }
+
   return NextResponse.json({ ok: true });
 }

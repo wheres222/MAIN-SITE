@@ -8,7 +8,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { canonicalGameSlug, toGameSlug } from "@/lib/game-slug";
 import { productHref } from "@/lib/product-route";
-import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import type { SellAuthGroup, SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
@@ -124,14 +124,24 @@ function shouldContainCategoryImage(slug: string): boolean {
   return false;
 }
 
-export function StorefrontClient() {
-  const [storefront, setStorefront] = useState<StorefrontData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function StorefrontClient({ initialData }: { initialData?: StorefrontData | null }) {
+  const [storefront, setStorefront] = useState<StorefrontData | null>(initialData ?? null);
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [error, setError] = useState("");
 
+  // Prime the client-side cache with SSR data so navigating away and back is instant
   useEffect(() => {
-    let active = true;
+    if (initialData) primeStorefrontCache(initialData);
+  }, [initialData]);
 
+  useEffect(() => {
+    // If we got SSR data, do a background revalidation after mount instead of blocking render
+    if (initialData) {
+      fetchStorefrontClient({ force: false }).then((data) => setStorefront(data)).catch(() => {});
+      return;
+    }
+
+    let active = true;
     (async () => {
       try {
         const data = await fetchStorefrontClient();
@@ -152,7 +162,7 @@ export function StorefrontClient() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [initialData]);
 
   const filteredGroups = useMemo(() => {
     const baseGroups = storefront?.groups || [];
@@ -570,7 +580,7 @@ export function StorefrontClient() {
                   loop
                   muted
                   playsInline
-                  preload="auto"
+                  preload="none"
                   poster="/placeholders/bendoo-media-poster.jpg"
                 >
                   <source src="/placeholders/bendoo-card2-loop.mp4" type="video/mp4" />
