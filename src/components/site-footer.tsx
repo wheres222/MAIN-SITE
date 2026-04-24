@@ -103,12 +103,14 @@ export function SiteFooter() {
 
             {/* Business inquiries */}
             <div className="footer-inquiry">
-              <span className="footer-inquiry-label">FOR BUSINESS INQUIRIES:</span>
+              <label htmlFor="footer-inquiry-email" className="footer-inquiry-label">FOR BUSINESS INQUIRIES:</label>
               <div className="footer-inquiry-input">
                 <input
+                  id="footer-inquiry-email"
                   type="email"
                   value="cheatparadisesupport@gmail.com"
                   readOnly
+                  aria-label="Business inquiry email address"
                 />
                 <a href="mailto:cheatparadisesupport@gmail.com" className="footer-inquiry-send" aria-label="Send email">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden>

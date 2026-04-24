@@ -95,6 +95,10 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
+        <link rel="preconnect" href="https://cdn.mysellauth.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://cdn.mysellauth.com" />
+        <link rel="preload" href="/fonts/gilroy/Gilroy-Bold.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/gilroy/Gilroy-SemiBold.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
         <link rel="icon" href="/branding/LOGO.webp" type="image/webp" />
         <link rel="shortcut icon" href="/branding/LOGO.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/branding/LOGO.webp" />

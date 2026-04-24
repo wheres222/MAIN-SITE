@@ -256,8 +256,9 @@ export function DepositModal({ onClose }: DepositModalProps) {
             </div>
 
             <div className={styles.field}>
-              <label className={styles.fieldLabel}>Amount (USD)</label>
+              <label htmlFor="deposit-amount" className={styles.fieldLabel}>Amount (USD)</label>
               <input
+                id="deposit-amount"
                 type="number"
                 min="1"
                 step="0.01"

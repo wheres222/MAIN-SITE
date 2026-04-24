@@ -177,8 +177,9 @@ export function AuthModal({ defaultTab = "login", onClose }: AuthModalProps) {
         {tab === "login" ? (
           <form onSubmit={handleLogin} className={styles.form}>
             <div className={styles.field}>
-              <label className={styles.label}>Email</label>
+              <label htmlFor="auth-login-email" className={styles.label}>Email</label>
               <input
+                id="auth-login-email"
                 type="email"
                 className={styles.input}
                 placeholder="you@example.com"
@@ -189,8 +190,9 @@ export function AuthModal({ defaultTab = "login", onClose }: AuthModalProps) {
               />
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Password</label>
+              <label htmlFor="auth-login-password" className={styles.label}>Password</label>
               <input
+                id="auth-login-password"
                 type="password"
                 className={styles.input}
                 placeholder="••••••••"
@@ -215,8 +217,9 @@ export function AuthModal({ defaultTab = "login", onClose }: AuthModalProps) {
         ) : (
           <form onSubmit={handleRegister} className={styles.form}>
             <div className={styles.field}>
-              <label className={styles.label}>Username (optional)</label>
+              <label htmlFor="auth-reg-username" className={styles.label}>Username (optional)</label>
               <input
+                id="auth-reg-username"
                 type="text"
                 className={styles.input}
                 placeholder="YourUsername"
@@ -226,8 +229,9 @@ export function AuthModal({ defaultTab = "login", onClose }: AuthModalProps) {
               />
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Email</label>
+              <label htmlFor="auth-reg-email" className={styles.label}>Email</label>
               <input
+                id="auth-reg-email"
                 type="email"
                 className={styles.input}
                 placeholder="you@example.com"
@@ -238,8 +242,9 @@ export function AuthModal({ defaultTab = "login", onClose }: AuthModalProps) {
               />
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Password</label>
+              <label htmlFor="auth-reg-password" className={styles.label}>Password</label>
               <input
+                id="auth-reg-password"
                 type="password"
                 className={styles.input}
                 placeholder="Min. 8 characters"
@@ -266,8 +271,9 @@ export function AuthModal({ defaultTab = "login", onClose }: AuthModalProps) {
               )}
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Confirm password</label>
+              <label htmlFor="auth-reg-confirm" className={styles.label}>Confirm password</label>
               <input
+                id="auth-reg-confirm"
                 type="password"
                 className={styles.input}
                 placeholder="••••••••"
@@ -278,8 +284,9 @@ export function AuthModal({ defaultTab = "login", onClose }: AuthModalProps) {
               />
             </div>
             <div className={styles.field}>
-              <label className={styles.label}>Referral code (optional)</label>
+              <label htmlFor="auth-reg-referral" className={styles.label}>Referral code (optional)</label>
               <input
+                id="auth-reg-referral"
                 type="text"
                 className={styles.input}
                 placeholder="e.g. ABC12345"
