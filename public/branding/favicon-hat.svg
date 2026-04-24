@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <!-- Hat crown -->
+  <path
+    d="M 172 238
+       C 160 195 158 150 168 118
+       C 178 88  200 68  225 63
+       C 237 60  250 60  263 60
+       C 288 60  312 72  325 95
+       C 340 122 340 175 328 238"
+    stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Brim top arc (back) -->
+  <path
+    d="M 58 252 C 100 228 172 218 250 218 C 328 218 400 228 442 252"
+    stroke="white" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Brim outer edge -->
+  <ellipse cx="250" cy="262" rx="195" ry="34"
+    stroke="white" stroke-width="6"/>
+
+  <!-- Hat band -->
+  <path
+    d="M 178 222 C 205 232 228 236 250 236 C 272 236 295 232 322 222"
+    stroke="white" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Crown dent top -->
+  <path
+    d="M 200 68 C 220 78 240 82 250 82 C 260 82 280 78 300 68"
+    stroke="white" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- Left sunglass lens -->
+  <path
+    d="M 88 302
+       C 95 278 128 268 158 272
+       C 186 276 202 292 198 314
+       C 194 332 170 340 145 336
+       C 112 330  82 320  88 302 Z"
+    stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Right sunglass lens -->
+  <path
+    d="M 302 302
+       C 309 278 342 268 372 272
+       C 400 276 416 292 412 314
+       C 408 332 384 340 359 336
+       C 326 330  296 320  302 302 Z"
+    stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Nose bridge -->
+  <path
+    d="M 198 308 C 218 300 238 298 250 298 C 262 298 282 300 302 308"
+    stroke="white" stroke-width="4" stroke-linecap="round"/>
+</svg>

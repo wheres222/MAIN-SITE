@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // ── Maintenance mode ─────────────────────────────────────────────────────────
-const MAINTENANCE_MODE  = true;                // ← flip to false to go live
+const MAINTENANCE_MODE  = false;               // ← flip to false to go live
 const PREVIEW_SECRET    = "cp-preview-2025";   // ← ?preview=<this> grants access
 const PREVIEW_COOKIE    = "cp_preview";
 const MAINTENANCE_PATH  = "/maintenance";

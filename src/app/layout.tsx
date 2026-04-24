@@ -22,9 +22,9 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: [{ url: "/favicon-v2.ico", type: "image/x-icon" }],
-    shortcut: [{ url: "/branding/LOGO.webp", type: "image/webp" }],
-    apple: [{ url: "/branding/LOGO.webp", type: "image/webp" }],
+    icon: [{ url: "/branding/favicon-hat.svg", type: "image/svg+xml" }],
+    shortcut: [{ url: "/branding/favicon-hat.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/branding/favicon-hat.svg", type: "image/svg+xml" }],
   },
   openGraph: {
     title: "Cheat Paradise",
@@ -81,10 +81,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
-        <link rel="icon" href="/favicon-v2.ico" type="image/x-icon" />
-        <link rel="icon" href="/branding/LOGO.webp" type="image/webp" />
-        <link rel="shortcut icon" href="/branding/LOGO.webp" type="image/webp" />
-        <link rel="apple-touch-icon" href="/branding/LOGO.webp" />
+        <link rel="icon" href="/branding/favicon-hat.svg" type="image/svg+xml" />
+        <link rel="shortcut icon" href="/branding/favicon-hat.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/branding/favicon-hat.svg" />
       </head>
       <body className="antialiased">
         <script

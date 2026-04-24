@@ -60,12 +60,6 @@
   border: none;
   border-radius: 16px;
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
-}
-
-.productCard:hover,
-.productCard:focus-within {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
 
 /* Link fills the full card */
@@ -202,8 +196,8 @@
 /* Only the button content turns white — no card lift */
 .productCard:hover .buyButton,
 .productCard:focus-within .buyButton {
-  color: #ffffff;
-  background: #23272f;
+  color: #000000;
+  background: #ffffff;
 }
 
 /* ─── Empty state ────────────────────────────────────────── */
