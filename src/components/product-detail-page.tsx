@@ -751,8 +751,9 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
   const displayRequirements = showRequirements
     ? [
-        { label: "Supported OS", value: "Windows 10/11" },
-        { label: "Supported CPU", value: "Intel / AMD" },
+        { label: "Supported CPU", value: "Intel + AMD" },
+        { label: "Supported Windows Version", value: "10 - 11" },
+        { label: "Cheat Type", value: "External" },
       ]
     : [];
 
