@@ -1073,9 +1073,6 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
             ) : null}
 
             <div className={styles.actionRow}>
-              <button type="button" className={styles.addToCartBtn} onClick={addToCart}>
-                Add To Cart
-              </button>
               <button
                 type="button"
                 className={styles.buyNowBtn}
@@ -1091,59 +1088,37 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
         </section>
         </div>
 
-        {detailContent.featureTabs.length > 0 ? (
-          <section className={styles.detailsStack}>
-            <section className={styles.detailBlock}>
-              <h2 className={styles.detailBlockTitle}>Features</h2>
-              <div className={styles.featuresGrid}>
-                  {detailContent.featureTabs.map((tab) => {
-                    const isOpen = openTabs.includes(tab.title);
-                    const maxHeight = Math.max(78, tab.items.length * 30 + 18);
-
-                    return (
-                      <article key={tab.title} className={styles.featureTabCard}>
-                        <button
-                          type="button"
-                          className={styles.featureTabHeader}
-                          onClick={() => toggleTab(tab.title)}
-                          aria-expanded={isOpen}
-                        >
-                          <span className={styles.featureTabHeaderLeft}>
-                            <span className={styles.featureTabIcon}>{featureIconSvg(tab.title)}</span>
-                            <strong>{tab.title}</strong>
-                          </span>
-
-                          <span
-                            className={`${styles.featureTabChevron} ${
-                              isOpen ? styles.featureTabChevronOpen : ""
-                            }`}
-                            aria-hidden
-                          >
-                            <svg viewBox="0 0 24 24" fill="none">
-                              <path d="m8.5 10.5 3.5 3.5 3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </span>
-                        </button>
-
-                        <div
-                          className={`${styles.featureTabBody} ${isOpen ? styles.featureTabBodyOpen : ""}`}
-                          style={{
-                            ["--feature-max-height" as string]: `${maxHeight}px`,
-                          }}
-                        >
-                          <ul className={styles.featureList}>
-                            {tab.items.map((item) => (
-                              <li key={`${tab.title}-${item}`}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      </article>
-                    );
-                  })}
+        {(detailContent.featureTabs.length > 0 || detailContent.requirements.length > 0 || showRequirements) && (
+          <section className={styles.descPanel}>
+            {/* INFORMATION column */}
+            {(detailContent.requirements.length > 0 || showRequirements) && (
+              <div className={styles.descInfoCol}>
+                <h3 className={styles.descInfoTitle}>INFORMATION</h3>
+                <ul className={styles.descBullets}>
+                  {(detailContent.requirements.length > 0 ? detailContent.requirements : displayRequirements).map((req, i) => (
+                    <li key={i}><strong>{req.label}:</strong> {req.value}</li>
+                  ))}
+                </ul>
               </div>
-            </section>
+            )}
+
+            {/* Feature tab columns */}
+            {detailContent.featureTabs.length > 0 && (
+              <div className={styles.descTabsGrid}>
+                {detailContent.featureTabs.map((tab) => (
+                  <div key={tab.title} className={styles.descTabCol}>
+                    <h4 className={styles.descTabTitle}>{tab.title.toUpperCase()}</h4>
+                    <ul className={styles.descTabItems}>
+                      {tab.items.map((item, i) => (
+                        <li key={i}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
-        ) : null}
+        )}
       </main>
 
       <SiteFooter />

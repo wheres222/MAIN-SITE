@@ -872,3 +872,134 @@
   .lightboxArrowRight { right: 8px; }
   .lightboxClose { top: 10px; right: 10px; }
 }
+
+/* ─── Description panel (info + feature tabs) ─────────────── */
+.descPanel {
+  margin-top: 32px;
+  display: flex;
+  gap: 0;
+  background: #111214;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.descInfoCol {
+  min-width: 220px;
+  max-width: 260px;
+  flex-shrink: 0;
+  padding: 28px 24px 32px;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  border-left: 3px solid #2563eb;
+}
+
+.descInfoTitle {
+  margin: 0 0 18px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.descBullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.descBullets li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #c8d3ea;
+  line-height: 1.45;
+}
+
+.descBullets li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2563eb;
+  margin-top: 5px;
+}
+
+.descTabsGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0;
+}
+
+.descTabCol {
+  padding: 28px 22px 32px;
+  border-left: 3px solid #2563eb;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.descTabCol:last-child {
+  border-right: none;
+}
+
+.descTabTitle {
+  margin: 0 0 14px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.descTabItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.descTabItems li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-size: 0.83rem;
+  color: #c8d3ea;
+  line-height: 1.4;
+}
+
+.descTabItems li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2563eb;
+  margin-top: 5px;
+}
+
+@media (max-width: 900px) {
+  .descPanel {
+    flex-direction: column;
+  }
+  .descInfoCol {
+    max-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .descTabsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .descTabsGrid {
+    grid-template-columns: 1fr;
+  }
+}
