@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import { StorefrontProvider } from "@/context/storefront-context";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
@@ -78,6 +79,18 @@ const HIDDEN_GROUP_SLUGS = new Set([
   "roblox",
 ]);
 
+// Static category images keyed by canonical slug
+const CATEGORY_IMAGES: Record<string, string> = {
+  "arc-raiders":          "/category/arc_raiders_category.png",
+  "fortnite":             "/category/fortnite_category.png",
+  "rainbow-six-siege":    "/category/r6_category.png",
+  "rust":                 "/category/rust_category.png",
+  "apex":                 "/category/apex_category.png",
+  "counter-strike-2":     "/category/cs2_category.png",
+  "escape-from-tarkov":   "/category/escape_from_tarkov_category.png",
+  "hwid-spoofers":        "/category/spoofer_category.png",
+};
+
 const PRIORITY_GROUP_ORDER = [
   "rust",
   "arc-raiders",
@@ -122,6 +135,42 @@ function money(value: number | null, currency = "USD"): string {
 
 function shouldContainCategoryImage(slug: string): boolean {
   return false;
+}
+
+function HeroSlideshow({ slides }: { slides: Array<{ src: string; name: string; href: string }> }) {
+  const [idx, setIdx] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const interval = window.setInterval(() => {
+      setFading(true);
+      window.setTimeout(() => {
+        setIdx((prev) => (prev + 1) % slides.length);
+        setFading(false);
+      }, 300);
+    }, 3800);
+    return () => clearInterval(interval);
+  }, [slides.length]);
+
+  if (slides.length === 0) return null;
+  const slide = slides[idx];
+
+  return (
+    <div className="hero-slideshow">
+      <div className="hero-ss-card">
+        <Link href={slide.href} className="hero-ss-img-wrap">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={slide.src}
+            alt={slide.name}
+            className={`hero-ss-img${fading ? " hero-ss-fading" : ""}`}
+          />
+        </Link>
+      </div>
+      <span className="hero-ss-name">{slide.name}</span>
+    </div>
+  );
 }
 
 export function StorefrontClient({ initialData }: { initialData?: StorefrontData | null }) {
@@ -285,15 +334,69 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
     [storefront?.warnings]
   );
 
+  const lowestPriceBySlug = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const product of storefront?.products || []) {
+      const slug = canonicalGroupSlug(product.groupName || product.categoryName || "");
+      if (!slug) continue;
+      const price = productLowestPrice(product);
+      if (price === null) continue;
+      const existing = map.get(slug);
+      if (existing === undefined || price < existing) map.set(slug, price);
+    }
+    return map;
+  }, [storefront?.products]);
+
   const [bendooProgress, setBendooProgress] = useState(0);
+  const bendooCardRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      setBendooProgress((previous) => (previous >= 100 ? 0 : previous + 5));
-    }, 1200);
+    let timer: number | null = null;
 
-    return () => window.clearInterval(timer);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!timer) {
+            timer = window.setInterval(() => {
+              setBendooProgress((previous) => (previous >= 100 ? 0 : previous + 5));
+            }, 1200);
+          }
+        } else {
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (bendooCardRef.current) observer.observe(bendooCardRef.current);
+    return () => {
+      observer.disconnect();
+      if (timer) clearInterval(timer);
+    };
   }, []);
+
+  const SLIDE_DEFS = [
+    { src: "/slideshow/Ancient Arc.png",          name: "Ancient Arc Raiders",   search: "ancient",  fallback: "/categories?slug=arc-raiders" },
+    { src: "/slideshow/Exodus Fortnite.png",       name: "Exodus Fortnite",       search: "exodus",   fallback: "/categories?slug=fortnite" },
+    { src: "/slideshow/Game Accounts.webp",        name: "Steam Accounts",        search: "account",  fallback: "/categories?slug=accounts" },
+    { src: "/slideshow/Mafia Rust.avif",           name: "Mafia Rust",            search: "mafia",    fallback: "/categories?slug=rust" },
+    { src: "/slideshow/Predator CS2.png",          name: "Predator CS2",          search: "predator", fallback: "/categories?slug=counter-strike-2" },
+    { src: "/slideshow/Rocket League Switch.png",  name: "Rocket League Switch",  search: "rocket",   fallback: "/categories?slug=rocket-league" },
+  ];
+
+  const slideshowSlides = useMemo(() => {
+    const products = storefront?.products ?? [];
+    return SLIDE_DEFS.map((def) => {
+      const match = products.find((p) =>
+        p.name.toLowerCase().includes(def.search)
+      );
+      return { src: def.src, name: def.name, href: match ? productHref(match) : def.fallback };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storefront?.products]);
 
   const bendooProgressStroke = useMemo(() => {
     const radius = 78;
@@ -303,40 +406,45 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
   }, [bendooProgress]);
 
   return (
+    <StorefrontProvider data={storefront}>
     <div className="marketplace-page">
       <SiteHeader activeTab="store" />
 
       <main id="top">
         <section className="hero">
-          <Image
-            src="/branding/hero.png"
-            alt=""
-            fill
-            priority
-            className="hero-bg"
-            sizes="100vw"
-            style={{ objectFit: "cover", objectPosition: "center center" }}
-          />
+          <video
+            className="hero-bg hero-bg-video"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          >
+            <source src="/branding/hero.mp4" type="video/mp4" />
+          </video>
+          <div className="hero-bg-overlay" />
           <div className="shell hero-content">
-            <div className="hero-copy">
+            {/* Left: copy + CTAs */}
+            <div className="hero-left">
               <h1 className="hero-title">
-                <span className="hero-title-row hero-line-primary">The best</span>
                 <span className="hero-title-row">
-                  <span className="hero-line-accent">Legit </span><span className="hero-line-primary">and </span><span className="hero-line-accent">Secure</span>
+                  <span className="hero-line-primary">Unlock Your </span>
+                  <span className="hero-line-accent">Advantage.</span>
                 </span>
-                <span className="hero-title-row hero-line-primary">cheats.</span>
+                <span className="hero-title-row">
+                  <span className="hero-line-primary">Play </span>
+                  <span className="hero-line-accent">Without Limits.</span>
+                </span>
               </h1>
               <p className="hero-subtext">
-                Your #1 Trusted Cheat Provider, offering 24/7 support, reliable
-                and undetected products with amazing prices.
+                Premium undetected cheats — instant delivery, always updated, trusted by thousands.
               </p>
               <div className="hero-cta-row">
                 <a href="#store-section" className="hero-browse-btn">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-                    <path d="M3 6h18M16 10a4 4 0 0 1-8 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M0 3.449L9.75 2.1v9.451H0V3.449zm10.949-1.35L24 0v11.4H10.949V2.099zM0 12.6h9.75v9.451L0 20.699V12.6zm10.949.001H24V24L10.949 22.1V12.601z"/>
                   </svg>
-                  Browse Products
+                  Purchase Now
                 </a>
                 <a href="https://discord.gg/6yGEKZC8aX" target="_blank" rel="noreferrer" className="hero-discord-btn">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -344,6 +452,11 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
                   Join Discord
                 </a>
               </div>
+            </div>
+
+            {/* Right: product showcase slideshow */}
+            <div className="hero-right">
+              <HeroSlideshow slides={slideshowSlides} />
             </div>
           </div>
         </section>
@@ -372,60 +485,39 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
           ) : null}
 
           <div className="game-grid frontpage-products-grid">
-            {filteredGroups.map((group, groupIndex) => {
+            {filteredGroups.filter(g => CATEGORY_IMAGES[canonicalGroupSlug(g.name)]).slice(0, 8).map((group, groupIndex) => {
               const groupSlug = canonicalGroupSlug(group.name);
-              const baseSrcRaw = group.image?.url?.trim() || "";
-              const hasImage = Boolean(baseSrcRaw);
-              const hoverSrcRaw = hasImage ? hoverImageFor(baseSrcRaw) : "";
-              const baseSrc = baseSrcRaw;
-              const hoverSrc = hoverSrcRaw;
-              const containImage = shouldContainCategoryImage(groupSlug);
-              const isAboveFold = groupIndex < 4;
+              const staticImg = CATEGORY_IMAGES[groupSlug];
+              const imageSrc = staticImg;
+              const hasImage = Boolean(imageSrc);
+              const isAboveFold = groupIndex < 3;
+              const href = `/categories?slug=${encodeURIComponent(groupSlug)}`;
 
               return (
-                <Link
-                  key={group.id}
-                  href={`/categories?slug=${encodeURIComponent(groupSlug)}`}
-                  className="game-card"
-                >
+                <div key={group.id} className="game-card">
                   <div className="game-card-media">
                     {hasImage ? (
-                      <>
-                        <Image
-                          src={baseSrc}
-                          alt={group.name}
-                          width={800}
-                          height={340}
-                          sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 25vw"
-                          priority={isAboveFold}
-                          className={`game-card-image game-card-image--base ${
-                            containImage ? "game-card-image--contain" : ""
-                          }`}
-                        />
-                        <Image
-                          src={hoverSrc}
-                          alt=""
-                          aria-hidden="true"
-                          width={800}
-                          height={340}
-                          sizes="(max-width: 900px) 90vw, (max-width: 1400px) 45vw, 25vw"
-                          priority={false}
-                          className={`game-card-image game-card-image--hover ${
-                            containImage ? "game-card-image--contain" : ""
-                          }`}
-                        />
-                      </>
+                      <Image
+                        src={imageSrc}
+                        alt={group.name}
+                        width={400}
+                        height={540}
+                        sizes="(max-width: 600px) 50vw, (max-width: 1200px) 25vw, 18vw"
+                        priority={isAboveFold}
+                        className="game-card-image"
+                      />
                     ) : (
                       <div className="game-card-missing-media">
                         <strong>{group.name}</strong>
-                        <p>Product image not added</p>
                       </div>
                     )}
                   </div>
-                  <div className="game-card-label">
-                    <span>{group.name}</span>
-                  </div>
-                </Link>
+
+                  {/* Buy Now button */}
+                  <Link href={href} className="game-card-buy-btn">
+                    BUY NOW
+                  </Link>
+                </div>
               );
             })}
           </div>
@@ -521,7 +613,7 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
               </div>
             </article>
 
-            <article className="bendoo-card bendoo-card-updates">
+            <article className="bendoo-card bendoo-card-updates" ref={bendooCardRef}>
               <div className="bendoo-dots-pattern" aria-hidden="true" />
               <div className="bendoo-progress-wrap" aria-hidden="true">
                 <svg viewBox="0 0 220 220" className="bendoo-progress-ring">
@@ -607,5 +699,6 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
 
       <SiteFooter />
     </div>
+    </StorefrontProvider>
   );
 }

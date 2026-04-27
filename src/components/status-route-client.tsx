@@ -51,6 +51,14 @@ export function StatusRouteClient() {
   return (
     <div className="marketplace-page">
       <SiteHeader activeTab="status" />
+
+      {/* Status page banner */}
+      <div className="status-banner">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/branding/status-banner.webp" alt="" className="status-banner-img" aria-hidden="true" />
+        <div className="status-banner-overlay" />
+      </div>
+
       <main className="shell subpage-wrap">
         {loading ? <SubpageSkeleton rows={5} /> : null}
         {error ? <p className="state-message error">{error}</p> : null}
