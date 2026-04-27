@@ -347,6 +347,16 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
     return map;
   }, [storefront?.products]);
 
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.load();
+    video.play().catch(() => {});
+  }, []);
+
   const [bendooProgress, setBendooProgress] = useState(0);
   const bendooCardRef = useRef<HTMLElement>(null);
 
@@ -413,6 +423,7 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
       <main id="top">
         <section className="hero">
           <video
+            ref={heroVideoRef}
             className="hero-bg-video"
             autoPlay
             loop
