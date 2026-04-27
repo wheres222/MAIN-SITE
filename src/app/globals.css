@@ -109,26 +109,14 @@ select::-ms-expand { display: none; }
   --ui-border-strong: var(--global-outline);
 }
 
-.top-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  background: rgba(21, 21, 21, 0.92);
-  border-bottom: 1px solid var(--nav-separator);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* Push all subpage content below the fixed navbar (110px header height) */
+/* Push all subpage content below the fixed navbar */
 .subpage-wrap,
 .info-page,
 .order-page-main,
 .guide-shell,
 .login-page,
 .account-page {
-  padding-top: 110px;
+  padding-top: 80px;
 }
 .top-header-inner {
   min-height: 110px;
@@ -175,12 +163,21 @@ select::-ms-expand { display: none; }
 .discord-btn .btn-icon { filter: brightness(0) invert(1); }
 
 .nav-row {
-  background: rgb(13, 13, 13);
-  border-top: 1px solid var(--nav-separator);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(13, 13, 13, 0.95);
   border-bottom: 1px solid var(--nav-separator);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Offset storefront page so hero is not hidden under fixed navbar */
+.marketplace-page {
+  padding-top: 78px;
 }
 .nav-row-inner {
   min-height: 78px;
