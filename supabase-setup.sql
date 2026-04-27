@@ -145,6 +145,34 @@ begin
 end;
 $$;
 
+-- Atomic balance deduction — raises exception if insufficient funds (prevents overspend)
+create or replace function public.spend_user_balance(p_user_id uuid, p_amount decimal)
+returns void
+language plpgsql
+security definer set search_path = public
+as $$
+declare
+  current_balance decimal;
+begin
+  select balance into current_balance
+  from public.profiles
+  where id = p_user_id
+  for update;
+
+  if current_balance is null then
+    raise exception 'User not found';
+  end if;
+
+  if current_balance < p_amount then
+    raise exception 'Insufficient balance';
+  end if;
+
+  update public.profiles
+  set balance = balance - p_amount
+  where id = p_user_id;
+end;
+$$;
+
 -- 6. DELIVERY LOGS (persistent deduplication for order delivery)
 create table if not exists public.delivery_logs (
   order_id    text primary key,

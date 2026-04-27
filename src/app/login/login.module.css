@@ -120,11 +120,25 @@
   gap: 6px;
 }
 
+.labelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .label {
   font-size: 0.82rem;
   font-weight: 600;
   color: #b2bdd3;
 }
+
+.forgotLink {
+  font-size: 0.78rem;
+  color: #7cc4ff;
+  font-weight: 500;
+  text-decoration: none;
+}
+.forgotLink:hover { text-decoration: underline; }
 
 .input {
   width: 100%;

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { productHref } from "@/lib/product-route";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { useStorefrontContext } from "@/context/storefront-context";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
 function normalized(value: string): string {
@@ -34,18 +35,21 @@ function productLowestPrice(product: SellAuthProduct): number | null {
 export function GlobalSearch() {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const [storefront, setStorefront] = useState<StorefrontData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const contextData = useStorefrontContext();
+  const [fetchedStorefront, setFetchedStorefront] = useState<StorefrontData | null>(null);
+  const [isLoading, setIsLoading] = useState(!contextData);
   const [activeIndex, setActiveIndex] = useState(-1);
 
   useEffect(() => {
+    if (contextData) return;
+
     let active = true;
     (async () => {
       try {
         const data = await fetchStorefrontClient();
-        if (active) setStorefront(data);
+        if (active) setFetchedStorefront(data);
       } catch {
-        if (active) setStorefront(null);
+        if (active) setFetchedStorefront(null);
       } finally {
         if (active) setIsLoading(false);
       }
@@ -54,7 +58,9 @@ export function GlobalSearch() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [contextData]);
+
+  const storefront = contextData ?? fetchedStorefront;
 
   const suggestions = useMemo(() => {
     const keyword = normalized(query);

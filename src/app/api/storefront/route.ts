@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { getStorefrontData } from "@/lib/sellauth";
 
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
+export const revalidate = 30;
 
 export async function GET() {
   const data = await getStorefrontData();

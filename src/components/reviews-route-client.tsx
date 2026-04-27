@@ -50,7 +50,7 @@ export function ReviewsRouteClient() {
 
   return (
     <div className="marketplace-page">
-      <SiteHeader activeTab="reviews" />
+      <SiteHeader activeTab="none" />
       <main className="shell subpage-wrap">
         {loading ? <SubpageSkeleton rows={8} /> : null}
         {error ? <p className="state-message error">{error}</p> : null}

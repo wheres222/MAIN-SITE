@@ -85,8 +85,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect already-authenticated users away from login/register
-  if (user && (pathname === "/login" || pathname === "/register")) {
+  // Redirect already-authenticated users away from login/register/forgot-password
+  if (user && (pathname === "/login" || pathname === "/register" || pathname === "/forgot-password")) {
     const url = request.nextUrl.clone();
     url.pathname = "/account";
     return NextResponse.redirect(url);

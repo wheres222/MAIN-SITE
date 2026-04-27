@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Roboto, Montserrat } from "next/font/google";
+import { Roboto, Montserrat, Inter } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "@/components/posthog-provider";
 
@@ -16,6 +16,14 @@ const montserrat = Montserrat({
   weight: ["600", "700", "800"],
   display: "optional",
   variable: "--font-montserrat",
+  preload: true,
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["700"],
+  display: "swap",
+  variable: "--font-inter",
   preload: true,
 });
 
@@ -91,7 +99,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${roboto.variable} ${montserrat.variable}`}>
+    <html lang="en" className={`${roboto.variable} ${montserrat.variable} ${inter.variable}`}>
       <head>
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
