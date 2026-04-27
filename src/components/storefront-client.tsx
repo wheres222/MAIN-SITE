@@ -352,9 +352,36 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
   useEffect(() => {
     const video = heroVideoRef.current;
     if (!video) return;
+
     video.muted = true;
+
+    const tryPlay = () => video.play().catch(() => {});
+
+    // Attempt immediate autoplay (works in Chrome, Firefox)
     video.load();
-    video.play().catch(() => {});
+    tryPlay();
+
+    // Fallback for Brave / strict autoplay browsers:
+    // play as soon as the user makes any interaction
+    const onInteract = () => {
+      tryPlay();
+      document.removeEventListener("scroll",   onInteract);
+      document.removeEventListener("click",    onInteract);
+      document.removeEventListener("keydown",  onInteract);
+      document.removeEventListener("touchstart", onInteract);
+    };
+
+    document.addEventListener("scroll",    onInteract, { once: true, passive: true });
+    document.addEventListener("click",     onInteract, { once: true });
+    document.addEventListener("keydown",   onInteract, { once: true });
+    document.addEventListener("touchstart",onInteract, { once: true, passive: true });
+
+    return () => {
+      document.removeEventListener("scroll",    onInteract);
+      document.removeEventListener("click",     onInteract);
+      document.removeEventListener("keydown",   onInteract);
+      document.removeEventListener("touchstart",onInteract);
+    };
   }, []);
 
   const [bendooProgress, setBendooProgress] = useState(0);
