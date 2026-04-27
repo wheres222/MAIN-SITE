@@ -412,6 +412,8 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
 
       <main id="top">
         <section className="hero">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/branding/hero.png" alt="" className="hero-bg hero-bg-img" aria-hidden="true" />
           <video
             className="hero-bg hero-bg-video"
             autoPlay
@@ -419,6 +421,7 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
             muted
             playsInline
             preload="auto"
+            poster="/branding/hero.png"
           >
             <source src="/branding/hero.mp4" type="video/mp4" />
           </video>
