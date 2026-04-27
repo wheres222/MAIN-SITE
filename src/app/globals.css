@@ -579,14 +579,14 @@ select::-ms-expand { display: none; }
 .hero { position: relative; height: 62vh; overflow: hidden; margin-top: -1px; background-color: #060912; }
 .hero-bg { position: absolute; inset: 0; }
 .hero-bg-video {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: calc(100% + 75px);
-  margin-top: -75px;
+  height: 100%;
   display: block;
   object-fit: cover;
-  object-position: center 5%;
+  object-position: center center;
   opacity: 0.4;
-  clip-path: inset(75px 0 0 0);
 }
 .hero-bg-overlay {
   position: absolute;

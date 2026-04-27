@@ -413,7 +413,7 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
       <main id="top">
         <section className="hero">
           <video
-            className="hero-bg hero-bg-video"
+            className="hero-bg-video"
             autoPlay
             loop
             muted
