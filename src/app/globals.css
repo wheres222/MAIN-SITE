@@ -586,13 +586,14 @@ select::-ms-expand { display: none; }
   display: block;
   object-fit: cover;
   object-position: center center;
-  opacity: 0.4;
+  opacity: 0.55;
+  z-index: 0;
 }
 .hero-bg-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(6, 9, 18, 0.35);
-  z-index: 0;
+  background: rgba(6, 9, 18, 0.15);
+  z-index: 1;
   pointer-events: none;
 }
 
