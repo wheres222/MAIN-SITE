@@ -13,7 +13,7 @@ async function verifySignature(request: Request, rawBody: string): Promise<{ val
   if (!secret) return { valid: false, secretMissing: true };
 
   const signature = request.headers.get("x-sellauth-signature") || "";
-  if (!signature) return false;
+  if (!signature) return { valid: false, secretMissing: false };
 
   const key = await crypto.subtle.importKey(
     "raw",
