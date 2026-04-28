@@ -27,6 +27,7 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
   const [modal, setModal] = useState<"login" | "register" | null>(null);
   const [showDeposit, setShowDeposit] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -90,6 +91,12 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
     return () => document.removeEventListener("mousedown", handleOutside);
   }, [showDropdown]);
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   async function handleLogout() {
     setShowDropdown(false);
     await supabase.auth.signOut();
@@ -101,7 +108,7 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
 
   return (
     <>
-      <div className="nav-row">
+      <div className={`nav-row${scrolled ? " nav-row--scrolled" : ""}`}>
         <div className="shell nav-row-inner">
           <div className="nav-row-left">
             <Link className="nav-left-logo" href="/" aria-label="CheatParadise home">
