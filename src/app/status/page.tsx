@@ -1,6 +1,9 @@
-
 import type { Metadata } from "next";
+import { getStorefrontData } from "@/lib/sellauth";
 import { StatusRouteClient } from "@/components/status-route-client";
+import type { StorefrontData } from "@/types/sellauth";
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Product Status",
@@ -8,6 +11,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/status" },
 };
 
-export default function StatusPage() {
-  return <StatusRouteClient />;
+export default async function StatusPage() {
+  let initialData: StorefrontData | null = null;
+  try {
+    initialData = await getStorefrontData();
+  } catch {
+    // Client-side fetch will handle it
+  }
+  return <StatusRouteClient initialData={initialData} />;
 }

@@ -1,6 +1,6 @@
 import type { StorefrontData } from "@/types/sellauth";
 
-const CLIENT_CACHE_TTL_MS = 90_000;
+const CLIENT_CACHE_TTL_MS = 300_000;
 
 let cachedStorefront: StorefrontData | null = null;
 let cachedAtMs = 0;

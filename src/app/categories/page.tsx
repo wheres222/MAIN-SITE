@@ -1,8 +1,12 @@
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { getStorefrontData } from "@/lib/sellauth";
 import { CategoryRouteClient } from "@/components/category-route-client";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
+import type { StorefrontData } from "@/types/sellauth";
+
+export const revalidate = 300;
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
@@ -37,10 +41,16 @@ export async function generateMetadata({
   };
 }
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+  let initialData: StorefrontData | null = null;
+  try {
+    initialData = await getStorefrontData();
+  } catch {
+    // Client-side fetch will handle it
+  }
   return (
     <Suspense fallback={<SubpageSkeleton rows={4} />}>
-      <CategoryRouteClient />
+      <CategoryRouteClient initialData={initialData} />
     </Suspense>
   );
 }

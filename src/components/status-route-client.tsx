@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ProductStatusBoard } from "@/components/product-status-board";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
-import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import type { StorefrontData } from "@/types/sellauth";
 
@@ -17,16 +17,26 @@ interface StatusOverride {
   updated_at: string;
 }
 
-export function StatusRouteClient() {
-  const [loading, setLoading] = useState(true);
+interface StatusRouteClientProps {
+  initialData?: StorefrontData | null;
+}
+
+export function StatusRouteClient({ initialData }: StatusRouteClientProps) {
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState("");
-  const [data, setData] = useState<StorefrontData | null>(null);
+  const [data, setData] = useState<StorefrontData | null>(initialData ?? null);
   const [statusOverrides, setStatusOverrides] = useState<
     Record<string, StatusOverride>
   >({});
 
-  // Load storefront data
+  // Seed client-side cache with SSR data so subsequent navigations are instant
   useEffect(() => {
+    if (initialData) primeStorefrontCache(initialData);
+  }, [initialData]);
+
+  // Load storefront data (only runs when SSR data wasn't available)
+  useEffect(() => {
+    if (initialData) return;
     let alive = true;
 
     async function run() {
@@ -52,7 +62,7 @@ export function StatusRouteClient() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [initialData]);
 
   // Load status overrides + subscribe to realtime changes
   useEffect(() => {

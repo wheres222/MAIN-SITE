@@ -3,7 +3,7 @@ import { StorefrontClient } from "@/components/storefront-client";
 import { getStorefrontData } from "@/lib/sellauth";
 import type { StorefrontData } from "@/types/sellauth";
 
-export const revalidate = 120;
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: {

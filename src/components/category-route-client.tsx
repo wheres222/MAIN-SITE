@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { GameCatalogPage } from "@/components/game-catalog-page";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { isSameGameSlug } from "@/lib/game-slug";
-import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { SellAuthGroup, StorefrontData } from "@/types/sellauth";
 
 function titleCaseFromSlug(slug: string): string {
@@ -17,15 +17,24 @@ function titleCaseFromSlug(slug: string): string {
     .join(" ");
 }
 
-export function CategoryRouteClient() {
+interface CategoryRouteClientProps {
+  initialData?: StorefrontData | null;
+}
+
+export function CategoryRouteClient({ initialData }: CategoryRouteClientProps) {
   const searchParams = useSearchParams();
   const slug = (searchParams.get("slug") || "").trim();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState("");
-  const [storefront, setStorefront] = useState<StorefrontData | null>(null);
+  const [storefront, setStorefront] = useState<StorefrontData | null>(initialData ?? null);
 
   useEffect(() => {
+    if (initialData) primeStorefrontCache(initialData);
+  }, [initialData]);
+
+  useEffect(() => {
+    if (initialData) return;
     let alive = true;
 
     async function run() {
@@ -52,7 +61,7 @@ export function CategoryRouteClient() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [initialData]);
 
   const resolved = useMemo(() => {
     if (!storefront || !slug) return null;

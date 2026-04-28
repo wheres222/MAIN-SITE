@@ -58,7 +58,11 @@ const SELLAUTH_BASE_URL =
 const SELLAUTH_SHOP_ID = normalizeEnvSecret(process.env.SELLAUTH_SHOP_ID) || "";
 const SELLAUTH_API_KEY = normalizeEnvSecret(process.env.SELLAUTH_API_KEY) || "";
 const PRODUCT_IMAGE_PLACEHOLDER = "/placeholders/product-image-not-added.svg";
-const STOREFRONT_CACHE_TTL_MS = 25_000;
+// 5-minute server-side in-memory TTL (aligns with the shared edge cache below)
+const STOREFRONT_CACHE_TTL_MS = 300_000;
+// How long the Next.js Data Cache (shared across ALL Vercel instances) holds each
+// SellAuth response. This is the primary rate-limit guard.
+const SELLAUTH_EDGE_CACHE_SECONDS = 300;
 const SELLAUTH_PAGE_SIZE = 100;
 const SELLAUTH_MAX_PAGES = 40;
 
@@ -398,8 +402,15 @@ function inferCategoryNameFromProduct(product: SellAuthProduct): string {
 
 async function fetchSellAuth<T>(
   path: string,
-  init?: RequestInit
+  init?: RequestInit,
+  /** Pass a positive number to cache via Next.js Data Cache (edge-shared). */
+  cacheSeconds?: number
 ): Promise<ApiEnvelope<T>> {
+  const cacheOption: RequestInit =
+    cacheSeconds !== undefined && cacheSeconds > 0
+      ? ({ next: { revalidate: cacheSeconds } } as RequestInit)
+      : { cache: "no-store" };
+
   const response = await fetch(`${SELLAUTH_BASE_URL}${path}`, {
     ...init,
     headers: {
@@ -408,7 +419,7 @@ async function fetchSellAuth<T>(
       Accept: "application/json",
       ...(init?.headers || {}),
     },
-    cache: "no-store",
+    ...cacheOption,
   });
 
   const body = (await response.json()) as ApiEnvelope<T>;
@@ -464,7 +475,8 @@ function recordKey(value: unknown): string {
 async function fetchSellAuthCollection(
   path: string,
   keys: string[],
-  extraParams?: Record<string, string>
+  extraParams?: Record<string, string>,
+  cacheSeconds?: number
 ): Promise<unknown[]> {
   const results: unknown[] = [];
   const seenItemKeys = new Set<string>();
@@ -475,7 +487,9 @@ async function fetchSellAuthCollection(
 
     try {
       response = await fetchSellAuth<unknown>(
-        withPageParams(path, page, SELLAUTH_PAGE_SIZE, extraParams)
+        withPageParams(path, page, SELLAUTH_PAGE_SIZE, extraParams),
+        undefined,
+        cacheSeconds
       );
     } catch (error) {
       if (page === 1) throw error;
@@ -1259,25 +1273,27 @@ export async function getStorefrontData(): Promise<StorefrontData> {
         fetchSellAuthCollection(
           `/v1/shops/${SELLAUTH_SHOP_ID}/products`,
           ["products", "items", "data"],
-          { all: "1" }
+          { all: "1" },
+          SELLAUTH_EDGE_CACHE_SECONDS
         ),
-        fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/groups`, [
-          "groups",
-          "items",
-          "data",
-        ]),
-        fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/categories`, [
-          "categories",
-          "items",
-          "data",
-        ]),
-        fetchSellAuthCollection(`/v1/shops/${SELLAUTH_SHOP_ID}/payment-methods`, [
-          "payment_methods",
-          "paymentMethods",
-          "methods",
-          "items",
-          "data",
-        ]),
+        fetchSellAuthCollection(
+          `/v1/shops/${SELLAUTH_SHOP_ID}/groups`,
+          ["groups", "items", "data"],
+          undefined,
+          SELLAUTH_EDGE_CACHE_SECONDS
+        ),
+        fetchSellAuthCollection(
+          `/v1/shops/${SELLAUTH_SHOP_ID}/categories`,
+          ["categories", "items", "data"],
+          undefined,
+          SELLAUTH_EDGE_CACHE_SECONDS
+        ),
+        fetchSellAuthCollection(
+          `/v1/shops/${SELLAUTH_SHOP_ID}/payment-methods`,
+          ["payment_methods", "paymentMethods", "methods", "items", "data"],
+          undefined,
+          SELLAUTH_EDGE_CACHE_SECONDS
+        ),
       ]);
 
     if (productsResult.status !== "fulfilled") {
