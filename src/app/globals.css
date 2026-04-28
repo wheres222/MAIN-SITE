@@ -861,6 +861,8 @@ select::-ms-expand { display: none; }
   transition: transform 0.22s ease, box-shadow 0.22s ease;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  text-decoration: none;
+  display: block;
 }
 .game-card:hover {
   transform: translateY(-6px);

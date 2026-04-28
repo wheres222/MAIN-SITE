@@ -532,7 +532,7 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
               const href = `/categories?slug=${encodeURIComponent(groupSlug)}`;
 
               return (
-                <div key={group.id} className="game-card">
+                <Link key={group.id} href={href} className="game-card">
                   <div className="game-card-media">
                     {hasImage ? (
                       <Image
@@ -551,11 +551,10 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
                     )}
                   </div>
 
-                  {/* Buy Now button */}
-                  <Link href={href} className="game-card-buy-btn">
+                  <span className="game-card-buy-btn">
                     BUY NOW
-                  </Link>
-                </div>
+                  </span>
+                </Link>
               );
             })}
           </div>
