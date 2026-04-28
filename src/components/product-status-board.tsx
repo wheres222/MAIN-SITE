@@ -11,7 +11,7 @@ import type {
 } from "@/types/sellauth";
 import styles from "@/components/product-status-board.module.css";
 
-type StatusKind = "undetected" | "testing" | "detected";
+type StatusKind = "undetected" | "updating" | "detected";
 
 interface ProductStatusMeta {
   kind: StatusKind;
@@ -30,10 +30,17 @@ interface GroupedCategory {
   items: GroupedProductEntry[];
 }
 
+interface StatusOverride {
+  product_id: string;
+  status: StatusKind;
+  note?: string | null;
+}
+
 interface ProductStatusBoardProps {
   products: SellAuthProduct[];
   groups?: SellAuthGroup[];
   categories?: SellAuthCategory[];
+  statusOverrides?: Record<string, StatusOverride>;
 }
 
 function normalized(value: string): string {
@@ -85,8 +92,8 @@ function inferStatus(product: SellAuthProduct): ProductStatusMeta {
 
   if (/(updating|testing|maintenance|patching|investigating|beta)/i.test(operationalText)) {
     return {
-      kind: "testing",
-      label: "TESTING",
+      kind: "updating",
+      label: "UPDATING",
     };
   }
 
@@ -129,6 +136,7 @@ export function ProductStatusBoard({
   products,
   groups = [],
   categories = [],
+  statusOverrides = {},
 }: ProductStatusBoardProps) {
   const grouped = useMemo<GroupedCategory[]>(() => {
     const groupsById = new Map<number, string>(
@@ -199,7 +207,17 @@ export function ProductStatusBoard({
 
             <ul className={styles.productList}>
               {category.items.map(({ key, product }) => {
-                const status = inferStatus(product);
+                const override = statusOverrides[String(product.id)];
+                const status: ProductStatusMeta = override
+                  ? {
+                      kind: override.status,
+                      label: override.status === "undetected"
+                        ? "UNDETECTED"
+                        : override.status === "detected"
+                        ? "DETECTED"
+                        : "UPDATING",
+                    }
+                  : inferStatus(product);
 
                 return (
                   <li key={key} className={styles.productRow}>
@@ -214,7 +232,7 @@ export function ProductStatusBoard({
                             ? styles.undetected
                             : status.kind === "detected"
                               ? styles.detected
-                              : styles.testing
+                              : styles.updating
                         }`}
                       >
                         <span className={styles.dot} aria-hidden="true" />

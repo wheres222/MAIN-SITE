@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ProductStatusBoard } from "@/components/product-status-board";
@@ -9,11 +10,22 @@ import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import type { StorefrontData } from "@/types/sellauth";
 
+interface StatusOverride {
+  product_id: string;
+  status: "undetected" | "updating" | "detected";
+  note?: string | null;
+  updated_at: string;
+}
+
 export function StatusRouteClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [data, setData] = useState<StorefrontData | null>(null);
+  const [statusOverrides, setStatusOverrides] = useState<
+    Record<string, StatusOverride>
+  >({});
 
+  // Load storefront data
   useEffect(() => {
     let alive = true;
 
@@ -37,9 +49,58 @@ export function StatusRouteClient() {
     }
 
     run();
-
     return () => {
       alive = false;
+    };
+  }, []);
+
+  // Load status overrides + subscribe to realtime changes
+  useEffect(() => {
+    const supabase = createClient();
+
+    // Initial fetch
+    supabase
+      .from("product_statuses")
+      .select("product_id, status, note, updated_at")
+      .then(({ data: rows }) => {
+        if (!rows) return;
+        const map: Record<string, StatusOverride> = {};
+        rows.forEach((row) => {
+          map[row.product_id] = row as StatusOverride;
+        });
+        setStatusOverrides(map);
+      });
+
+    // Realtime — push changes to all open tabs instantly
+    const channel = supabase
+      .channel("product-statuses-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "product_statuses" },
+        (payload) => {
+          if (payload.eventType === "DELETE") {
+            const deletedId = (payload.old as { product_id?: string })
+              .product_id;
+            if (deletedId) {
+              setStatusOverrides((prev) => {
+                const next = { ...prev };
+                delete next[deletedId];
+                return next;
+              });
+            }
+          } else {
+            const row = payload.new as StatusOverride;
+            setStatusOverrides((prev) => ({
+              ...prev,
+              [row.product_id]: row,
+            }));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
     };
   }, []);
 
@@ -55,7 +116,12 @@ export function StatusRouteClient() {
       {/* Status page banner */}
       <div className="status-banner">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/branding/status-banner.webp" alt="" className="status-banner-img" aria-hidden="true" />
+        <img
+          src="/branding/status-banner.webp"
+          alt=""
+          className="status-banner-img"
+          aria-hidden="true"
+        />
         <div className="status-banner-overlay" />
       </div>
 
@@ -76,6 +142,7 @@ export function StatusRouteClient() {
             products={data.products}
             groups={data.groups}
             categories={data.categories}
+            statusOverrides={statusOverrides}
           />
         ) : null}
       </main>

@@ -142,7 +142,8 @@
   background: rgba(18, 67, 45, 0.48);
 }
 
-.testing {
+.testing,
+.updating {
   color: #62abff;
   border-color: rgba(44, 105, 196, 0.5);
   background: rgba(21, 54, 102, 0.5);
