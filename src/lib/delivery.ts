@@ -3,6 +3,7 @@
  * This module must never be imported from client components.
  * The DELIVERY_API_KEY is read from process.env and never exposed.
  */
+import "server-only";
 
 function normalizeEnvSecret(value: string | undefined): string {
   if (!value) return "";

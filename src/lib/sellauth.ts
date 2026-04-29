@@ -1,3 +1,4 @@
+import "server-only";
 import { mockStorefrontData } from "@/lib/mock-data";
 import { toGameSlug } from "@/lib/game-slug";
 import {
