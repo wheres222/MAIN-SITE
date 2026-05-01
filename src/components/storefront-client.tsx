@@ -500,17 +500,10 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
         </section>
 
         <section className="shell game-picker" id="store-section">
-          <div className="categories-intro">
-            <span className="categories-intro-pill">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M5 7h14l-1 12H6L5 7Z" stroke="currentColor" strokeWidth="1.6" />
-                <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.6" />
-              </svg>
-              CATEGORIES
-            </span>
-            <h2>Popular Games</h2>
+          <header className="bendoo-cards-heading" aria-hidden="true">
+            <h2>Products</h2>
             <p>Find the perfect undetected cheat for your favorite game.</p>
-          </div>
+          </header>
 
           {isLoading ? <SubpageSkeleton rows={6} /> : null}
           {!isLoading && error && <p className="state-message error">{error}</p>}
