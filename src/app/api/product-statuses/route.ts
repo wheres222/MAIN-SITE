@@ -8,7 +8,7 @@ export async function GET() {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("product_statuses")
-      .select("product_id, status, note, updated_at");
+      .select("product_id, product_name, status, note, updated_at");
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
