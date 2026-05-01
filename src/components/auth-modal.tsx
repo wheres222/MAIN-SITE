@@ -190,7 +190,16 @@ export function AuthModal({ defaultTab = "login", onClose }: AuthModalProps) {
               />
             </div>
             <div className={styles.field}>
-              <label htmlFor="auth-login-password" className={styles.label}>Password</label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                <label htmlFor="auth-login-password" className={styles.label}>Password</label>
+                <a
+                  href="/forgot-password"
+                  onClick={onClose}
+                  style={{ fontSize: "0.75rem", color: "#818cf8", textDecoration: "none" }}
+                >
+                  Forgot password?
+                </a>
+              </div>
               <input
                 id="auth-login-password"
                 type="password"

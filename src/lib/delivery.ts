@@ -24,7 +24,10 @@ const RESELLING_PRO_BASE_URL = "https://reselling.pro/api";
 export interface DeliveryResult {
   success: boolean;
   message: string;
+  /** The reselling.pro order/delivery ID returned on success */
   deliveryId?: string;
+  /** The actual product key/license string, if returned directly */
+  key?: string;
 }
 
 export function isDeliveryConfigured(): boolean {
@@ -32,20 +35,23 @@ export function isDeliveryConfigured(): boolean {
 }
 
 /**
- * Trigger key delivery for a completed order via reselling.pro.
+ * Fulfill one unit of a product from reselling.pro by its product ID.
  *
- * Adjust the endpoint path and body shape to match reselling.pro's actual API
- * docs — only the auth header pattern is stable here.
+ * This is the primary function used by the checkout webhook.  Pass the
+ * reselling.pro product ID (stored in shop_variants.reselling_product_id)
+ * and the customer email so reselling.pro can associate the purchase.
+ *
+ * Adjust the endpoint path / body shape if reselling.pro updates their API.
  */
 export async function deliverOrder(
-  orderId: string,
+  resellingProductId: string,
   customerEmail: string
 ): Promise<DeliveryResult> {
   if (!DELIVERY_API_KEY) {
     return { success: false, message: "Delivery API key not configured." };
   }
 
-  const response = await fetch(`${RESELLING_PRO_BASE_URL}/deliver`, {
+  const response = await fetch(`${RESELLING_PRO_BASE_URL}/orders`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${DELIVERY_API_KEY}`,
@@ -53,8 +59,9 @@ export async function deliverOrder(
       Accept: "application/json",
     },
     body: JSON.stringify({
-      order_id: orderId,
+      product_id:     resellingProductId,
       customer_email: customerEmail,
+      quantity:       1, // called once per unit — loop at call site
     }),
   });
 
@@ -67,7 +74,21 @@ export async function deliverOrder(
   }
 
   const json = (await response.json().catch(() => ({}))) as Record<string, unknown>;
-  const deliveryId = typeof json.id === "string" ? json.id : undefined;
 
-  return { success: true, message: "Delivery triggered.", deliveryId };
+  // reselling.pro may return the key directly or as a nested field
+  const deliveryId =
+    typeof json.id === "string"
+      ? json.id
+      : typeof json.order_id === "string"
+      ? json.order_id
+      : undefined;
+
+  const key =
+    typeof json.key === "string"
+      ? json.key
+      : typeof json.license_key === "string"
+      ? json.license_key
+      : undefined;
+
+  return { success: true, message: "Delivery triggered.", deliveryId, key };
 }

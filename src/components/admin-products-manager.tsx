@@ -260,8 +260,35 @@ export function AdminProductsManager() {
           <button onClick={loadData} style={css.btn()} disabled={loading}>
             {loading ? "Loading…" : "↺ Refresh"}
           </button>
+          {/* Export buttons */}
+          <a
+            href="/api/admin/export/sellauth?format=json"
+            download
+            style={{
+              ...css.btn("ghost"),
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
+            ↓ Export JSON
+          </a>
+          <a
+            href="/api/admin/export/sellauth?format=csv"
+            download
+            style={{
+              ...css.btn("ghost"),
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
+            ↓ Export CSV
+          </a>
           <span style={{ color: "#4a5060", fontSize: "0.78rem" }}>
-            Importing is safe to run multiple times — it upserts, never duplicates.
+            Import is safe to run multiple times — upserts, never duplicates.
           </span>
         </div>
 
