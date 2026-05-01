@@ -169,7 +169,7 @@ select::-ms-expand { display: none; }
   right: 0;
   z-index: 100;
   background: rgb(13, 13, 13);
-  border-bottom: 1px solid var(--nav-separator);
+  border-bottom: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   box-shadow: none;
@@ -849,7 +849,53 @@ select::-ms-expand { display: none; }
 .hero-tp-label strong { color: #fff; font-weight: 700; }
 .hero-tp-sep { color: rgba(255,255,255,0.3); font-size: 0.84rem; }
 
-.game-picker { margin-top: 18px; padding: 26px 0; border: 0; border-radius: 0; background: transparent; }
+.game-picker {
+  margin-top: 18px;
+  padding: 26px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Ambient glow behind the products grid */
+.game-picker::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    rgba(0, 120, 255, 0.07) 0%,
+    rgba(88, 101, 242, 0.05) 40%,
+    transparent 72%
+  );
+  filter: blur(48px);
+  pointer-events: none;
+  z-index: -1;
+}
+.game-picker::after {
+  content: "";
+  position: absolute;
+  bottom: 10%;
+  right: 5%;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    rgba(88, 101, 242, 0.05) 0%,
+    transparent 70%
+  );
+  filter: blur(52px);
+  pointer-events: none;
+  z-index: -1;
+}
 .categories-intro {
   text-align: center;
   margin: 0 auto 20px;
@@ -1007,6 +1053,29 @@ select::-ms-expand { display: none; }
 .bendoo-cards-wrap {
   margin-top: 26px;
   margin-bottom: 8px;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Glow behind the bendoo "why choose us" section */
+.bendoo-cards-wrap::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 700px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(0, 120, 255, 0.06) 0%,
+    rgba(88, 101, 242, 0.04) 45%,
+    transparent 72%
+  );
+  filter: blur(56px);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .bendoo-cards-heading {

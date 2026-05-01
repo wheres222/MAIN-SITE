@@ -78,7 +78,7 @@ export function SiteFooter() {
                 </svg>
               </a>
               <a
-                href="https://www.youtube.com/@lllarp"
+                href="https://www.youtube.com/@franprado"
                 target="_blank"
                 rel="noreferrer"
                 aria-label="YouTube"
@@ -86,17 +86,6 @@ export function SiteFooter() {
               >
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
                   <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.6 3.5 12 3.5 12 3.5s-7.6 0-9.4.6A3 3 0 0 0 .5 6.2C0 8 0 12 0 12s0 4 .5 5.8a3 3 0 0 0 2.1 2.1c1.8.6 9.4.6 9.4.6s7.6 0 9.4-.6a3 3 0 0 0 2.1-2.1C24 16 24 12 24 12s0-4-.5-5.8ZM9.6 15.6V8.4l6.3 3.6-6.3 3.6Z"/>
-                </svg>
-              </a>
-              <a
-                href="https://www.tiktok.com/@cheat_paradise"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="TikTok"
-                className="footer-social-sq"
-              >
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
-                  <path d="M19.6 6.9a5.3 5.3 0 0 1-3.3-1.2 5.3 5.3 0 0 1-2-3.7h-3v12.2a2.7 2.7 0 1 1-2.7-2.7c.3 0 .5 0 .7.1V8.5a5.8 5.8 0 1 0 5 5.7V9.3a8.2 8.2 0 0 0 5.3 1.9V8.3a5.3 5.3 0 0 1 0-1.4Z"/>
                 </svg>
               </a>
             </div>
