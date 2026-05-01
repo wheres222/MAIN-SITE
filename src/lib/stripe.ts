@@ -5,16 +5,25 @@
 import "server-only";
 import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  // Warn at module load — don't crash the whole build
-  console.warn("[stripe] STRIPE_SECRET_KEY is not set");
+// Lazy singleton — avoids crashing the build when STRIPE_SECRET_KEY is not set
+let _stripe: Stripe | null = null;
+
+function getStripe(): Stripe {
+  if (_stripe) return _stripe;
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
+  _stripe = new Stripe(key, {
+    apiVersion: "2026-04-22.dahlia",
+    typescript: true,
+    telemetry: false,
+  });
+  return _stripe;
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
-  apiVersion: "2026-04-22.dahlia",
-  typescript: true,
-  // Telemetry off — no usage data sent to Stripe
-  telemetry: false,
+export const stripe = new Proxy({} as Stripe, {
+  get(_target, prop) {
+    return (getStripe() as unknown as Record<string | symbol, unknown>)[prop];
+  },
 });
 
 /** Cart item passed in from the checkout route. */
