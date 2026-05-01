@@ -666,6 +666,42 @@ select::-ms-expand { display: none; }
   align-items: center;
   justify-content: flex-end;
 }
+
+/* ── Hero character (replaces slideshow) ── */
+.hero-character-wrap {
+  position: relative;
+  width: 520px;
+  height: 520px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.hero-character-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 68% 72% at 50% 62%,
+    rgba(0, 140, 255, 0.28) 0%,
+    rgba(88, 101, 242, 0.22) 36%,
+    rgba(120, 60, 220, 0.10) 64%,
+    transparent 100%
+  );
+  filter: blur(28px);
+  pointer-events: none;
+}
+.hero-character-img {
+  position: relative;
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom center;
+  display: block;
+  /* subtle drop-shadow to reinforce the glow */
+  filter: drop-shadow(0 0 32px rgba(0, 140, 255, 0.22))
+          drop-shadow(0 0 80px rgba(88, 101, 242, 0.14));
+}
+
 .hero-title {
   margin: 0;
   font-family: var(--font-inter), Inter, sans-serif;

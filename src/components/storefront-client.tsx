@@ -492,9 +492,18 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
               </div>
             </div>
 
-            {/* Right: product showcase slideshow */}
+            {/* Right: hero character */}
             <div className="hero-right">
-              <HeroSlideshow slides={slideshowSlides} />
+              <div className="hero-character-wrap">
+                <div className="hero-character-glow" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/branding/hero-character.avif"
+                  alt=""
+                  className="hero-character-img"
+                  aria-hidden="true"
+                />
+              </div>
             </div>
           </div>
         </section>
