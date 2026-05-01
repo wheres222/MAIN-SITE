@@ -478,16 +478,25 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
                 Premium undetected cheats — instant delivery, always updated, trusted by thousands.
               </p>
               <div className="hero-cta-row">
+                {/* Primary CTA */}
                 <a href="#store-section" className="hero-browse-btn">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  {/* Windows logo */}
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M0 3.449L9.75 2.1v9.451H0V3.449zm10.949-1.35L24 0v11.4H10.949V2.099zM0 12.6h9.75v9.451L0 20.699V12.6zm10.949.001H24V24L10.949 22.1V12.601z"/>
                   </svg>
                   Purchase Now
+                  {/* Arrow */}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
                 </a>
+
+                {/* Ghost Discord link */}
                 <a href="https://discord.gg/6yGEKZC8aX" target="_blank" rel="noreferrer" className="hero-discord-btn">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/social/discord.png" alt="" width={18} height={18} style={{ filter: "brightness(0) invert(1)" }} />
-                  Join Discord
+                  <svg viewBox="0 0 127.14 96.36" fill="currentColor" width="20" height="20" aria-hidden="true">
+                    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+                  </svg>
+                  Join our Discord
                 </a>
               </div>
             </div>
