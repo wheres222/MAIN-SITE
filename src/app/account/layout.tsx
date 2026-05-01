@@ -124,7 +124,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     <div className={styles.page}>
       <SiteHeader activeTab="none" />
 
-      <div className={styles.wrapper}>
+      <div className={styles.wrapper} style={{ paddingTop: 96 }}>
         <div className={styles.panel}>
           {/* Sidebar */}
           <aside className={styles.sidebar}>
