@@ -1,35 +1,38 @@
+/* ─── Page shell ─────────────────────────────────── */
 .statusPage {
-  margin: 18px 0 56px;
   width: 100%;
+  max-width: 780px;
+  margin: 0 auto 64px;
+  padding: 0 16px;
 }
 
+/* ─── Board: stacked groups ──────────────────────── */
 .board {
   display: grid;
-  gap: 14px;
+  gap: 32px;
 }
 
+/* ─── Category group ─────────────────────────────── */
 .categoryCard {
-  border: 1px solid var(--global-outline);
-  border-radius: 10px;
-  background: rgb(21, 21, 21);
-  padding: 10px 12px 12px;
+  display: grid;
+  gap: 6px;
 }
 
 .categoryHeader {
-  min-height: 34px;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  padding: 0 4px;
 }
 
 .categoryLogoBox {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
   overflow: hidden;
-  border: 1px solid var(--global-outline);
-  background: #0a0d12;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -45,22 +48,19 @@
 
 .categoryTitle {
   margin: 0;
-  color: #f1f5ff;
-  font-size: 0.98rem;
-  line-height: 1;
+  color: #8a96b0;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .countChip {
-  margin-left: 2px;
-  min-height: 18px;
-  padding: 0 6px;
-  border-radius: 4px;
-  border: 1px solid var(--global-outline);
-  background: #171b24;
-  color: #8e98ab;
+  padding: 1px 7px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.04);
+  color: #5a6478;
   font-size: 0.62rem;
   font-weight: 600;
   display: inline-flex;
@@ -68,138 +68,140 @@
   white-space: nowrap;
 }
 
+/* ─── Product list ───────────────────────────────── */
 .productList {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
+  gap: 5px;
 }
 
+/* ─── Glass pill row ─────────────────────────────── */
 .productRow {
-  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 6px 0;
+  gap: 12px;
+  padding: 13px 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.033);
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.productRow + .productRow {
-  border-top: 1px solid var(--global-outline);
+.productRow:hover {
+  background: rgba(255, 255, 255, 0.052);
+  border-color: rgba(255, 255, 255, 0.11);
+}
+
+/* ─── Name + last-update ─────────────────────────── */
+.nameCol {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
 }
 
 .name {
   margin: 0;
-  min-width: 0;
 }
 
 .name a {
-  color: #eef3ff;
-  font-size: 0.94rem;
-  line-height: 1.2;
+  color: #dce8ff;
+  font-size: 0.95rem;
   font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.12s;
 }
 
 .name a:hover {
-  color: #bfd8ff;
+  color: #fff;
 }
 
+.lastUpdate {
+  font-size: 0.73rem;
+  color: #4b5468;
+  white-space: nowrap;
+}
+
+/* ─── Status pill ────────────────────────────────── */
 .rowRight {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   flex: 0 0 auto;
-  flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
 .statusPill {
-  min-height: 28px;
-  border-radius: 6px;
+  min-height: 26px;
+  border-radius: 99px;
   border: 1px solid transparent;
-  padding: 0 10px;
+  padding: 0 11px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   line-height: 1;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
   white-space: nowrap;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 999px;
   background: currentColor;
-  box-shadow: 0 0 8px currentColor;
+  box-shadow: 0 0 6px currentColor;
+  flex: 0 0 auto;
 }
 
 .undetected {
   color: #2fe496;
-  border-color: rgba(31, 124, 80, 0.5);
-  background: rgba(18, 67, 45, 0.48);
+  border-color: rgba(31, 124, 80, 0.45);
+  background: rgba(18, 67, 45, 0.4);
 }
 
-.testing,
 .updating {
   color: #62abff;
-  border-color: rgba(44, 105, 196, 0.5);
-  background: rgba(21, 54, 102, 0.5);
+  border-color: rgba(44, 105, 196, 0.45);
+  background: rgba(21, 54, 102, 0.4);
 }
 
 .detected {
   color: #ff8a9f;
-  border-color: rgba(179, 64, 94, 0.48);
-  background: rgba(92, 24, 41, 0.45);
+  border-color: rgba(179, 64, 94, 0.45);
+  background: rgba(92, 24, 41, 0.4);
 }
 
-.purchaseBtn {
-  min-width: 104px;
-  min-height: 32px;
-  border-radius: 6px;
-  border: 0;
-  background: var(--themed-blue-gradient);
-  color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 0 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  transition: transform 0.16s ease, filter 0.16s ease;
-}
-
-.purchaseBtn:hover {
-  filter: brightness(1.07);
-  transform: translateY(-1px);
-}
-
+/* ─── Empty ──────────────────────────────────────── */
 .empty {
-  border: 1px solid var(--global-outline);
-  border-radius: 9px;
-  background: rgb(21, 21, 21);
-  color: #9aa4b7;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #6b7691;
   text-align: center;
-  padding: 22px 16px;
+  padding: 32px 16px;
+  font-size: 0.92rem;
 }
 
-@media (max-width: 760px) {
-  .statusPage {
-    margin-top: 16px;
-  }
-
+/* ─── Responsive ─────────────────────────────────── */
+@media (max-width: 600px) {
   .productRow {
-    align-items: flex-start;
     flex-direction: column;
-    gap: 8px;
-    padding: 8px 0;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
   }
 
   .rowRight {
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-start;
   }
 }

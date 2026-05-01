@@ -120,22 +120,67 @@ export function StatusRouteClient({ initialData }: StatusRouteClientProps) {
   );
 
   return (
-    <div className="marketplace-page">
+    <div className="marketplace-page" style={{ background: "#0d0d0f", position: "relative", overflow: "hidden" }}>
       <SiteHeader activeTab="status" />
 
-      {/* Status page banner */}
-      <div className="status-banner">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/branding/status-banner.webp"
-          alt=""
-          className="status-banner-img"
-          aria-hidden="true"
-        />
-        <div className="status-banner-overlay" />
+      {/* Ambient background glows — non-invasive, site palette */}
+      <div aria-hidden="true" style={{
+        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+      }}>
+        <div style={{
+          position: "absolute",
+          top: "8%", left: "50%",
+          transform: "translateX(-50%)",
+          width: 700, height: 340,
+          borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(0,120,255,0.09) 0%, rgba(88,101,242,0.06) 50%, transparent 80%)",
+          filter: "blur(48px)",
+        }} />
+        <div style={{
+          position: "absolute",
+          top: "30%", left: "18%",
+          width: 320, height: 320,
+          borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(88,101,242,0.07) 0%, transparent 75%)",
+          filter: "blur(56px)",
+        }} />
+        <div style={{
+          position: "absolute",
+          top: "25%", right: "12%",
+          width: 280, height: 280,
+          borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(0,166,255,0.06) 0%, transparent 75%)",
+          filter: "blur(52px)",
+        }} />
       </div>
 
-      <main className="shell subpage-wrap">
+      {/* Page header */}
+      <header style={{
+        position: "relative", zIndex: 1,
+        paddingTop: 112, paddingBottom: 36,
+        textAlign: "center",
+      }}>
+        <h1 style={{
+          margin: 0,
+          fontSize: "clamp(2rem, 4vw, 2.8rem)",
+          fontWeight: 700,
+          color: "#f0f4ff",
+          letterSpacing: "-0.02em",
+          lineHeight: 1.1,
+        }}>
+          Product Status
+        </h1>
+        <p style={{
+          margin: "10px 0 0",
+          fontSize: "0.97rem",
+          color: "#5a6478",
+          fontWeight: 400,
+        }}>
+          Realtime status of all products
+        </p>
+      </header>
+
+      <main style={{ position: "relative", zIndex: 1 }}>
         {loading ? <SubpageSkeleton rows={5} /> : null}
         {error ? <p className="state-message error">{error}</p> : null}
 

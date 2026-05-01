@@ -34,6 +34,7 @@ interface StatusOverride {
   product_id: string;
   status: StatusKind;
   note?: string | null;
+  updated_at?: string;
 }
 
 interface ProductStatusBoardProps {
@@ -41,6 +42,22 @@ interface ProductStatusBoardProps {
   groups?: SellAuthGroup[];
   categories?: SellAuthCategory[];
   statusOverrides?: Record<string, StatusOverride>;
+}
+
+function formatRelative(iso: string): string {
+  try {
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff / 60_000);
+    if (mins < 2)  return "Just now";
+    if (mins < 60) return `${mins} min ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24)  return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    if (days < 7)  return `${days}d ago`;
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  } catch {
+    return "Recently";
+  }
 }
 
 function normalized(value: string): string {
@@ -197,9 +214,7 @@ export function ProductStatusBoard({
               <span className={styles.categoryLogoBox} aria-hidden="true">
                 <img src={category.logo} alt="" className={styles.categoryLogo} loading="lazy" />
               </span>
-
               <h2 className={styles.categoryTitle}>{category.name}</h2>
-
               <span className={styles.countChip}>
                 {category.items.length} {category.items.length === 1 ? "product" : "products"}
               </span>
@@ -219,11 +234,18 @@ export function ProductStatusBoard({
                     }
                   : inferStatus(product);
 
+                const lastUpdate = override?.updated_at
+                  ? formatRelative(override.updated_at)
+                  : "Recently";
+
                 return (
                   <li key={key} className={styles.productRow}>
-                    <p className={styles.name}>
-                      <Link href={productHref(product)}>{product.name}</Link>
-                    </p>
+                    <div className={styles.nameCol}>
+                      <p className={styles.name}>
+                        <Link href={productHref(product)}>{product.name}</Link>
+                      </p>
+                      <span className={styles.lastUpdate}>Last update: {lastUpdate}</span>
+                    </div>
 
                     <div className={styles.rowRight}>
                       <span
@@ -238,10 +260,6 @@ export function ProductStatusBoard({
                         <span className={styles.dot} aria-hidden="true" />
                         {status.label}
                       </span>
-
-                      <Link href={productHref(product)} className={styles.purchaseBtn}>
-                        Purchase Now
-                      </Link>
                     </div>
                   </li>
                 );
