@@ -1122,17 +1122,13 @@ select::-ms-expand { display: none; }
   gap: 9px;
   margin: 0 -24px 0;
   margin-top: auto;
-  padding: 18px 24px 22px;
-  /* gradient: card content bleeds through at top, solid dark at bottom */
-  background: linear-gradient(
-    to bottom,
-    rgba(8, 10, 18, 0.18) 0%,
-    rgba(8, 10, 18, 0.72) 28%,
-    rgba(8, 10, 18, 0.92) 100%
-  );
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px 20px 20px;
+  /* same glass recipe as the status-page pills */
+  background: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  text-align: left;
 }
 
 .bendoo-card-copy h3 {
@@ -1590,17 +1586,25 @@ select::-ms-expand { display: none; }
     margin-bottom: -22px;
   }
 
-  /* streamproof: video fills edge-to-edge with no gap anywhere */
+  /* streamproof: video fills edge-to-edge with zero gaps */
   .bendoo-card-streamproof {
     padding: 0;
-    gap: 0;   /* override the desktop gap:10px so no dark strip between video and bar */
+    gap: 0;
   }
   .bendoo-card-streamproof .bendoo-media-box {
     margin: 0;
     width: 100%;
-    border-radius: 17px 17px 0 0;
-    flex: 1;
+    height: auto;       /* clear the fixed 132px from .bendoo-media-box */
+    flex: 1 1 0;
     min-height: 0;
+    border-radius: 17px 17px 0 0;
+  }
+  /* copy bar has no side-padding to counteract when card padding is 0 */
+  .bendoo-card-streamproof .bendoo-card-copy {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .bendoo-support-icon-wrap,
@@ -1640,9 +1644,9 @@ select::-ms-expand { display: none; }
     margin-top: auto;
     min-height: var(--bendoo-bar-h);
     height: var(--bendoo-bar-h);
-    padding-top: 11px;
-    padding-bottom: 12px;
+    padding: 14px 20px 16px;
     overflow: hidden;
+    text-align: left;
   }
 
   .bendoo-card-copy h3 {
