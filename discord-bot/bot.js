@@ -38,13 +38,14 @@ require("fs").existsSync(".env") && require("fs")
     }
   });
 
-const TOKEN              = process.env.DISCORD_BOT_TOKEN;
-const CLIENT_ID          = process.env.DISCORD_CLIENT_ID;
-const GUILD_ID           = process.env.DISCORD_GUILD_ID;           // optional
-const STATUS_CHANNEL_ID  = process.env.DISCORD_STATUS_CHANNEL_ID;  // where embeds go
-const ALLOWED_ROLE_ID    = process.env.ALLOWED_ROLE_ID;            // optional role gate
-const SITE_URL           = (process.env.SITE_URL || "https://cheatparadise.com").replace(/\/$/, "");
-const BOT_API_KEY        = process.env.BOT_API_KEY;
+const TOKEN                    = process.env.DISCORD_BOT_TOKEN;
+const CLIENT_ID                = process.env.DISCORD_CLIENT_ID;
+const GUILD_ID                 = process.env.DISCORD_GUILD_ID;              // optional
+const STATUS_CHANNEL_ID        = process.env.DISCORD_STATUS_CHANNEL_ID;    // where embeds go
+const WEBHOOK_UPDATES_CHANNEL  = process.env.WEBHOOK_UPDATES_CHANNEL_ID;   // auto-listener source
+const ALLOWED_ROLE_ID          = process.env.ALLOWED_ROLE_ID;               // optional role gate
+const SITE_URL                 = (process.env.SITE_URL || "https://cheatparadise.com").replace(/\/$/, "");
+const BOT_API_KEY              = process.env.BOT_API_KEY;
 
 if (!TOKEN || !CLIENT_ID || !BOT_API_KEY) {
   console.error("Missing DISCORD_BOT_TOKEN, DISCORD_CLIENT_ID, or BOT_API_KEY in .env");
@@ -232,7 +233,15 @@ async function registerCommands() {
 }
 
 // ─── Client ────────────────────────────────────────────────────────────────
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// GuildMessages + MessageContent are privileged intents — enable them in the
+// Discord Developer Portal → Bot → Privileged Gateway Intents.
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+});
 
 client.once("ready", async () => {
   console.log(`🤖 Logged in as ${client.user.tag}`);
@@ -379,6 +388,79 @@ client.on("interactionCreate", async (interaction) => {
 
     await interaction.editReply({ embeds: [embed] });
     return;
+  }
+});
+
+// ─── Auto-listener: "Webhook Bot Updates" channel ─────────────────────────
+//
+// Parses the standard "Status Change" embed format:
+//   Title:  "Status Change"
+//   Fields: Product | Changed from | New Status
+//
+// On match → upserts to product_statuses via the same API the slash commands
+// use. No manual intervention needed; fires the moment the webhook posts.
+
+/** Convert "Ancient - Fortnite External" → "ancient-fortnite-external" */
+function toSlug(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+/**
+ * Strip emoji codepoints and surrounding whitespace from an embed field value,
+ * then map to our internal status kind.
+ */
+function parseEmbedStatus(raw) {
+  // Remove all emoji / unicode symbols, collapse whitespace
+  const clean = raw
+    .replace(/\p{Emoji_Presentation}/gu, "")
+    .replace(/[​-‍﻿]/g, "")
+    .trim()
+    .toLowerCase();
+
+  if (clean.includes("undetected")) return "undetected";
+  if (clean.includes("updating") || clean.includes("update")) return "updating";
+  if (clean.includes("detected")) return "detected";
+  return null;
+}
+
+client.on("messageCreate", async (message) => {
+  // Only care about the configured "Webhook Bot Updates" channel
+  if (!WEBHOOK_UPDATES_CHANNEL) return;
+  if (message.channelId !== WEBHOOK_UPDATES_CHANNEL) return;
+  if (!message.embeds?.length) return;
+
+  const embed = message.embeds[0];
+
+  // Guard: must be a "Status Change" embed
+  if (!embed.title || !embed.title.toLowerCase().includes("status change")) return;
+
+  const fields = embed.fields ?? [];
+  const productField   = fields.find((f) => f.name?.toLowerCase().includes("product"));
+  const newStatusField = fields.find((f) => f.name?.toLowerCase().includes("new status"));
+
+  if (!productField || !newStatusField) return;
+
+  const productName = productField.value.trim();
+  const newStatus   = parseEmbedStatus(newStatusField.value);
+
+  if (!productName || !newStatus) {
+    console.warn(`[listener] Could not parse embed — product="${productName}" status="${newStatusField.value}"`);
+    return;
+  }
+
+  const productId = toSlug(productName);
+
+  console.log(`[listener] Auto-update → "${productName}" (${productId}) = ${newStatus}`);
+
+  try {
+    const result = await apiSetStatus(productId, productName, newStatus, null);
+    if (result.ok) {
+      console.log(`[listener] ✅ Site updated for "${productName}"`);
+    } else {
+      console.error(`[listener] ❌ API returned ${result.status} for "${productName}"`);
+    }
+  } catch (err) {
+    console.error(`[listener] ❌ Network error updating "${productName}":`, err.message);
   }
 });
 
