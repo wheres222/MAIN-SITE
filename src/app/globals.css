@@ -611,22 +611,27 @@ select::-ms-expand { display: none; }
 .hero-bg-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(5, 7, 16, 0.38);
+  background: linear-gradient(
+    135deg,
+    rgba(0, 28, 80, 0.42) 0%,
+    rgba(0, 15, 55, 0.30) 55%,
+    rgba(5, 7, 16, 0.18) 100%
+  );
   z-index: 1;
   pointer-events: none;
 }
 
-/* Left veil — stronger for bigger text readability */
+/* Left veil — lightened so background shows through; text uses own shadow */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to right,
-    rgba(5, 7, 16, 0.92) 0%,
-    rgba(5, 7, 16, 0.78) 28%,
-    rgba(5, 7, 16, 0.35) 54%,
-    rgba(5, 7, 16, 0.04) 72%,
+    rgba(5, 7, 16, 0.58) 0%,
+    rgba(5, 7, 16, 0.40) 28%,
+    rgba(5, 7, 16, 0.14) 54%,
+    rgba(5, 7, 16, 0.02) 72%,
     transparent 85%
   );
   z-index: 1;
@@ -717,6 +722,7 @@ select::-ms-expand { display: none; }
   font-weight: 800;
   display: grid;
   gap: 2px;
+  text-shadow: 0 2px 32px rgba(0, 0, 0, 0.9), 0 0 64px rgba(0, 0, 0, 0.6);
 }
 .hero-title-row {
   display: block;
@@ -739,6 +745,7 @@ select::-ms-expand { display: none; }
   color: #7d95b8;
   margin: 0;
   max-width: 460px;
+  text-shadow: 0 1px 14px rgba(0, 0, 0, 0.85);
 }
 .hero-subtext span { display: block; }
 
