@@ -138,7 +138,29 @@ export default function SupportPage() {
       />
       <SiteHeader activeTab="support" />
 
-      <main className="shell subpage-wrap support-page">
+      {/* Ambient glow blobs */}
+      <div aria-hidden="true" style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
+        <div style={{
+          position: "absolute", top: "-100px", left: "50%", transform: "translateX(-50%)",
+          width: "900px", height: "650px",
+          background: "radial-gradient(ellipse at 50% 30%, rgba(42,82,190,0.22) 0%, transparent 62%), radial-gradient(ellipse at 20% 60%, rgba(88,53,200,0.15) 0%, transparent 55%)",
+          filter: "blur(60px)"
+        }} />
+        <div style={{
+          position: "absolute", top: "40%", right: "-100px",
+          width: "500px", height: "500px",
+          background: "radial-gradient(ellipse at 60% 40%, rgba(60,40,180,0.13) 0%, transparent 65%)",
+          filter: "blur(70px)"
+        }} />
+        <div style={{
+          position: "absolute", bottom: "10%", left: "10%",
+          width: "420px", height: "380px",
+          background: "radial-gradient(ellipse at 40% 60%, rgba(30,55,140,0.12) 0%, transparent 65%)",
+          filter: "blur(70px)"
+        }} />
+      </div>
+
+      <main className="shell subpage-wrap support-page" style={{ position: "relative", zIndex: 1 }}>
         <section className="support-main-card">
           <header className="support-main-header">
             <h1>

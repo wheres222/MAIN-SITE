@@ -215,9 +215,6 @@ export function ProductStatusBoard({
                 <img src={category.logo} alt="" className={styles.categoryLogo} loading="lazy" />
               </span>
               <h2 className={styles.categoryTitle}>{category.name}</h2>
-              <span className={styles.countChip}>
-                {category.items.length} {category.items.length === 1 ? "product" : "products"}
-              </span>
             </header>
 
             <ul className={styles.productList}>

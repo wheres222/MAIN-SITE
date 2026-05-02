@@ -140,7 +140,7 @@
 
 .statusPill {
   min-height: 26px;
-  border-radius: 99px;
+  border-radius: 6px;
   border: 1px solid transparent;
   padding: 0 11px;
   display: inline-flex;
