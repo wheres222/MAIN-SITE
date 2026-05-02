@@ -1123,8 +1123,10 @@ select::-ms-expand { display: none; }
   margin: 0 -24px 0;
   margin-top: auto;
   padding: 18px 24px 22px;
-  background: rgba(14, 14, 14, 0.92);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(10, 12, 20, 0.58);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .bendoo-card-copy h3 {
@@ -1527,7 +1529,7 @@ select::-ms-expand { display: none; }
   }
 
   .bendoo-cards-list {
-    max-width: 1060px;
+    max-width: 100%;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 12px;
     grid-auto-rows: 352px;
@@ -1577,9 +1579,23 @@ select::-ms-expand { display: none; }
     margin-top: 0;
   }
 
-  .bendoo-card-safety .bendoo-media-box,
-  .bendoo-card-streamproof .bendoo-media-box {
+  /* safety: pull media to bottom edge */
+  .bendoo-card-safety .bendoo-media-box {
     margin-bottom: -22px;
+  }
+
+  /* streamproof: video fills the full card top-to-bottom with no gap */
+  .bendoo-card-streamproof {
+    padding-top: 0;
+  }
+  .bendoo-card-streamproof .bendoo-media-box {
+    margin-top: 0;
+    margin-left: -24px;
+    margin-right: -24px;
+    width: calc(100% + 48px);
+    border-radius: 17px 17px 0 0;
+    flex: 1;
+    margin-bottom: 0;
   }
 
   .bendoo-support-icon-wrap,
@@ -1601,9 +1617,17 @@ select::-ms-expand { display: none; }
     margin-top: -8px;
   }
 
+  /* Push ACCESS button to vertical center of the card above the text bar */
   .bendoo-access-button {
     width: 260px;
-    margin-top: 6px;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  /* Push Discord icon to vertical center */
+  .bendoo-discord-icon-wrap {
+    margin-top: auto;
+    margin-bottom: auto;
   }
 
   .bendoo-card-copy {
