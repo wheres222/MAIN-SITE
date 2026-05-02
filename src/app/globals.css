@@ -595,7 +595,7 @@ select::-ms-expand { display: none; }
   padding: 10px 8px;
 }
 
-.hero { position: relative; height: min(92vh, 860px); overflow: hidden; margin-top: -1px; background-color: #060912; }
+.hero { position: relative; height: min(76vh, 700px); overflow: hidden; margin-top: -1px; background-color: #060912; }
 .hero-bg { position: absolute; inset: 0; }
 .hero-bg-video {
   position: absolute;
@@ -672,8 +672,8 @@ select::-ms-expand { display: none; }
 /* ── Hero character ── */
 .hero-character-wrap {
   position: relative;
-  width: 580px;
-  height: 100%;
+  width: 680px;
+  height: 115%;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -711,9 +711,9 @@ select::-ms-expand { display: none; }
 .hero-title {
   margin: 0;
   font-family: var(--font-inter), Inter, sans-serif;
-  font-size: clamp(3.4rem, 5.4vw, 6.4rem);
-  line-height: 1.01;
-  letter-spacing: -0.04em;
+  font-size: clamp(2.2rem, 3.4vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
   font-weight: 800;
   display: grid;
   gap: 2px;
