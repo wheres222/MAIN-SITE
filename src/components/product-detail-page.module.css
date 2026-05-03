@@ -523,11 +523,11 @@
 .descTabItems li::before {
   content: '';
   position: absolute;
-  left: -23px;
+  left: -12px;
   top: 50%;
   transform: translateY(-50%);
-  width: 9px;
-  height: 9px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--accent);
 }
