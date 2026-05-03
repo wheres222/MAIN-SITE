@@ -404,23 +404,11 @@
 
 /* INFORMATION strip */
 .descInfoRow {
-  background: #0f1012;
-  border-radius: 12px;
-  padding: 20px 24px 22px 32px;
+  background: #0d0f11;
+  border-radius: 10px;
+  border-left: 2px solid var(--accent);
+  padding: 18px 22px 20px 18px;
   position: relative;
-}
-
-/* Accent sidebar line */
-.descInfoRow::before {
-  content: '';
-  position: absolute;
-  left: 13px;
-  top: 14px;
-  bottom: 14px;
-  width: 2px;
-  background: var(--accent);
-  border-radius: 2px;
-  opacity: 0.55;
 }
 
 .descInfoTitle {
@@ -442,23 +430,24 @@
 }
 
 .descBullets li {
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   line-height: 1.45;
   position: relative;
-  padding-left: 0;
+  padding-left: 14px;
 }
 
 .descBullets li::before {
   content: '';
   position: absolute;
-  left: -23px;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 9px;
-  height: 9px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: var(--accent);
+  opacity: 0.85;
 }
 
 /* Feature tabs grid */
@@ -469,67 +458,58 @@
 }
 
 .descTabCol {
-  background: #0f1012;
-  border-radius: 12px;
-  padding: 20px 18px 22px 32px;
+  background: #0d0f11;
+  border-radius: 10px;
+  /* Line IS the left border — runs full card height */
+  border-left: 2px solid var(--accent);
+  padding: 18px 18px 22px 18px;
   position: relative;
 }
 
-/* Accent sidebar line */
-.descTabCol::before {
-  content: '';
-  position: absolute;
-  left: 13px;
-  top: 14px;
-  bottom: 14px;
-  width: 2px;
-  background: var(--accent);
-  border-radius: 2px;
-  opacity: 0.55;
-}
-
 .descTabTitle {
-  margin: 0 0 5px;
-  font-size: 0.87rem;
+  margin: 0 0 4px;
+  font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: #ffffff;
 }
 
 .descTabSubtitle {
-  margin: 0 0 14px;
-  font-size: 0.75rem;
+  margin: 0 0 12px;
+  font-size: 0.73rem;
   color: var(--text-dim);
   line-height: 1.4;
 }
 
 .descTabItems {
   list-style: none;
-  margin: 14px 0 0;
+  margin: 10px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 11px;
 }
 
 .descTabItems li {
-  font-size: 0.83rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   line-height: 1.4;
   position: relative;
+  padding-left: 14px;
 }
 
 .descTabItems li::before {
   content: '';
   position: absolute;
-  left: -12px;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: var(--accent);
+  opacity: 0.85;
 }
 
 /* ── Responsive ────────────────────────────────── */
