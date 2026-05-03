@@ -2134,17 +2134,17 @@ select::-ms-expand { display: none; }
   justify-content: center;
   gap: 8px;
   border-radius: 6px;
-  border: 1px solid var(--accent);
-  background: var(--accent-dim);
-  color: var(--accent);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.06);
+  color: #a0aec0;
   font-weight: 700;
   padding: 12px 14px;
-  transition: background 0.16s ease, color 0.16s ease, transform 0.14s ease;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
 }
 .support-option-cta:hover {
-  background: var(--accent-soft);
-  color: #fff;
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #cbd5e0;
 }
 .support-cta-icon {
   width: 16px;
@@ -2161,10 +2161,7 @@ select::-ms-expand { display: none; }
   background: var(--themed-blue-gradient);
   border-color: var(--accent);
   color: #ffffff;
-}
-.support-option-cta-primary:hover {
-  filter: brightness(1.07);
-  color: #ffffff;
+  pointer-events: none;
 }
 
 /* ── Status page banner ── */
