@@ -12,7 +12,7 @@
 
 .showreel {
   margin-top: 20px;
-  background: #0d0e11;
+  background: var(--surface-2);
   border-radius: 16px;
   padding: 22px 26px;
 }
@@ -248,7 +248,7 @@
 .planCard {
   border: 1px solid var(--border);
   border-radius: 7px;
-  background: #111315;
+  background: var(--surface-3);
   padding: 10px 11px 10px;
   min-height: 64px;
   color: #ffffff;
@@ -292,6 +292,7 @@
   letter-spacing: 0.05em;
   text-align: right;
   white-space: nowrap;
+  opacity: 0.9;
 }
 .planCardSelected .planStock { color: rgba(255,255,255,0.75); }
 .planPrice {
@@ -315,8 +316,8 @@
 
 .qtyStepper button {
   border: 0;
-  background: transparent;
-  color: var(--text-muted);
+  background: var(--accent-dim);
+  color: var(--accent);
   font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
@@ -328,8 +329,8 @@
 }
 
 .qtyStepper button:first-child:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .qtyStepper button:last-child {
@@ -394,7 +395,7 @@
 /* ── Description panel ───────────────────────── */
 .descPanel {
   margin-top: 16px;
-  background: #0d0e11;
+  background: var(--surface-2);
   border-radius: 14px;
   padding: 18px 20px;
   display: flex;
@@ -404,7 +405,7 @@
 
 /* INFORMATION strip */
 .descInfoRow {
-  background: #0d0f11;
+  background: var(--surface-3);
   border-radius: 10px;
   border-left: 2px solid var(--accent);
   padding: 18px 22px 20px 18px;
@@ -458,7 +459,7 @@
 }
 
 .descTabCol {
-  background: #0d0f11;
+  background: var(--surface-3);
   border-radius: 10px;
   /* Line IS the left border — runs full card height */
   border-left: 2px solid var(--accent);
