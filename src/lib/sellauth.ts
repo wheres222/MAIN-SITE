@@ -937,7 +937,7 @@ async function fetchProductDetailRecord(productId: number): Promise<GenericRecor
 
   for (const path of paths) {
     try {
-      const response = await fetchSellAuth<unknown>(path);
+      const response = await fetchSellAuth<unknown>(path, undefined, SELLAUTH_EDGE_CACHE_SECONDS);
       const root = asRecord(response.data);
       const candidates = [
         asRecord(root.product),

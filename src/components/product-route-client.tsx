@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ProductDetailPage } from "@/components/product-detail-page";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { productHref, productSlugFromName } from "@/lib/product-route";
-import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
 
 function upsertMeta(
@@ -51,7 +51,11 @@ function safeDecoded(value: string): string {
   }
 }
 
-export function ProductRouteClient() {
+interface ProductRouteClientProps {
+  initialData?: StorefrontData | null;
+}
+
+export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = useParams<{ slug?: string | string[] }>();
@@ -93,11 +97,20 @@ export function ProductRouteClient() {
     ).trim()
   );
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState("");
-  const [storefront, setStorefront] = useState<StorefrontData | null>(null);
+  const [storefront, setStorefront] = useState<StorefrontData | null>(initialData ?? null);
+
+  // Prime the client-side cache from server data so subsequent navigations
+  // within the same session don't re-fetch.
+  useEffect(() => {
+    if (initialData) primeStorefrontCache(initialData);
+  }, [initialData]);
 
   useEffect(() => {
+    // Skip client fetch — server already provided the data.
+    if (initialData) return;
+
     let alive = true;
 
     async function run() {
@@ -124,7 +137,7 @@ export function ProductRouteClient() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [initialData]);
 
   const product = useMemo(() => {
     if (!storefront) return null;

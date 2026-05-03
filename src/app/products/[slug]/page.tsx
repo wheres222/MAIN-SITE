@@ -4,6 +4,10 @@ import { ProductRouteClient } from "@/components/product-route-client";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { getStorefrontData } from "@/lib/sellauth";
 import { productSlugFromName } from "@/lib/product-route";
+import type { StorefrontData } from "@/types/sellauth";
+
+export const revalidate = 300;
+
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
 export async function generateMetadata({
@@ -56,10 +60,19 @@ export async function generateMetadata({
   };
 }
 
-export default function ProductSlugPage() {
+export default async function ProductSlugPage() {
+  // generateMetadata already called getStorefrontData() for this request —
+  // the module-level cache means this second call is free (no extra fetch).
+  let initialData: StorefrontData | null = null;
+  try {
+    initialData = await getStorefrontData();
+  } catch {
+    // Client will fall back to its own fetch
+  }
+
   return (
     <Suspense fallback={<SubpageSkeleton rows={5} />}>
-      <ProductRouteClient />
+      <ProductRouteClient initialData={initialData} />
     </Suspense>
   );
 }
