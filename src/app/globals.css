@@ -1058,7 +1058,7 @@ select::-ms-expand { display: none; }
 }
 
 .bendoo-cards-wrap {
-  margin-top: 26px;
+  margin-top: 64px;
   margin-bottom: 8px;
   position: relative;
   isolation: isolate;
@@ -2170,8 +2170,8 @@ select::-ms-expand { display: none; }
 
 /* ── Gameplay footage showcase ───────────────────────── */
 .footage-section {
-  margin-top: 48px;
-  margin-bottom: 12px;
+  margin-top: 72px;
+  margin-bottom: 24px;
 }
 
 .footage-grid {
