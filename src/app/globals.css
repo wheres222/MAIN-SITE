@@ -2161,7 +2161,11 @@ select::-ms-expand { display: none; }
   background: var(--themed-blue-gradient);
   border-color: var(--accent);
   color: #ffffff;
-  pointer-events: none;
+}
+.support-option-cta-primary:hover {
+  background: var(--themed-blue-gradient);
+  border-color: var(--accent);
+  color: #ffffff;
 }
 
 /* ── Status page banner ── */
