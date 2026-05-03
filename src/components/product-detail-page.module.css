@@ -11,16 +11,16 @@
 }
 
 .showreel {
-  margin-top: 24px;
-  background: var(--surface-2);
-  border-radius: 20px;
-  padding: 36px 40px;
+  margin-top: 20px;
+  background: #0d0e11;
+  border-radius: 16px;
+  padding: 22px 26px;
 }
 
 .topGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 48px;
+  gap: 32px;
   align-items: stretch;
 }
 
@@ -185,7 +185,7 @@
 .buyColumn h1 {
   margin: 0;
   font-family: var(--font-main);
-  font-size: clamp(28px, 3.2vw, 42px);
+  font-size: clamp(22px, 2.6vw, 34px);
   line-height: 1.1;
   font-weight: 700;
   color: #ffffff;
@@ -195,8 +195,8 @@
 .badgeRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 20px 0;
+  gap: 7px;
+  margin: 12px 0 14px;
 }
 .badgeInstant,
 .badgeUndetected {
@@ -227,12 +227,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin: 0 0 22px;
+  margin: 0 0 14px;
 }
 
 .price {
   margin: 0;
-  font-size: clamp(1.86rem, 3.25vw, 2.7rem);
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
   line-height: 1;
   font-weight: 700;
   color: var(--text-primary);
@@ -247,10 +247,10 @@
 
 .planCard {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface-3);
-  padding: 16px 14px 14px;
-  min-height: 80px;
+  border-radius: 7px;
+  background: #111315;
+  padding: 10px 11px 10px;
+  min-height: 64px;
   color: #ffffff;
   cursor: pointer;
   display: flex;
@@ -277,7 +277,7 @@
   margin-bottom: 6px;
 }
 .planName {
-  font-size: 0.72rem;
+  font-size: 0.67rem;
   font-weight: 700;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -295,7 +295,7 @@
 }
 .planCardSelected .planStock { color: rgba(255,255,255,0.75); }
 .planPrice {
-  font-size: 1.1rem;
+  font-size: 0.98rem;
   font-weight: 800;
   color: #ffffff;
   line-height: 1;
@@ -358,32 +358,32 @@
 /* ── Action row ──────────────────────────────── */
 .actionRow {
   margin-top: auto;
-  padding-top: 28px;
+  padding-top: 18px;
   display: flex;
   flex-direction: row;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
   justify-content: flex-start;
 }
 
 .buyNowBtn {
-  height: 54px;
-  padding: 0 32px;
-  border-radius: 8px;
-  border: 0;
-  background: var(--themed-blue-gradient);
-  color: #ffffff;
-  font-size: 0.92rem;
+  height: 46px;
+  padding: 0 28px;
+  border-radius: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #ffffff;
+  color: #0d0e11;
+  font-size: 0.88rem;
   line-height: 1;
   font-weight: 700;
   cursor: pointer;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
-  transition: opacity 0.15s ease, transform 0.1s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
-.buyNowBtn:hover { opacity: 0.88; }
-.buyNowBtn:disabled { opacity: 0.65; cursor: not-allowed; }
+.buyNowBtn:hover { background: #e8edf5; color: #0d0e11; }
+.buyNowBtn:disabled { opacity: 0.55; cursor: not-allowed; }
 .buyNowBtn:active { transform: scale(0.99); }
 
 .notice {
@@ -393,13 +393,13 @@
 
 /* ── Description panel ───────────────────────── */
 .descPanel {
-  margin-top: 24px;
-  background: var(--surface-2);
-  border-radius: 20px;
-  padding: 22px 24px;
+  margin-top: 16px;
+  background: #0d0e11;
+  border-radius: 14px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 /* INFORMATION strip */
