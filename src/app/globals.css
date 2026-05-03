@@ -2168,6 +2168,78 @@ select::-ms-expand { display: none; }
   color: #ffffff;
 }
 
+/* ── Gameplay footage showcase ───────────────────────── */
+.footage-section {
+  margin-top: 48px;
+  margin-bottom: 12px;
+}
+
+.footage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.footage-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface-2);
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: stretch;
+}
+
+.footage-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Bottom gradient so label stays readable over any footage */
+.footage-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    rgba(5, 7, 18, 0.72) 100%
+  );
+  pointer-events: none;
+}
+
+.footage-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px 13px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.footage-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+  .footage-grid { grid-template-columns: 1fr; }
+}
+
 /* ── Status page banner ── */
 .status-banner {
   position: relative;

@@ -743,6 +743,34 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
           </div>
         </section>
 
+        {/* ── Gameplay footage showcase ── */}
+        <section className="shell footage-section">
+          <div className="footage-grid">
+            {([
+              { label: "FORTNITE FOOTAGE", src: "/footage/fortnite.mp4", poster: "/footage/fortnite-poster.jpg" },
+              { label: "APEX FOOTAGE",     src: "/footage/apex.mp4",     poster: "/footage/apex-poster.jpg"     },
+              { label: "RUST FOOTAGE",     src: "/footage/rust.mp4",     poster: "/footage/rust-poster.jpg"     },
+            ] as const).map(({ label, src, poster }) => (
+              <div key={label} className="footage-card">
+                <video
+                  className="footage-video"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  poster={poster}
+                >
+                  <source src={src} type="video/mp4" />
+                </video>
+                <div className="footage-label">
+                  <span className="footage-dot" aria-hidden="true" />
+                  <span>{label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
       </main>
 
       <SiteFooter />
