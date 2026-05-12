@@ -101,6 +101,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${roboto.variable} ${montserrat.variable} ${inter.variable}`}>
       <head>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-9XTJ5HDH2M"></script>
+        <script dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-9XTJ5HDH2M');` }} />
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
         <link rel="preconnect" href="https://cdn.mysellauth.com" crossOrigin="anonymous" />
