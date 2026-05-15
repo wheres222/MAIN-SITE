@@ -158,6 +158,136 @@ export function AdminStatusManager() {
           </p>
         </div>
 
+        {/* API Docs */}
+        <details
+          style={{
+            marginBottom: 28,
+            background: "#0d1017",
+            border: "1px solid #1e2332",
+            borderRadius: 10,
+            overflow: "hidden",
+          }}
+        >
+          <summary
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "13px 18px",
+              cursor: "pointer",
+              color: "#c8d4f0",
+              fontWeight: 600,
+              fontSize: "0.9rem",
+              listStyle: "none",
+              userSelect: "none",
+            }}
+          >
+            <span style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 28,
+              height: 28,
+              borderRadius: 7,
+              background: "rgba(0,166,255,0.12)",
+              border: "1px solid rgba(0,166,255,0.2)",
+              color: "#00A6FF",
+              fontSize: "0.78rem",
+              fontWeight: 800,
+              flexShrink: 0,
+            }}>
+              {"</>"}
+            </span>
+            Update via API
+            <span style={{ color: "#4a5468", fontWeight: 400, fontSize: "0.82rem", marginLeft: 4 }}>
+              Push status from your bots/monitors
+            </span>
+          </summary>
+
+          <div style={{ padding: "0 18px 18px", borderTop: "1px solid #1e2332" }}>
+            <p style={{ color: "#8e98ab", fontSize: "0.85rem", margin: "14px 0 10px" }}>
+              Use your <code style={{ color: "#00A6FF", background: "rgba(0,166,255,0.08)", padding: "1px 6px", borderRadius: 4 }}>STATUS_API_KEY</code> env variable to push status updates programmatically.
+              The <code style={{ color: "#c8d4f0" }}>:ref</code> is any slug you choose — it becomes the identifier in the status board.
+            </p>
+
+            {/* Endpoint table */}
+            <div style={{ display: "grid", gap: 6, marginBottom: 14 }}>
+              {[
+                { method: "PUT", path: "/api/status/:ref", desc: "Set or update status" },
+                { method: "DELETE", path: "/api/status/:ref", desc: "Clear override (revert to auto)" },
+                { method: "GET", path: "/api/status/:ref", desc: "Read current status (no auth)" },
+              ].map(({ method, path, desc }) => (
+                <div key={method + path} style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "7px 12px",
+                  background: "#111520",
+                  borderRadius: 6,
+                  border: "1px solid #1e2332",
+                  fontSize: "0.82rem",
+                }}>
+                  <span style={{
+                    fontWeight: 800,
+                    fontSize: "0.7rem",
+                    color: method === "PUT" ? "#62abff" : method === "DELETE" ? "#ff8a9f" : "#2fe496",
+                    letterSpacing: "0.04em",
+                    width: 44,
+                    flexShrink: 0,
+                  }}>{method}</span>
+                  <code style={{ color: "#c8d4f0", flex: 1 }}>{path}</code>
+                  <span style={{ color: "#4a5468", fontSize: "0.78rem" }}>{desc}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Curl example */}
+            <pre style={{
+              margin: 0,
+              padding: "14px 16px",
+              background: "#080b11",
+              border: "1px solid #1a2030",
+              borderRadius: 8,
+              fontSize: "0.78rem",
+              color: "#8aa4c8",
+              overflowX: "auto",
+              lineHeight: 1.7,
+              fontFamily: "monospace",
+            }}>
+{`# Set a product to UPDATING
+curl -X PUT https://cheatparadise.gg/api/status/rust \\
+  -H "Authorization: Bearer $STATUS_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"status":"updating","message":"Patch dropped — testing in progress"}'
+
+# Valid status values: undetected | updating | detected
+# :ref examples:  rust  valorant  cs2  fortnite  apex`}
+            </pre>
+
+            {/* Status values */}
+            <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+              {(Object.entries(STATUS_CONFIG) as [StatusKind, typeof STATUS_CONFIG[StatusKind]][]).map(([kind, cfg]) => (
+                <span key={kind} style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 5,
+                  padding: "3px 10px",
+                  borderRadius: 5,
+                  border: `1px solid ${cfg.border}`,
+                  background: cfg.bg,
+                  color: cfg.color,
+                  fontSize: "0.68rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.06em",
+                  fontFamily: "monospace",
+                }}>
+                  {`"${kind}"`}
+                </span>
+              ))}
+            </div>
+          </div>
+        </details>
+
         {/* Legend */}
         <div
           style={{

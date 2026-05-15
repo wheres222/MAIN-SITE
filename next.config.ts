@@ -23,16 +23,14 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      {
-        source: "/products/:productId",
-        destination: "/products?id=:productId",
-        permanent: false,
-      },
-      {
-        source: "/categories/:categorySlug",
-        destination: "/categories?slug=:categorySlug",
-        permanent: false,
-      },
+      // /products/:productId and /categories/:categorySlug redirects were
+      // removed — they were intercepting the new clean-URL routes at
+      // src/app/products/[slug] and src/app/categories/[slug], preventing
+      // the SEO landing pages from ever rendering. The clean URL is now the
+      // canonical form; the legacy query-param URL self-redirects to the
+      // clean URL via src/app/categories/page.tsx when a landing page exists.
+
+      // Legacy /games/* paths still redirect into the category route.
       {
         source: "/games/:gameSlug",
         destination: "/categories?slug=:gameSlug",
@@ -97,8 +95,26 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value:
-              "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; media-src 'self' blob:; connect-src 'self' https:; frame-src https://odysee.com https://www.youtube.com https://player.vimeo.com; frame-ancestors 'none';",
+            value: [
+              "default-src 'self'",
+              // script-src — explicit allowlist of CDNs we load JS from.
+              // jsdelivr powers @widgetbot/html-embed. posthog hosts the
+              // analytics SDK + config. googletagmanager + google-analytics
+              // power the gtag snippet in src/app/layout.tsx.
+              "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.posthog.com https://www.googletagmanager.com https://www.google-analytics.com",
+              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+              "img-src 'self' data: https:",
+              "font-src 'self' data:",
+              "media-src 'self' blob:",
+              // connect-src — wss: needed for Supabase realtime websocket.
+              // The wildcard https: already covers PostHog ingest, SellAuth,
+              // NowPayments, Supabase REST.
+              "connect-src 'self' https: wss:",
+              // frame-src — domains we're allowed to embed iframes from.
+              // widgetbot.io renders the Discord chat embed via e.widgetbot.io.
+              "frame-src https://odysee.com https://www.youtube.com https://player.vimeo.com https://e.widgetbot.io https://*.widgetbot.io",
+              "frame-ancestors 'none'",
+            ].join("; "),
           },
         ],
       },

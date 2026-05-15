@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Roboto, Montserrat, Inter } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "@/components/posthog-provider";
+import { DISCORD_INVITE_URL } from "@/lib/links";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -58,14 +59,14 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "Cheat Paradise",
     type: "website",
-    images: [{ url: "/branding/LOGO.webp", width: 1200, height: 630 }],
+    images: [{ url: "/branding/og-banner.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Cheat Paradise",
     description:
       "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
-    images: ["/branding/LOGO.webp"],
+    images: ["/branding/og-banner.png"],
   },
   robots: {
     index: true,
@@ -81,19 +82,36 @@ export default function RootLayout({
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "CheatParadise",
+    name: "Cheat Paradise",
+    alternateName: "CheatParadise",
     url: siteUrl,
-    sameAs: [process.env.NEXT_PUBLIC_DISCORD_URL?.trim()].filter(Boolean),
+    logo: `${siteUrl}/branding/LOGO.webp`,
+    description:
+      "Cheat Paradise sells undetected gaming software for Rust, ARC Raiders, Rainbow Six Siege, Fortnite and more, with instant delivery and 24/7 support.",
+    sameAs: [
+      DISCORD_INVITE_URL,
+      "https://www.youtube.com/@franprado",
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: "cheatparadisesupport@gmail.com",
+      availableLanguage: ["English"],
+    },
   };
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "CheatParadise",
+    name: "Cheat Paradise",
+    alternateName: "CheatParadise",
     url: siteUrl,
     potentialAction: {
       "@type": "SearchAction",
-      target: `${siteUrl}/products?id={search_term_string}`,
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${siteUrl}/products?q={search_term_string}`,
+      },
       "query-input": "required name=search_term_string",
     },
   };
@@ -107,8 +125,6 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
         <link rel="preconnect" href="https://cdn.mysellauth.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://cdn.mysellauth.com" />
-        <link rel="preload" href="/fonts/gilroy/Gilroy-Bold.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
-        <link rel="preload" href="/fonts/gilroy/Gilroy-SemiBold.ttf" as="font" type="font/ttf" crossOrigin="anonymous" />
         <link rel="icon" href="/branding/LOGO.webp" type="image/webp" />
         <link rel="shortcut icon" href="/branding/LOGO.webp" type="image/webp" />
         <link rel="apple-touch-icon" href="/branding/LOGO.webp" />
@@ -123,15 +139,6 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         <PostHogProvider>{children}</PostHogProvider>
-        {/* Discourage casual asset inspection */}
-        <script dangerouslySetInnerHTML={{ __html: `
-          document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-          document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12') { e.preventDefault(); return false; }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) { e.preventDefault(); return false; }
-            if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) { e.preventDefault(); return false; }
-          });
-        ` }} />
       </body>
     </html>
   );

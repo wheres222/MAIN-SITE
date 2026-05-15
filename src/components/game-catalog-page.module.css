@@ -54,12 +54,17 @@
   width: min(1220px, 100%);
 }
 
-/* ─── Card shell ─────────────────────────────────────────── */
+/* ─── Card shell — unified "glass" treatment shared with reviews / support / status ── */
 .productCard {
-  background: #0f1012;
-  border: none;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005));
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   overflow: hidden;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.productCard:hover {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Link fills the full card */
@@ -88,23 +93,14 @@
 .productCardBody {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 16px 16px;
+  gap: 12px;
+  padding: 16px 18px 18px;
   flex: 1;
-}
-
-/* Name + price on one line */
-.productCardHeading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  min-width: 0;
 }
 
 .productCardName {
   margin: 0;
-  font-size: 1.08rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #ffffff;
   line-height: 1.2;
@@ -113,91 +109,111 @@
   text-overflow: ellipsis;
 }
 
-.productCardPriceBlock {
+/* Bottom row — STARTING AT $X.XX on left, Buy Now button on right. */
+.productCardFooter {
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 2px;
+}
+
+.productCardPriceBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   flex-shrink: 0;
 }
 
 .productCardFrom {
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.45);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  line-height: 1;
 }
 
 .productCardPrice {
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #4ade80;
+  line-height: 1.1;
 }
 
-/* ─── Status badge — skinny, matches product detail page ──── */
+/* ─── Status pill — globally unified styling (matches status board + product detail) ── */
 .statusBadge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
-  border-radius: 5px;
-  font-size: 0.64rem;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 7px;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.055em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   width: fit-content;
   max-width: 100%;
+  border: none;
+  line-height: 1;
 }
 
-/* Matches product page badgeUndetected exactly */
+.statusBadge svg {
+  flex-shrink: 0;
+}
+
+/* Undetected — dark green bg, bright green text + icons */
 .statusUpdated {
-  background: #0d7a55;
-  border: 1px solid #10b981;
-  color: #ffffff;
+  background: #0a3a22;
+  color: #22c55e;
 }
-.statusUpdated svg { color: #6ee7b7; }
+.statusUpdated svg { color: #22c55e; }
 
-/* Updating — blue equivalent */
+/* Updating — dark amber bg, gold text + icons */
 .statusUpdating {
-  background: #0f3460;
-  border: 1px solid #3b82f6;
-  color: #ffffff;
+  background: #3a2f0a;
+  color: #fbbf24;
 }
-.statusUpdating svg { color: #93c5fd; }
+.statusUpdating svg { color: #fbbf24; }
 
-/* Frozen — muted gray */
+/* Frozen / Detected — dark red bg, bright red text + icons */
 .statusFrozen {
-  background: #1e2029;
-  border: 1px solid #4b5563;
-  color: #9ca3af;
+  background: #3a0f10;
+  color: #ef4444;
 }
-.statusFrozen svg { color: #6b7280; }
+.statusFrozen svg { color: #ef4444; }
 
-/* ─── Buy Now button ─────────────────────────────────────── */
+/* ─── Buy Now button (right side of footer row) ──────────── */
 .buyButton {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
-  padding: 11px 14px;
+  padding: 9px 18px;
   border-radius: 8px;
   background: #1a1d24;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  color: #8b95a8;
-  font-size: 0.88rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d8dde6;
+  font-size: 0.84rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  transition: color 0.18s ease, background 0.18s ease;
-  margin-top: auto;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-/* Only the button content turns white — no card lift */
+.buyButton svg {
+  flex-shrink: 0;
+}
+
+/* Hover: button fills with white, no card lift */
 .productCard:hover .buyButton,
 .productCard:focus-within .buyButton {
   color: #000000;
   background: #ffffff;
+  border-color: #ffffff;
 }
 
 /* ─── Empty state ────────────────────────────────────────── */

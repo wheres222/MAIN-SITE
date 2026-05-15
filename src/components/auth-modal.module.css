@@ -2,8 +2,8 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,29 +13,111 @@
 
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
 
+/* ── Two-column modal shell ── */
 .modal {
   position: relative;
   width: 100%;
-  max-width: 440px;
-  background: rgb(18, 18, 21);
-  border: 1px solid rgb(36, 36, 42);
+  max-width: 820px;
+  display: flex;
+  flex-direction: row;
+  background: rgb(14, 14, 17);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
+  overflow: hidden;
+  animation: slideUp 0.18s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Left form panel ── */
+.formPanel {
+  flex: 1;
+  min-width: 0;
   padding: 32px 30px 30px;
   display: flex;
   flex-direction: column;
   gap: 0;
-  animation: slideUp 0.18s ease;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ── Right decorative panel ── */
+.decorPanel {
+  width: 300px;
+  flex: 0 0 300px;
+  background:
+    linear-gradient(160deg, rgba(0, 100, 200, 0.18) 0%, rgba(0, 50, 120, 0.10) 50%, rgba(0, 20, 60, 0.05) 100%),
+    rgb(10, 12, 18);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px;
+  position: relative;
+  overflow: hidden;
 }
 
+.decorPanel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0, 166, 255, 0.06) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.decorPanel::after {
+  content: "";
+  position: absolute;
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 166, 255, 0.12) 0%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.decorContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.decorLogo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  opacity: 0.9;
+}
+
+.decorTitle {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #f0f4ff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.decorSub {
+  font-size: 0.82rem;
+  color: #5a6a88;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Close button ── */
 .closeBtn {
   position: absolute;
   top: 14px;
@@ -43,7 +125,7 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  border: 1px solid rgb(40, 40, 46);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   background: transparent;
   color: #6b7694;
   cursor: pointer;
@@ -52,8 +134,9 @@
   justify-content: center;
   transition: background 0.15s, color 0.15s;
 }
-.closeBtn:hover { background: rgb(30, 30, 36); color: #f0f4ff; }
+.closeBtn:hover { background: rgba(255,255,255,0.06); color: #f0f4ff; }
 
+/* ── Logo ── */
 .logo {
   display: flex;
   justify-content: center;
@@ -65,14 +148,15 @@
   object-fit: contain;
 }
 
+/* ── Tabs ── */
 .tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: rgb(13, 13, 15);
-  border: 1px solid rgb(32, 32, 38);
+  background: rgb(10, 10, 13);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 10px;
   padding: 3px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .tabBtn {
@@ -87,57 +171,84 @@
   transition: background 0.15s, color 0.15s;
 }
 .tabBtnActive {
-  background: rgb(28, 28, 34);
+  background: rgb(22, 22, 28);
   color: #f0f4ff;
   box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* ── Social buttons row ── */
+.socialRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .discordBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  width: 100%;
-  min-height: 44px;
+  gap: 8px;
+  min-height: 42px;
   background: #5865f2;
   border: 1px solid #4752c4;
   border-radius: 10px;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s;
-  margin-bottom: 16px;
 }
 .discordBtn:hover:not(:disabled) { background: #4752c4; }
-.discordBtn:disabled { opacity: 0.6; cursor: not-allowed; }
-.discordIcon { width: 22px; height: 22px; flex: 0 0 auto; }
+.discordBtn:disabled { opacity: 0.55; cursor: not-allowed; }
 
+.googleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  background: rgb(18, 18, 22);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #e8eeff;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.googleBtn:hover:not(:disabled) { background: rgb(24, 24, 30); border-color: rgba(255,255,255,0.18); }
+.googleBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.socialIcon { width: 20px; height: 20px; flex: 0 0 auto; }
+
+/* ── Divider ── */
 .divider {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 16px;
 }
-.dividerLine { flex: 1; height: 1px; background: rgb(32, 32, 38); }
-.dividerText { font-size: 0.72rem; color: #4a5468; white-space: nowrap; }
+.dividerLine { flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+.dividerText { font-size: 0.72rem; color: #3a4460; white-space: nowrap; }
 
+/* ── Form ── */
 .form { display: flex; flex-direction: column; gap: 12px; }
 .field { display: flex; flex-direction: column; gap: 5px; }
-.label { font-size: 0.78rem; font-weight: 600; color: #8a97b8; }
+.label { font-size: 0.78rem; font-weight: 600; color: #6b7694; }
 
+/* ── Password checklist ── */
 .pwChecklist {
   list-style: none;
   margin: 6px 0 0;
   padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgb(36, 36, 44);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 7px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
 .pwCheckPass,
 .pwCheckFail {
   display: flex;
@@ -148,8 +259,7 @@
   transition: color 0.15s;
 }
 .pwCheckPass { color: #4ade80; }
-.pwCheckFail { color: #6b7694; }
-
+.pwCheckFail { color: #4a5468; }
 .pwCheckIcon {
   font-size: 0.7rem;
   font-weight: 700;
@@ -158,36 +268,37 @@
   flex: 0 0 auto;
 }
 
+/* ── Input ── */
 .input {
   width: 100%;
   min-height: 42px;
-  background: rgb(13, 13, 15);
-  border: 1px solid rgb(36, 36, 44);
+  background: rgb(11, 11, 14);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 0 12px;
   color: #f0f4ff;
   font-size: 0.88rem;
   transition: border-color 0.15s;
 }
-.input:focus { outline: none; border-color: #7cc4ff; }
-.input::placeholder { color: #3a4460; }
+.input:focus { outline: none; border-color: var(--accent, #00A6FF); }
+.input::placeholder { color: #2a3050; }
 
+/* ── Error / Success ── */
 .error {
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.22);
+  background: rgba(239, 68, 68, 0.07);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 7px;
   color: #fca5a5;
   font-size: 0.8rem;
   padding: 8px 12px;
   margin: 0;
 }
-
 .successBox {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: rgba(74, 222, 128, 0.07);
-  border: 1px solid rgba(74, 222, 128, 0.2);
+  background: rgba(74, 222, 128, 0.06);
+  border: 1px solid rgba(74, 222, 128, 0.18);
   border-radius: 10px;
   color: #86efac;
   font-size: 0.85rem;
@@ -195,30 +306,26 @@
   padding: 14px 16px;
 }
 
+/* ── Submit button — unified style for both Login and Register ── */
 .submitBtn {
   width: 100%;
   min-height: 44px;
-  background: #7cc4ff;
+  background: var(--themed-blue-gradient, linear-gradient(180deg, #33bbff 0%, #00A6FF 60%, #0080cc 100%));
   border: none;
   border-radius: 10px;
-  color: #050d1a;
+  color: #ffffff;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s, opacity 0.15s;
+  transition: opacity 0.15s;
   margin-top: 2px;
+  letter-spacing: 0.01em;
 }
-.submitBtn:hover:not(:disabled) { background: #a8d9ff; }
-.submitBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.submitBtn:hover:not(:disabled) { opacity: 0.88; }
+.submitBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-/* Create Account — matches hero "Browse Products" gradient */
-.submitBtnRegister {
-  background: var(--themed-blue-gradient, linear-gradient(135deg, #1d65f5 0%, #4d3bff 100%));
-  color: #ffffff;
-  box-shadow: 0 4px 18px rgba(29, 101, 245, 0.38);
-  letter-spacing: 0.02em;
-}
-.submitBtnRegister:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2d75ff 0%, #5d4bff 100%);
-  box-shadow: 0 6px 22px rgba(29, 101, 245, 0.5);
+/* ── Responsive: hide decor panel on small screens ── */
+@media (max-width: 680px) {
+  .modal { max-width: 440px; }
+  .decorPanel { display: none; }
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { ProductDetailPage } from "@/components/product-detail-page";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
@@ -59,6 +59,7 @@ export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = useParams<{ slug?: string | string[] }>();
+  const router = useRouter();
 
   const pidRaw = (searchParams.get("pid") || "").trim();
   const idRaw = (searchParams.get("id") || "").trim();
@@ -178,6 +179,15 @@ export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}
     upsertCanonical(canonicalUrl);
   }, [product]);
 
+  // Redirect legacy ?id= and ?pid= URLs to clean slug paths
+  useEffect(() => {
+    if (!product) return;
+    const hasLegacyParam = searchParams.has("id") || searchParams.has("pid");
+    if (hasLegacyParam) {
+      router.replace(productHref(product));
+    }
+  }, [product, searchParams, router]);
+
   if (loading) {
     return <SubpageSkeleton rows={5} />;
   }
@@ -204,69 +214,12 @@ export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}
     );
   }
 
-  const siteUrl =
-    (typeof window !== "undefined" ? window.location.origin : "") ||
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://cheatparadise.com";
-
-  const productUrl = `${siteUrl}${productHref(product)}`;
-
-  const productJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.name,
-    description: product.description || `Buy ${product.name} with instant delivery on CheatParadise.`,
-    sku: String(product.id),
-    category: product.categoryName || product.groupName || "Gaming Product",
-    image: product.image ? [product.image] : undefined,
-    offers: {
-      "@type": "Offer",
-      priceCurrency: product.currency || "USD",
-      price: typeof product.price === "number" ? product.price.toFixed(2) : undefined,
-      availability:
-        typeof product.stock === "number" && product.stock <= 0
-          ? "https://schema.org/OutOfStock"
-          : "https://schema.org/InStock",
-      url: productUrl,
-    },
-  };
-
-  const breadcrumbJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${siteUrl}/` },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: product.categoryName || product.groupName || "Category",
-        item: `${siteUrl}/categories?slug=${encodeURIComponent(
-          (product.categoryName || product.groupName || "category")
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, "-")
-            .replace(/^-+|-+$/g, "")
-        )}`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: product.name,
-        item: productUrl,
-      },
-    ],
-  };
+  // JSON-LD schemas are emitted server-side from src/app/products/[slug]/page.tsx
+  // via buildProductSchemas() — see src/lib/product-schemas.ts. Don't duplicate
+  // them here or Googlebot will see two copies and the canonical product
+  // schema spec disallows that.
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      <ProductDetailPage product={product} paymentMethods={storefront.paymentMethods} />
-    </>
+    <ProductDetailPage product={product} paymentMethods={storefront.paymentMethods} />
   );
 }

@@ -28,7 +28,7 @@
   width: 26px;
   height: 26px;
   border: 2px solid #1e1e26;
-  border-top-color: #5865f2;
+  border-top-color: var(--accent, #00A6FF);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -54,7 +54,7 @@
 }
 .seeAll {
   font-size: 0.76rem;
-  color: #5865f2;
+  color: var(--accent, #00A6FF);
   text-decoration: none;
   font-weight: 500;
 }
@@ -98,7 +98,7 @@
 .statCode {
   font-size: 0.9rem;
   font-family: monospace;
-  color: #818cf8;
+  color: var(--accent, #00A6FF);
   letter-spacing: 0.1em;
 }
 
@@ -126,7 +126,7 @@
   margin-bottom: 10px;
   transition: border-color 0.12s;
 }
-.searchBar:focus { outline: none; border-color: #5865f2; }
+.searchBar:focus { outline: none; border-color: var(--accent, #00A6FF); }
 .searchBar::placeholder { color: #374151; }
 
 .paginationRow {
@@ -148,7 +148,7 @@
   cursor: pointer;
   transition: border-color 0.12s, color 0.12s;
 }
-.paginationBtn:hover:not(:disabled) { border-color: #5865f2; color: #818cf8; }
+.paginationBtn:hover:not(:disabled) { border-color: var(--accent, #00A6FF); color: var(--accent, #00A6FF); }
 .paginationBtn:disabled { opacity: 0.3; cursor: not-allowed; }
 .paginationInfo {
   font-size: 0.8rem;
@@ -165,7 +165,7 @@
   cursor: pointer;
   margin-left: auto;
 }
-.rowsSelect:focus { outline: none; border-color: #5865f2; }
+.rowsSelect:focus { outline: none; border-color: var(--accent, #00A6FF); }
 
 /* ─── Table ────────────────────────────────────────────── */
 .tableWrap {
@@ -196,7 +196,7 @@
   vertical-align: middle;
 }
 .table tr:last-child td { border-bottom: none; }
-.table tr:hover td { background: rgba(88,101,242,0.03); }
+.table tr:hover td { background: rgba(0, 166, 255,0.03); }
 
 .tdPrimary { color: #e5e7eb !important; font-size: 0.82rem; }
 .tdSub { font-size: 0.74rem; color: #4b5563; margin-top: 2px; display: block; }
@@ -204,7 +204,7 @@
 .tdOrange { color: #fb923c !important; }
 .tdBlue { color: #60a5fa !important; }
 
-.mono { font-family: monospace; color: #818cf8 !important; font-size: 0.78rem; }
+.mono { font-family: monospace; color: var(--accent, #00A6FF) !important; font-size: 0.78rem; }
 
 .productCell { display: flex; align-items: center; gap: 8px; }
 .productThumb {
@@ -221,7 +221,7 @@
   align-items: center;
   gap: 5px;
   padding: 5px 14px;
-  background: #5865f2;
+  background: var(--accent, #00A6FF);
   border: none;
   border-radius: 6px;
   color: #fff;
@@ -231,23 +231,23 @@
   transition: background 0.12s;
   white-space: nowrap;
 }
-.actionBtn:hover { background: #6875f5; }
+.actionBtn:hover { background: var(--accent-dark, #0080cc); }
 
 .downloadBtn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 5px 12px;
-  background: rgba(88,101,242,0.1);
-  border: 1px solid rgba(88,101,242,0.25);
+  background: rgba(0, 166, 255,0.1);
+  border: 1px solid rgba(0, 166, 255,0.25);
   border-radius: 6px;
-  color: #818cf8;
+  color: var(--accent, #00A6FF);
   font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.12s;
 }
-.downloadBtn:hover { background: rgba(88,101,242,0.18); }
+.downloadBtn:hover { background: rgba(0, 166, 255,0.18); }
 
 /* ─── Badges ───────────────────────────────────────────── */
 .badge {
@@ -270,15 +270,15 @@
 /* ─── Balance display ──────────────────────────────────── */
 .balanceDisplay {
   padding: 20px 22px;
-  background: linear-gradient(135deg, rgba(88,101,242,0.12), rgba(88,101,242,0.03));
-  border: 1px solid rgba(88,101,242,0.22);
+  background: linear-gradient(135deg, rgba(0, 166, 255,0.12), rgba(0, 166, 255,0.03));
+  border: 1px solid rgba(0, 166, 255,0.22);
   border-radius: 10px;
   margin-bottom: 20px;
   display: flex;
   align-items: flex-end;
   gap: 12px;
 }
-.balanceLabel { font-size: 0.68rem; font-weight: 700; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px; }
+.balanceLabel { font-size: 0.68rem; font-weight: 700; color: var(--accent, #00A6FF); text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 4px; }
 .balanceAmt { font-size: 2.4rem; font-weight: 800; color: #f0f4ff; line-height: 1; letter-spacing: -0.03em; }
 .balanceCurrency { font-size: 0.78rem; color: #4b5563; padding-bottom: 5px; }
 
@@ -289,19 +289,19 @@
   justify-content: space-between;
   gap: 14px;
   padding: 18px 20px;
-  background: linear-gradient(135deg, rgba(88,101,242,0.1), rgba(88,101,242,0.03));
-  border: 1px solid rgba(88,101,242,0.2);
+  background: linear-gradient(135deg, rgba(0, 166, 255,0.1), rgba(0, 166, 255,0.03));
+  border: 1px solid rgba(0, 166, 255,0.2);
   border-radius: 10px;
   margin-bottom: 18px;
 }
-.refCodeLabel { font-size: 0.68rem; font-weight: 700; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; display: block; }
+.refCodeLabel { font-size: 0.68rem; font-weight: 700; color: var(--accent, #00A6FF); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; display: block; }
 .refCode { font-size: 1.7rem; font-weight: 800; color: #f0f4ff; font-family: monospace; letter-spacing: 0.12em; }
 .copyBtn {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   padding: 8px 16px;
-  background: #5865f2;
+  background: var(--accent, #00A6FF);
   border: none;
   border-radius: 7px;
   color: #fff;
@@ -312,7 +312,7 @@
   transition: background 0.12s;
   flex-shrink: 0;
 }
-.copyBtn:hover { background: #6875f5; }
+.copyBtn:hover { background: var(--accent-dark, #0080cc); }
 
 .linkRow { display: flex; gap: 8px; margin-bottom: 18px; }
 .linkInput {
@@ -339,7 +339,7 @@
   white-space: nowrap;
   transition: border-color 0.12s, color 0.12s;
 }
-.copyLinkBtn:hover { border-color: #5865f2; color: #818cf8; }
+.copyLinkBtn:hover { border-color: var(--accent, #00A6FF); color: var(--accent, #00A6FF); }
 
 /* ─── Affiliate stats ──────────────────────────────────── */
 .affiliateBalanceCard {
@@ -408,7 +408,7 @@
   text-decoration: none;
   transition: border-color 0.12s;
 }
-.quickCard:hover { border-color: rgba(88,101,242,0.4); }
+.quickCard:hover { border-color: rgba(0, 166, 255,0.4); }
 .quickCardTitle { font-size: 0.82rem; font-weight: 700; color: #d1d5db; }
 .quickCardDesc { font-size: 0.72rem; color: #4b5563; }
 
@@ -425,12 +425,12 @@
   border-radius: 7px;
   transition: border-color 0.12s;
 }
-.orderRow:hover { border-color: rgba(88,101,242,0.3); }
+.orderRow:hover { border-color: rgba(0, 166, 255,0.3); }
 .orderLeft { display: flex; flex-direction: column; gap: 2px; }
 .orderName { font-size: 0.84rem; font-weight: 600; color: #d1d5db; }
 .orderDate { font-size: 0.72rem; color: #4b5563; }
 .orderRight { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.orderAmt { font-size: 0.82rem; font-weight: 600; color: #818cf8; font-family: monospace; }
+.orderAmt { font-size: 0.82rem; font-weight: 600; color: var(--accent, #00A6FF); font-family: monospace; }
 
 /* ─── Empty state ──────────────────────────────────────── */
 .empty {
@@ -446,7 +446,7 @@
   display: inline-block;
   margin-top: 12px;
   padding: 8px 20px;
-  background: #5865f2;
+  background: var(--accent, #00A6FF);
   border-radius: 7px;
   color: #fff;
   font-weight: 700;
@@ -454,7 +454,7 @@
   text-decoration: none;
   transition: background 0.12s;
 }
-.emptyBtn:hover { background: #6875f5; }
+.emptyBtn:hover { background: var(--accent-dark, #0080cc); }
 
 /* ─── Forms ────────────────────────────────────────────── */
 .form { display: flex; flex-direction: column; gap: 14px; max-width: 460px; }
@@ -474,7 +474,7 @@
   font-size: 0.86rem;
   transition: border-color 0.12s;
 }
-.input:focus { outline: none; border-color: #5865f2; }
+.input:focus { outline: none; border-color: var(--accent, #00A6FF); }
 .input::placeholder { color: #2a2a36; }
 .inputReadonly { opacity: 0.45; cursor: default; }
 
@@ -500,7 +500,7 @@ select.input { cursor: pointer; }
 .submitBtn {
   min-height: 42px;
   padding: 0 24px;
-  background: #5865f2;
+  background: var(--accent, #00A6FF);
   border: none;
   border-radius: 8px;
   color: #fff;
@@ -510,7 +510,7 @@ select.input { cursor: pointer; }
   transition: background 0.14s;
   align-self: flex-start;
 }
-.submitBtn:hover:not(:disabled) { background: #6875f5; }
+.submitBtn:hover:not(:disabled) { background: var(--accent-dark, #0080cc); }
 .submitBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ─── Settings grid ────────────────────────────────────── */

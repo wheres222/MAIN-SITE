@@ -131,12 +131,15 @@ async function handleShopOrder(
     return NextResponse.json({ ok: true });
   }
 
-  // Mark as paid first so we don't double-process on retries
-  const { error: updateErr } = await admin
+  // Atomic transition: pending → paid.
+  // .select("id") returns the rows actually updated; an empty result means another
+  // concurrent webhook invocation already claimed this order — bail out immediately.
+  const { data: lockData, error: updateErr } = await admin
     .from("shop_orders")
     .update({ status: "paid", updated_at: new Date().toISOString() })
     .eq("id", order.id)
-    .eq("status", "pending"); // optimistic lock — only update if still pending
+    .eq("status", "pending")
+    .select("id");
 
   if (updateErr) {
     log.error("Failed to mark shop order paid", {
@@ -144,6 +147,11 @@ async function handleShopOrder(
       err: String(updateErr),
     });
     return NextResponse.json({ error: "DB update failed" }, { status: 500 });
+  }
+
+  if (!lockData || lockData.length === 0) {
+    log.info("Shop order lock not acquired — already being processed", { orderId: order.id });
+    return NextResponse.json({ ok: true });
   }
 
   log.info("Shop order marked paid", { orderId: order.id, email: order.email });

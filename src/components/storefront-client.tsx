@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { CheatMenuDemo } from "@/components/cheat-menu-demo";
+import { ReviewsMarquee } from "@/components/reviews-marquee";
+import { DiscordWidget } from "@/components/discord-widget";
+import { categoryHref } from "@/lib/category-href";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { StorefrontProvider } from "@/context/storefront-context";
@@ -133,9 +137,6 @@ function money(value: number | null, currency = "USD"): string {
   }).format(value);
 }
 
-function shouldContainCategoryImage(slug: string): boolean {
-  return false;
-}
 
 function HeroSlideshow({ slides }: { slides: Array<{ src: string; name: string; href: string }> }) {
   const [idx, setIdx] = useState(0);
@@ -310,7 +311,10 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
         const slug = canonicalGroupSlug(group.name);
         if (!slug) return false;
         if (slug === "league-of-legends" || slug === "dayz") return false;
-        if (HIDDEN_GROUP_SLUGS.has(slug) && (productCountBySlug.get(slug) || 0) === 0) {
+        // Hide any game category with no live products so users don't land
+        // on an empty page. This is reversible — re-add products in SellAuth
+        // and they reappear automatically.
+        if ((productCountBySlug.get(slug) || 0) === 0) {
           return false;
         }
         return true;
@@ -416,12 +420,12 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
   }, []);
 
   const SLIDE_DEFS = [
-    { src: "/slideshow/Ancient Arc.png",          name: "Ancient Arc Raiders",   search: "ancient",  fallback: "/categories?slug=arc-raiders" },
-    { src: "/slideshow/Exodus Fortnite.png",       name: "Exodus Fortnite",       search: "exodus",   fallback: "/categories?slug=fortnite" },
-    { src: "/slideshow/Game Accounts.webp",        name: "Steam Accounts",        search: "account",  fallback: "/categories?slug=accounts" },
-    { src: "/slideshow/Mafia Rust.avif",           name: "Mafia Rust",            search: "mafia",    fallback: "/categories?slug=rust" },
-    { src: "/slideshow/Predator CS2.png",          name: "Predator CS2",          search: "predator", fallback: "/categories?slug=counter-strike-2" },
-    { src: "/slideshow/Rocket League Switch.png",  name: "Rocket League Switch",  search: "rocket",   fallback: "/categories?slug=rocket-league" },
+    { src: "/slideshow/Ancient Arc.png",          name: "Ancient Arc Raiders",   search: "ancient",  fallback: categoryHref("arc-raiders") },
+    { src: "/slideshow/Exodus Fortnite.png",       name: "Exodus Fortnite",       search: "exodus",   fallback: categoryHref("fortnite") },
+    { src: "/slideshow/Game Accounts.webp",        name: "Steam Accounts",        search: "account",  fallback: categoryHref("accounts") },
+    { src: "/slideshow/Mafia Rust.avif",           name: "Mafia Rust",            search: "mafia",    fallback: categoryHref("rust") },
+    { src: "/slideshow/Predator CS2.png",          name: "Predator CS2",          search: "predator", fallback: categoryHref("counter-strike-2") },
+    { src: "/slideshow/Rocket League Switch.png",  name: "Rocket League Switch",  search: "rocket",   fallback: categoryHref("rocket-league") },
   ];
 
   const slideshowSlides = useMemo(() => {
@@ -540,7 +544,9 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
               const imageSrc = staticImg;
               const hasImage = Boolean(imageSrc);
               const isAboveFold = groupIndex < 3;
-              const href = `/categories?slug=${encodeURIComponent(groupSlug)}`;
+              const href = categoryHref(groupSlug);
+
+              const lowestPrice = lowestPriceBySlug.get(groupSlug) ?? null;
 
               return (
                 <Link key={group.id} href={href} className="game-card">
@@ -562,9 +568,14 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
                     )}
                   </div>
 
-                  <span className="game-card-buy-btn">
-                    BUY NOW
-                  </span>
+                  <div className="game-card-footer">
+                    {lowestPrice !== null && (
+                      <span className="game-card-price">from {money(lowestPrice)}</span>
+                    )}
+                    <span className="game-card-buy-btn">
+                      BUY NOW
+                    </span>
+                  </div>
                 </Link>
               );
             })}
@@ -575,7 +586,12 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
           )}
         </section>
 
-        <section className="shell bendoo-cards-wrap" aria-label="Why choose Division">
+        {/* ── Interactive cheat menu demo ── */}
+        <section className="shell" style={{ paddingTop: 80, paddingBottom: 80 }}>
+          <CheatMenuDemo />
+        </section>
+
+        <section className="shell bendoo-cards-wrap" aria-label="Why choose Division" style={{ display: "none" }}>
           <header className="bendoo-cards-heading" aria-hidden="true">
             <h2>You&apos;ll Choose Us.</h2>
             <p>Because your Cheats should feel this good.</p>
@@ -747,10 +763,10 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
         <section className="shell footage-section">
           <div className="footage-grid">
             {([
-              { label: "FORTNITE FOOTAGE", src: "/footage/fortnite.mp4", poster: "/footage/fortnite-poster.jpg" },
-              { label: "APEX FOOTAGE",     src: "/footage/apex.mp4",     poster: "/footage/apex-poster.jpg"     },
-              { label: "RUST FOOTAGE",     src: "/footage/rust.mp4",     poster: "/footage/rust-poster.jpg"     },
-            ] as const).map(({ label, src, poster }) => (
+              { label: "FORTNITE FOOTAGE",     src: "/footage/fortnite.mp4", poster: "" },
+              { label: "ARC RAIDERS FOOTAGE", src: "/footage/arc.mp4",     poster: "" },
+              { label: "RUST FOOTAGE",         src: "/footage/rust.mp4",     poster: "" },
+            ] as const).map(({ label, src }) => (
               <div key={label} className="footage-card">
                 <video
                   className="footage-video"
@@ -758,7 +774,6 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
                   muted
                   loop
                   playsInline
-                  poster={poster}
                 >
                   <source src={src} type="video/mp4" />
                 </video>
@@ -770,6 +785,12 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
             ))}
           </div>
         </section>
+
+        {/* ── Reviews marquee ── */}
+        <ReviewsMarquee />
+
+        {/* ── Discord community widget ── */}
+        <DiscordWidget />
 
       </main>
 

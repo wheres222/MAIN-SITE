@@ -5,6 +5,68 @@ import type { StorefrontData } from "@/types/sellauth";
 
 export const revalidate = 300;
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
+
+// VideoObject schema for the gameplay footage shown on the landing page.
+// Unlocks video previews in Google SERPs and feeds AI engines extractable
+// metadata about each clip. Update uploadDate if you re-record / re-encode.
+const FOOTAGE_VIDEOS: Array<{
+  name: string;
+  description: string;
+  src: string;
+  duration: string;
+  uploadDate: string;
+}> = [
+  {
+    name: "Fortnite Cheat Gameplay Footage",
+    description:
+      "Live Fortnite gameplay using Cheat Paradise's undetected aimbot, ESP, and prediction features in Chapter 7 Season 2.",
+    src: "/footage/fortnite.mp4",
+    duration: "PT50S",
+    uploadDate: "2026-05-14",
+  },
+  {
+    name: "ARC Raiders Cheat Gameplay Footage",
+    description:
+      "Extraction shooter gameplay demonstrating Cheat Paradise's ARC Raiders ESP, silent aim, and loot filter.",
+    src: "/footage/arc.mp4",
+    duration: "PT50S",
+    uploadDate: "2026-05-14",
+  },
+  {
+    name: "Rust Cheat Gameplay Footage",
+    description:
+      "Live Rust raid footage using Cheat Paradise's undetected external cheat with full player ESP, item ESP, and aimbot.",
+    src: "/footage/rust.mp4",
+    duration: "PT50S",
+    uploadDate: "2026-05-14",
+  },
+];
+
+function buildVideoSchemas() {
+  return FOOTAGE_VIDEOS.map((video) =>
+    JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      name: video.name,
+      description: video.description,
+      thumbnailUrl: `${siteUrl}/branding/og-banner.png`,
+      contentUrl: `${siteUrl}${video.src}`,
+      uploadDate: video.uploadDate,
+      duration: video.duration,
+      publisher: {
+        "@type": "Organization",
+        name: "Cheat Paradise",
+        logo: {
+          "@type": "ImageObject",
+          url: `${siteUrl}/branding/LOGO.webp`,
+        },
+      },
+    })
+  );
+}
+
 export const metadata: Metadata = {
   title: {
     absolute: "Cheat Paradise",
@@ -51,11 +113,20 @@ export default async function Home() {
     ? `/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=828&q=75`
     : null;
 
+  const videoSchemas = buildVideoSchemas();
+
   return (
     <>
       {lcpProxyUrl && (
         <link rel="preload" as="image" href={lcpProxyUrl} fetchPriority="high" />
       )}
+      {videoSchemas.map((json, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: json }}
+        />
+      ))}
       <StorefrontClient initialData={initialData} />
     </>
   );

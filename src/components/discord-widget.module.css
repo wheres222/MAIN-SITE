@@ -1,0 +1,61 @@
+.section {
+  padding: 64px 0 88px;
+  background: var(--surface-0, #0d0d0d);
+}
+
+.heading {
+  text-align: center;
+  margin: 0 auto 36px;
+  max-width: 700px;
+  padding: 0 24px;
+}
+
+.heading h2 {
+  margin: 0;
+  font-size: clamp(2rem, 3.4vw, 2.8rem);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.heading p {
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+  color: #5a6478;
+  font-weight: 400;
+}
+
+/* Constrain the widget to a sensible max width and centre it. */
+.widgetWrap {
+  width: min(960px, calc(100% - 48px));
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: #1e1f22;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+/* Outer height of the embed. The widget renders an iframe inside that
+   inherits 100% from its <widgetbot> parent. */
+.widget {
+  width: 100%;
+  height: 600px;
+  display: block;
+}
+
+/* Make sure the WidgetBot iframe + element fill the container. */
+.widget :global(widgetbot),
+.widget :global(widgetbot) :global(iframe) {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  .section { padding: 48px 0 64px; }
+  .heading { margin-bottom: 26px; }
+  .widget { height: 520px; }
+}

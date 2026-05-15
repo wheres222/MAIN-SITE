@@ -23,7 +23,7 @@
   border: 1px solid #1e1e26;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  box-shadow: none;
   min-height: 640px;
 }
 
@@ -51,7 +51,7 @@
   height: 36px;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #5865f2, #818cf8);
+  background: linear-gradient(135deg, #0080cc, #00A6FF);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -108,17 +108,17 @@
   transition: background 0.1s, color 0.1s, border-color 0.1s;
 }
 .navItem:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: #c8d4f0;
+  background: rgba(0, 166, 255, 0.06);
+  color: #d8e8ff;
 }
 .navItemActive {
-  background: rgba(124, 196, 255, 0.08);
-  border-left-color: #7cc4ff;
-  color: #7cc4ff;
+  background: rgba(0, 166, 255, 0.10);
+  border-left-color: var(--accent, #00A6FF);
+  color: var(--accent, #00A6FF);
 }
 .navItemActive:hover {
-  background: rgba(124, 196, 255, 0.12);
-  color: #7cc4ff;
+  background: rgba(0, 166, 255, 0.14);
+  color: var(--accent, #00A6FF);
 }
 
 .navIcon {
@@ -174,7 +174,7 @@
     font-size: 0.78rem;
   }
   .navItemActive {
-    border-bottom-color: #7cc4ff;
+    border-bottom-color: var(--accent, #00A6FF);
     border-left-color: transparent;
   }
   .navSignOut { margin-top: 0; }

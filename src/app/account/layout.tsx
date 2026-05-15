@@ -89,7 +89,20 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+
+      // Dev preview mode: when running locally and no user is logged in,
+      // populate the dashboard with mock data so the layout can be designed
+      // without juggling Supabase OAuth + production-URL redirects. Stripped
+      // entirely in production builds since process.env.NODE_ENV becomes
+      // the literal string "production" and the branch is dead.
+      if (!user) {
+        if (process.env.NODE_ENV !== "production") {
+          setEmail("preview@cheatparadise.dev");
+          setAvatarUrl(null);
+          setDisplayName("Preview User");
+        }
+        return;
+      }
 
       setEmail(user.email || "");
       setAvatarUrl(user.user_metadata?.avatar_url || user.user_metadata?.picture || null);
@@ -120,11 +133,35 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
   const initials = displayName.slice(0, 2).toUpperCase() || "??";
 
+  const isPreviewMode =
+    process.env.NODE_ENV !== "production" && email === "preview@cheatparadise.dev";
+
   return (
     <div className={styles.page}>
       <SiteHeader activeTab="none" />
 
-      <div className={styles.wrapper} style={{ paddingTop: 96 }}>
+      {isPreviewMode && (
+        <div
+          style={{
+            position: "fixed",
+            top: 78,
+            left: 0,
+            right: 0,
+            zIndex: 50,
+            background: "#fbbf24",
+            color: "#1a1a1a",
+            padding: "6px 16px",
+            textAlign: "center",
+            fontSize: "0.78rem",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+          }}
+        >
+          🛠 DEV PREVIEW — mock data shown because no user is logged in. This banner is hidden in production.
+        </div>
+      )}
+
+      <div className={styles.wrapper} style={{ paddingTop: isPreviewMode ? 124 : 96 }}>
         <div className={styles.panel}>
           {/* Sidebar */}
           <aside className={styles.sidebar}>

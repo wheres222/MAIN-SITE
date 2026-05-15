@@ -2,23 +2,23 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { DISCORD_INVITE_URL } from "@/lib/links";
+import { categoryHref } from "@/lib/category-href";
 
+// Curated list of game categories shown in the footer. Mirrors what
+// appears on the landing page. Edit here whenever a new game is added
+// or an old one retired — the footer is intentionally static (no
+// storefront fetch) so it renders correctly on every page including
+// SSR-only routes where StorefrontProvider isn't wrapped.
 const SUPPORTED_GAMES = [
-  { name: "Accounts",           slug: "accounts" },
-  { name: "Apex Legends",       slug: "apex" },
-  { name: "ARC Raiders",        slug: "arc-raiders" },
-  { name: "Call of Duty",       slug: "call-of-duty" },
-  { name: "Counter Strike 2",   slug: "counter-strike-2" },
-  { name: "Delta Force",        slug: "delta-force" },
-  { name: "Escape From Tarkov", slug: "escape-from-tarkov" },
-  { name: "Fortnite",           slug: "fortnite" },
-  { name: "HWID Spoofer",       slug: "hwid-spoofers" },
-  { name: "Lag Switches",       slug: "lag-switches" },
-  { name: "Rainbow Six Siege",  slug: "rainbow-six-siege" },
-  { name: "Rocket League",      slug: "rocket-league" },
-  { name: "Rust",               slug: "rust" },
-  { name: "Valorant",           slug: "valorant" },
-  { name: "VPNs",               slug: "vpns" },
+  { name: "Accounts",          slug: "accounts" },
+  { name: "Apex Legends",      slug: "apex" },
+  { name: "ARC Raiders",       slug: "arc-raiders" },
+  { name: "Counter Strike 2",  slug: "counter-strike-2" },
+  { name: "Fortnite",          slug: "fortnite" },
+  { name: "HWID Spoofer",      slug: "hwid-spoofers" },
+  { name: "Rainbow Six Siege", slug: "rainbow-six-siege" },
+  { name: "Rust",              slug: "rust" },
+  { name: "VPNs",              slug: "vpns" },
 ];
 
 // Split games into two balanced columns
@@ -117,14 +117,14 @@ export function SiteFooter() {
               <ul>
                 {GAMES_COL_1.map((g) => (
                   <li key={g.slug}>
-                    <Link href={`/categories?slug=${g.slug}`}>{g.name}</Link>
+                    <Link href={categoryHref(g.slug)}>{g.name}</Link>
                   </li>
                 ))}
               </ul>
               <ul>
                 {GAMES_COL_2.map((g) => (
                   <li key={g.slug}>
-                    <Link href={`/categories?slug=${g.slug}`}>{g.name}</Link>
+                    <Link href={categoryHref(g.slug)}>{g.name}</Link>
                   </li>
                 ))}
               </ul>

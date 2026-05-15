@@ -37,7 +37,20 @@ export default function BalancePage() {
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      if (process.env.NODE_ENV !== "production") {
+        // Dev preview — mock balance + cashout history so the UI is fully exercised.
+        setBalance(42.5);
+        setTotalEarned(187.25);
+        setCashouts([
+          { id: "co_demo_001", amount: 50.0,  method: "crypto_btc", status: "completed", created_at: new Date(Date.now() - 7 * 86400000).toISOString() },
+          { id: "co_demo_002", amount: 25.0,  method: "crypto_eth", status: "completed", created_at: new Date(Date.now() - 21 * 86400000).toISOString() },
+          { id: "co_demo_003", amount: 15.75, method: "crypto_btc", status: "pending",   created_at: new Date(Date.now() - 1 * 86400000).toISOString() },
+        ]);
+      }
+      setLoading(false);
+      return;
+    }
 
     const [{ data: prof }, { data: co }] = await Promise.all([
       supabase.from("profiles").select("balance, total_earned").eq("id", user.id).single(),

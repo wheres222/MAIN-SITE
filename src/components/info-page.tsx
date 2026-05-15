@@ -11,11 +11,18 @@ interface InfoPageProps {
   title: string;
   subtitle: string;
   sections: InfoSection[];
+  jsonLd?: object;
 }
 
-export function InfoPage({ title, subtitle, sections }: InfoPageProps) {
+export function InfoPage({ title, subtitle, sections, jsonLd }: InfoPageProps) {
   return (
     <div className="marketplace-page">
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
       <SiteHeader activeTab="none" />
 
       <main className="shell info-page">

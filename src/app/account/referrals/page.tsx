@@ -48,7 +48,20 @@ export default function ReferralsPage() {
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    if (!user) {
+      if (process.env.NODE_ENV !== "production") {
+        setProfile({ referral_code: "PREVIEW42", total_earned: 187.25, balance: 42.5 });
+        setReferrals([
+          { id: "ref_demo_001", commission_amount: 4.99,  status: "paid",     created_at: new Date(Date.now() - 1 * 86400000).toISOString() },
+          { id: "ref_demo_002", commission_amount: 12.99, status: "paid",     created_at: new Date(Date.now() - 4 * 86400000).toISOString() },
+          { id: "ref_demo_003", commission_amount: 3.50,  status: "pending",  created_at: new Date(Date.now() - 8 * 86400000).toISOString() },
+          { id: "ref_demo_004", commission_amount: 19.99, status: "paid",     created_at: new Date(Date.now() - 18 * 86400000).toISOString() },
+          { id: "ref_demo_005", commission_amount: 7.25,  status: "paid",     created_at: new Date(Date.now() - 31 * 86400000).toISOString() },
+        ]);
+      }
+      setLoading(false);
+      return;
+    }
 
     const [{ data: prof }, { data: refs }] = await Promise.all([
       supabase.from("profiles").select("referral_code, total_earned, balance").eq("id", user.id).single(),

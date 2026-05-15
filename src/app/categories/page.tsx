@@ -1,47 +1,42 @@
 
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getStorefrontData } from "@/lib/sellauth";
 import { CategoryRouteClient } from "@/components/category-route-client";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
+import { canonicalGameSlug } from "@/lib/game-slug";
+import { gameSeoContentFor } from "@/lib/game-seo-content";
 import type { StorefrontData } from "@/types/sellauth";
 
 export const revalidate = 300;
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
-
-export async function generateMetadata({
-  searchParams,
-}: {
-  searchParams: Promise<{ slug?: string }>;
-}): Promise<Metadata> {
-  const { slug } = await searchParams;
-
-  if (slug) {
-    const name = slug
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase());
-    return {
-      title: `${name} Cheats & Hacks`,
-      description: `Buy undetected ${name} cheats, hacks, and mods with instant delivery. Secure checkout and 24/7 support on Cheat Paradise.`,
-      alternates: { canonical: `/categories?slug=${encodeURIComponent(slug)}` },
-      openGraph: {
-        title: `${name} Cheats & Hacks`,
-        description: `Buy undetected ${name} cheats with instant delivery on Cheat Paradise.`,
-        url: `${siteUrl}/categories?slug=${encodeURIComponent(slug)}`,
-      },
-    };
-  }
-
+export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Game Categories",
     description:
-      "Browse cheat categories by game — Rust, Valorant, Fortnite, COD, CS2, Apex, Rainbow Six Siege, and more. Instant delivery.",
+      "Browse cheat categories by game — Rust, ARC Raiders, Rainbow Six Siege, and more. Instant delivery, 24/7 support.",
     alternates: { canonical: "/categories" },
   };
 }
 
-export default async function CategoriesPage() {
+export default async function CategoriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ slug?: string }>;
+}) {
+  const { slug } = await searchParams;
+
+  // Legacy URL: 301-redirect /categories?slug=rust → /categories/rust when we
+  // have an SEO landing page for it. Preserves any existing backlinks /
+  // bookmarks pointing at the old query-param form.
+  if (slug) {
+    const canonical = canonicalGameSlug(slug);
+    if (gameSeoContentFor(canonical)) {
+      redirect(`/categories/${canonical}`);
+    }
+  }
+
   let initialData: StorefrontData | null = null;
   try {
     initialData = await getStorefrontData();

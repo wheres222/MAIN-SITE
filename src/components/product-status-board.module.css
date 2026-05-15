@@ -77,7 +77,7 @@
   gap: 5px;
 }
 
-/* ─── Glass pill row ─────────────────────────────── */
+/* ─── Product row — unified glass treatment (matches reviews / category cards) ── */
 .productRow {
   display: flex;
   align-items: center;
@@ -85,16 +85,14 @@
   gap: 12px;
   padding: 13px 18px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.033);
-  border: 1px solid rgba(255, 255, 255, 0.075);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.005));
+  border: 1px solid rgba(255, 255, 255, 0.06);
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .productRow:hover {
-  background: rgba(255, 255, 255, 0.052);
-  border-color: rgba(255, 255, 255, 0.11);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ─── Name + last-update ─────────────────────────── */
@@ -139,13 +137,13 @@
 }
 
 .statusPill {
-  min-height: 26px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  padding: 0 11px;
+  min-height: 30px;
+  border-radius: 7px;
+  border: none;
+  padding: 0 12px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   font-size: 0.7rem;
   line-height: 1;
   font-weight: 700;
@@ -154,30 +152,29 @@
 }
 
 .dot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
   background: currentColor;
-  box-shadow: 0 0 6px currentColor;
   flex: 0 0 auto;
 }
 
+/* Undetected — dark green bg, bright green text */
 .undetected {
-  color: #2fe496;
-  border-color: rgba(31, 124, 80, 0.45);
-  background: rgba(18, 67, 45, 0.4);
+  color: #22c55e;
+  background: #0a3a22;
 }
 
+/* Updating — dark amber bg, gold text */
 .updating {
-  color: #62abff;
-  border-color: rgba(44, 105, 196, 0.45);
-  background: rgba(21, 54, 102, 0.4);
+  color: #fbbf24;
+  background: #3a2f0a;
 }
 
+/* Detected — dark red bg, bright red text */
 .detected {
-  color: #ff8a9f;
-  border-color: rgba(179, 64, 94, 0.45);
-  background: rgba(92, 24, 41, 0.4);
+  color: #ef4444;
+  background: #3a0f10;
 }
 
 /* ─── Empty ──────────────────────────────────────── */

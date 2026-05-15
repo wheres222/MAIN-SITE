@@ -1,0 +1,131 @@
+/* ── Section wrapper ───────────────────────────────────────────────────────── */
+.section {
+  padding: 72px 0 88px;
+  background: var(--surface-0, #0d0d0d);
+  overflow: hidden;
+  position: relative;
+}
+
+.heading {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.heading h2 {
+  margin: 0;
+  font-size: clamp(2rem, 3.4vw, 2.8rem);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.heading p {
+  margin: 10px 0 0;
+  font-size: 0.95rem;
+  color: #5a6478;
+  font-weight: 400;
+}
+
+/* ── Marquee rows ──────────────────────────────────────────────────────────── */
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* Soft fade-out on both edges so cards don't appear to "appear" abruptly. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+}
+
+.row {
+  width: 100%;
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  will-change: transform;
+}
+
+@keyframes marqueeLeft {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes marqueeRight {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.trackLeft {
+  animation: marqueeLeft 70s linear infinite;
+}
+
+.trackRight {
+  animation: marqueeRight 70s linear infinite;
+}
+
+/* Pause on hover so users can read a card they're interested in. */
+.row:hover .track {
+  animation-play-state: paused;
+}
+
+/* Respect reduced motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+  .trackLeft,
+  .trackRight {
+    animation: none;
+  }
+}
+
+/* ── Card ──────────────────────────────────────────────────────────────────── */
+.card {
+  flex: 0 0 auto;
+  width: 280px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 2px;
+  color: #fbbf24;
+}
+
+.star {
+  display: block;
+}
+
+.text {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .section { padding: 56px 0 64px; }
+  .heading { margin-bottom: 26px; }
+  .card { width: 240px; padding: 14px 16px 16px; }
+  .text { font-size: 0.82rem; }
+}

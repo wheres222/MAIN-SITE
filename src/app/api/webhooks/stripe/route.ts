@@ -135,17 +135,26 @@ async function fulfillShopOrder(
     return NextResponse.json({ ok: true });
   }
 
-  // Atomic transition: pending → paid (only if still pending)
-  // If two webhook deliveries race, only one will match the .eq("status","pending") clause
-  const { error: lockErr } = await admin
+  // Atomic transition: pending → paid.
+  // .select("id") makes Supabase return the rows that were actually updated.
+  // If another webhook already won the race, the .eq("status","pending") filter
+  // matches zero rows → data is empty → we bail out without triggering delivery.
+  const { data: lockData, error: lockErr } = await admin
     .from("shop_orders")
     .update({ status: "paid", updated_at: new Date().toISOString() })
     .eq("id", orderId)
-    .eq("status", "pending");
+    .eq("status", "pending")
+    .select("id");
 
   if (lockErr) {
     logger.error("Failed to acquire order lock", { orderId, err: String(lockErr) });
     return NextResponse.json({ error: "DB error" }, { status: 500 });
+  }
+
+  if (!lockData || lockData.length === 0) {
+    // Zero rows updated — another webhook invocation already claimed this order
+    logger.info("Order lock not acquired — already being processed", { orderId });
+    return NextResponse.json({ ok: true });
   }
 
   logger.info("Stripe payment confirmed — beginning fulfillment", { orderId });

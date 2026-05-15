@@ -7,5 +7,5 @@ export function productSlugFromName(name: string, productId?: number): string {
 }
 
 export function productHref(product: { id: number; name: string }): string {
-  return `/products?id=${product.id}`;
+  return `/products/${productSlugFromName(product.name, product.id)}`;
 }

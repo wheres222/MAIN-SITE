@@ -31,7 +31,23 @@ export default function OrdersPage() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        if (process.env.NODE_ENV !== "production") {
+          // Dev preview — populate with a realistic mix of orders so the
+          // table + pagination + search can all be exercised without auth.
+          setOrders([
+            { id: "ord_demo_001", sellauth_order_id: "SA-58291", product_name: "Rust External (1 Month)",    product_variant: "1 Month",   product_image: null, amount: 19.99,  currency: "USD", status: "completed", created_at: new Date(Date.now() - 1 * 86400000).toISOString() },
+            { id: "ord_demo_002", sellauth_order_id: "SA-58144", product_name: "ARC Raiders ESP (Lifetime)", product_variant: "Lifetime",  product_image: null, amount: 89.99,  currency: "USD", status: "completed", created_at: new Date(Date.now() - 5 * 86400000).toISOString() },
+            { id: "ord_demo_003", sellauth_order_id: "SA-57988", product_name: "HWID Spoofer (Permanent)",   product_variant: "Permanent", product_image: null, amount: 24.99,  currency: "USD", status: "pending",   created_at: new Date(Date.now() - 9 * 86400000).toISOString() },
+            { id: "ord_demo_004", sellauth_order_id: "SA-57820", product_name: "R6 Siege Internal (1 Week)", product_variant: "1 Week",    product_image: null, amount: 12.50,  currency: "USD", status: "completed", created_at: new Date(Date.now() - 14 * 86400000).toISOString() },
+            { id: "ord_demo_005", sellauth_order_id: "SA-57601", product_name: "Fortnite Cheat (1 Month)",   product_variant: "1 Month",   product_image: null, amount: 24.99,  currency: "USD", status: "completed", created_at: new Date(Date.now() - 21 * 86400000).toISOString() },
+            { id: "ord_demo_006", sellauth_order_id: "SA-57422", product_name: "Rust External (1 Day)",      product_variant: "1 Day",     product_image: null, amount: 4.99,   currency: "USD", status: "refunded",  created_at: new Date(Date.now() - 28 * 86400000).toISOString() },
+            { id: "ord_demo_007", sellauth_order_id: "SA-57190", product_name: "ARC Raiders ESP (1 Month)",  product_variant: "1 Month",   product_image: null, amount: 19.99,  currency: "USD", status: "completed", created_at: new Date(Date.now() - 35 * 86400000).toISOString() },
+          ]);
+        }
+        setLoading(false);
+        return;
+      }
       const { data } = await supabase
         .from("orders")
         .select("*")

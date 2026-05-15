@@ -32,7 +32,28 @@ export default function AccountOverviewPage() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+
+      // Dev preview: when nobody is logged in locally, fall back to mock data
+      // so the dashboard can be designed/iterated without going through OAuth
+      // every reload. Branch is dead in production builds.
+      if (!user) {
+        if (process.env.NODE_ENV !== "production") {
+          setProfile({
+            username: "Preview User",
+            balance: 42.5,
+            referral_code: "PREVIEW42",
+            total_earned: 18.75,
+          });
+          setOrders([
+            { id: "ord_demo_001", product_name: "Rust External (1 Month)",   amount: 19.99, currency: "USD", status: "completed", created_at: new Date(Date.now() - 1 * 86400000).toISOString() },
+            { id: "ord_demo_002", product_name: "ARC Raiders ESP (Lifetime)", amount: 89.99, currency: "USD", status: "completed", created_at: new Date(Date.now() - 5 * 86400000).toISOString() },
+            { id: "ord_demo_003", product_name: "HWID Spoofer (Permanent)",   amount: 24.99, currency: "USD", status: "pending",   created_at: new Date(Date.now() - 9 * 86400000).toISOString() },
+            { id: "ord_demo_004", product_name: "R6 Siege Internal (1 Week)", amount: 12.50, currency: "USD", status: "completed", created_at: new Date(Date.now() - 14 * 86400000).toISOString() },
+          ]);
+        }
+        setLoading(false);
+        return;
+      }
 
       const [{ data: prof }, { data: ords }] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).single(),

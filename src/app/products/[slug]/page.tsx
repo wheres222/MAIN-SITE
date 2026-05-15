@@ -4,7 +4,8 @@ import { ProductRouteClient } from "@/components/product-route-client";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { getStorefrontData } from "@/lib/sellauth";
 import { productSlugFromName } from "@/lib/product-route";
-import type { StorefrontData } from "@/types/sellauth";
+import { buildProductSchemas } from "@/lib/product-schemas";
+import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
 export const revalidate = 300;
 
@@ -60,7 +61,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductSlugPage() {
+export default async function ProductSlugPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+
   // generateMetadata already called getStorefrontData() for this request —
   // the module-level cache means this second call is free (no extra fetch).
   let initialData: StorefrontData | null = null;
@@ -70,9 +77,32 @@ export default async function ProductSlugPage() {
     // Client will fall back to its own fetch
   }
 
+  // Resolve the product so we can SSR the full JSON-LD schema set into the
+  // initial HTML response — Googlebot picks this up immediately, no JS needed.
+  let resolvedProduct: SellAuthProduct | null = null;
+  if (initialData) {
+    const normalizedSlug = slug.toLowerCase();
+    resolvedProduct =
+      initialData.products.find(
+        (p) => productSlugFromName(p.name, p.id) === normalizedSlug
+      ) || null;
+  }
+
+  const schemas =
+    resolvedProduct ? buildProductSchemas(resolvedProduct, siteUrl) : [];
+
   return (
-    <Suspense fallback={<SubpageSkeleton rows={5} />}>
-      <ProductRouteClient initialData={initialData} />
-    </Suspense>
+    <>
+      {schemas.map((json, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: json }}
+        />
+      ))}
+      <Suspense fallback={<SubpageSkeleton rows={5} />}>
+        <ProductRouteClient initialData={initialData} />
+      </Suspense>
+    </>
   );
 }

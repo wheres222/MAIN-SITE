@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { productHref } from "@/lib/product-route";
+import { productHref, productSlugFromName } from "@/lib/product-route";
 import type {
   SellAuthCategory,
   SellAuthGroup,
@@ -219,7 +219,13 @@ export function ProductStatusBoard({
 
             <ul className={styles.productList}>
               {category.items.map(({ key, product }) => {
-                const override = statusOverrides[String(product.id)];
+                // Match overrides by numeric ID, full slug, or bare game name
+                const slug = productSlugFromName(product.name, product.id);
+                const simpleName = product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+                const override =
+                  statusOverrides[String(product.id)] ??
+                  statusOverrides[slug] ??
+                  statusOverrides[simpleName];
                 const status: ProductStatusMeta = override
                   ? {
                       kind: override.status,

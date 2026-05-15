@@ -11,34 +11,42 @@ export interface DeliveryRecord {
   deliveryId?: string;
 }
 
-/** Returns the existing record for an order, or null if not seen before. */
-export async function getDeliveryRecord(orderId: string): Promise<DeliveryRecord | null> {
+/**
+ * Atomically claims an order for delivery by INSERTing a "pending" row.
+ * Returns true if the claim succeeded (this process owns delivery).
+ * Returns false if another process already inserted a row for this order.
+ * Unlike setDeliveryRecord (upsert), this is safe against concurrent webhook invocations.
+ */
+export async function claimDeliveryRecord(orderId: string): Promise<boolean> {
   const admin = createAdminClient();
-  const { data, error } = await admin
-    .from("delivery_logs")
-    .select("state, delivery_id")
-    .eq("order_id", orderId)
-    .maybeSingle();
-
-  if (error || !data) return null;
-  return { state: data.state as DeliveryState, deliveryId: data.delivery_id ?? undefined };
+  const { error } = await admin.from("delivery_logs").insert({
+    order_id:   orderId,
+    state:      "pending" as DeliveryState,
+    updated_at: new Date().toISOString(),
+  });
+  // Unique constraint violation (code 23505) means another handler already claimed it.
+  // Any other error is also treated as "not claimed" to prevent accidental double-delivery.
+  return !error;
 }
 
-/** Upserts (insert or update) a delivery record. */
+/** Updates an existing delivery record — only call after claimDeliveryRecord succeeds. */
 export async function setDeliveryRecord(
   orderId: string,
   state: DeliveryState,
   deliveryId?: string
 ): Promise<void> {
   const admin = createAdminClient();
-  await admin.from("delivery_logs").upsert(
-    { order_id: orderId, state, delivery_id: deliveryId ?? null, updated_at: new Date().toISOString() },
-    { onConflict: "order_id" }
-  );
+  await admin
+    .from("delivery_logs")
+    .update({ state, delivery_id: deliveryId ?? null, updated_at: new Date().toISOString() })
+    .eq("order_id", orderId);
 }
 
-/** Removes a delivery record so a genuine retry can attempt redelivery. */
-export async function deleteDeliveryRecord(orderId: string): Promise<void> {
+/** Marks a failed delivery so it won't auto-retry. Use for permanent failures. */
+export async function failDeliveryRecord(orderId: string, reason?: string): Promise<void> {
   const admin = createAdminClient();
-  await admin.from("delivery_logs").delete().eq("order_id", orderId);
+  await admin
+    .from("delivery_logs")
+    .update({ state: "failed" as DeliveryState, delivery_id: reason ?? null, updated_at: new Date().toISOString() })
+    .eq("order_id", orderId);
 }

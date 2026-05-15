@@ -29,7 +29,18 @@ export default function InvoicesPage() {
   useEffect(() => {
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        if (process.env.NODE_ENV !== "production") {
+          setOrders([
+            { id: "ord_demo_001", sellauth_order_id: "SA-58291", product_name: "Rust External (1 Month)",    amount: 19.99, currency: "USD", status: "completed", created_at: new Date(Date.now() - 1 * 86400000).toISOString() },
+            { id: "ord_demo_002", sellauth_order_id: "SA-58144", product_name: "ARC Raiders ESP (Lifetime)", amount: 89.99, currency: "USD", status: "completed", created_at: new Date(Date.now() - 5 * 86400000).toISOString() },
+            { id: "ord_demo_003", sellauth_order_id: "SA-57988", product_name: "HWID Spoofer (Permanent)",   amount: 24.99, currency: "USD", status: "pending",   created_at: new Date(Date.now() - 9 * 86400000).toISOString() },
+            { id: "ord_demo_004", sellauth_order_id: "SA-57820", product_name: "R6 Siege Internal (1 Week)", amount: 12.50, currency: "USD", status: "completed", created_at: new Date(Date.now() - 14 * 86400000).toISOString() },
+          ]);
+        }
+        setLoading(false);
+        return;
+      }
       const { data } = await supabase
         .from("orders")
         .select("*")

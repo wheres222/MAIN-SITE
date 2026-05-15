@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { deliverOrder, isDeliveryConfigured } from "@/lib/delivery";
 import { sendOrderDeliveredEmail } from "@/lib/email";
-import { getDeliveryRecord, setDeliveryRecord, deleteDeliveryRecord } from "@/lib/dedupe";
+import { claimDeliveryRecord, setDeliveryRecord, failDeliveryRecord } from "@/lib/dedupe";
 import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
@@ -75,21 +75,13 @@ export async function POST(request: Request) {
     return ok();
   }
 
-  // DB-backed deduplication — survives server restarts and cold starts.
-  const existing = await getDeliveryRecord(orderId);
-
-  if (existing) {
-    if (existing.state === "done") {
-      logger.info("Order already delivered, skipping.", { route: "webhook/sellauth", orderId });
-      return ok();
-    }
-    if (existing.state === "pending") {
-      logger.info("Order delivery in progress, skipping duplicate.", { route: "webhook/sellauth", orderId });
-      return ok();
-    }
+  // Atomic claim via INSERT — unique constraint ensures only one handler proceeds.
+  // claimDeliveryRecord returns false if the row already exists (done, pending, or failed).
+  const claimed = await claimDeliveryRecord(orderId);
+  if (!claimed) {
+    logger.info("Order delivery already claimed — skipping duplicate.", { route: "webhook/sellauth", orderId });
+    return ok();
   }
-
-  await setDeliveryRecord(orderId, "pending");
 
   try {
     const result = await deliverOrder(orderId, customerEmail);
@@ -103,11 +95,11 @@ export async function POST(request: Request) {
         );
       }
     } else {
-      await deleteDeliveryRecord(orderId);
+      await failDeliveryRecord(orderId, result.message);
       logger.error("Delivery failed.", { route: "webhook/sellauth", orderId, message: result.message });
     }
   } catch (err) {
-    await deleteDeliveryRecord(orderId);
+    await failDeliveryRecord(orderId, String(err));
     logger.error("Unexpected error during delivery.", { route: "webhook/sellauth", orderId, err: String(err) });
   }
 

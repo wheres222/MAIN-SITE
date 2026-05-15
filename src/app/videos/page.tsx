@@ -187,7 +187,7 @@ export default function VideosPage() {
             <p>New gameplay clips and feature previews are posted regularly. Subscribe to stay updated.</p>
           </div>
           <a
-            href="https://www.youtube.com/@lllarp"
+            href="https://www.youtube.com/@franprado"
             target="_blank"
             rel="noreferrer"
             className="videos-yt-btn"
