@@ -13,13 +13,11 @@ const siteUrl =
  * content. Improves citation rates in AI search results.
  */
 export async function GET() {
-  let storefront;
+  let storefront: Awaited<ReturnType<typeof getStorefrontData>> | null = null;
   try {
     storefront = await getStorefrontData();
   } catch {
-    storefront = { products: [], groups: [] } as Awaited<
-      ReturnType<typeof getStorefrontData>
-    >;
+    // Storefront fetch failed — render the markdown without product list below.
   }
 
   const landingPageLines = allGameSeoSlugs()
@@ -31,7 +29,7 @@ export async function GET() {
     .filter(Boolean)
     .join("\n");
 
-  const featuredProducts = storefront.products
+  const featuredProducts = (storefront?.products ?? [])
     .slice(0, 12)
     .map((p) => {
       const slug = p.name

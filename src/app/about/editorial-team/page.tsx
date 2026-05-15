@@ -48,7 +48,7 @@ export default function EditorialTeamPage() {
       />
 
       <div className="marketplace-page" style={{ background: "#0d0d0f" }}>
-        <SiteHeader />
+        <SiteHeader activeTab="none" />
 
         <main
           style={{

@@ -6,27 +6,16 @@ import { redirect } from "next/navigation";
  * Keeps a single auth UI (the modal) instead of maintaining a duplicate
  * full-page route, and means login and register share identical styling.
  *
- * Any inbound traffic (search engines, old bookmarks, password reset emails)
- * still arrives at /login and gets the popup automatically.
+ * Inbound traffic (search engines, old bookmarks, password reset emails)
+ * still arrives at /login and gets the popup automatically. Any `?next=`
+ * query param is preserved so users land on their intended page post-login.
  */
-export default function LoginRedirect({
+export default async function LoginRedirect({
   searchParams,
 }: {
   searchParams?: Promise<{ next?: string }>;
 }) {
-  // Preserve `?next=` if present so users land on their intended page post-login.
-  if (searchParams) {
-    return <AsyncRedirect searchParams={searchParams} />;
-  }
-  redirect("/?auth=login");
-}
-
-async function AsyncRedirect({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string }>;
-}) {
-  const params = await searchParams;
+  const params = searchParams ? await searchParams : {};
   const next = params.next ? `&next=${encodeURIComponent(params.next)}` : "";
   redirect(`/?auth=login${next}`);
 }

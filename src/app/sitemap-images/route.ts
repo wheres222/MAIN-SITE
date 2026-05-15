@@ -25,11 +25,17 @@ function escapeXml(value: string): string {
  * for Googlebot to discover when listed explicitly here.
  */
 export async function GET() {
-  let storefront;
+  let storefront: Awaited<ReturnType<typeof getStorefrontData>> | null = null;
   try {
     storefront = await getStorefrontData();
   } catch {
-    storefront = { products: [], groups: [] } as Awaited<ReturnType<typeof getStorefrontData>>;
+    // Storefront fetch failed; return an empty image sitemap.
+  }
+  if (!storefront) {
+    return new Response(
+      `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"></urlset>`,
+      { headers: { "Content-Type": "application/xml; charset=utf-8" } }
+    );
   }
 
   // Build a Map: page URL -> array of image URLs visible on that page
