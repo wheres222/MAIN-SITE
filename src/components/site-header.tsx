@@ -203,16 +203,6 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
               </div>
             ) : (
               <>
-                {process.env.NODE_ENV !== "production" && (
-                  <Link
-                    href="/account"
-                    className="nav-signin-btn"
-                    style={{ background: "#fbbf24", color: "#1a1a1a", borderColor: "#fbbf24" }}
-                    title="Dev-only preview of the account dashboard with mock data. Hidden in production."
-                  >
-                    🛠 Preview Dashboard
-                  </Link>
-                )}
                 <button type="button" className="nav-signin-btn" onClick={() => setModal("login")}>
                   Login
                 </button>

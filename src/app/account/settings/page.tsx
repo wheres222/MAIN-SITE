@@ -31,12 +31,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        setEmail(user.email || "");
-      } else if (process.env.NODE_ENV !== "production") {
-        // Dev preview — populate with mock email so the settings form renders.
-        setEmail("preview@cheatparadise.dev");
-      }
+      if (user) setEmail(user.email || "");
     });
   }, []);
 
