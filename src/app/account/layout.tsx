@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { SiteHeader } from "@/components/site-header";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import styles from "./layout.module.css";
 
 const NAV_ITEMS = [
@@ -84,6 +85,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -112,7 +114,12 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     load();
   }, [pathname]);
 
-  async function handleSignOut() {
+  function requestSignOut() {
+    setShowSignOutConfirm(true);
+  }
+
+  async function confirmSignOut() {
+    setShowSignOutConfirm(false);
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
@@ -161,7 +168,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
               <button
                 type="button"
-                onClick={handleSignOut}
+                onClick={requestSignOut}
                 className={`${styles.navItem} ${styles.navSignOut}`}
               >
                 <span className={styles.navIcon}>
@@ -178,6 +185,18 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           <main className={styles.content}>{children}</main>
         </div>
       </div>
+
+      {showSignOutConfirm && (
+        <ConfirmDialog
+          title="Sign out?"
+          message="You'll need to sign back in to access your account, orders, and balance."
+          confirmLabel="Sign out"
+          cancelLabel="Stay signed in"
+          destructive
+          onConfirm={confirmSignOut}
+          onCancel={() => setShowSignOutConfirm(false)}
+        />
+      )}
     </div>
   );
 }

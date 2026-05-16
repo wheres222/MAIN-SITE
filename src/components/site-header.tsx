@@ -7,6 +7,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { AuthModal } from "@/components/auth-modal";
 import { DepositModal } from "@/components/deposit-modal";
+import { AccountModal } from "@/components/account-modal";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export type NavTab = "store" | "status" | "support" | "guide" | "loaders" | "videos" | "none";
 
@@ -27,6 +29,8 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
   const [modal, setModal] = useState<"login" | "register" | null>(null);
   const [showDeposit, setShowDeposit] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showAccountModal, setShowAccountModal] = useState(false);
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -107,8 +111,13 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  async function handleLogout() {
+  function requestLogout() {
     setShowDropdown(false);
+    setShowSignOutConfirm(true);
+  }
+
+  async function confirmLogout() {
+    setShowSignOutConfirm(false);
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
@@ -172,9 +181,13 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
 
                   {showDropdown && (
                     <div className="nav-dropdown">
-                      <Link href="/account" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
-                        Account
-                      </Link>
+                      <button
+                        type="button"
+                        className="nav-dropdown-item"
+                        onClick={() => { setShowDropdown(false); setShowAccountModal(true); }}
+                      >
+                        Dashboard
+                      </button>
                       <Link href="/account/settings" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
                         Settings
                       </Link>
@@ -191,7 +204,7 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
 
                       <div className="nav-dropdown-divider" />
 
-                      <button type="button" className="nav-dropdown-item nav-dropdown-logout" onClick={handleLogout}>
+                      <button type="button" className="nav-dropdown-item nav-dropdown-logout" onClick={requestLogout}>
                         <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden>
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
@@ -224,6 +237,22 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
 
       {showDeposit && (
         <DepositModal onClose={() => setShowDeposit(false)} />
+      )}
+
+      {showAccountModal && (
+        <AccountModal onClose={() => setShowAccountModal(false)} />
+      )}
+
+      {showSignOutConfirm && (
+        <ConfirmDialog
+          title="Sign out?"
+          message="You'll need to sign back in to access your account, orders, and balance."
+          confirmLabel="Sign out"
+          cancelLabel="Stay signed in"
+          destructive
+          onConfirm={confirmLogout}
+          onCancel={() => setShowSignOutConfirm(false)}
+        />
       )}
     </>
   );
