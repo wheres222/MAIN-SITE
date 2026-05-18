@@ -43,13 +43,14 @@ export interface StripeLineItem {
 export async function createStripeCheckoutSession(params: {
   orderId:      string;
   lineItems:    StripeLineItem[];
-  customerEmail: string;
+  /** Optional — when omitted, Stripe Checkout collects email on its hosted page. */
+  customerEmail?: string;
   successUrl:   string;
   cancelUrl:    string;
 }): Promise<{ sessionId: string; url: string }> {
   const session = await stripe.checkout.sessions.create({
     mode:                "payment",
-    customer_email:      params.customerEmail,
+    customer_email:      params.customerEmail || undefined,
     payment_method_types: ["card"],
     line_items: params.lineItems.map((li) => ({
       quantity: li.quantity,

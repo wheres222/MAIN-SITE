@@ -192,16 +192,21 @@ async function handleStripeCheckout(
   locks: Map<string, LockState>,
 ): Promise<NextResponse> {
 
-  const email = (body.email || "").trim().toLowerCase();
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  // Stripe path — email is optional. When omitted, Stripe Checkout collects
+  // it on its hosted page. We still validate the format if one was provided.
+  const rawEmail = (body.email || "").trim().toLowerCase();
+  if (rawEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
     locks.delete(dedupeKey);
-    return NextResponse.json({ success: false, message: "A valid email address is required." }, { status: 400 });
+    return NextResponse.json({ success: false, message: "Email format is invalid." }, { status: 400 });
   }
+  const email = rawEmail; // may be ""
 
   const admin = createAdminClient();
 
-  // Idempotency
-  const idempHash = createHash("sha256").update(`stripe:${dedupeKey}:${email}`).digest("hex");
+  // Idempotency — falls back to a random suffix when email is unknown so
+  // anonymous Stripe attempts each get their own session.
+  const idempSeed = email || `anon:${crypto.randomUUID()}`;
+  const idempHash = createHash("sha256").update(`stripe:${dedupeKey}:${idempSeed}`).digest("hex");
   const { data: existingOrder } = await admin
     .from("shop_orders")
     .select("id, stripe_session_url")
@@ -254,7 +259,7 @@ async function handleStripeCheckout(
   // Create pending order
   const { data: order, error: orderErr } = await admin
     .from("shop_orders")
-    .insert({ user_id: null, email, status: "pending", total_usd: totalUsd, pay_currency: "stripe", idempotency_key: idempHash })
+    .insert({ user_id: null, email: email || null, status: "pending", total_usd: totalUsd, pay_currency: "stripe", idempotency_key: idempHash })
     .select("id").single();
 
   if (orderErr || !order) { locks.delete(dedupeKey); return NextResponse.json({ success: false, message: "Failed to create order." }, { status: 500 }); }
@@ -274,7 +279,7 @@ async function handleStripeCheckout(
   try {
     session = await createStripeCheckoutSession({
       orderId:       order.id,
-      customerEmail: email,
+      customerEmail: email || undefined,
       lineItems:     lineItems.map((li) => ({ productName: li.productName, variantName: li.variantName, quantity: li.quantity, unitPriceUsd: li.unitPrice })),
       successUrl:    `${origin}/checkout/${order.id}?stripe=success`,
       cancelUrl:     `${origin}/checkout/${order.id}?stripe=cancelled`,

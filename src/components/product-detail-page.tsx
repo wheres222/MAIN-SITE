@@ -728,20 +728,6 @@ function featureIconSvg(title: string) {
   );
 }
 
-const CRYPTO_CURRENCIES = [
-  { value: "stripe", label: "💳  Card / Stripe"  },
-  { value: "btc",    label: "₿   Bitcoin (BTC)"  },
-  { value: "eth",    label: "Ξ   Ethereum (ETH)" },
-  { value: "sol",    label: "◎   Solana (SOL)"   },
-  { value: "ltc",    label: "Ł   Litecoin (LTC)" },
-  { value: "usdt",   label: "₮   USDT (TRC-20)"  },
-  { value: "usdc",   label: "◎   USD Coin (USDC)"},
-  { value: "bnb",    label: "BNB"                },
-  { value: "doge",   label: "Ð   Dogecoin (DOGE)"},
-  { value: "trx",    label: "TRON (TRX)"         },
-  { value: "xrp",    label: "XRP"                },
-];
-
 export function ProductDetailPage({ product, paymentMethods }: ProductDetailPageProps) {
   const variants = useMemo(() => variantsFor(product), [product]);
   const [selectedVariantId, setSelectedVariantId] = useState<number>(
@@ -750,11 +736,8 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [notice, setNotice] = useState("");
 
-  // Checkout modal state
-  const [modalOpen,    setModalOpen]    = useState(false);
-  const [modalEmail,   setModalEmail]   = useState("");
-  const [modalCurrency, setModalCurrency] = useState("btc");
-  const [modalError,   setModalError]   = useState("");
+  // No intermediate modal — Buy Now POSTs straight to /api/checkout and
+  // window.location is set to the returned Stripe URL.
 
   const detailContent = useMemo(() => parseDetailContent(product), [product]);
   const galleryImages = useMemo(() => parseGalleryImages(product), [product]);
@@ -898,22 +881,10 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     setNotice("Added to cart. Cart is saved in your browser.");
   }
 
-  // Step 1: open modal (collect email + currency)
-  function checkoutNow() {
+  // Click "Buy Now" → POST straight to /api/checkout (Stripe path) → redirect
+  // to Stripe's hosted checkout. Stripe collects email there so no popup needed.
+  async function checkoutNow() {
     setNotice("");
-    setModalError("");
-    setModalOpen(true);
-  }
-
-  // Step 2: user confirmed modal — call API and redirect
-  async function submitCheckout() {
-    if (!modalEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(modalEmail.trim())) {
-      setModalError("Please enter a valid email address.");
-      return;
-    }
-
-    setModalError("");
-    setModalOpen(false);
     setIsCheckingOut(true);
 
     const checkoutQuantity  = resolveCheckoutQuantity();
@@ -922,11 +893,11 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     try {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         const idempotencyKey = [
-          modalCurrency,
+          "stripe",
           String(product.id),
           String(checkoutVariantId || 0),
           String(checkoutQuantity),
-          modalEmail.trim().toLowerCase(),
+          Date.now().toString(),
         ].join("|");
 
         const response = await fetch("/api/checkout", {
@@ -936,9 +907,8 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
             "x-idempotency-key": idempotencyKey,
           },
           body: JSON.stringify({
-            paymentMethod: modalCurrency,
-            currency:      modalCurrency,
-            email:         modalEmail.trim().toLowerCase(),
+            paymentMethod: "stripe",
+            currency:      "stripe",
             items: [
               {
                 productId: product.id,
@@ -1198,117 +1168,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
       <SiteFooter />
 
-      {/* ── Checkout modal ── */}
-      {modalOpen && (
-        <div
-          style={{
-            position: "fixed", inset: 0, zIndex: 9998,
-            background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "16px",
-          }}
-          onClick={() => setModalOpen(false)}
-        >
-          <div
-            style={{
-              background: "var(--surface-2)", border: "1px solid var(--border-strong)",
-              borderRadius: 14, padding: "28px 28px 24px", width: "100%", maxWidth: 420,
-              display: "flex", flexDirection: "column", gap: 18,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div>
-              <p style={{ margin: 0, fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-dim)" }}>
-                Complete Purchase
-              </p>
-              <h2 style={{ margin: "6px 0 0", fontSize: "1.1rem", fontWeight: 700, color: "#fff", lineHeight: 1.2 }}>
-                {product.name}
-              </h2>
-              {selectedUnitPrice != null && (
-                <p style={{ margin: "4px 0 0", color: "var(--accent)", fontWeight: 700, fontSize: "1.05rem" }}>
-                  ${(selectedUnitPrice * quantity).toFixed(2)}
-                </p>
-              )}
-            </div>
-
-            {/* Email */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-                Delivery Email
-              </label>
-              <input
-                type="email"
-                autoFocus
-                placeholder="you@example.com"
-                value={modalEmail}
-                onChange={(e) => setModalEmail(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") submitCheckout(); }}
-                style={{
-                  background: "var(--surface-3)", border: "1px solid var(--border)",
-                  borderRadius: 7, padding: "10px 13px", color: "#fff", fontSize: "0.9rem",
-                  outline: "none", width: "100%",
-                }}
-              />
-              <p style={{ margin: 0, fontSize: "0.74rem", color: "var(--text-dim)" }}>
-                Your license key will be sent here after payment confirms.
-              </p>
-            </div>
-
-            {/* Currency */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <label style={{ fontSize: "0.78rem", fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.04em" }}>
-                Pay With
-              </label>
-              <select
-                value={modalCurrency}
-                onChange={(e) => setModalCurrency(e.target.value)}
-                style={{
-                  background: "var(--surface-3)", border: "1px solid var(--border)",
-                  borderRadius: 7, padding: "10px 13px", color: "#fff", fontSize: "0.9rem",
-                  outline: "none", width: "100%", cursor: "pointer",
-                }}
-              >
-                {CRYPTO_CURRENCIES.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Error */}
-            {modalError && (
-              <p style={{ margin: 0, color: "#f87171", fontSize: "0.82rem" }}>{modalError}</p>
-            )}
-
-            {/* Actions */}
-            <div style={{ display: "flex", gap: 10, marginTop: 2 }}>
-              <button
-                type="button"
-                onClick={submitCheckout}
-                style={{
-                  flex: 1, height: 44, borderRadius: 7, border: "none",
-                  background: "#fff", color: "#0d0e11", fontWeight: 700,
-                  fontSize: "0.88rem", letterSpacing: "0.04em", textTransform: "uppercase",
-                  cursor: "pointer",
-                }}
-              >
-                {modalCurrency === "stripe" ? "Pay with Card →" : "Pay with Crypto →"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                style={{
-                  height: 44, padding: "0 18px", borderRadius: 7,
-                  border: "1px solid var(--border)", background: "transparent",
-                  color: "var(--text-muted)", fontSize: "0.88rem", cursor: "pointer",
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Checkout modal removed — Buy Now goes directly to Stripe. */}
 
       {/* ── Lightbox ── */}
       {lightboxOpen && (
