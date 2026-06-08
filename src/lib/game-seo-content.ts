@@ -18,8 +18,17 @@ export interface GameSeoContent {
   h1: string;
   /** 40-60 word answer-first lead paragraph. Becomes the AI Overview / SGE quote. */
   lead: string;
-  /** Body sections, each becomes an <h2> */
-  sections: Array<{ heading: string; body: string }>;
+  /**
+   * Body sections, each becomes an <h2>.
+   * `body` supports paragraph breaks via `\n\n` — the renderer splits and
+   * emits separate <p> tags so long sections read as multiple paragraphs.
+   * Optional `bullets` block renders a highlighted feature list under the body.
+   */
+  sections: Array<{
+    heading: string;
+    body: string;
+    bullets?: { heading?: string; items: string[] };
+  }>;
   /** FAQ items — used for FAQPage schema + visible accordion */
   faqs: GameSeoFaq[];
   /** Last tested label, e.g. "Patch 1.42 · May 2026". Updated periodically. */
@@ -28,6 +37,8 @@ export interface GameSeoContent {
   heroImage?: string;
   /** Optional MP4 path for the side-by-side "Precision Perfected" aimbot section. */
   videoSrc?: string;
+  /** Optional poster image shown before the video lazy-loads. WebP/AVIF preferred. */
+  videoPoster?: string;
 }
 
 /**
@@ -44,59 +55,95 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
   {
     slug: "rust",
     displayName: "Rust",
-    title: "Rust Cheats — Undetected External & Internal Hacks 2026",
+    title: "Rust Cheats — Undetected ESP, Aimbot & Wallhack 2026",
     metaDescription:
-      "Buy undetected Rust cheats with instant delivery. External and internal hacks featuring aimbot, ESP, recoil control, and HWID spoofer support. Verified May 2026.",
-    h1: "Rust Cheats: Undetected External & Internal Hacks",
+      "Buy undetected Rust cheats with instant delivery. Rust hacks with ESP/wallhack, aimbot & no-recoil — updated every force wipe, tested against EAC.",
+    h1: "Rust Cheats — Undetected ESP, Aimbot & Wallhacks",
     lead:
-      "Cheat Paradise's Rust cheats are external, EAC-safe loaders updated within hours of every Facepunch patch. Each build includes aimbot with prediction, full player and item ESP, recoil control, and bag/cupboard ESP — delivered instantly after purchase and protected by an active HWID spoofer.",
+      "Buy undetected Rust cheats with instant delivery. Every Rust hack includes full player and item ESP (wallhack), a humanised aimbot with bullet-drop prediction, and no-recoil — updated within hours of every force wipe and tested against the current EAC build.",
     sections: [
       {
-        heading: "Are Rust cheats safe to use in 2026?",
+        heading: "Does the Rust cheat have an aimbot?",
         body:
-          "Rust is protected by EasyAntiCheat (EAC) and Facepunch's server-side detections. Every cheat on this page is tested against the current EAC build before release and re-tested after Rust force-wipe Thursdays. We never publish a loader that triggers EAC live detections, and every account ban while running an undetected version is replaced under our policy.",
+          "Yes. The Rust aimbot includes a configurable FOV, adjustable smoothing for a natural lock-on, hitbox selection (head/chest), and bullet-drop + travel-time prediction so you land shots on moving targets at range. No-recoil and no-sway modules read each weapon's pattern so the AK, bolt, and MP5 stay on target in full-auto. A toggleable silent-aim mode is available for closer-range wipe-day fights.",
+        bullets: {
+          heading: "Rust aimbot features",
+          items: [
+            "Configurable FOV + per-shot smoothing",
+            "Head / chest hitbox selection",
+            "Bullet-drop & travel-time prediction",
+            "Full no-recoil + no-sway",
+            "Toggleable silent aim",
+            "Hotkey bindable aim key",
+          ],
+        },
       },
       {
-        heading: "External vs internal — which Rust cheat should I buy?",
+        heading: "Rust ESP & wallhack — players, loot and traps",
         body:
-          "External cheats run as a separate process and read game memory without injecting code, making them statistically the safest option against kernel anti-cheats like EAC. Internal cheats inject directly into the game for better visuals (full chams, advanced ESP) but carry slightly higher detection risk. For first-time buyers we recommend external; for streamers and ranked grinders, the latest internal builds are stream-proof and produce no overlay artifacts.",
+          "The Rust ESP (wallhack) shows every player through walls with distance, health, held weapon, and skeleton lines, plus sleeper highlights for raid scouting. Item ESP colour-codes barrels and crates by loot tier, and deployable ESP reveals auto-turrets, traps, and tool cupboards before you push a base.",
+        bullets: {
+          heading: "What the Rust wallhack shows",
+          items: [
+            "Player ESP: box, health, weapon, distance",
+            "Sleeper & AFK highlights",
+            "Item/loot ESP by rarity",
+            "Crate, barrel & monument loot",
+            "Turret, trap & cupboard ESP",
+            "Animal & scientist ESP",
+          ],
+        },
       },
       {
-        heading: "What's included with every Rust cheat purchase?",
+        heading: "Are Rust cheats undetected in 2026?",
         body:
-          "Every loader includes the cheat binary, a current-build HWID spoofer, written setup guide, Discord support access, and free version updates for the duration of your license. Active subscriptions roll over through every Rust force-wipe and major Facepunch patch automatically.",
+          "Every Rust cheat here is tested against the current EasyAntiCheat (EAC) build before release and re-checked after each force wipe.",
       },
       {
-        heading: "How fast is delivery?",
+        heading: "Best undetected Rust cheats — why buy from Cheat Paradise",
         body:
-          "Instant. Once your crypto or card payment is confirmed, your license key appears in your Cheat Paradise account dashboard and is emailed to you. Median time from payment to first launch is under 2 minutes.",
+          "Instant delivery, free updates for the life of your subscription, automatic force-wipe coverage, and 24/7 Discord support. Pay by card or crypto and your license lands in your dashboard the moment payment confirms.",
+        bullets: {
+          heading: "Every Rust purchase includes",
+          items: [
+            "Instant automated delivery",
+            "Free updates + force-wipe coverage",
+            "Stream-proof overlay",
+            "24/7 Discord support",
+          ],
+        },
       },
     ],
     faqs: [
       {
-        q: "Will I get EAC banned using these Rust cheats?",
-        a: "Not while running an undetected build. EAC bans the account, not the hardware, but our included HWID spoofer protects against the rare cases of hardware flagging. Every undetected ban is replaced free under our protection policy.",
+        q: "Are Rust cheats safe to use?",
+        a: "Yes, when you run an undetected build. Every Rust cheat here is tested against the live EAC build before release and re-validated after each force wipe.",
+      },
+      {
+        q: "Will I get banned for using Rust cheats?",
+        a: "Risk is minimised by legit play and humanised aimbot settings — conservative FOV, smoothing, and not blatantly cheating in front of others. As long as you run the current undetected build and play sensibly, bans are rare.",
+      },
+      {
+        q: "Are there free Rust cheats?",
+        a: "Free Rust cheats are almost always detected and get your account permanently EAC-banned. Paid cheats fund the continuous bypass work that keeps the loader undetected — far cheaper than replacing a banned account.",
       },
       {
         q: "Do Rust cheats work after force wipe?",
-        a: "Yes. Every cheat on this page is tested against the new build within the first 2 hours of a force wipe Thursday. Subscriptions roll over automatically with no action required.",
+        a: "Yes. We ship a matched update within hours of every force wipe and major Facepunch patch. Subscriptions roll over automatically — your license picks up the new build on next launch.",
       },
       {
-        q: "Can I use a Rust cheat on a streamer account?",
-        a: "Yes. Our internal Rust cheats are stream-proof — overlays, menus, and ESP do not appear in OBS, Shadowplay, Discord screen-share, or browser-based capture.",
+        q: "How fast is delivery?",
+        a: "Instant. Your license is delivered automatically to your account dashboard and email the moment your payment confirms — crypto typically clears in 1–5 minutes.",
       },
       {
-        q: "Which Rust cheats work on Windows 11?",
-        a: "All current builds support Windows 10 (1909+) and Windows 11 23H2 / 24H2. Each product page lists the exact supported builds under its compatibility tab.",
-      },
-      {
-        q: "What's the difference between paid Rust cheats and free ones?",
-        a: "Free Rust cheats are detected within hours of release and result in permanent EAC bans. Paid cheats fund continuous EAC bypass research, daily detection monitoring, and the support staff who keep the loader live across patches.",
+        q: "Do Rust cheats work on Steam Deck or console?",
+        a: "No. Rust cheats are PC-only and require native Windows 10 or 11. Steam Deck/Proton and consoles are not supported.",
       },
     ],
     lastTested: "Force Wipe · May 2026",
     heroImage: "/banners/rust.webp",
     videoSrc: "/footage/rust.mp4",
+    videoPoster: "/footage/rust-poster.webp",
   },
   {
     slug: "arc-raiders",
@@ -106,54 +153,89 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
       "Buy undetected ARC Raiders cheats with instant delivery. Full extraction ESP, item ESP, aimbot, and silent aim — verified against the latest Embark patch.",
     h1: "ARC Raiders Cheats: Undetected ESP, Aimbot & Extraction Helper",
     lead:
-      "Cheat Paradise's ARC Raiders cheats are external loaders built specifically for Embark Studios' extraction shooter. Each build includes player and ARC machine ESP, full loot and extraction-point ESP, configurable aimbot with silent aim, and a current-build HWID spoofer — all delivered instantly after purchase.",
+      "Buy undetected ARC Raiders cheats with instant delivery. Every ARC Raiders hack includes player and ARC-machine ESP, full loot and extraction-point ESP, and a configurable aimbot with silent aim — tested against the latest Embark patch.",
     sections: [
+      {
+        heading: "Does the ARC Raiders cheat have an aimbot?",
+        body:
+          "Yes. The ARC Raiders aimbot offers configurable FOV, smoothing, and hitbox selection, plus a silent-aim mode that corrects your shot to the target without visibly moving your crosshair. It works identically in solo, duo, and trio queues, with teammate filtering so you never lock onto your own squad.",
+        bullets: {
+          heading: "ARC Raiders aimbot features",
+          items: [
+            "Configurable FOV + smoothing",
+            "Hitbox selection",
+            "Silent aim (no crosshair snap)",
+            "Target prediction",
+            "Squad-safe teammate filter",
+            "Hotkey bindable",
+          ],
+        },
+      },
+      {
+        heading: "ARC Raiders ESP & wallhack — loot and extraction",
+        body:
+          "Full ESP shows rival raiders, ARC machines, loot, and extraction points through walls. The loot filter is configurable by rarity so you can hide common drops and highlight only purple/gold-tier items, ARC tech, and rare schematics — so you extract with the best loot every raid.",
+        bullets: {
+          heading: "What the ARC Raiders wallhack shows",
+          items: [
+            "Player (raider) ESP with distance & health",
+            "ARC machine ESP",
+            "Loot ESP filtered by rarity",
+            "Extraction-point markers",
+            "Rare tech & schematic highlights",
+          ],
+        },
+      },
       {
         heading: "Are ARC Raiders cheats undetected?",
         body:
-          "ARC Raiders launched without a kernel anti-cheat, relying primarily on Embark's server-side detection. Every cheat on this page is tested against the current build before each release and monitored daily for new detection signatures. We pause sales on any product that shows a detection signal — we don't keep selling a flagged loader.",
+          "ARC Raiders relies primarily on Embark's server-side detection. Every cheat here is tested against the current build before release and monitored daily — we pause sales on any loader that shows a detection signal rather than keep selling a flagged build.",
       },
       {
-        heading: "Does the ARC Raiders cheat have item ESP?",
+        heading: "Best ARC Raiders cheats — why buy from Cheat Paradise",
         body:
-          "Yes — full loot, extraction point, ARC robot, and PvP player ESP are included in every paid build. The ESP filter is configurable by rarity tier so you can hide low-value common loot and highlight only purple/gold tier items, ARC technology drops, and rare schematics.",
-      },
-      {
-        heading: "Will my ARC Raiders cheat survive Embark patches?",
-        body:
-          "Embark Studios pushes balance patches weekly and engine updates roughly monthly. Our team retests every build within 4 hours of a patch dropping and pushes a hot-fix loader if anything breaks. Active subscriptions automatically receive the updated version.",
-      },
-      {
-        heading: "Solo or squad mode — does cheat behaviour change?",
-        body:
-          "The aimbot, ESP, and silent aim work identically in solo, duo, and trio queues. Squad ESP includes teammate filtering so you don't accidentally target your own squadmates while ARC enemies and rival raiders remain highlighted.",
+          "Instant delivery, free updates with patch coverage (we retest within hours of each Embark patch), stream-proof overlay, and 24/7 Discord support.",
+        bullets: {
+          heading: "Every ARC Raiders purchase includes",
+          items: [
+            "Instant automated delivery",
+            "Free updates + patch coverage",
+            "Stream-proof overlay",
+            "24/7 Discord support",
+          ],
+        },
       },
     ],
     faqs: [
       {
-        q: "Is ARC Raiders cheating possible without kernel anti-cheat?",
-        a: "Yes, and it's substantially easier than cheating in EAC or BattlEye titles. ARC Raiders' server-side detection still bans for blatant cheating, so configurable humanised aimbot and ESP-only setups are the safest play patterns.",
+        q: "Are ARC Raiders cheats safe to use?",
+        a: "Yes, when running an undetected build. ARC Raiders uses server-side detection, so humanised aimbot settings plus ESP are the safest setup. Every build is monitored daily.",
       },
       {
-        q: "Do you ban-shield ARC Raiders accounts?",
-        a: "Every undetected ban on an active subscription is replaced free. The included HWID spoofer protects against any rare cases of hardware association.",
+        q: "Will I get banned for using ARC Raiders cheats?",
+        a: "Risk is minimised by legit play and humanised settings. As long as you run the current undetected build and don't cheat blatantly in front of other raiders, bans are rare.",
       },
       {
-        q: "Can I use the ARC Raiders cheat on Steam Deck or Linux?",
-        a: "No. ARC Raiders cheats currently require Windows 10 or 11 with the standard PC client. Steam Deck Proton compatibility is on the roadmap but not yet supported.",
+        q: "Are there free ARC Raiders cheats?",
+        a: "Free ARC Raiders cheats are typically detected quickly and get accounts banned. Paid cheats fund ongoing bypass work and daily monitoring that keep the loader undetected.",
       },
       {
-        q: "How does the silent aim work in ARC Raiders?",
-        a: "Silent aim corrects your bullet trajectory toward the target's hitbox at the moment of fire, without visibly moving your crosshair. To replays, teammates, and spectators, your aim looks completely natural — there is no snap or pull effect.",
+        q: "How does silent aim work in ARC Raiders?",
+        a: "Silent aim corrects your bullet to the target's hitbox at the moment of fire without moving your crosshair, so your aim looks natural to spectators and replays — no snap or pull.",
       },
       {
-        q: "Will I see other players using ARC Raiders cheats?",
-        a: "ARC Raiders has an active cheater population, especially in higher-tier extraction zones. Running ESP gives you parity — you'll know when another raider is tracking you through walls before they engage.",
+        q: "How fast is delivery?",
+        a: "Instant. Your license is delivered automatically to your dashboard and email the moment payment confirms.",
+      },
+      {
+        q: "Do ARC Raiders cheats work on Steam Deck or console?",
+        a: "No. ARC Raiders cheats require native Windows 10 or 11. Steam Deck/Proton and consoles are not supported.",
       },
     ],
     lastTested: "Patch 1.6 · May 2026",
     heroImage: "/banners/arc-raiders.webp",
     videoSrc: "/footage/arc.mp4",
+    videoPoster: "/footage/arc-poster.webp",
   },
   {
     slug: "rainbow-six-siege",
@@ -163,49 +245,83 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
       "Buy undetected Rainbow Six Siege cheats with instant delivery. R6 aimbot, operator ESP, drone radar, and BattlEye bypass — verified against the latest season.",
     h1: "Rainbow Six Siege Cheats: Undetected Aimbot & Operator ESP",
     lead:
-      "Cheat Paradise's Rainbow Six Siege cheats are external loaders engineered specifically for Ubisoft's BattlEye implementation. Every build includes a smooth aimbot with hitbox prediction, full operator and gadget ESP, drone radar, and a BattlEye-aware HWID spoofer — instantly delivered after purchase.",
+      "Buy undetected Rainbow Six Siege cheats with instant delivery. Every R6 hack includes a smooth aimbot with hitbox prediction, operator and gadget ESP, and drone radar — tested against the current season's BattlEye build.",
     sections: [
       {
-        heading: "Are R6 Siege cheats undetected by BattlEye?",
+        heading: "Does the R6 cheat have an aimbot?",
         body:
-          "BattlEye is one of the most aggressive kernel anti-cheats deployed in any FPS. Our R6 cheats run as external loaders that read game memory without injecting code into the BattlEye-protected process, which is the technique that has consistently survived BattlEye scan waves. Every build is tested against the current season's BattlEye signature before release.",
+          "Yes. The Rainbow Six Siege aimbot includes configurable FOV, smoothing, hitbox priority (head/neck/chest), line-of-sight vischeck, and prediction for moving targets. Settings are tuned to produce humanised aim that holds up in Ranked and Premier without obvious snapping.",
+        bullets: {
+          heading: "R6 aimbot features",
+          items: [
+            "Configurable FOV + smoothing",
+            "Head / neck / chest priority",
+            "Line-of-sight vischeck",
+            "Moving-target prediction",
+            "Aim-key bindings",
+            "Humanised aim curves",
+          ],
+        },
       },
       {
-        heading: "Will I get a permanent BattlEye ban?",
+        heading: "R6 ESP & wallhack — operators, gadgets and drones",
         body:
-          "BattlEye bans are MAC and hardware-level, not just account-level — which is why every R6 cheat we sell includes an active HWID spoofer. If your account or hardware is flagged while running an undetected version, you're covered by our replacement policy: a new key plus spoofer setup, no questions asked.",
+          "Operator ESP shows enemies through walls with their gadget loadout (Mira, Kapkan, Lesion, Maestro), so you know what you're walking into. Drone ESP reveals enemy and friendly drones to clear before a push, and defuser ESP marks the bomb carrier in real time.",
+        bullets: {
+          heading: "What the R6 wallhack shows",
+          items: [
+            "Operator ESP through walls",
+            "Gadget / loadout indicators",
+            "Enemy & friendly drone ESP",
+            "Defuser / objective ESP",
+            "Distance & health",
+          ],
+        },
       },
       {
-        heading: "What features does the R6 Siege aimbot include?",
+        heading: "Are R6 cheats undetected by BattlEye?",
         body:
-          "Configurable FOV, smoothing curves, hitbox priority (head / neck / chest), aim key bindings, prediction for moving targets, vischeck (line-of-sight verification), and stand-still-only modes. The aimbot is tuned to produce humanised aim curves that don't trigger Ubisoft's behavioural detection systems.",
+          "Every R6 cheat here is tested against the current season's BattlEye build before release and monitored for new scan waves.",
       },
       {
-        heading: "How does the R6 ESP help in ranked?",
+        heading: "Best R6 Siege cheats — why buy from Cheat Paradise",
         body:
-          "Operator ESP highlights enemy positions through walls, including their gadget loadout (Mira, Kapkan, Lesion, Maestro). Drone ESP shows enemy and friendly drones so you can clear them before pushes. Bomb site ESP marks defuser carriers in real time during defuse rounds.",
+          "Instant delivery, free updates across mid-season patches and season launches, stream-proof overlay, and 24/7 Discord support. We recommend a dedicated Ubisoft account and humanised settings in Premier for the lowest risk.",
+        bullets: {
+          heading: "Every R6 purchase includes",
+          items: [
+            "Instant automated delivery",
+            "Free updates + season coverage",
+            "Stream-proof overlay",
+            "24/7 Discord support",
+          ],
+        },
       },
     ],
     faqs: [
       {
-        q: "Do R6 Siege cheats work in ranked and competitive playlists?",
-        a: "Yes. Every feature is enabled across Unranked, Ranked, Premier, and Standard playlists. We recommend humanised settings (smoothing + delay) in Premier to avoid behavioural pattern flags.",
+        q: "Are R6 Siege cheats safe to use?",
+        a: "Yes, when running an undetected build. Each cheat is tested against the current BattlEye build and monitored for new scan waves.",
       },
       {
-        q: "Is the R6 cheat stream-proof?",
-        a: "Yes. Menus, ESP overlays, and aimbot indicators do not appear in OBS, Discord screen-share, Shadowplay, or browser capture. Internal R6 cheats use a DirectX-bypass overlay that doesn't render in any standard capture pipeline.",
+        q: "Will I get banned for using R6 cheats?",
+        a: "Risk is minimised by legit play and humanised settings. As long as you run the current undetected build and play sensibly in Ranked and Premier, bans are rare.",
       },
       {
-        q: "How often does the R6 cheat get updated?",
-        a: "Every Tuesday after Ubisoft's mid-season patch, every six weeks for season launches, and within hours if BattlEye pushes an emergency signature update. Active subscriptions get every update free.",
+        q: "Are there free R6 cheats?",
+        a: "Free R6 cheats are quickly detected by BattlEye and lead to hardware bans. Paid cheats fund the ongoing bypass work that keeps the loader undetected.",
       },
       {
-        q: "Can I buy an R6 cheat without a HWID spoofer?",
-        a: "We bundle the HWID spoofer with every R6 product specifically because BattlEye performs hardware-level bans. Selling R6 cheats without a spoofer would put customers at preventable risk.",
+        q: "Do R6 cheats work in Ranked and Premier?",
+        a: "Yes. Every feature works across Unranked, Standard, Ranked, and Premier. We recommend humanised aimbot settings in Premier to stay under behavioural detection.",
       },
       {
-        q: "Will the R6 cheat work on a new Ubisoft account?",
-        a: "Yes, and we actually recommend a dedicated cheat account. Fresh Ubisoft accounts have no rank reputation to protect — if anything ever does happen, you've lost nothing of value.",
+        q: "How fast is delivery?",
+        a: "Instant. Your license is delivered automatically to your dashboard and email the moment payment confirms.",
+      },
+      {
+        q: "Do R6 cheats work on console?",
+        a: "No. R6 cheats are PC-only and require native Windows 10 or 11. Xbox and PlayStation are not supported.",
       },
     ],
     lastTested: "Operation Y10S2 · May 2026",
@@ -219,54 +335,89 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
       "Buy undetected Fortnite cheats with instant delivery. Aimbot with prediction, full player and chest ESP, no-recoil, and EAC bypass — verified for the latest chapter.",
     h1: "Fortnite Cheats: Undetected Aimbot, ESP & EAC Bypass",
     lead:
-      "Cheat Paradise's Fortnite cheats are external loaders engineered around Epic Games' EasyAntiCheat (EAC) implementation. Every build includes a humanised aimbot with prediction, full enemy and chest/loot ESP, no-recoil and no-spread modules, and an active HWID spoofer — delivered instantly after purchase.",
+      "Buy undetected Fortnite cheats with instant delivery. Every Fortnite hack includes a humanised aimbot with prediction, full enemy and chest/loot ESP, and no-recoil and no-spread — tested against EasyAntiCheat for the latest chapter.",
     sections: [
       {
-        heading: "Are Fortnite cheats safe against EAC in 2026?",
+        heading: "Does the Fortnite cheat have an aimbot?",
         body:
-          "Fortnite runs both EasyAntiCheat and Epic's BattlEye implementation on competitive playlists, plus its own server-side detection. Our Fortnite cheats are external loaders that read game memory without injecting into the EAC-protected process, which is the technique that has consistently survived Epic's detection waves. Every build is tested against the current chapter before release.",
+          "Yes. The Fortnite aimbot includes configurable FOV, hitbox priority (head/chest/closest), smoothing for natural movement, line-of-sight vischeck, prediction for moving targets, and a silent-aim mode. No-recoil and no-spread keep your shots on target, and humanised settings keep it subtle on Ranked accounts.",
+        bullets: {
+          heading: "Fortnite aimbot features",
+          items: [
+            "Configurable FOV + smoothing",
+            "Head / chest / closest priority",
+            "Moving-target prediction",
+            "Silent aim",
+            "No-recoil + no-spread",
+            "Line-of-sight vischeck",
+          ],
+        },
       },
       {
-        heading: "What features does the Fortnite aimbot include?",
+        heading: "Fortnite ESP & wallhack — players, chests and loot",
         body:
-          "Configurable FOV, hitbox priority (head / chest / closest), aim key bindings, smoothing curves for natural aim movement, prediction for moving targets, vischeck (line-of-sight validation), and silent aim modes. The aimbot is tuned to produce humanised aim curves that won't trigger Epic's behavioural pattern detection on competitive accounts.",
+          "Player ESP shows enemies through walls with health, shield, distance, and held weapon. Loot ESP reveals chests, supply drops, ammo, and weapons, with rarity filtering so you can highlight only gold/mythic weapons, medallions, and rare consumables.",
+        bullets: {
+          heading: "What the Fortnite wallhack shows",
+          items: [
+            "Player ESP: health, shield, distance",
+            "Held-weapon indicator",
+            "Chest & supply-drop ESP",
+            "Loot ESP by rarity",
+            "Medallion & mythic highlights",
+          ],
+        },
       },
       {
-        heading: "Does the Fortnite ESP show chests and loot?",
+        heading: "Are Fortnite cheats undetected against EAC?",
         body:
-          "Yes — full chest, supply drop, ammo, and weapon ESP are included in every paid build. Loot tier filtering lets you hide common items and highlight only gold and mythic-tier weapons, medallions, and rare consumables. Player ESP includes health, distance, weapon held, and shield status.",
+          "Every Fortnite cheat here is tested against the current EasyAntiCheat build before release and re-tested after each chapter update.",
       },
       {
-        heading: "Will my Fortnite cheat work after a chapter update?",
+        heading: "Best Fortnite cheats — why buy from Cheat Paradise",
         body:
-          "Epic pushes major chapter resets roughly every 3 months and hotfix patches weekly. Our team retests every build within 4 hours of a chapter launch and pushes a hotfix loader if anything breaks. Active subscriptions automatically receive the updated version with no action required from you.",
+          "Instant delivery, free updates with chapter coverage, stream-proof overlay, and 24/7 Discord support. Works across all Epic regions (NA, EU, Asia, OCE, Brazil, ME). Pay by card or crypto and get your license instantly.",
+        bullets: {
+          heading: "Every Fortnite purchase includes",
+          items: [
+            "Instant automated delivery",
+            "Free updates + chapter coverage",
+            "Stream-proof overlay",
+            "24/7 Discord support",
+          ],
+        },
       },
     ],
     faqs: [
       {
-        q: "Can I use Fortnite cheats in ranked and competitive playlists?",
-        a: "Yes — features work across Solo, Duos, Squads, Reload, Zero Build, and Ranked playlists. We recommend humanised settings (smoothing + delay) and lower FOV values in Ranked to stay below Epic's behavioural detection thresholds.",
+        q: "Are Fortnite cheats safe to use?",
+        a: "Yes, when running an undetected build. Each cheat is tested against the current EAC build and uses humanised aimbot settings to stay subtle.",
       },
       {
-        q: "Is the Fortnite cheat stream-proof?",
-        a: "Yes. Menus, ESP overlays, and aimbot indicators do not render in OBS, Discord screen-share, Shadowplay, or browser-based capture. Streamers and content creators have been using our internal Fortnite builds for over a year without overlay leakage.",
+        q: "Will I get banned for using Fortnite cheats?",
+        a: "Risk is minimised by legit play and humanised settings. As long as you run the current undetected build and play sensibly, bans are rare.",
       },
       {
-        q: "Will Epic ban my Fortnite account for using these cheats?",
-        a: "Not while running an undetected build. EAC bans the account and IP — which is why every Fortnite product includes an HWID spoofer to protect against hardware-level association. Every undetected ban is replaced free under our policy.",
+        q: "Are there free Fortnite cheats?",
+        a: "Free Fortnite cheats are detected fast and get accounts EAC-banned. Paid cheats fund the ongoing bypass work that keeps the loader undetected.",
       },
       {
-        q: "Do Fortnite cheats work on the EU and Asia servers?",
-        a: "Yes. Region has no impact on cheat functionality. All Epic-hosted Fortnite servers (NA, EU, Asia, OCE, Brazil, ME) are supported on the same loader.",
+        q: "Do Fortnite cheats work in Ranked and Zero Build?",
+        a: "Yes. Features work across Solo, Duos, Squads, Reload, Zero Build, and Ranked. We recommend humanised settings and lower FOV in Ranked.",
       },
       {
-        q: "Can I use Fortnite cheats on Xbox or PlayStation?",
-        a: "No. Console cheating requires hardware-level interception devices and is fundamentally different from PC cheating. Our Fortnite cheats are PC-only — Windows 10 (1909+) and Windows 11 23H2 / 24H2.",
+        q: "How fast is delivery?",
+        a: "Instant. Your license is delivered automatically to your dashboard and email the moment payment confirms.",
+      },
+      {
+        q: "Do Fortnite cheats work on Xbox or PlayStation?",
+        a: "No. Fortnite cheats are PC-only and require native Windows 10 or 11. Consoles are not supported.",
       },
     ],
     lastTested: "Chapter 7 Season 2 · May 2026",
     heroImage: "/banners/fortnite.webp",
     videoSrc: "/footage/fortnite.mp4",
+    videoPoster: "/footage/fortnite-poster.webp",
   },
 ];
 

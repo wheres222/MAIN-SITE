@@ -36,7 +36,7 @@ export default function NotFound() {
           <Link href="/status">Status</Link>
           <Link href="/guide">Setup Guide</Link>
           <Link href="/loaders">Loaders</Link>
-          <Link href="/reviews">Reviews</Link>
+          <Link href="/faq">FAQ</Link>
         </nav>
       </div>
 
@@ -45,120 +45,123 @@ export default function NotFound() {
 
         .nf-root {
           min-height: 100vh;
-          background: #0d0d0d;
+          background: var(--surface-0);
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 24px;
-          font-family: 'Roboto', 'Segoe UI', sans-serif;
+          padding: var(--space-6);
+          font-family: var(--font-body);
         }
 
         .nf-card {
-          background: #17181d;
-          border: 1px solid #222430;
-          border-radius: 20px;
-          padding: 56px 48px;
+          background: var(--surface-1);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-xl);
+          padding: var(--space-14) var(--space-12);
           max-width: 500px;
           width: 100%;
           text-align: center;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 20px;
+          gap: var(--space-5);
         }
 
         .nf-brand {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: var(--space-3);
           text-decoration: none;
         }
         .nf-logo { width: 40px; height: 40px; object-fit: contain; }
         .nf-wordmark {
+          font-family: var(--font-display);
           font-weight: 800;
-          font-size: 1.1rem;
-          color: #ffffff;
+          font-size: var(--text-lg);
+          color: var(--text-primary);
           letter-spacing: 0.03em;
         }
 
         .nf-code {
+          font-family: var(--font-display);
           font-size: 5rem;
           font-weight: 800;
-          color: #2563eb;
+          color: var(--accent);
           line-height: 1;
           letter-spacing: -0.04em;
         }
 
         .nf-title {
-          color: #ffffff;
-          font-size: 1.6rem;
+          font-family: var(--font-display);
+          color: var(--text-primary);
+          font-size: var(--text-2xl);
           font-weight: 700;
           letter-spacing: -0.02em;
           margin-top: -8px;
         }
 
         .nf-desc {
-          color: #8a93a8;
-          font-size: 0.93rem;
+          color: var(--text-muted);
+          font-size: var(--text-sm);
           line-height: 1.65;
           max-width: 360px;
         }
 
         .nf-actions {
           display: flex;
-          gap: 10px;
+          gap: var(--space-3);
           flex-wrap: wrap;
           justify-content: center;
         }
 
         .nf-btn-primary {
           display: inline-block;
-          padding: 11px 28px;
-          background: #2563eb;
+          padding: var(--space-3) var(--space-8);
+          background: var(--accent);
           color: #fff;
-          border-radius: 8px;
-          font-size: 0.9rem;
+          border-radius: var(--radius-md);
+          font-size: var(--text-sm);
           font-weight: 700;
           text-decoration: none;
-          transition: background 0.15s;
+          transition: background var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
         }
-        .nf-btn-primary:hover { background: #1d4ed8; }
+        .nf-btn-primary:hover { background: var(--accent-hover); box-shadow: var(--accent-glow); }
 
         .nf-btn-secondary {
           display: inline-block;
-          padding: 11px 28px;
+          padding: var(--space-3) var(--space-8);
           background: transparent;
-          color: #8a93a8;
-          border: 1px solid #2a2d3a;
-          border-radius: 8px;
-          font-size: 0.9rem;
+          color: var(--text-muted);
+          border: 1px solid var(--border-strong);
+          border-radius: var(--radius-md);
+          font-size: var(--text-sm);
           font-weight: 600;
           text-decoration: none;
-          transition: border-color 0.15s, color 0.15s;
+          transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
         }
-        .nf-btn-secondary:hover { border-color: #2563eb; color: #c8d3ea; }
+        .nf-btn-secondary:hover { border-color: var(--accent); color: var(--text-primary); }
 
-        .nf-divider { width: 100%; height: 1px; background: #222430; }
+        .nf-divider { width: 100%; height: 1px; background: var(--border); }
 
         .nf-links {
           display: flex;
-          gap: 20px;
+          gap: var(--space-5);
           flex-wrap: wrap;
           justify-content: center;
         }
         .nf-links a {
-          color: #5272a8;
-          font-size: 0.85rem;
+          color: var(--text-muted);
+          font-size: var(--text-sm);
           font-weight: 500;
           text-decoration: none;
-          transition: color 0.15s;
+          transition: color var(--dur-fast) var(--ease-out);
         }
-        .nf-links a:hover { color: #7cc4ff; }
+        .nf-links a:hover { color: var(--accent); }
 
         @media (max-width: 480px) {
-          .nf-card { padding: 40px 24px; }
+          .nf-card { padding: var(--space-10) var(--space-6); }
           .nf-code { font-size: 4rem; }
-          .nf-title { font-size: 1.3rem; }
+          .nf-title { font-size: var(--text-xl); }
         }
       `}</style>
     </div>

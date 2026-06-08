@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact-us" },
 };
 
+export const dynamic = "force-static";
+
 export default function ContactUsPage() {
   const discordUrl = getDiscordUrl();
 

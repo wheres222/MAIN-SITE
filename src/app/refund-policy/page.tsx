@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/refund-policy" },
 };
 
+export const dynamic = "force-static";
+
 export default function RefundPolicyPage() {
   return (
     <InfoPage

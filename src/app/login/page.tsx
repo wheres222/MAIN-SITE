@@ -1,21 +1,20 @@
-import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import { AuthPage } from "@/components/auth-page";
 
-/**
- * /login is now a thin redirect that bounces users to the homepage with
- * `?auth=login`, which the SiteHeader picks up and opens the AuthModal popup.
- * Keeps a single auth UI (the modal) instead of maintaining a duplicate
- * full-page route, and means login and register share identical styling.
- *
- * Inbound traffic (search engines, old bookmarks, password reset emails)
- * still arrives at /login and gets the popup automatically. Any `?next=`
- * query param is preserved so users land on their intended page post-login.
- */
-export default async function LoginRedirect({
+export const metadata: Metadata = {
+  title: "Sign In",
+  description:
+    "Sign in to your Cheat Paradise account to access your dashboard, orders, balance, and downloads.",
+  robots: { index: false, follow: true },
+  alternates: { canonical: "/login" },
+};
+
+export default async function LoginPage({
   searchParams,
 }: {
   searchParams?: Promise<{ next?: string }>;
 }) {
   const params = searchParams ? await searchParams : {};
-  const next = params.next ? `&next=${encodeURIComponent(params.next)}` : "";
-  redirect(`/?auth=login${next}`);
+  const next = params.next && params.next.startsWith("/") ? params.next : "/account";
+  return <AuthPage defaultTab="login" next={next} />;
 }

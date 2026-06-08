@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy-policy" },
 };
 
+export const dynamic = "force-static";
+
 export default function PrivacyPolicyPage() {
   return (
     <InfoPage

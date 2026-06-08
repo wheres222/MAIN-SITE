@@ -1,26 +1,29 @@
 .page {
   min-height: 100vh;
-  background: var(--surface-0);
+  /* Match the category page background (.marketplace-page) instead of the body grey */
+  background-color: #0d0d0d;
+  background-image: none;
   color: var(--text-primary);
 }
 
 .shell {
-  width: min(1460px, calc(100% - 56px));
+  width: min(1080px, calc(100% - 40px));
   margin: 0 auto;
-  padding-top: 96px;
+  padding-top: 88px;
   padding-bottom: 60px;
 }
 
 .showreel {
-  margin-top: 20px;
-  background: var(--surface-2);
-  border-radius: 16px;
+  margin-top: 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
   padding: 22px 26px;
 }
 
 .topGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
   gap: 32px;
   align-items: stretch;
 }
@@ -37,9 +40,9 @@
 /* ── Main display ──────────────────────────────── */
 .mainDisplay {
   width: 100%;
-  border-radius: 10px;
+  border-radius: 6px;
   overflow: hidden;
-  background: var(--surface-0);
+  background: var(--surface-3);
   aspect-ratio: 16 / 9;
   display: flex;
   align-items: center;
@@ -68,32 +71,35 @@
 .mainImg {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   display: block;
 }
 
 /* ── Thumbnail grid ───────────────────────────── */
 .thumbGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  margin-top: 8px;
 }
 
 .thumbCard {
   position: relative;
-  border-radius: 8px;
-  background: var(--surface-0);
+  width: 84px;
+  aspect-ratio: 16 / 10;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface-3);
   overflow: hidden;
   cursor: pointer;
   padding: 0;
-  aspect-ratio: 16 / 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.18s;
+  flex: 0 0 auto;
+  transition: border-color 0.15s ease, transform 0.1s ease;
 }
 
-.thumbCard:hover { opacity: 0.8; }
+.thumbCard:hover { border-color: var(--accent); }
+.thumbCard:active { transform: translateY(1px); }
+.thumbCard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 .thumbCard img {
   width: 100%;
@@ -185,90 +191,82 @@
 
 .buyColumn h1 {
   margin: 0;
-  font-family: var(--font-main);
-  font-size: clamp(22px, 2.6vw, 34px);
-  line-height: 1.1;
+  font-family: var(--font-brand);
+  font-size: clamp(22px, 2.6vw, 32px);
+  line-height: 1.15;
   font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .badgeRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-  margin: 12px 0 14px;
+  gap: 10px;
+  margin: 14px 0 18px;
 }
 .badgeInstant,
 .badgeUndetected {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  border: 1px solid transparent;
 }
 .badgeInstant {
-  background: var(--surface-3);
-  border: none;
+  background: var(--surface-2);
+  border-color: var(--border);
   color: var(--text-muted);
 }
-.badgeInstant svg { width: 13px; height: 13px; color: var(--accent); flex: 0 0 auto; }
-/* Undetected — dark green bg, bright green text + icons (matches global pill style) */
+.badgeInstant svg { width: 14px; height: 14px; color: var(--accent); flex: 0 0 auto; }
+/* Undetected — brand-green pill (matches status board) */
 .badgeUndetected {
-  background: #0a3a22;
-  border: none;
-  color: #22c55e;
+  background: rgba(67, 198, 1, 0.10);
+  border-color: rgba(67, 198, 1, 0.25);
+  color: #43c601;
 }
-.badgeUndetected svg { width: 13px; height: 13px; color: #22c55e; flex: 0 0 auto; }
+.badgeUndetected svg { width: 14px; height: 14px; color: #43c601; flex: 0 0 auto; }
 
 .priceQtyRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 16px;
   margin: 0 0 14px;
-}
-
-.price {
-  margin: 0;
-  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
-  line-height: 1;
-  font-weight: 700;
-  color: var(--text-primary);
 }
 
 /* ── Plan / variant grid ─────────────────────── */
 .planGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
 }
 
 .planCard {
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  background: var(--surface-3);
-  padding: 10px 11px 10px;
-  min-height: 64px;
-  color: #ffffff;
+  border: 1px solid #37a300;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #50d40f 0%, #43c601 55%, #37a300 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+  padding: 12px 14px;
+  min-height: 72px;
+  color: var(--accent-ink);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition: filter 0.12s ease, transform 0.1s ease;
 }
-.planCard:hover { border-color: var(--border-strong); }
-.planCardSelected {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.planCardSelected:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
-.planCard:disabled { opacity: 0.6; cursor: not-allowed; }
+.planCard:hover { filter: brightness(1.08); }
+.planCard:active { transform: translateY(1px); }
+.planCard:disabled { opacity: 0.6; cursor: not-allowed; transform: none; filter: none; }
 
 .planTopRow {
   display: flex;
@@ -280,67 +278,55 @@
 }
 .planName {
   font-size: 0.67rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-weight: 800;
+  color: var(--accent-ink);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   white-space: nowrap;
 }
-.planCardSelected .planName { color: rgba(255,255,255,0.85); }
 .planStock {
   font-size: 0.62rem;
   font-weight: 700;
-  color: var(--accent);
+  color: rgba(12, 34, 0, 0.7);
   letter-spacing: 0.05em;
   text-align: right;
   white-space: nowrap;
-  opacity: 0.9;
 }
-.planCardSelected .planStock { color: rgba(255,255,255,0.75); }
 .planPrice {
   font-size: 0.98rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--accent-ink);
   line-height: 1;
 }
 
 /* ── Qty stepper ─────────────────────────────── */
 .qtyStepper {
-  height: 38px;
-  border-radius: 8px;
+  height: 40px;
+  border-radius: 6px;
   border: none;
-  background: var(--surface-3);
+  background: var(--surface-2);
   display: inline-grid;
-  grid-template-columns: 36px 44px 36px;
+  grid-template-columns: 40px 48px 40px;
   align-items: stretch;
   overflow: hidden;
 }
 
 .qtyStepper button {
   border: 0;
-  background: var(--accent-dim);
-  color: var(--accent);
+  background: var(--themed-blue-gradient);
+  color: var(--text-primary);
   font-size: 1.15rem;
   line-height: 1;
   cursor: pointer;
-  height: 38px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.12s ease, color 0.12s ease;
+  font-weight: 700;
+  transition: opacity 0.12s ease;
 }
 
-.qtyStepper button:first-child:hover {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.qtyStepper button:last-child {
-  background: var(--accent);
-  color: #ffffff;
-}
-
-.qtyStepper button:last-child:hover { background: var(--accent-dark); }
+.qtyStepper button:hover { opacity: 0.9; }
 
 .qtyStepper span {
   text-align: center;
@@ -358,186 +344,99 @@
   font-size: 0.82rem;
 }
 
-/* ── Action row ──────────────────────────────── */
-.actionRow {
-  margin-top: auto;
-  padding-top: 18px;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.buyNowBtn {
-  height: 46px;
-  padding: 0 28px;
-  border-radius: 7px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: #ffffff;
-  color: #0d0e11;
-  font-size: 0.88rem;
-  line-height: 1;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-}
-.buyNowBtn:hover { background: #e8edf5; color: #0d0e11; }
-.buyNowBtn:disabled { opacity: 0.55; cursor: not-allowed; }
-.buyNowBtn:active { transform: scale(0.99); }
-
 .notice {
   margin-top: 12px;
   color: var(--accent);
 }
 
-/* ── Description panel ───────────────────────── */
+/* ── Description — stack of forum panels (header bar + points) ───────────── */
 .descPanel {
   margin-top: 16px;
-  background: var(--surface-2);
-  border-radius: 14px;
-  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
-/* INFORMATION strip */
-.descInfoRow {
-  background: var(--surface-3);
-  border-radius: 10px;
-  border-left: 2px solid var(--accent);
-  padding: 18px 22px 20px 18px;
-  position: relative;
-}
-
-.descInfoTitle {
-  margin: 0 0 13px;
-  font-size: 0.67rem;
-  font-weight: 800;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: #ffffff;
-}
-
+/* Information panel bullets (label: value pairs, 2-col) */
 .descBullets {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
 }
-
 .descBullets li {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   line-height: 1.45;
   position: relative;
   padding-left: 14px;
 }
-
+.descBullets li strong { color: var(--text-primary); font-weight: 600; }
 .descBullets li::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 4px;
+  top: 0.5em;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--accent);
-  opacity: 0.85;
 }
 
-/* Feature tabs grid */
+/* Feature category panels — grid of forum panels */
 .descTabsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
-
-.descTabCol {
-  background: var(--surface-3);
-  border-radius: 10px;
-  /* Line IS the left border — runs full card height */
-  border-left: 2px solid var(--accent);
-  padding: 18px 18px 22px 18px;
-  position: relative;
-}
-
-.descTabTitle {
-  margin: 0 0 4px;
-  font-size: 0.82rem;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: #ffffff;
-}
-
 .descTabSubtitle {
   margin: 0 0 12px;
-  font-size: 0.73rem;
+  font-size: 0.78rem;
   color: var(--text-dim);
   line-height: 1.4;
 }
-
 .descTabItems {
   list-style: none;
-  margin: 10px 0 0;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 9px;
 }
-
 .descTabItems li {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.45;
   position: relative;
+  padding-left: 14px;
 }
-
 .descTabItems li::before {
   content: '';
   position: absolute;
-  /* Reach back onto the border-left line: -(padding-left + half-border) */
-  left: -22px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
+  left: 0;
+  top: 0.5em;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--accent);
-  /* Gap ring in card bg colour — makes the line appear to break around the dot */
-  box-shadow: 0 0 0 3px #0d0f11;
-  z-index: 1;
 }
 
 /* ── Responsive ────────────────────────────────── */
-@media (max-width: 1100px) {
-  .descTabsGrid { grid-template-columns: repeat(2, 1fr); }
-}
-
 @media (max-width: 820px) {
   .topGrid { grid-template-columns: 1fr; }
-  .thumbGrid { grid-template-columns: repeat(3, 1fr); }
+  .descTabsGrid { grid-template-columns: 1fr; }
+  .descBullets { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
   .shell { width: min(1080px, calc(100% - 24px)); }
   .actionRow { grid-template-columns: 1fr; }
-  .thumbGrid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .thumbGrid { gap: 6px; }
+  .thumbCard { width: 72px; }
   .lightboxArrow { width: 38px; height: 38px; }
   .lightboxArrowLeft { left: 8px; }
   .lightboxArrowRight { right: 8px; }
   .lightboxClose { top: 10px; right: 10px; }
-}
-
-@media (max-width: 600px) {
-  .descPanel { padding: 14px; gap: 10px; border-radius: 16px; }
-  .descTabsGrid { grid-template-columns: 1fr; gap: 10px; }
 }

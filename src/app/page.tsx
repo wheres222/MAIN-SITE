@@ -15,6 +15,7 @@ const FOOTAGE_VIDEOS: Array<{
   name: string;
   description: string;
   src: string;
+  poster: string;
   duration: string;
   uploadDate: string;
 }> = [
@@ -23,6 +24,7 @@ const FOOTAGE_VIDEOS: Array<{
     description:
       "Live Fortnite gameplay using Cheat Paradise's undetected aimbot, ESP, and prediction features in Chapter 7 Season 2.",
     src: "/footage/fortnite.mp4",
+    poster: "/footage/fortnite-poster.webp",
     duration: "PT50S",
     uploadDate: "2026-05-14",
   },
@@ -31,6 +33,7 @@ const FOOTAGE_VIDEOS: Array<{
     description:
       "Extraction shooter gameplay demonstrating Cheat Paradise's ARC Raiders ESP, silent aim, and loot filter.",
     src: "/footage/arc.mp4",
+    poster: "/footage/arc-poster.webp",
     duration: "PT50S",
     uploadDate: "2026-05-14",
   },
@@ -39,6 +42,7 @@ const FOOTAGE_VIDEOS: Array<{
     description:
       "Live Rust raid footage using Cheat Paradise's undetected external cheat with full player ESP, item ESP, and aimbot.",
     src: "/footage/rust.mp4",
+    poster: "/footage/rust-poster.webp",
     duration: "PT50S",
     uploadDate: "2026-05-14",
   },
@@ -51,7 +55,7 @@ function buildVideoSchemas() {
       "@type": "VideoObject",
       name: video.name,
       description: video.description,
-      thumbnailUrl: `${siteUrl}/branding/og-banner.png`,
+      thumbnailUrl: `${siteUrl}${video.poster}`,
       contentUrl: `${siteUrl}${video.src}`,
       uploadDate: video.uploadDate,
       duration: video.duration,

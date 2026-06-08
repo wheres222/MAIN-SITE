@@ -6,8 +6,8 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { categoryHref } from "@/lib/category-href";
-import { lineId, readCart, variantsFor, writeCart } from "@/lib/cart";
-import type { SellAuthPaymentMethod, SellAuthProduct } from "@/types/sellauth";
+import { variantsFor } from "@/lib/cart";
+import type { SellAuthPaymentMethod, SellAuthProduct, SellAuthVariant } from "@/types/sellauth";
 import styles from "./product-detail-page.module.css";
 
 interface ProductDetailPageProps {
@@ -757,7 +757,7 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     ? [
         { label: "Supported CPU", value: "Intel + AMD" },
         { label: "Supported Windows Version", value: "10 - 11" },
-        { label: "Cheat Type", value: "External" },
+        { label: "Cheat Type", value: "Internal" },
       ]
     : [];
 
@@ -839,56 +839,15 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
     return checkoutQuantity;
   }
 
-  function addToCart() {
-    const checkoutQuantity = resolveCheckoutQuantity();
-    const checkoutVariantId = selectedVariant?.isSynthetic ? undefined : selectedVariant?.id;
-    const id = lineId(product.id, checkoutVariantId);
-    const currentLines = readCart();
-    const existingLine = currentLines.find((line) => line.lineId === id);
-
-    if (existingLine) {
-      writeCart(
-        currentLines.map((line) =>
-          line.lineId === id
-            ? {
-                ...line,
-                quantity: line.quantity + checkoutQuantity,
-                unitPrice: selectedUnitPrice,
-              }
-            : line
-        )
-      );
-      setNotice("Quantity updated in cart. Cart is saved if you close the tab.");
-      return;
-    }
-
-    writeCart([
-      ...currentLines,
-      {
-        lineId: id,
-        productId: product.id,
-        productName: product.name,
-        image: product.image,
-        quantity: checkoutQuantity,
-        variantId: checkoutVariantId,
-        variantName: selectedVariant?.isSynthetic ? undefined : selectedVariant?.name,
-        unitPrice: selectedUnitPrice,
-        currency: product.currency || "USD",
-        status: "undetected",
-      },
-    ]);
-
-    setNotice("Added to cart. Cart is saved in your browser.");
-  }
-
-  // Click "Buy Now" → POST straight to /api/checkout (Stripe path) → redirect
+  // Click a variant → POST straight to /api/checkout (Stripe path) → redirect
   // to Stripe's hosted checkout. Stripe collects email there so no popup needed.
-  async function checkoutNow() {
+  async function checkoutNow(variantOverride?: SellAuthVariant) {
     setNotice("");
     setIsCheckingOut(true);
 
+    const useVariant = variantOverride || selectedVariant;
     const checkoutQuantity  = resolveCheckoutQuantity();
-    const checkoutVariantId = selectedVariant?.isSynthetic ? undefined : selectedVariant?.id;
+    const checkoutVariantId = useVariant?.isSynthetic ? undefined : useVariant?.id;
 
     try {
       for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -1018,8 +977,10 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                 ) : null}
               </div>
 
-              {/* ── Thumbnail row ── */}
+              {/* ── Thumbnail row: all extra images; click opens full-scale lightbox ── */}
               {(() => {
+                // When a video occupies the main display, every image is a thumb.
+                // Otherwise the first image is the main display, so thumbs are the rest.
                 const thumbs = videoPreview ? galleryImages : galleryImages.slice(1);
                 if (thumbs.length === 0) return null;
                 return (
@@ -1032,9 +993,9 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                           type="button"
                           className={styles.thumbCard}
                           onClick={() => openLightbox(actualIndex)}
-                          aria-label={`View image ${i + 1}`}
+                          aria-label={`View image ${actualIndex + 1} full size`}
                         >
-                          <img src={src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                          <img src={src} alt={`${product.name} screenshot ${actualIndex + 1}`} loading="lazy" decoding="async" />
                         </button>
                       );
                     })}
@@ -1062,36 +1023,17 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               </span>
             </div>
 
-            <div className={styles.priceQtyRow}>
-              <p className={styles.price}>{money(selectedUnitPrice, product.currency)}</p>
-              <div className={styles.qtyStepper}>
-                <button
-                  type="button"
-                  aria-label="Decrease quantity"
-                  onClick={() => setQuantity((value) => Math.max(minQuantity, value - 1))}
-                >
-                  −
-                </button>
-                <span>{quantity}</span>
-                <button
-                  type="button"
-                  aria-label="Increase quantity"
-                  onClick={() => setQuantity((value) => value + 1)}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
             <div className={styles.planGrid}>
               {variants.map((variant) => {
-                const isSelected = variant.id === selectedVariantId;
                 const stock = typeof variant.stock === "number" && variant.stock >= 0 ? variant.stock : null;
                 return (
                   <button
                     key={variant.id}
-                    className={`${styles.planCard} ${isSelected ? styles.planCardSelected : ""}`}
-                    onClick={() => setSelectedVariantId(variant.id)}
+                    className={styles.planCard}
+                    onClick={() => {
+                      setSelectedVariantId(variant.id);
+                      void checkoutNow(variant);
+                    }}
                     disabled={isCheckingOut}
                   >
                     <div className={styles.planTopRow}>
@@ -1112,17 +1054,6 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               <p className={styles.minimumHint}>Minimum quantity for this product: {minQuantity}</p>
             ) : null}
 
-            <div className={styles.actionRow}>
-              <button
-                type="button"
-                className={styles.buyNowBtn}
-                onClick={checkoutNow}
-                disabled={isCheckingOut}
-              >
-                {isCheckingOut ? "Processing…" : "Buy Now →"}
-              </button>
-            </div>
-
             {notice ? <p className={styles.notice}>{notice}</p> : null}
           </article>
         </section>
@@ -1130,19 +1061,21 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
         {(detailContent.featureTabs.length > 0 || detailContent.requirements.length > 0 || showRequirements) && (
           <section className={styles.descPanel}>
-            {/* INFORMATION — full-width strip at the top */}
+            {/* Information panel */}
             {(detailContent.requirements.length > 0 || showRequirements) && (
-              <div className={styles.descInfoRow}>
-                <h3 className={styles.descInfoTitle}>INFORMATION</h3>
-                <ul className={styles.descBullets}>
-                  {(detailContent.requirements.length > 0 ? detailContent.requirements : displayRequirements).map((req, i) => (
-                    <li key={i}><strong>{req.label}:</strong> {req.value}</li>
-                  ))}
-                </ul>
+              <div className="panel">
+                <header className="panel-header">Information</header>
+                <div className="panel-body">
+                  <ul className={styles.descBullets}>
+                    {(detailContent.requirements.length > 0 ? detailContent.requirements : displayRequirements).map((req, i) => (
+                      <li key={i}><strong>{req.label}:</strong> {req.value}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             )}
 
-            {/* Feature tabs — max 4 per row, wrapping grid */}
+            {/* One forum panel per feature category (ESP, Aimbot, Misc…) */}
             {detailContent.featureTabs.length > 0 && (
               <div className={styles.descTabsGrid}>
                 {detailContent.featureTabs.map((tab) => {
@@ -1151,12 +1084,14 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
                   const subtitle = firstIsSubtitle ? first : tabDescription(tab.title);
                   const bullets = firstIsSubtitle ? tab.items.slice(1) : tab.items;
                   return (
-                    <div key={tab.title} className={styles.descTabCol}>
-                      <h4 className={styles.descTabTitle}>{tab.title.toUpperCase()}</h4>
-                      {subtitle && <p className={styles.descTabSubtitle}>{subtitle}</p>}
-                      <ul className={styles.descTabItems}>
-                        {bullets.map((item, i) => <li key={i}>{item}</li>)}
-                      </ul>
+                    <div key={tab.title} className="panel">
+                      <header className="panel-header">{tab.title.toUpperCase()}</header>
+                      <div className="panel-body">
+                        {subtitle && <p className={styles.descTabSubtitle}>{subtitle}</p>}
+                        <ul className={styles.descTabItems}>
+                          {bullets.map((item, i) => <li key={i}>{item}</li>)}
+                        </ul>
+                      </div>
                     </div>
                   );
                 })}
