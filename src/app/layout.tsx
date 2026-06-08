@@ -1,30 +1,38 @@
 import type { Metadata, Viewport } from "next";
-import { Roboto, Montserrat, Inter } from "next/font/google";
+import { Inter, Raleway } from "next/font/google";
+import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import { PostHogProvider } from "@/components/posthog-provider";
 import { DISCORD_INVITE_URL } from "@/lib/links";
 
-const roboto = Roboto({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  display: "optional",
-  variable: "--font-roboto",
-  preload: true,
-});
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["600", "700", "800"],
-  display: "optional",
-  variable: "--font-montserrat",
-  preload: true,
-});
-
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["700"],
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
   variable: "--font-inter",
+  preload: true,
+});
+
+// Brand font — matches gamesense's wordmark stack (Raleway, with Helvetica
+// Neue / Arial as fallbacks). Used for the CheatParadise wordmark + branding.
+const raleway = Raleway({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-raleway",
+  preload: true,
+});
+
+const satoshi = localFont({
+  src: [
+    { path: "../../public/fonts/satoshi/Satoshi-400.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/satoshi/Satoshi-500.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/satoshi/Satoshi-700.woff2", weight: "700", style: "normal" },
+    { path: "../../public/fonts/satoshi/Satoshi-900.woff2", weight: "900", style: "normal" },
+  ],
+  variable: "--font-satoshi",
+  display: "swap",
   preload: true,
 });
 
@@ -117,10 +125,8 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${roboto.variable} ${montserrat.variable} ${inter.variable}`}>
+    <html lang="en" className={`${inter.variable} ${satoshi.variable} ${raleway.variable}`}>
       <head>
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-9XTJ5HDH2M"></script>
-        <script dangerouslySetInnerHTML={{ __html: `window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-9XTJ5HDH2M');` }} />
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
         <link rel="preconnect" href="https://cdn.mysellauth.com" crossOrigin="anonymous" />
@@ -139,6 +145,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         <PostHogProvider>{children}</PostHogProvider>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-9XTJ5HDH2M"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-9XTJ5HDH2M');`}
+        </Script>
       </body>
     </html>
   );

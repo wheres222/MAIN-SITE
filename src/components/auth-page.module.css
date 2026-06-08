@@ -1,0 +1,158 @@
+/* ── Auth page — forum-panel layout ───────────────────────────────────────── */
+
+.authMain {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: transparent; /* body grain shows through */
+}
+
+.authWrap {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Brand wordmark above the panel */
+.brand {
+  display: block;
+  text-align: center;
+  font-family: var(--font-brand);
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+.brandAccent { color: var(--accent); }
+
+/* ── Form ── */
+.form { display: flex; flex-direction: column; gap: 14px; }
+.fields { display: flex; flex-direction: column; gap: 10px; }
+
+.inputWrap { position: relative; display: flex; align-items: center; }
+.inputIcon {
+  position: absolute;
+  left: 13px;
+  color: var(--text-dim);
+  display: inline-flex;
+  pointer-events: none;
+}
+.input {
+  width: 100%;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  padding: 11px 13px 11px 40px;
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.input::placeholder { color: var(--text-dim); }
+.input:focus { border-color: var(--accent); }
+
+.forgotRow { display: flex; justify-content: flex-end; }
+.forgotLink { font-size: 0.78rem; color: var(--text-muted); text-decoration: none; }
+.forgotLink:hover { color: var(--accent); }
+
+/* Password checklist */
+.pwChecklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.pwChecklist li { display: flex; align-items: center; gap: 7px; font-size: 0.75rem; }
+.pwCheckPass { color: var(--accent); }
+.pwCheckFail { color: var(--text-dim); }
+.pwCheckIcon { font-size: 0.8rem; width: 12px; text-align: center; }
+
+/* ── 3D beveled primary button (green) ── */
+.primaryBtn {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 4px;
+  border: none;
+  background: linear-gradient(180deg, #50d40f 0%, #43c601 55%, #37a300 100%);
+  color: var(--accent-ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.18),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+  transition: filter var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.primaryBtn:hover:not(:disabled) { filter: brightness(1.08); }
+.primaryBtn:active:not(:disabled) { box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25); }
+.primaryBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Social buttons (dark, bevel) ── */
+.socialRow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.socialBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: filter var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+.socialBtn:hover:not(:disabled) { filter: brightness(1.25); border-color: var(--accent); }
+.socialBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Switch line */
+.switchLine {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 2px 0 0;
+}
+.switchBtn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+.switchBtn:hover { filter: brightness(1.15); text-decoration: underline; }
+
+/* ── Error / success ── */
+.error {
+  font-size: 0.8rem;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: 4px;
+  padding: 9px 12px;
+  margin: 0;
+}
+.successBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent-soft);
+  border-radius: 4px;
+  padding: 18px;
+}
+.successBox svg { flex-shrink: 0; margin-top: 2px; }
+.successBox strong { color: var(--accent); font-size: 0.95rem; display: block; margin-bottom: 2px; }
+.successBox p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+
+/* ── Responsive ── */
+@media (max-width: 460px) {
+  .brand { font-size: 1.4rem; }
+}

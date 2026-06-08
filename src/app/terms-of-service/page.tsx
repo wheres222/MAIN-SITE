@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/terms-of-service" },
 };
 
+export const dynamic = "force-static";
+
 export default function TermsPage() {
   return (
     <InfoPage

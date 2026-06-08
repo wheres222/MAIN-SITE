@@ -18,7 +18,6 @@ const SUPPORTED_GAMES = [
   { name: "HWID Spoofer",      slug: "hwid-spoofers" },
   { name: "Rainbow Six Siege", slug: "rainbow-six-siege" },
   { name: "Rust",              slug: "rust" },
-  { name: "VPNs",              slug: "vpns" },
 ];
 
 // Split games into two balanced columns
@@ -47,13 +46,13 @@ export function SiteFooter() {
             <div className="footer-brand">
               <img
                 src="/branding/cp-logo.png"
-                alt="CheatParadise logo"
+                alt="cheatparadise logo"
                 loading="lazy"
                 decoding="async"
                 className="footer-brand-logo"
               />
               <div className="footer-brand-wordmark">
-                <span className="footer-brand-word-top">CHEATPARADISE</span>
+                <span className="footer-brand-word-top">cheat<span className="footer-brand-word-accent">paradise</span></span>
               </div>
             </div>
 

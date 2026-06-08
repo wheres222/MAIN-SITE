@@ -19,6 +19,11 @@ node.zip
 # Logs
 *.log
 
+# Local backup artifacts (large originals — not for the repo)
+_video_originals_backup/
+.devserver.out.log
+.devserver.err.log
+
 # Fulfillment runtime artifacts
 fulfillment/state/
 fulfillment/artifacts/

@@ -3,9 +3,8 @@
 
 import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { AuthModal } from "@/components/auth-modal";
 import { DepositModal } from "@/components/deposit-modal";
 import { AccountModal } from "@/components/account-modal";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -17,16 +16,11 @@ interface SiteHeaderProps {
   searchSlot?: ReactNode;
 }
 
-function activeClass(current: NavTab, target: NavTab): string {
-  return current === target ? "active" : "";
-}
-
-export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderProps) {
+export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: SiteHeaderProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [balance, setBalance] = useState<number | null>(null);
-  const [modal, setModal] = useState<"login" | "register" | null>(null);
   const [showDeposit, setShowDeposit] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
@@ -34,18 +28,9 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const pathname = usePathname() || "/";
 
   const supabase = createClient();
-
-  // Auto-open the auth modal when arriving via /?auth=login or /?auth=register
-  // (these are how /login and /register routes redirect into the popup flow).
-  useEffect(() => {
-    const auth = searchParams.get("auth");
-    if (auth === "login" || auth === "register") {
-      setModal(auth);
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     async function loadUser() {
@@ -130,14 +115,15 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
       <div className={`nav-row${scrolled ? " nav-row--scrolled" : ""}`}>
         <div className="shell nav-row-inner">
           <div className="nav-row-left">
-            <Link className="nav-left-logo" href="/" aria-label="CheatParadise home">
-              <img src="/branding/cp-logo.png" alt="CheatParadise logo" className="nav-left-logo-mark" />
+            <Link className="nav-left-logo" href="/" aria-label="cheatparadise home">
+              <img src="/branding/cp-logo.png" alt="" className="nav-left-logo-mark" />
+              <span className="nav-wordmark">cheat<span className="nav-wordmark-accent">paradise</span></span>
             </Link>
 
             <nav className="site-nav">
-              <Link className={activeClass(activeTab, "store")} href="/">Store</Link>
-              <Link className={activeClass(activeTab, "status")} href="/status">Status</Link>
-              <Link className={activeClass(activeTab, "support")} href="/support">Support</Link>
+              <Link className={pathname === "/" ? "active" : ""} href="/">Home</Link>
+              <Link className={pathname.startsWith("/products") ? "active" : ""} href="/products">Products</Link>
+              <Link className={pathname.startsWith("/status") ? "active" : ""} href="/status">Status</Link>
             </nav>
           </div>
 
@@ -215,25 +201,19 @@ export function SiteHeader({ activeTab, searchSlot: _searchSlot }: SiteHeaderPro
                 </div>
               </div>
             ) : (
-              <>
-                <button type="button" className="nav-signin-btn" onClick={() => setModal("login")}>
-                  Login
-                </button>
-                <button type="button" className="nav-register-btn" onClick={() => setModal("register")}>
-                  Register
-                </button>
-              </>
+              <div className="nav-auth-links">
+                <Link href="/login" className="nav-text-btn">
+                  Log In
+                </Link>
+                <span className="nav-text-sep">/</span>
+                <Link href="/register" className="nav-text-btn">
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
         </div>
       </div>
-
-      {modal && (
-        <AuthModal
-          defaultTab={modal}
-          onClose={() => setModal(null)}
-        />
-      )}
 
       {showDeposit && (
         <DepositModal onClose={() => setShowDeposit(false)} />

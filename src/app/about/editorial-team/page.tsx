@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about/editorial-team" },
 };
 
+export const dynamic = "force-static";
+
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 

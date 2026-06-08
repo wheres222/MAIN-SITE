@@ -1,9 +1,9 @@
 .page {
   min-height: 100vh;
-  background: #0d0d0f;
+  background: transparent;
   display: flex;
   flex-direction: column;
-  padding-top: 78px; /* offset fixed navbar */
+  padding-top: 72px; /* offset fixed navbar */
 }
 
 .wrapper {
@@ -11,27 +11,26 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 32px 20px 48px;
+  padding: 28px 20px 48px;
 }
 
 .panel {
   width: 100%;
   max-width: 1060px;
   display: grid;
-  grid-template-columns: 210px 1fr;
-  background: #121216;
-  border: 1px solid #1e1e26;
-  border-radius: 12px;
+  grid-template-columns: 220px 1fr;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
   overflow: hidden;
-  box-shadow: none;
-  min-height: 640px;
+  min-height: 620px;
 }
 
 /* ─── Sidebar ─────────────────────────────────────────── */
 .sidebar {
-  background: #0f0f13;
-  border-right: 1px solid #1e1e26;
-  padding: 20px 10px;
+  background: var(--surface-2);
+  border-right: 1px solid var(--border);
+  padding: 18px 10px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -42,23 +41,23 @@
   align-items: center;
   gap: 10px;
   padding: 4px 8px 16px;
-  border-bottom: 1px solid #1e1e26;
+  border-bottom: 1px solid var(--border);
   margin-bottom: 8px;
 }
 
 .avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, #0080cc, #00A6FF);
+  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
 }
 .avatarImg { width: 100%; height: 100%; object-fit: cover; display: block; }
-.avatarInitials { color: #fff; font-weight: 700; font-size: 0.76rem; }
+.avatarInitials { color: var(--accent-ink); font-weight: 700; font-size: 0.78rem; }
 
 .userMeta {
   display: flex;
@@ -67,16 +66,16 @@
   min-width: 0;
 }
 .userName {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #e8eeff;
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .userEmail {
-  font-size: 0.68rem;
-  color: #4b5563;
+  font-size: 0.7rem;
+  color: var(--text-dim);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -94,9 +93,9 @@
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
-  border-radius: 6px;
-  color: #6b7280;
-  font-size: 0.84rem;
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
   font-weight: 500;
   text-decoration: none;
   border: none;
@@ -108,17 +107,17 @@
   transition: background 0.1s, color 0.1s, border-color 0.1s;
 }
 .navItem:hover {
-  background: rgba(0, 166, 255, 0.06);
-  color: #d8e8ff;
+  background: var(--accent-dim);
+  color: var(--text-primary);
 }
 .navItemActive {
-  background: rgba(0, 166, 255, 0.10);
-  border-left-color: var(--accent, #00A6FF);
-  color: var(--accent, #00A6FF);
+  background: var(--accent-dim);
+  border-left-color: var(--accent);
+  color: var(--accent);
 }
 .navItemActive:hover {
-  background: rgba(0, 166, 255, 0.14);
-  color: var(--accent, #00A6FF);
+  background: var(--accent-soft);
+  color: var(--accent);
 }
 
 .navIcon {
@@ -129,13 +128,11 @@
 
 .navDivider {
   height: 1px;
-  background: #1e1e26;
+  background: var(--border);
   margin: 6px 4px;
 }
 
-.navSignOut {
-  color: #4b5563;
-}
+.navSignOut { color: var(--text-dim); }
 .navSignOut:hover {
   background: rgba(239, 68, 68, 0.08);
   border-left-color: rgba(239, 68, 68, 0.4);
@@ -144,10 +141,10 @@
 
 /* ─── Content ─────────────────────────────────────────── */
 .content {
-  padding: 28px 28px;
+  padding: 26px 28px;
   min-width: 0;
   overflow: hidden;
-  background: #121216;
+  background: var(--surface-1);
 }
 
 /* ─── Responsive ──────────────────────────────────────── */
@@ -161,7 +158,7 @@
   }
   .sidebar {
     border-right: none;
-    border-bottom: 1px solid #1e1e26;
+    border-bottom: 1px solid var(--border);
     padding: 14px 10px;
   }
   .nav { flex-direction: row; flex-wrap: wrap; gap: 2px; }
@@ -169,12 +166,12 @@
     flex: 0 0 auto;
     border-left: none;
     border-bottom: 2px solid transparent;
-    border-radius: 6px;
+    border-radius: 4px;
     padding: 7px 10px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
   }
   .navItemActive {
-    border-bottom-color: var(--accent, #00A6FF);
+    border-bottom-color: var(--accent);
     border-left-color: transparent;
   }
   .navSignOut { margin-top: 0; }

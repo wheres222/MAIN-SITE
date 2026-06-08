@@ -4,7 +4,12 @@ import Link from "next/link";
 import { CheatMenuDemo } from "@/components/cheat-menu-demo";
 import { ReviewsMarquee } from "@/components/reviews-marquee";
 import { DiscordWidget } from "@/components/discord-widget";
+import { DiscordShowcase } from "@/components/discord-showcase";
+import { LazyVideo } from "@/components/lazy-video";
+import { HeroMarquee } from "@/components/hero-marquee";
 import { categoryHref } from "@/lib/category-href";
+import { CATEGORY_IMAGES, CATEGORY_TILES } from "@/lib/category-images";
+import { DISCORD_INVITE_URL } from "@/lib/links";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { StorefrontProvider } from "@/context/storefront-context";
@@ -83,17 +88,7 @@ const HIDDEN_GROUP_SLUGS = new Set([
   "roblox",
 ]);
 
-// Static category images keyed by canonical slug
-const CATEGORY_IMAGES: Record<string, string> = {
-  "arc-raiders":          "/category/arc_raiders_category.png",
-  "fortnite":             "/category/fortnite_category.png",
-  "rainbow-six-siege":    "/category/r6_category.png",
-  "rust":                 "/category/rust_category.png",
-  "apex":                 "/category/apex_category.png",
-  "counter-strike-2":     "/category/cs2_category.png",
-  "escape-from-tarkov":   "/category/escape_from_tarkov_category.png",
-  "hwid-spoofers":        "/category/spoofer_category.png",
-};
+// Category images shared with the /products catalog — see src/lib/category-images.ts
 
 const PRIORITY_GROUP_ORDER = [
   "rust",
@@ -351,42 +346,7 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
     return map;
   }, [storefront?.products]);
 
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const video = heroVideoRef.current;
-    if (!video) return;
-
-    video.muted = true;
-
-    const tryPlay = () => video.play().catch(() => {});
-
-    // Attempt immediate autoplay (works in Chrome, Firefox)
-    video.load();
-    tryPlay();
-
-    // Fallback for Brave / strict autoplay browsers:
-    // play as soon as the user makes any interaction
-    const onInteract = () => {
-      tryPlay();
-      document.removeEventListener("scroll",   onInteract);
-      document.removeEventListener("click",    onInteract);
-      document.removeEventListener("keydown",  onInteract);
-      document.removeEventListener("touchstart", onInteract);
-    };
-
-    document.addEventListener("scroll",    onInteract, { once: true, passive: true });
-    document.addEventListener("click",     onInteract, { once: true });
-    document.addEventListener("keydown",   onInteract, { once: true });
-    document.addEventListener("touchstart",onInteract, { once: true, passive: true });
-
-    return () => {
-      document.removeEventListener("scroll",    onInteract);
-      document.removeEventListener("click",     onInteract);
-      document.removeEventListener("keydown",   onInteract);
-      document.removeEventListener("touchstart",onInteract);
-    };
-  }, []);
+  // Hero video removed — replaced with CSS gradient background for better LCP performance.
 
   const [bendooProgress, setBendooProgress] = useState(0);
   const bendooCardRef = useRef<HTMLElement>(null);
@@ -452,55 +412,167 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
       <SiteHeader activeTab="store" />
 
       <main id="top">
+        {/* ── Hero ── */}
+        <section className="home-hero">
+          <div className="home-shell home-hero-inner">
+            <div className="home-hero-copy">
+              <h1 className="home-hero-title">
+                If you can&apos;t beat them, <span className="accent">Join Them.</span>
+              </h1>
+              <p className="home-hero-sub">
+                Premium, undetected game enhancements with instant delivery and 24/7 support.
+                Trusted by thousands of players since 2022.
+              </p>
+              <div className="home-hero-cta">
+                <a href="#products" className="btn-primary">Browse Cheats</a>
+                <a href="/status" className="btn-ghost">View Live Status →</a>
+              </div>
+            </div>
+            <div className="home-hero-character" aria-hidden="true">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/branding/hero-character.avif"
+                alt=""
+                className="home-hero-character-img"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ── Trust bar ── */}
+        <div className="trust-bar">
+          <div className="home-shell trust-bar-inner">
+            <span className="trust-bar-item"><strong>14,000+</strong> orders delivered</span>
+            <span className="trust-bar-sep" aria-hidden="true" />
+            <span className="trust-bar-item"><strong>4.9★</strong> average rating</span>
+            <span className="trust-bar-sep" aria-hidden="true" />
+            <span className="trust-bar-item"><strong>Instant</strong> delivery</span>
+            <span className="trust-bar-sep" aria-hidden="true" />
+            <span className="trust-bar-item"><strong>24/7</strong> Discord support</span>
+          </div>
+        </div>
+
+        {/* ── Shop by Game ── */}
+        <section className="home-shell home-section" id="products">
+          <div className="panel">
+            <header className="panel-header">Shop by Game</header>
+            <div className="panel-body">
+              <div className="game-tiles">
+                {CATEGORY_TILES.map((tile, i) => {
+                  const img = CATEGORY_IMAGES[tile.slug];
+                  if (!img) return null;
+                  const price = lowestPriceBySlug.get(tile.slug) ?? null;
+                  return (
+                    <Link key={tile.slug} href={categoryHref(tile.slug)} className="game-tile">
+                      <Image
+                        className="game-tile-img"
+                        src={img}
+                        alt={`${tile.name} cheats`}
+                        width={400}
+                        height={225}
+                        sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
+                        priority={i < 4}
+                      />
+                      <span className="game-tile-info">
+                        <span className="game-tile-name">{tile.name}</span>
+                        {price !== null && (
+                          <span className="game-tile-price">from {money(price)}</span>
+                        )}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Gameplay footage (below products) ── */}
+        <section className="home-shell footage-section" aria-label="Gameplay footage">
+          <div className="footage-grid">
+            {([
+              { label: "FORTNITE FOOTAGE",    src: "/footage/fortnite.mp4", poster: "/footage/fortnite-poster.webp" },
+              { label: "ARC RAIDERS FOOTAGE", src: "/footage/arc.mp4",      poster: "/footage/arc-poster.webp" },
+              { label: "RUST FOOTAGE",        src: "/footage/rust.mp4",     poster: "/footage/rust-poster.webp" },
+            ] as const).map(({ label, src, poster }) => (
+              <div key={label} className="footage-card">
+                <LazyVideo className="footage-video" src={src} poster={poster} ariaLabel={label} />
+                <div className="footage-label">
+                  <span className="footage-dot" aria-hidden="true" />
+                  <span>{label}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Reviews slider ── */}
+        <ReviewsMarquee />
+
+        {/* ── FAQ ── */}
+        <section className="home-shell home-section" id="faq">
+          <div className="panel">
+            <header className="panel-header">Frequently Asked Questions</header>
+            <div className="panel-body home-faq">
+              {[
+                { q: "Are your cheats undetected?", a: "Every product is tested against the game's current anti-cheat before release and monitored continuously. Detection status for each product is shown live on our Status page." },
+                { q: "How fast is delivery?", a: "Instant. Your license key is delivered automatically to your account dashboard and email the moment your payment confirms — crypto usually clears in 1–5 minutes." },
+                { q: "Will I get banned?", a: "Risk is minimised by legit play and humanised settings. As long as you run the current undetected build and play sensibly, bans are rare." },
+                { q: "What payment methods do you accept?", a: "Card payments via Stripe, plus Bitcoin, Ethereum, Litecoin, USDT and more via crypto. You can also top up your account balance." },
+                { q: "Do you offer support?", a: "Yes — 24/7 support through our Discord community, answered by the same team that builds the products." },
+                { q: "Can I get a refund?", a: "Refunds follow our Refund Policy (linked in the footer). Reach out in Discord and our team will help." },
+              ].map((item) => (
+                <details key={item.q} className="home-faq-item">
+                  <summary className="home-faq-q">{item.q}</summary>
+                  <p className="home-faq-a">{item.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Discord community (lazy-loads on scroll) ── */}
+        <section className="home-shell home-section">
+          <DiscordShowcase />
+        </section>
+
+        {/* ─────────────────────────────────────────────────────────────────── */}
+        {/* CONTENT HIDDEN FOR STEP-BY-STEP REBUILD                              */}
+        {/* Nothing deleted — all original sections preserved inside this block. */}
+        {/* Flip `false` to `true` (or pull sections out) to restore.            */}
+        {/* ─────────────────────────────────────────────────────────────────── */}
+        {false && (
+        <>
         <section className="hero">
-          <video
-            ref={heroVideoRef}
-            className="hero-bg-video"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-          >
-            <source src="/branding/hero.mp4" type="video/mp4" />
-          </video>
-          <div className="hero-bg-overlay" />
           <div className="shell hero-content">
             {/* Left: copy + CTAs */}
             <div className="hero-left">
               <h1 className="hero-title">
                 <span className="hero-title-row">
-                  <span className="hero-line-primary">Unlock Your </span>
-                  <span className="hero-line-accent">Advantage.</span>
+                  <span className="hero-line-accent">DOMINATE </span>
+                  <span className="hero-line-white">THE GAME</span>
                 </span>
                 <span className="hero-title-row">
-                  <span className="hero-line-primary">Play </span>
-                  <span className="hero-line-accent">Without Limits.</span>
+                  <span className="hero-line-white">START TODAY</span>
                 </span>
               </h1>
-              <p className="hero-subtext">
-                Premium undetected cheats — instant delivery, always updated, trusted by thousands.
-              </p>
-              <div className="hero-cta-row">
-                {/* Primary CTA */}
-                <a href="#store-section" className="hero-browse-btn">
-                  {/* Windows logo */}
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M0 3.449L9.75 2.1v9.451H0V3.449zm10.949-1.35L24 0v11.4H10.949V2.099zM0 12.6h9.75v9.451L0 20.699V12.6zm10.949.001H24V24L10.949 22.1V12.601z"/>
+              <div className="hero-action-buttons">
+                <a href="#store-section" className="hero-primary-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M0 3.5L10 2.1v9.15H0V3.5zM11 1.95L24 0.4v10.85H11V1.95zM0 12.75H10V21.9L0 20.5V12.75zM11 12.75H24V23.6L11 22.05V12.75z" />
                   </svg>
                   Purchase Now
-                  {/* Arrow */}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
                 </a>
-
-                {/* Ghost Discord link */}
-                <a href="https://discord.gg/6yGEKZC8aX" target="_blank" rel="noreferrer" className="hero-discord-btn">
-                  <svg viewBox="0 0 127.14 96.36" fill="currentColor" width="20" height="20" aria-hidden="true">
-                    <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
+                <a
+                  href="https://discord.gg/cheatparadise"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hero-secondary-btn hero-secondary-btn--icon"
+                  aria-label="Join our Discord"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.07.07 0 0 0-.075.036c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.075-.036A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127c-.598.35-1.22.645-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.548-13.66a.061.061 0 0 0-.031-.028zM8.02 15.331c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.974 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
                   </svg>
-                  Join our Discord
                 </a>
               </div>
             </div>
@@ -520,6 +592,8 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
             </div>
           </div>
         </section>
+
+        <HeroMarquee />
 
         <section className="shell game-picker" id="store-section">
           <header className="bendoo-cards-heading" aria-hidden="true">
@@ -763,20 +837,17 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
         <section className="shell footage-section">
           <div className="footage-grid">
             {([
-              { label: "FORTNITE FOOTAGE",     src: "/footage/fortnite.mp4", poster: "" },
-              { label: "ARC RAIDERS FOOTAGE", src: "/footage/arc.mp4",     poster: "" },
-              { label: "RUST FOOTAGE",         src: "/footage/rust.mp4",     poster: "" },
-            ] as const).map(({ label, src }) => (
+              { label: "FORTNITE FOOTAGE",    src: "/footage/fortnite.mp4", poster: "/footage/fortnite-poster.webp" },
+              { label: "ARC RAIDERS FOOTAGE", src: "/footage/arc.mp4",      poster: "/footage/arc-poster.webp" },
+              { label: "RUST FOOTAGE",        src: "/footage/rust.mp4",     poster: "/footage/rust-poster.webp" },
+            ] as const).map(({ label, src, poster }) => (
               <div key={label} className="footage-card">
-                <video
+                <LazyVideo
                   className="footage-video"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                >
-                  <source src={src} type="video/mp4" />
-                </video>
+                  src={src}
+                  poster={poster}
+                  ariaLabel={label}
+                />
                 <div className="footage-label">
                   <span className="footage-dot" aria-hidden="true" />
                   <span>{label}</span>
@@ -791,7 +862,8 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
 
         {/* ── Discord community widget ── */}
         <DiscordWidget />
-
+        </>
+        )}
       </main>
 
       <SiteFooter />

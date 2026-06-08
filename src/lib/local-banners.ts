@@ -14,7 +14,6 @@ const ORDERED_BANNERS = [
   { slug: "hwid-spoofers", name: "HWID Spoofer" },
   { slug: "rainbow-six-siege", name: "Rainbow Six Siege" },
   { slug: "rust", name: "Rust" },
-  { slug: "vpns", name: "VPNs" },
 ] as const;
 
 const ALIASES_BY_SLUG: Record<string, string[]> = {
@@ -26,7 +25,6 @@ const ALIASES_BY_SLUG: Record<string, string[]> = {
   "hwid-spoofers": ["hwid", "spoofer", "spoofers", "hwidspoofer", "hwidspoofers", "spoof"],
   "rainbow-six-siege": ["r6", "r6s", "rainbowsix", "siege"],
   rust: ["rust"],
-  vpns: ["vpn", "vpns"],
 };
 
 export interface LocalCategoryBanner {

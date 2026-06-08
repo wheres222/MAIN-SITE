@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/faq" },
 };
 
+export const dynamic = "force-static";
+
 const FAQ_SECTIONS = [
         {
           heading: "How does delivery work?",
