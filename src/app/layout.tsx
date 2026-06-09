@@ -136,6 +136,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/branding/LOGO.webp" />
       </head>
       <body className="antialiased">
+        {/* Skip-to-content link — visually hidden until focused by keyboard */}
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}

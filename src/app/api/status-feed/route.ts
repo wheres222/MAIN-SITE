@@ -81,24 +81,44 @@ export async function GET(request: Request) {
 
   let payload: unknown;
   try {
-    const res = await fetch(`${base}/items`, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        Accept: "application/json",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-      },
-      next: { revalidate: 30 }, // cache keyhub response 30s so polling doesn't hammer it
-    });
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      return NextResponse.json({
-        statuses: {},
-        error: `keyhub responded ${res.status}`,
-        url: `${base}/items`,
-        detail: detail.slice(0, 600),
-      });
+    // Try the base URL first, then /items as a fallback (keyhub may serve
+    // the list at either path depending on account tier/configuration).
+    const urlsToTry = [base, `${base}/items`];
+    let lastError = "";
+    let succeeded = false;
+
+    for (const url of urlsToTry) {
+      let res: Response;
+      try {
+        res = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            Accept: "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+          },
+          next: { revalidate: 30 }, // cache keyhub response 30s so polling doesn't hammer it
+        });
+      } catch (e) {
+        lastError = String(e).slice(0, 300);
+        continue;
+      }
+
+      if (!res.ok) {
+        lastError = `keyhub responded ${res.status} at ${url}`;
+        continue;
+      }
+
+      payload = await res.json();
+      const items = extractItems(payload);
+      if (items.length > 0 || url === urlsToTry[urlsToTry.length - 1]) {
+        succeeded = true;
+        break;
+      }
     }
-    payload = await res.json();
+
+    if (!succeeded && !payload) {
+      return NextResponse.json({ statuses: {}, error: lastError || "keyhub fetch failed" });
+    }
   } catch (e) {
     return NextResponse.json({ statuses: {}, error: "keyhub fetch failed", detail: String(e).slice(0, 300) });
   }

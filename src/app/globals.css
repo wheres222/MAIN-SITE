@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+/* ── Skip navigation link (keyboard / screen-reader accessibility) ─────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 10000;
+  padding: 10px 18px;
+  background: var(--accent, #43c601);
+  color: #000;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: top 0.12s ease;
+  white-space: nowrap;
+}
+.skip-link:focus {
+  top: 16px;
+}
+
 /* ── Unified design tokens ───────────────────────────────────────────────── */
 /* Fonts: Satoshi (display) + Inter (UI/body). Both loaded via next/font in   */
 /* src/app/layout.tsx — no @font-face needed here.                            */

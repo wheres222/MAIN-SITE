@@ -2,10 +2,19 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
-import { ReviewsMarquee } from "@/components/reviews-marquee";
-import { DiscordShowcase } from "@/components/discord-showcase";
 import { LazyVideo } from "@/components/lazy-video";
+
+// Lazy-load heavy below-fold components so they don't bloat the initial JS bundle
+const ReviewsMarquee = dynamic(
+  () => import("@/components/reviews-marquee").then((m) => ({ default: m.ReviewsMarquee })),
+  { ssr: false }
+);
+const DiscordShowcase = dynamic(
+  () => import("@/components/discord-showcase").then((m) => ({ default: m.DiscordShowcase })),
+  { ssr: false }
+);
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontProvider } from "@/context/storefront-context";
@@ -115,7 +124,10 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
               <img
                 src="/branding/hero-character.avif"
                 alt=""
+                width={400}
+                height={540}
                 className="home-hero-character-img"
+                decoding="async"
               />
             </div>
           </div>

@@ -753,11 +753,19 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
 
   const showRequirements = !isAccountsOrVpnProduct(product);
 
+  const cheatType = (() => {
+    if (!showRequirements) return null;
+    const text = `${product.name} ${product.description} ${product.variants.map((v) => v.name).join(" ")}`.toLowerCase();
+    if (/\bexternal\b/.test(text)) return "External";
+    if (/\binternal\b/.test(text)) return "Internal";
+    return null;
+  })();
+
   const displayRequirements = showRequirements
     ? [
         { label: "Supported CPU", value: "Intel + AMD" },
         { label: "Supported Windows Version", value: "10 - 11" },
-        { label: "Cheat Type", value: "Internal" },
+        ...(cheatType ? [{ label: "Cheat Type", value: cheatType }] : []),
       ]
     : [];
 

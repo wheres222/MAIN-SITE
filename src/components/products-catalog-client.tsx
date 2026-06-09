@@ -9,7 +9,7 @@ import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { productHref } from "@/lib/product-route";
 import { categoryHref } from "@/lib/category-href";
 import { canonicalGameSlug } from "@/lib/game-slug";
-import { CATEGORY_IMAGES } from "@/lib/category-images";
+import { CATEGORY_IMAGES, CATEGORY_TILES } from "@/lib/category-images";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 import styles from "./products-catalog.module.css";
@@ -32,6 +32,10 @@ interface Group {
   name: string;
   image: string;
   products: SellAuthProduct[];
+}
+
+function isCheatProduct(slug: string): boolean {
+  return !/(^account|^vpn|^discord|^misc)/.test(slug);
 }
 
 export function ProductsCatalogClient() {
@@ -61,7 +65,15 @@ export function ProductsCatalogClient() {
       }
       g.products.push(p);
     }
-    return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+    const priorityOrder = CATEGORY_TILES.map((t) => t.slug);
+    return [...map.values()].sort((a, b) => {
+      const ai = priorityOrder.indexOf(a.slug);
+      const bi = priorityOrder.indexOf(b.slug);
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      if (ai !== -1) return -1;
+      if (bi !== -1) return 1;
+      return a.name.localeCompare(b.name);
+    });
   }, [data]);
 
   // Apply category + search filters.
@@ -142,10 +154,12 @@ export function ProductsCatalogClient() {
                             height={225}
                             sizes="(max-width: 760px) 100vw, 33vw"
                           />
-                          <span className={styles.pcardBadge}>
-                            <span className={styles.pcardDot} aria-hidden="true" />
-                            Undetected
-                          </span>
+                          {isCheatProduct(g.slug) && (
+                            <span className={styles.pcardBadge}>
+                              <span className={styles.pcardDot} aria-hidden="true" />
+                              Undetected
+                            </span>
+                          )}
                         </div>
                         <div className={styles.pcardFoot}>
                           <span className={styles.pcardMeta}>

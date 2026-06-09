@@ -115,12 +115,12 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
       <div className={`nav-row${scrolled ? " nav-row--scrolled" : ""}`}>
         <div className="shell nav-row-inner">
           <div className="nav-row-left">
-            <Link className="nav-left-logo" href="/" aria-label="cheatparadise home">
-              <img src="/branding/cp-logo.png" alt="" className="nav-left-logo-mark" />
+            <Link className="nav-left-logo" href="/" aria-label="Cheat Paradise home">
+              <img src="/branding/cp-logo.png" alt="" width={40} height={40} className="nav-left-logo-mark" />
               <span className="nav-wordmark">cheat<span className="nav-wordmark-accent">paradise</span></span>
             </Link>
 
-            <nav className="site-nav">
+            <nav className="site-nav" aria-label="Main navigation">
               <Link className={pathname === "/" ? "active" : ""} href="/">Home</Link>
               <Link className={pathname.startsWith("/products") ? "active" : ""} href="/products">Products</Link>
               <Link className={pathname.startsWith("/status") ? "active" : ""} href="/status">Status</Link>
@@ -135,13 +135,13 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
                   type="button"
                   className="nav-balance-btn"
                   onClick={() => setShowDeposit(true)}
-                  title="Add balance"
+                  aria-label="Add account balance"
                 >
                   <span className="nav-balance-label">BALANCE</span>
                   <span className="nav-balance-amount">${(balance ?? 0).toFixed(2)}</span>
                   {/* Deposit plus icon */}
-                  <span className="nav-balance-add">
-                    <svg viewBox="0 0 24 24" fill="none" width="12" height="12" aria-hidden>
+                  <span className="nav-balance-add" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" width="12" height="12" aria-hidden="true">
                       <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
                     </svg>
                   </span>
@@ -153,45 +153,47 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
                     type="button"
                     className="nav-avatar-btn"
                     onClick={() => setShowDropdown((v) => !v)}
-                    title={displayName}
+                    aria-label={displayName ? `Account menu for ${displayName}` : "Account menu"}
                     aria-expanded={showDropdown}
+                    aria-haspopup="menu"
                   >
                     <span className="nav-avatar">
                       {avatarUrl ? (
-                        <img src={avatarUrl} alt={displayName} className="nav-avatar-img" />
+                        <img src={avatarUrl} alt={displayName} width={36} height={36} className="nav-avatar-img" />
                       ) : (
-                        <span className="nav-avatar-initials">{initials}</span>
+                        <span className="nav-avatar-initials" aria-hidden="true">{initials}</span>
                       )}
                     </span>
                   </button>
 
                   {showDropdown && (
-                    <div className="nav-dropdown">
+                    <div className="nav-dropdown" role="menu" aria-label="Account options">
                       <button
                         type="button"
+                        role="menuitem"
                         className="nav-dropdown-item"
                         onClick={() => { setShowDropdown(false); setShowAccountModal(true); }}
                       >
                         Dashboard
                       </button>
-                      <Link href="/account/settings" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
+                      <Link href="/account/settings" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
                         Settings
                       </Link>
-                      <Link href="/account/balance" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
+                      <Link href="/account/balance" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
                         Transactions
                       </Link>
-                      <Link href="/account/referrals" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
+                      <Link href="/account/referrals" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
                         Affiliates
                       </Link>
-                      <div className="nav-dropdown-item nav-dropdown-disabled">
+                      <div role="menuitem" aria-disabled="true" className="nav-dropdown-item nav-dropdown-disabled">
                         Live Support
                         <span className="nav-dropdown-soon">Coming soon</span>
                       </div>
 
-                      <div className="nav-dropdown-divider" />
+                      <div className="nav-dropdown-divider" role="separator" />
 
-                      <button type="button" className="nav-dropdown-item nav-dropdown-logout" onClick={requestLogout}>
-                        <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden>
+                      <button type="button" role="menuitem" className="nav-dropdown-item nav-dropdown-logout" onClick={requestLogout}>
+                        <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden="true">
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
                         Logout
@@ -205,7 +207,7 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
                 <Link href="/login" className="nav-text-btn">
                   Log In
                 </Link>
-                <span className="nav-text-sep">/</span>
+                <span className="nav-text-sep" aria-hidden="true">/</span>
                 <Link href="/register" className="nav-text-btn">
                   Sign Up
                 </Link>
@@ -214,6 +216,8 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
           </div>
         </div>
       </div>
+      {/* Skip-link target — placed after the nav so keyboard users land here */}
+      <span id="main-content" aria-hidden="true" />
 
       {showDeposit && (
         <DepositModal onClose={() => setShowDeposit(false)} />
