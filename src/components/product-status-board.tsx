@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { productHref, productSlugFromName } from "@/lib/product-route";
+import { toGameSlug } from "@/lib/game-slug";
 import type {
   SellAuthCategory,
   SellAuthGroup,
@@ -226,10 +227,15 @@ export function ProductStatusBoard({
                 // Match overrides by numeric ID, full slug, or bare game name
                 const slug = productSlugFromName(product.name, product.id);
                 const simpleName = product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+                const groupSlug = toGameSlug(product.groupName || product.categoryName || "");
                 const override =
+                  // Exact SellAuth product ID (set via admin panel or keyhub external_ref)
                   statusOverrides[String(product.id)] ??
+                  // Full product name slug (e.g. "rust-external-lite")
                   statusOverrides[slug] ??
-                  statusOverrides[simpleName];
+                  statusOverrides[simpleName] ??
+                  // Game/category name slug (e.g. "rust") — matches keyhub items keyed by game name
+                  (groupSlug ? statusOverrides[groupSlug] : undefined);
                 const status: ProductStatusMeta = override
                   ? {
                       kind: override.status,
