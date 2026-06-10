@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { STATIC_STATUS_DEFAULTS } from "@/lib/status-defaults";
 
 export const dynamic = "force-dynamic";
 
@@ -162,6 +163,17 @@ async function fetchKeyhubStatuses(): Promise<Record<string, StatusEntry>> {
   return {};
 }
 
+// ── Static defaults (lowest priority baseline) ────────────────────────────────
+
+function buildStaticStatuses(): Record<string, StatusEntry> {
+  const now = new Date().toISOString();
+  const result: Record<string, StatusEntry> = {};
+  for (const [slug, status] of Object.entries(STATIC_STATUS_DEFAULTS)) {
+    result[slug] = { product_id: slug, status, note: null, updated_at: now };
+  }
+  return result;
+}
+
 // ── Handler ───────────────────────────────────────────────────────────────────
 
 export async function GET(request: Request) {
@@ -172,18 +184,24 @@ export async function GET(request: Request) {
     fetchKeyhubStatuses(),
   ]);
 
-  // Supabase (admin-set) overrides keyhub
+  const staticStatuses = buildStaticStatuses();
+
+  // Priority (lowest → highest): static defaults → keyhub → Supabase admin panel
   const statuses: Record<string, StatusEntry> = {
+    ...staticStatuses,
     ...keyhubStatuses,
     ...supabaseStatuses,
   };
 
   if (debug) {
+    const hasSupabase = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+    const hasKeyhub = !!process.env.KEYHUB_API_KEY?.trim();
     return NextResponse.json({
-      supabaseCount: Object.keys(supabaseStatuses).length,
-      keyhubCount: Object.keys(keyhubStatuses).length,
-      supabase: supabaseStatuses,
-      keyhub: keyhubStatuses,
+      sources: {
+        static: { count: Object.keys(staticStatuses).length },
+        keyhub: { configured: hasKeyhub, count: Object.keys(keyhubStatuses).length },
+        supabase: { configured: hasSupabase, count: Object.keys(supabaseStatuses).length },
+      },
       merged: statuses,
     });
   }
