@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Raleway } from "next/font/google";
 import localFont from "next/font/local";
 import Script from "next/script";
+import { AssistifyScript } from "@assistifychat/widget/react";
 import "./globals.css";
 import { PostHogProvider } from "@/components/posthog-provider";
 import { DISCORD_INVITE_URL } from "@/lib/links";
@@ -37,6 +38,9 @@ const satoshi = localFont({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
+
+// Assistify support chat — only rendered when a widget id is configured.
+const assistifyWidgetId = process.env.NEXT_PUBLIC_ASSISTIFY_WIDGET_ID?.trim();
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -154,6 +158,7 @@ export default function RootLayout({
         <Script id="gtag-init" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-9XTJ5HDH2M');`}
         </Script>
+        {assistifyWidgetId && <AssistifyScript widgetId={assistifyWidgetId} />}
       </body>
     </html>
   );

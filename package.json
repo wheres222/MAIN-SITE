@@ -12,6 +12,7 @@
     "security:install-hook": "bash scripts/install-security-hook.sh"
   },
   "dependencies": {
+    "@assistifychat/widget": "^1.0.1",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.104.0",
     "lenis": "^1.3.23",
