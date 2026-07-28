@@ -389,7 +389,7 @@ select::-ms-expand { display: none; }
   position: relative;
   padding: 14px 0 0;
   overflow: hidden;
-  --hero-h: 500px;
+  --hero-h: 420px;
   background-color: var(--surface-0);
   background-image: image-set(
     url("/branding/hero-bg.avif") type("image/avif"),
@@ -397,6 +397,14 @@ select::-ms-expand { display: none; }
   );
   background-repeat: no-repeat;
   background-position: right center;
+  /* The hero tracks the artwork's own 2006:784 ratio, so `cover` scales the
+     image to the full width with nothing cropped and no empty space. A fixed
+     height would either crop the figures (cover) or strand the image on the
+     right (contain). min/max keep it sane on very narrow and ultrawide screens,
+     where a little cropping is the better trade. */
+  aspect-ratio: 2006 / 784;
+  min-height: 420px;
+  max-height: 760px;
   background-size: cover;
 }
 /* Left-to-right scrim: guarantees text contrast regardless of viewport width,
@@ -468,6 +476,10 @@ select::-ms-expand { display: none; }
       url("/branding/hero-bg-sm.avif") type("image/avif"),
       url("/branding/hero-bg-sm.webp") type("image/webp")
     );
+    /* Back to cover here: at phone widths `contain` would shrink a 2.56:1 image
+       to ~150px tall inside a 420px hero, leaving most of it empty. Cropping is
+       the right trade-off on mobile — the vertical scrim carries legibility. */
+    background-size: cover;
     /* Bias toward the figures so they stay in frame once the crop tightens. */
     background-position: 72% center;
   }
