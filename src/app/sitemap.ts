@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { canonicalGameSlug, toGameSlug } from "@/lib/game-slug";
 import { getStorefrontData } from "@/lib/sellauth";
 import { productSlugFromName } from "@/lib/product-route";
-import { gameSeoContentFor } from "@/lib/game-seo-content";
+import { gameSeoContentFor, allGameSeoSlugs } from "@/lib/game-seo-content";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -26,13 +26,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/privacy-policy`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ];
 
+  // Every authored SEO landing page gets a sitemap entry unconditionally —
+  // these are prerendered via generateStaticParams and must be indexable even
+  // when the matching SellAuth group is temporarily missing or renamed.
+  const seenSlugs = new Set<string>();
+  const landingEntries: MetadataRoute.Sitemap = allGameSeoSlugs().map((slug) => {
+    seenSlugs.add(slug);
+    return {
+      url: `${siteUrl}/categories/${slug}`,
+      lastModified: now,
+      changeFrequency: "daily" as const,
+      priority: 0.9,
+    };
+  });
+
   try {
     const storefront = await getStorefrontData();
 
-    // Build category URLs: prefer the clean /categories/[slug] form for any
-    // game that has a dedicated SEO landing page; fall back to the legacy
-    // query-param URL for the rest until we author content for them.
-    const seenSlugs = new Set<string>();
+    // Remaining storefront groups without an authored landing page fall back
+    // to the legacy query-param URL until content is written for them.
     const categoryEntries = storefront.groups
       .map((group) => {
         const slug = toGameSlug(group.name);
@@ -62,8 +74,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.75,
     }));
 
-    return [...baseEntries, ...categoryEntries, ...productEntries];
+    return [...baseEntries, ...landingEntries, ...categoryEntries, ...productEntries];
   } catch {
-    return baseEntries;
+    return [...baseEntries, ...landingEntries];
   }
 }

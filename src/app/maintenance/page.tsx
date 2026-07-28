@@ -12,7 +12,7 @@ export default function MaintenancePage() {
     <div className="maint-root">
       <div className="maint-card">
         <div className="maint-brand">
-          <img src="/branding/cp-logo.png" alt="CheatParadise" className="maint-logo" />
+          <img src="/branding/cp-logo.webp" alt="CheatParadise" className="maint-logo" />
           <span className="maint-wordmark">CHEATPARADISE</span>
         </div>
 
@@ -46,7 +46,7 @@ export default function MaintenancePage() {
 
         .maint-root {
           min-height: 100vh;
-          background: #0d0d0d;
+          background: #050506;
           display: flex;
           align-items: center;
           justify-content: center;

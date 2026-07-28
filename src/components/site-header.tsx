@@ -116,8 +116,7 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
         <div className="shell nav-row-inner">
           <div className="nav-row-left">
             <Link className="nav-left-logo" href="/" aria-label="Cheat Paradise home">
-              <img src="/branding/cp-logo.png" alt="" width={40} height={40} className="nav-left-logo-mark" />
-              <span className="nav-wordmark">cheat<span className="nav-wordmark-accent">paradise</span></span>
+              <img src="/branding/cp-logo.webp" alt="" width={40} height={40} className="nav-left-logo-mark" />
             </Link>
 
             <nav className="site-nav" aria-label="Main navigation">

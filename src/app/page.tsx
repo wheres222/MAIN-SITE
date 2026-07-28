@@ -73,33 +73,14 @@ function buildVideoSchemas() {
 
 export const metadata: Metadata = {
   title: {
-    absolute: "Cheat Paradise",
+    absolute: "Cheat Paradise — Undetected Rust, CS2 & ARC Raiders Cheats",
   },
   description:
-    "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
+    "Buy undetected game cheats with instant delivery. Rust cheats, CS2 cheats, ARC Raiders cheats, Fortnite, COD, Apex & more — trusted by thousands. 24/7 support.",
   alternates: {
     canonical: "/",
   },
 };
-
-const PRIORITY_SLUG_ORDER = ["rust", "arc-raiders", "call-of-duty", "fortnite"];
-
-function pickLcpImageUrl(data: StorefrontData): string | null {
-  if (!data.groups?.length) return null;
-  const sorted = [...data.groups].sort((a, b) => {
-    const ai = PRIORITY_SLUG_ORDER.findIndex((s) =>
-      a.name?.toLowerCase().replace(/\s+/g, "-").includes(s)
-    );
-    const bi = PRIORITY_SLUG_ORDER.findIndex((s) =>
-      b.name?.toLowerCase().replace(/\s+/g, "-").includes(s)
-    );
-    const ap = ai === -1 ? 999 : ai;
-    const bp = bi === -1 ? 999 : bi;
-    return ap - bp;
-  });
-  const first = sorted.find((g) => g.image?.url && g.image.url.startsWith("http"));
-  return first?.image?.url ?? null;
-}
 
 export default async function Home() {
   let initialData: StorefrontData | null = null;
@@ -112,18 +93,10 @@ export default async function Home() {
     // Fall through to client-side fetch on error
   }
 
-  const lcpImageUrl = initialData ? pickLcpImageUrl(initialData) : null;
-  const lcpProxyUrl = lcpImageUrl
-    ? `/_next/image?url=${encodeURIComponent(lcpImageUrl)}&w=828&q=75`
-    : null;
-
   const videoSchemas = buildVideoSchemas();
 
   return (
     <>
-      {lcpProxyUrl && (
-        <link rel="preload" as="image" href={lcpProxyUrl} fetchPriority="high" />
-      )}
       {videoSchemas.map((json, i) => (
         <script
           key={i}

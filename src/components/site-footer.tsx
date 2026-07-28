@@ -45,7 +45,7 @@ export function SiteFooter() {
           <article className="footer-brand-col">
             <div className="footer-brand">
               <img
-                src="/branding/cp-logo.png"
+                src="/branding/cp-logo.webp"
                 alt="cheatparadise logo"
                 loading="lazy"
                 decoding="async"

@@ -14,6 +14,8 @@ interface GameCatalogPageProps {
   products: SellAuthProduct[];
   seoContent?: React.ReactNode;
   seoFooter?: React.ReactNode;
+  /** Keyword-rich H1 override for SEO landing pages (defaults to group.name). */
+  title?: string;
 }
 
 function money(value: number, currency = "USD"): string {
@@ -66,7 +68,7 @@ const IconShield = (
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.4 3 8.4 7 9.5 4-1.1 7-5.1 7-9.5V6l-7-3Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /><path d="m9 12 2 2 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
 
-export function GameCatalogPage({ group, products, seoContent, seoFooter }: GameCatalogPageProps) {
+export function GameCatalogPage({ group, products, seoContent, seoFooter, title }: GameCatalogPageProps) {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -81,7 +83,7 @@ export function GameCatalogPage({ group, products, seoContent, seoFooter }: Game
       <main className={styles.pageShell}>
         {/* Header */}
         <header className={styles.head}>
-          <h1 className={styles.headTitle}>{group.name}</h1>
+          <h1 className={styles.headTitle}>{title ?? group.name}</h1>
           <p className={styles.headSub}>Get more information about {group.name} Cheats</p>
         </header>
 

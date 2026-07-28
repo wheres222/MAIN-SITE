@@ -15,7 +15,9 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
   images: {
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 86400,
+    // 1 year — local sources are version-suffixed (e.g. /category/rust_v3.png)
+    // so cache busting happens via the filename, never via TTL expiry.
+    minimumCacheTTL: 31536000,
     remotePatterns: imageHosts.map((hostname) => ({
       protocol: "https",
       hostname,
@@ -84,8 +86,10 @@ const nextConfig: NextConfig = {
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
       {
+        // Immutable 1y — rename the file (poster + mp4) when re-recording
+        // footage, same convention as the version-suffixed category images.
         source: "/footage/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=86400" }],
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
       {
         source: "/:path*",

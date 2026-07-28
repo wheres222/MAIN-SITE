@@ -26,7 +26,7 @@
   height: min(720px, calc(100vh - 48px));
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0)),
-    #0d0d0f;
+    #050506;
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
   overflow: hidden;
@@ -54,7 +54,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
     linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005)),
-    #111215;
+    #0a0a0b;
   color: rgba(255, 255, 255, 0.62);
   cursor: pointer;
   display: flex;
@@ -68,12 +68,12 @@
   border-color: rgba(255, 255, 255, 0.16);
   background:
     linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
-    #16181d;
+    #101012;
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────────── */
 .sidebar {
-  background: #09090d;
+  background: #050506;
   border-right: 1px solid rgba(255, 255, 255, 0.055);
   display: flex;
   flex-direction: column;
@@ -92,7 +92,7 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0080cc, #00A6FF);
+  background: var(--brand-gradient);
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -174,8 +174,8 @@
 
 .navItemActive {
   background: rgba(0, 166, 255, 0.10);
-  color: var(--accent, #00A6FF);
-  border-left-color: var(--accent, #00A6FF);
+  color: var(--accent);
+  border-left-color: var(--accent);
 }
 
 .navIcon {
@@ -230,7 +230,7 @@
 .statCard {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005)),
-    #111215;
+    #0a0a0b;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   padding: 14px 16px 15px;
@@ -253,7 +253,7 @@
   color: #ffffff;
 }
 
-.statValueAccent { color: var(--accent, #00A6FF); }
+.statValueAccent { color: var(--accent); }
 
 .statValueMono {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -265,7 +265,7 @@
 .panel {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005)),
-    #111215;
+    #0a0a0b;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 18px 20px 20px;
@@ -289,12 +289,12 @@
 .seeAll {
   font-size: 0.82rem;
   font-weight: 500;
-  color: var(--accent, #00A6FF);
+  color: var(--accent);
   text-decoration: none;
   transition: color 0.15s;
 }
 
-.seeAll:hover { color: var(--accent-dark, #0080cc); }
+.seeAll:hover { color: var(--accent-dark); }
 
 .orderList {
   display: flex;
@@ -353,7 +353,7 @@
 
 .badge {
   padding: 3px 9px;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 0.66rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -399,7 +399,7 @@
 .quickCard {
   background:
     linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005)),
-    #111215;
+    #0a0a0b;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 10px;
   padding: 16px 18px 18px;
@@ -414,7 +414,7 @@
   border-color: rgba(0, 166, 255, 0.3);
   background:
     linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
-    #16181d;
+    #101012;
   transform: translateY(-1px);
 }
 
@@ -458,7 +458,7 @@
   width: 32px;
   height: 32px;
   border: 2.5px solid rgba(0, 166, 255, 0.18);
-  border-top-color: var(--accent, #00A6FF);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }

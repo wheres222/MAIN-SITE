@@ -35,10 +35,12 @@ export function GameLandingIntro({ content }: GameLandingSeoProps) {
 
   return (
     <section className={styles.landing} aria-label={`About ${content.displayName} cheats`}>
-      {/* ── Header: H1, last-tested badge, lead, trust stats ────────────── */}
+      {/* ── Header: intro heading, last-tested badge, lead, trust stats ──
+          h2 (not h1): the page's single H1 is the catalog header up top,
+          which receives content.h1 via GameCatalogPage's title prop. */}
       <header className={styles.intro}>
         <div className={styles.headRow}>
-          <h1 className={styles.h1}>{content.h1}</h1>
+          <h2 className={styles.h1}>{content.h1}</h2>
           <span className={styles.tested} aria-label="Last verified">
             <span className={styles.testedDot} aria-hidden="true" />
             Last tested: {content.lastTested}

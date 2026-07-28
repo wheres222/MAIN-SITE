@@ -30,27 +30,37 @@ export function LazyVideo({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [visible, setVisible] = useState(false);
 
+  // Mount the <video> on first intersection, then KEEP observing so playback
+  // can be paused once it scrolls away. Without this, every footage clip keeps
+  // decoding forever after a single view — three looping MP4s burning CPU for
+  // the whole session, which is the dominant cost on the homepage.
   useEffect(() => {
-    if (visible || !containerRef.current) return;
+    const el = containerRef.current;
+    if (!el) return;
     if (typeof IntersectionObserver === "undefined") {
       setVisible(true);
       return;
     }
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
+          if (entry.isIntersecting) setVisible(true);
+
+          const video = videoRef.current;
+          if (!video || !autoPlayOnVisible) continue;
           if (entry.isIntersecting) {
-            setVisible(true);
-            observer.disconnect();
-            return;
+            void video.play().catch(() => {});
+          } else if (!video.paused) {
+            video.pause();
           }
         }
       },
       { rootMargin }
     );
-    observer.observe(containerRef.current);
+    observer.observe(el);
     return () => observer.disconnect();
-  }, [visible, rootMargin]);
+  }, [rootMargin, autoPlayOnVisible]);
 
   return (
     <div ref={containerRef} className={className} aria-label={ariaLabel}>

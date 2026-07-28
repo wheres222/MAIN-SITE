@@ -99,7 +99,7 @@
   width: 280px;
   background: var(--surface-1);
   border: 1px solid var(--border);
-  border-radius: 4px;
+  border-radius: 8px;
   padding: 16px 18px 18px;
   display: flex;
   flex-direction: column;

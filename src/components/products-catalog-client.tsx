@@ -8,9 +8,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { productHref } from "@/lib/product-route";
 import { categoryHref } from "@/lib/category-href";
-import { canonicalGameSlug } from "@/lib/game-slug";
 import { CATEGORY_IMAGES, CATEGORY_TILES } from "@/lib/category-images";
-import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { canonicalGroupSlug } from "@/lib/category-tiles";
+import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 import styles from "./products-catalog.module.css";
 
@@ -38,29 +38,49 @@ function isCheatProduct(slug: string): boolean {
   return !/(^account|^vpn|^discord|^misc)/.test(slug);
 }
 
-export function ProductsCatalogClient() {
-  const [data, setData] = useState<StorefrontData | null>(null);
-  const [loading, setLoading] = useState(true);
+export function ProductsCatalogClient({
+  initialData,
+}: {
+  initialData?: StorefrontData | null;
+} = {}) {
+  // Seed from the server render so the catalog is present in the HTML — this
+  // page previously shipped only a skeleton and filled in client-side, which
+  // meant crawlers indexed an empty page.
+  const [data, setData] = useState<StorefrontData | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
 
   useEffect(() => {
+    if (initialData) primeStorefrontCache(initialData);
+
     let alive = true;
     fetchStorefrontClient()
       .then((d) => { if (alive) { setData(d); setLoading(false); } })
       .catch(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
-  }, []);
+  }, [initialData]);
 
-  // Build per-game groups from the product list.
+  // Build per-game groups from the product list. Anything new in SellAuth
+  // shows up here automatically, using its own artwork when we have no
+  // curated local image for it.
   const allGroups = useMemo<Group[]>(() => {
+    const remoteImages = new Map<string, string>();
+    for (const source of [...(data?.groups ?? []), ...(data?.categories ?? [])]) {
+      const slug = canonicalGroupSlug(source.name || "");
+      const url = source.image?.url;
+      if (slug && url && !remoteImages.has(slug)) remoteImages.set(slug, url);
+    }
+
     const map = new Map<string, Group>();
     for (const p of data?.products ?? []) {
       const rawName = (p.groupName || p.categoryName || "Other").trim();
-      const slug = canonicalGameSlug(rawName) || "other";
+      const slug = canonicalGroupSlug(rawName) || "other";
       let g = map.get(slug);
       if (!g) {
-        g = { slug, name: rawName, image: CATEGORY_IMAGES[slug] || p.image || PLACEHOLDER, products: [] };
+        const image =
+          CATEGORY_IMAGES[slug] || remoteImages.get(slug) || p.image || PLACEHOLDER;
+        g = { slug, name: rawName, image, products: [] };
         map.set(slug, g);
       }
       g.products.push(p);

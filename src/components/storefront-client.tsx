@@ -19,42 +19,9 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontProvider } from "@/context/storefront-context";
 import { categoryHref } from "@/lib/category-href";
-import { CATEGORY_IMAGES, CATEGORY_TILES } from "@/lib/category-images";
-import { canonicalGameSlug } from "@/lib/game-slug";
+import { buildCategoryTiles } from "@/lib/category-tiles";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
-import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
-
-function canonicalGroupSlug(value: string): string {
-  const raw = value || "";
-  if (/^\s*(?:b0?7\s*)?(?:wz\s*)?(?:internal|external)\s*$/i.test(raw)) {
-    return "call-of-duty";
-  }
-
-  const slug = canonicalGameSlug(raw);
-  const compact = slug.replace(/-/g, "");
-  if (
-    compact === "b07" ||
-    compact === "wz" ||
-    compact === "wzexternal" ||
-    compact === "wzinternal" ||
-    compact === "b07wzexternal" ||
-    compact === "b07wzinternal"
-  ) {
-    return "call-of-duty";
-  }
-
-  return slug;
-}
-
-function productLowestPrice(product: SellAuthProduct): number | null {
-  const prices: number[] = [];
-  if (typeof product.price === "number") prices.push(product.price);
-  for (const variant of product.variants) {
-    if (typeof variant.price === "number") prices.push(variant.price);
-  }
-  if (prices.length === 0) return null;
-  return Math.min(...prices);
-}
+import type { StorefrontData } from "@/types/sellauth";
 
 function money(value: number | null, currency = "USD"): string {
   if (value === null) return "N/A";
@@ -84,18 +51,9 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
     };
   }, [initialData]);
 
-  const lowestPriceBySlug = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const product of storefront?.products || []) {
-      const slug = canonicalGroupSlug(product.groupName || product.categoryName || "");
-      if (!slug) continue;
-      const price = productLowestPrice(product);
-      if (price === null) continue;
-      const existing = map.get(slug);
-      if (existing === undefined || price < existing) map.set(slug, price);
-    }
-    return map;
-  }, [storefront?.products]);
+  // Derived live from SellAuth — adding a category there makes it appear here
+  // automatically, after the curated games.
+  const categoryTiles = useMemo(() => buildCategoryTiles(storefront), [storefront]);
 
   return (
     <StorefrontProvider data={storefront}>
@@ -120,14 +78,17 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
               </div>
             </div>
             <div className="home-hero-character" aria-hidden="true">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              {/* Likely LCP element (renders above the H1 on mobile) — serve a
+                  right-sized optimized variant at high priority instead of the
+                  full 227KB source file. */}
+              <Image
                 src="/branding/hero-character.avif"
                 alt=""
                 width={400}
                 height={540}
+                sizes="(max-width: 760px) 220px, 400px"
                 className="home-hero-character-img"
-                decoding="async"
+                priority
               />
             </div>
           </div>
@@ -152,30 +113,42 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
             <header className="panel-header">Shop by Game</header>
             <div className="panel-body">
               <div className="game-tiles">
-                {CATEGORY_TILES.map((tile, i) => {
-                  const img = CATEGORY_IMAGES[tile.slug];
-                  if (!img) return null;
-                  const price = lowestPriceBySlug.get(tile.slug) ?? null;
-                  return (
-                    <Link key={tile.slug} href={categoryHref(tile.slug)} className="game-tile">
+                {categoryTiles.map((tile, i) => (
+                  <Link key={tile.slug} href={categoryHref(tile.slug)} className="game-tile">
+                    {tile.usesRemoteImage ? (
+                      /* Newly added SellAuth categories serve their art from an
+                         arbitrary host, so a plain <img> is used here — an
+                         unconfigured host would make next/image throw and blank
+                         the whole page. */
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        className="game-tile-img"
+                        src={tile.image}
+                        alt={`${tile.name} cheats`}
+                        width={400}
+                        height={225}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
                       <Image
                         className="game-tile-img"
-                        src={img}
+                        src={tile.image}
                         alt={`${tile.name} cheats`}
                         width={400}
                         height={225}
                         sizes="(max-width: 640px) 50vw, (max-width: 1080px) 33vw, 25vw"
-                        priority={i < 4}
+                        loading={i < 4 ? "eager" : "lazy"}
                       />
-                      <span className="game-tile-info">
-                        <span className="game-tile-name">{tile.name}</span>
-                        {price !== null && (
-                          <span className="game-tile-price">from {money(price)}</span>
-                        )}
-                      </span>
-                    </Link>
-                  );
-                })}
+                    )}
+                    <span className="game-tile-info">
+                      <span className="game-tile-name">{tile.name}</span>
+                      {tile.lowestPrice !== null && (
+                        <span className="game-tile-price">from {money(tile.lowestPrice)}</span>
+                      )}
+                    </span>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>

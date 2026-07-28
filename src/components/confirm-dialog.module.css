@@ -22,7 +22,7 @@
   max-width: 420px;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005)),
-    #111215;
+    #0a0a0b;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 24px 26px 22px;
@@ -80,7 +80,7 @@
 
 .confirm {
   background: var(--themed-blue-gradient);
-  border: 1px solid var(--accent, #00a6ff);
+  border: 1px solid var(--accent);
   color: #ffffff;
 }
 

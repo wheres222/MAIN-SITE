@@ -13,7 +13,7 @@ export default function NotFound() {
     <div className="nf-root">
       <div className="nf-card">
         <Link href="/" className="nf-brand" aria-label="CheatParadise home">
-          <img src="/branding/cp-logo.png" alt="CheatParadise" className="nf-logo" />
+          <img src="/branding/cp-logo.webp" alt="CheatParadise" className="nf-logo" />
           <span className="nf-wordmark">CHEATPARADISE</span>
         </Link>
 

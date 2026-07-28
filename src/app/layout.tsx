@@ -45,17 +45,17 @@ const assistifyWidgetId = process.env.NEXT_PUBLIC_ASSISTIFY_WIDGET_ID?.trim();
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0d0d0d",
+  themeColor: "#050506",
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Cheat Paradise",
+    default: "Cheat Paradise — Undetected Rust, CS2 & ARC Raiders Cheats",
     template: "%s | Cheat Paradise",
   },
   description:
-    "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
+    "Buy undetected game cheats with instant delivery. Rust cheats, CS2 cheats, ARC Raiders cheats, Fortnite, COD, Apex & more — trusted by thousands. 24/7 support.",
   alternates: {
     canonical: "/",
   },
@@ -65,9 +65,9 @@ export const metadata: Metadata = {
     apple: [{ url: "/branding/LOGO.webp", type: "image/webp" }],
   },
   openGraph: {
-    title: "Cheat Paradise",
+    title: "Cheat Paradise — Undetected Rust, CS2 & ARC Raiders Cheats",
     description:
-      "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
+      "Buy undetected game cheats with instant delivery. Rust cheats, CS2 cheats, ARC Raiders cheats, Fortnite, COD, Apex & more — trusted by thousands. 24/7 support.",
     url: siteUrl,
     siteName: "Cheat Paradise",
     type: "website",
@@ -75,9 +75,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cheat Paradise",
+    title: "Cheat Paradise — Undetected Rust, CS2 & ARC Raiders Cheats",
     description:
-      "Buy undetected game cheats, hacks, and mods with instant delivery. Trusted by thousands — Rust, Valorant, Fortnite, COD, CS2, Apex & more. 24/7 support.",
+      "Buy undetected game cheats with instant delivery. Rust cheats, CS2 cheats, ARC Raiders cheats, Fortnite, COD, Apex & more — trusted by thousands. 24/7 support.",
     images: ["/branding/og-banner.png"],
   },
   robots: {
@@ -151,11 +151,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
         <PostHogProvider>{children}</PostHogProvider>
+        {/* lazyOnload keeps gtag (and its head preload hint) entirely off the
+            critical path — it loads after everything else is done. */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-9XTJ5HDH2M"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="gtag-init" strategy="afterInteractive">
+        <Script id="gtag-init" strategy="lazyOnload">
           {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-9XTJ5HDH2M');`}
         </Script>
         {assistifyWidgetId && <AssistifyScript widgetId={assistifyWidgetId} />}

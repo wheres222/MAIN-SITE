@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
 
       <div className={styles.card}>
         <div className={styles.logo}>
-          <img src="/branding/cp-logo.png" alt="Cheat Paradise" className={styles.logoImg} />
+          <img src="/branding/cp-logo.webp" alt="Cheat Paradise" className={styles.logoImg} />
         </div>
 
         {sent ? (

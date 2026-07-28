@@ -176,6 +176,7 @@ export default async function CategoryLandingPage({
       <GameCatalogPage
         group={group}
         products={products}
+        title={content?.h1}
         seoFooter={
           content ? (
             <>

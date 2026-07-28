@@ -1,6 +1,6 @@
 .page {
   min-height: 100vh;
-  background: rgb(13, 13, 13);
+  background: var(--surface-1);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,8 +26,8 @@
 .card {
   width: 100%;
   max-width: 420px;
-  background: rgb(21, 21, 21);
-  border: 1px solid rgb(31, 31, 33);
+  background: var(--surface-1);
+  border: 1px solid var(--surface-2);
   border-radius: 18px;
   padding: 40px 36px;
   display: flex;
@@ -100,7 +100,7 @@
 .dividerLine {
   flex: 1;
   height: 1px;
-  background: rgb(31, 31, 33);
+  background: var(--surface-2);
 }
 .dividerText {
   font-size: 0.75rem;
@@ -134,7 +134,7 @@
 
 .forgotLink {
   font-size: 0.78rem;
-  color: #7cc4ff;
+  color: var(--accent);
   font-weight: 500;
   text-decoration: none;
 }
@@ -143,7 +143,7 @@
 .input {
   width: 100%;
   min-height: 44px;
-  background: rgb(13, 13, 13);
+  background: var(--surface-1);
   border: 1px solid rgb(40, 40, 44);
   border-radius: 8px;
   padding: 0 14px;
@@ -153,7 +153,7 @@
 }
 .input:focus {
   outline: none;
-  border-color: #7cc4ff;
+  border-color: var(--accent);
 }
 .input::placeholder { color: #4a5468; }
 
@@ -170,10 +170,10 @@
 .submitBtn {
   width: 100%;
   min-height: 48px;
-  background: #7cc4ff;
+  background: var(--accent);
   border: none;
   border-radius: 10px;
-  color: #050d1a;
+  color: var(--accent-ink);
   font-size: 0.94rem;
   font-weight: 700;
   cursor: pointer;
@@ -191,7 +191,7 @@
   margin: 20px 0 0;
 }
 .switchLink {
-  color: #7cc4ff;
+  color: var(--accent);
   font-weight: 600;
   text-decoration: none;
 }
