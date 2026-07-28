@@ -91,7 +91,7 @@
   --accent-dark:   #c2122a;
   --accent-dim:    rgba(239, 27, 53, 0.10);
   --accent-soft:   rgba(239, 27, 53, 0.16);
-  --accent-glow:   0 10px 40px -10px rgba(239, 27, 53, 0.5);
+  --accent-glow:   none;   /* buttons are flat — no outer glow */
   /* Text placed on the accent. The red is dark enough to need white, unlike
      the previous green which took near-black type. */
   --accent-ink:    #ffffff;
@@ -326,7 +326,8 @@ select::-ms-expand { display: none; }
   padding: 13px 24px;
   border-radius: var(--radius-sm);
   border: none;
-  /* Candy glass: white sheen fade over the brand green */
+  /* Candy glass: white sheen fade over the brand red. Inset highlights only —
+     no outer glow. */
   background-color: var(--accent);
   background-image: var(--brand-sheen);
   color: var(--accent-ink);
@@ -337,8 +338,7 @@ select::-ms-expand { display: none; }
   cursor: pointer;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -8px 16px rgba(74, 0, 14, 0.35),
-    var(--accent-glow);
+    inset 0 -8px 16px rgba(74, 0, 14, 0.35);
   transition: filter var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 .btn-primary:hover {
@@ -346,8 +346,7 @@ select::-ms-expand { display: none; }
   transform: translateY(-1px);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -8px 16px rgba(74, 0, 14, 0.35),
-    0 14px 44px -10px rgba(239, 27, 53, 0.6);
+    inset 0 -8px 16px rgba(74, 0, 14, 0.35);
 }
 .btn-primary:active {
   transform: translateY(0);
@@ -394,28 +393,23 @@ select::-ms-expand { display: none; }
   min-height: var(--hero-char-h);
 }
 .home-hero-copy { flex: 1 1 auto; max-width: 600px; text-align: left; padding-bottom: 80px; }
+/* Original type scale — reverted from the oversized Arctic-style display. */
 .home-hero-title {
   margin: 0;
   font-family: var(--font-brand);
-  /* Arctic-scale display type: huge, tight-tracked, near-solid leading */
-  font-size: clamp(2.1rem, 5.4vw, 4.3rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 0.99;
+  font-size: clamp(1.7rem, 4.6vw, 3.3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
   color: var(--text-primary);
 }
-.home-hero-title .accent {
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
+.home-hero-title .accent { color: var(--accent); }
 .home-hero-sub {
-  margin: 18px 0 0;
+  margin: 16px 0 0;
   max-width: 560px;
-  font-size: 1.05rem;
-  line-height: 1.65;
-  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-muted);
 }
 .home-hero-cta {
   display: flex;
@@ -425,7 +419,7 @@ select::-ms-expand { display: none; }
   margin-top: 26px;
 }
 
-/* Hero character (right side) — spans the hero, recolored green via CSS filter */
+/* Hero character (right side) — spans the hero, recolored red via CSS filter */
 .home-hero-character {
   position: relative;
   flex: 0 0 auto;
@@ -452,9 +446,11 @@ select::-ms-expand { display: none; }
   max-width: 150%;
   object-fit: contain;
   object-position: bottom center;
-  /* Recolor: strip original colour, then lightly re-tint toward brand green. */
+  /* Recolor: strip original colour, then re-tint toward brand red.
+     sepia() lands the base around hue 39deg, so -45deg rotates it to ~4deg
+     (red); saturate(5) is needed or it reads as washed-out salmon. */
   filter:
-    grayscale(1) sepia(1) hue-rotate(55deg) saturate(2.1) brightness(0.98)
+    grayscale(1) sepia(1) hue-rotate(-45deg) saturate(5) brightness(0.85)
     drop-shadow(0 8px 20px rgba(0, 0, 0, 0.45));
 }
 
