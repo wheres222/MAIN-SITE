@@ -97,6 +97,33 @@ export default async function Home() {
 
   return (
     <>
+      {/* The hero background is the LCP element. CSS background-images are only
+          discovered after the stylesheet parses, so preload it — one per
+          breakpoint, matching the media queries in globals.css. */}
+      <link
+        rel="preload"
+        as="image"
+        href="/branding/hero-bg.avif"
+        type="image/avif"
+        media="(min-width: 1201px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/branding/hero-bg-md.avif"
+        type="image/avif"
+        media="(min-width: 761px) and (max-width: 1200px)"
+        fetchPriority="high"
+      />
+      <link
+        rel="preload"
+        as="image"
+        href="/branding/hero-bg-sm.avif"
+        type="image/avif"
+        media="(max-width: 760px)"
+        fetchPriority="high"
+      />
       {videoSchemas.map((json, i) => (
         <script
           key={i}

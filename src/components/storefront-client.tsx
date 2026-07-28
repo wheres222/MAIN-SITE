@@ -77,20 +77,6 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
                 <a href="/status" className="btn-ghost">View Live Status →</a>
               </div>
             </div>
-            <div className="home-hero-character" aria-hidden="true">
-              {/* Likely LCP element (renders above the H1 on mobile) — serve a
-                  right-sized optimized variant at high priority instead of the
-                  full 227KB source file. */}
-              <Image
-                src="/branding/hero-character.avif"
-                alt=""
-                width={400}
-                height={540}
-                sizes="(max-width: 760px) 220px, 400px"
-                className="home-hero-character-img"
-                priority
-              />
-            </div>
           </div>
         </section>
 
