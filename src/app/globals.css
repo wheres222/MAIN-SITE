@@ -391,9 +391,15 @@ select::-ms-expand { display: none; }
   overflow: hidden;
   --hero-h: 420px;
   background-color: var(--surface-0);
+  /* 1x + 2x per format: the hero renders at up to ~1660px wide (past that the
+     max-height cap starts cropping rather than growing), so 2x needs a source
+     up to ~3320px to stay sharp on retina — a 1x-only image would get upscaled
+     by the browser and look soft on those screens. */
   background-image: image-set(
-    url("/branding/hero-bg.avif") type("image/avif"),
-    url("/branding/hero-bg.webp") type("image/webp")
+    url("/branding/hero-bg.avif") 1x type("image/avif"),
+    url("/branding/hero-bg@2x.avif") 2x type("image/avif"),
+    url("/branding/hero-bg.webp") 1x type("image/webp"),
+    url("/branding/hero-bg@2x.webp") 2x type("image/webp")
   );
   background-repeat: no-repeat;
   background-position: right center;
@@ -465,12 +471,15 @@ select::-ms-expand { display: none; }
   margin-top: 26px;
 }
 
-/* Serve smaller background art to smaller viewports. */
+/* Serve smaller background art to smaller viewports — still with a 2x variant
+   each, so retina screens in this range don't upscale a 1x source either. */
 @media (max-width: 1200px) {
   .home-hero {
     background-image: image-set(
-      url("/branding/hero-bg-md.avif") type("image/avif"),
-      url("/branding/hero-bg-md.webp") type("image/webp")
+      url("/branding/hero-bg-md.avif") 1x type("image/avif"),
+      url("/branding/hero-bg-md@2x.avif") 2x type("image/avif"),
+      url("/branding/hero-bg-md.webp") 1x type("image/webp"),
+      url("/branding/hero-bg-md@2x.webp") 2x type("image/webp")
     );
   }
 }
@@ -485,8 +494,10 @@ select::-ms-expand { display: none; }
     max-height: none;
     min-height: var(--hero-h);
     background-image: image-set(
-      url("/branding/hero-bg-sm.avif") type("image/avif"),
-      url("/branding/hero-bg-sm.webp") type("image/webp")
+      url("/branding/hero-bg-sm.avif") 1x type("image/avif"),
+      url("/branding/hero-bg-sm@2x.avif") 2x type("image/avif"),
+      url("/branding/hero-bg-sm.webp") 1x type("image/webp"),
+      url("/branding/hero-bg-sm@2x.webp") 2x type("image/webp")
     );
     /* Back to cover here: at phone widths `contain` would shrink a 2.56:1 image
        to ~150px tall inside a 420px hero, leaving most of it empty. Cropping is
