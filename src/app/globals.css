@@ -397,14 +397,17 @@ select::-ms-expand { display: none; }
   );
   background-repeat: no-repeat;
   background-position: right center;
-  /* The hero tracks the artwork's own 2006:784 ratio, so `cover` scales the
-     image to the full width with nothing cropped and no empty space. A fixed
-     height would either crop the figures (cover) or strand the image on the
-     right (contain). min/max keep it sane on very narrow and ultrawide screens,
-     where a little cropping is the better trade. */
-  aspect-ratio: 2006 / 784;
-  min-height: 420px;
-  max-height: 760px;
+  /* No side bars + no stretching means the image must render exactly viewport
+     wide, which fixes its height at 100vw / 2.5587 (the art is 2006:784). The
+     hero is set 50px shorter than that, so `cover` trims ~25px off the top and
+     ~25px off the bottom — background-position is centred vertically, so the
+     trim splits evenly. Height comes from 100vw (not aspect-ratio) purely so
+     that -50px offset is possible.
+     max-height caps how tall this can get on wide screens; past ~1660px the cap
+     wins and the trim grows, which keeps the hero from dominating the page. */
+  height: calc(100vw / 2.5587 - 50px);
+  min-height: 380px;
+  max-height: 600px;
   background-size: cover;
 }
 /* Left-to-right scrim: guarantees text contrast regardless of viewport width,
@@ -429,9 +432,13 @@ select::-ms-expand { display: none; }
   align-items: flex-end;
   justify-content: space-between;
   gap: 36px;
-  min-height: var(--hero-h);
+  /* Fill the hero rather than set their own floor — .home-hero now has an
+     explicit height, and a taller min-height here would push the copy past it
+     and get it clipped by overflow: hidden. */
+  height: 100%;
+  min-height: 0;
 }
-.home-hero-copy { flex: 1 1 auto; max-width: 600px; text-align: left; padding-bottom: 80px; }
+.home-hero-copy { flex: 1 1 auto; max-width: 600px; text-align: left; padding-bottom: 56px; }
 /* Original type scale — reverted from the oversized Arctic-style display. */
 .home-hero-title {
   margin: 0;
@@ -472,6 +479,11 @@ select::-ms-expand { display: none; }
   .home-hero {
     padding: 40px 0 0;
     --hero-h: 420px;
+    /* Let content drive the height here: the desktop calc() would resolve to
+       roughly 100px on a phone. */
+    height: auto;
+    max-height: none;
+    min-height: var(--hero-h);
     background-image: image-set(
       url("/branding/hero-bg-sm.avif") type("image/avif"),
       url("/branding/hero-bg-sm.webp") type("image/webp")
@@ -492,7 +504,7 @@ select::-ms-expand { display: none; }
       rgba(5, 5, 6, 0.92) 100%
     );
   }
-  .home-hero-inner { flex-direction: column; gap: 16px; min-height: var(--hero-h); }
+  .home-hero-inner { flex-direction: column; gap: 16px; height: auto; min-height: var(--hero-h); }
   .home-hero-copy { max-width: none; text-align: center; padding-bottom: 0; }
   .home-hero-sub { margin-left: auto; margin-right: auto; }
   .home-hero-cta { justify-content: center; }
