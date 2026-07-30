@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -154,7 +155,7 @@ export function CheckoutPaymentClient({ orderId }: { orderId: string }) {
         <div style={s.card}>
           <p style={{ color: "#f87171", textAlign: "center", marginBottom: 12 }}>{error}</p>
           <p style={{ textAlign: "center" }}>
-            <a href="/" style={{ color: "var(--accent)", fontSize: 14 }}>← Back to store</a>
+            <Link href="/" style={{ color: "var(--accent)", fontSize: 14 }}>← Back to store</Link>
           </p>
         </div>
       </div>
@@ -299,14 +300,14 @@ export function CheckoutPaymentClient({ orderId }: { orderId: string }) {
               <p style={{ margin: "0 0 10px", fontSize: 12, opacity: 0.8 }}>{order.deliveryError}</p>
             )}
             <p style={{ margin: 0, fontSize: 12 }}>
-              Contact support with order ID <strong style={{ fontFamily: "monospace" }}>#{order.id}</strong> and we'll resolve this immediately.
+              Contact support with order ID <strong style={{ fontFamily: "monospace" }}>#{order.id}</strong> and we&apos;ll resolve this immediately.
             </p>
           </div>
         )}
 
         {/* ── Footer ── */}
         <div style={{ textAlign: "center", marginTop: 28, paddingTop: 20, borderTop: "1px solid #1e293b" }}>
-          <a href="/" style={{ color: "#475569", fontSize: 13 }}>← Back to store</a>
+          <Link href="/" style={{ color: "#475569", fontSize: 13 }}>← Back to store</Link>
         </div>
 
       </div>

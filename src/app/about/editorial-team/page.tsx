@@ -91,11 +91,11 @@ export default function EditorialTeamPage() {
               and documenting third-party game software since 2022. Every product
               listing, comparison guide, and detection report on this site is written
               by a team member who has personally tested the product against the
-              current build of the game's anti-cheat system.
+              current build of the game&apos;s anti-cheat system.
             </p>
             <p>
               We do not publish AI-generated content without human verification, and
-              we do not write reviews of products we haven't tested ourselves. When
+              we do not write reviews of products we haven&apos;t tested ourselves. When
               a cheat we sell becomes detected, we say so on the product page and
               pause sales until a working build is verified — not the other way
               around.

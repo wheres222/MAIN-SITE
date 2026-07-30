@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -186,7 +187,7 @@ export function OrderConfirmClient({ orderId }: { orderId: string }) {
         <div style={s.card}>
           <p style={{ color: "#f87171", textAlign: "center" }}>{error}</p>
           <p style={{ textAlign: "center", marginTop: 8 }}>
-            <a href="/" style={{ color: "#a78bfa", fontSize: 14 }}>← Back to store</a>
+            <Link href="/" style={{ color: "#a78bfa", fontSize: 14 }}>← Back to store</Link>
           </p>
         </div>
       </div>
@@ -338,12 +339,12 @@ export function OrderConfirmClient({ orderId }: { orderId: string }) {
 
         {/* Footer */}
         <div style={{ textAlign: "center", marginTop: 28, borderTop: "1px solid #1e293b", paddingTop: 20 }}>
-          <a href="/account/orders" style={{ color: "#a78bfa", fontSize: 13, marginRight: 20 }}>
+          <Link href="/account/orders" style={{ color: "#a78bfa", fontSize: 13, marginRight: 20 }}>
             All Orders
-          </a>
-          <a href="/" style={{ color: "#64748b", fontSize: 13 }}>
+          </Link>
+          <Link href="/" style={{ color: "#64748b", fontSize: 13 }}>
             Back to Store
-          </a>
+          </Link>
         </div>
       </div>
     </div>

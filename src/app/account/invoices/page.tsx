@@ -2,6 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import styles from "../account.module.css";
@@ -123,7 +124,7 @@ export default function InvoicesPage() {
       {paginated.length === 0 ? (
         <div className={styles.empty}>
           {search ? "No invoices match your search." : "No invoices found."}
-          {!search && <><br /><a href="/" className={styles.emptyBtn}>Browse Store</a></>}
+          {!search && <><br /><Link href="/" className={styles.emptyBtn}>Browse Store</Link></>}
         </div>
       ) : (
         <div className={styles.tableWrap}>

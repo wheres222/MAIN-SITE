@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Standalone CommonJS Discord bot — its own package.json and Railway
+    // deploy, so the Next/TypeScript rules (no-require-imports) don't apply.
+    "discord-bot/**",
   ]),
 ]);
 

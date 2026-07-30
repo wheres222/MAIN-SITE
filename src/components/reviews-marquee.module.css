@@ -28,31 +28,13 @@
   font-weight: 400;
 }
 
-/* ── Marquee rows ──────────────────────────────────────────────────────────── */
-.rows {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  /* Soft fade-out on both edges so cards don't appear to "appear" abruptly. */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 6%,
-    #000 94%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 6%,
-    #000 94%,
-    transparent 100%
-  );
-}
-
+/* ── Marquee row ───────────────────────────────────────────────────────────── */
 .row {
   width: 100%;
   overflow: hidden;
+  /* Soft fade on both edges so cards don't pop in and out abruptly. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
 }
 
 .track {
@@ -60,36 +42,29 @@
   gap: 14px;
   width: max-content;
   will-change: transform;
+  animation: marquee 45s linear infinite;
 }
 
-@keyframes marqueeLeft {
+@keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 }
 
-@keyframes marqueeRight {
-  from { transform: translateX(-50%); }
-  to   { transform: translateX(0); }
-}
-
-.trackLeft {
-  animation: marqueeLeft 70s linear infinite;
-}
-
-.trackRight {
-  animation: marqueeRight 70s linear infinite;
-}
-
-/* Pause on hover so users can read a card they're interested in. */
+/* Pause on hover so a card that catches someone's eye can be read. */
 .row:hover .track {
   animation-play-state: paused;
 }
 
-/* Respect reduced motion preferences. */
+/* This marquee keeps moving even when the OS asks for reduced motion — the
+ * scrolling reviews are the point of the section, and a frozen row reads as a
+ * broken page. The blanket rule in globals.css collapses every animation to
+ * 0.01ms with !important, so this has to out-specify it the same way.
+ * To hand control back to the OS preference, delete this block and the row
+ * will simply sit still for those users. */
 @media (prefers-reduced-motion: reduce) {
-  .trackLeft,
-  .trackRight {
-    animation: none;
+  .track {
+    animation-duration: 45s !important;
+    animation-iteration-count: infinite !important;
   }
 }
 
@@ -100,10 +75,10 @@
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 16px 18px 18px;
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .stars {
@@ -127,6 +102,6 @@
 @media (max-width: 720px) {
   .section { padding: 56px 0 64px; }
   .heading { margin-bottom: 26px; }
-  .card { width: 240px; padding: 14px 16px 16px; }
+  .card { width: 240px; padding: 12px 14px 14px; }
   .text { font-size: 0.82rem; }
 }

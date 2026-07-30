@@ -202,7 +202,7 @@ export default function LoadersPage() {
             </svg>
             <div>
               <strong>Run as Administrator</strong>
-              <span>Right-click the loader and select "Run as administrator" every time.</span>
+              <span>Right-click the loader and select &quot;Run as administrator&quot; every time.</span>
             </div>
           </div>
           <div className="loaders-help-item">
