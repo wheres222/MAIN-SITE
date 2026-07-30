@@ -19,6 +19,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontProvider } from "@/context/storefront-context";
 import { categoryHref } from "@/lib/category-href";
+import { DISCORD_INVITE_URL } from "@/lib/links";
 import { buildCategoryTiles } from "@/lib/category-tiles";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
@@ -34,6 +35,22 @@ function money(value: number | null, currency = "USD"): string {
 
 export function StorefrontClient({ initialData }: { initialData?: StorefrontData | null }) {
   const [storefront, setStorefront] = useState<StorefrontData | null>(initialData ?? null);
+  const [adspotOpen, setAdspotOpen] = useState(false);
+
+  // Close the ad-spot popup on Escape, and lock page scroll while it's open.
+  useEffect(() => {
+    if (!adspotOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setAdspotOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [adspotOpen]);
 
   useEffect(() => {
     // Prime the client cache with SSR data, then revalidate in the background
@@ -93,10 +110,24 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
           </div>
         </div>
 
+        {/* ── Ad spots — rentable placements ── */}
+        <section className="adspots" aria-label="Advertising spots">
+          {[0, 1, 2].map((i) => (
+            <button
+              key={i}
+              type="button"
+              className="adspot"
+              onClick={() => setAdspotOpen(true)}
+            >
+              <span className="adspot-label">Purchase ADSPOT</span>
+              <span className="adspot-size">550 × 90</span>
+            </button>
+          ))}
+        </section>
+
         {/* ── Shop by Game ── */}
-        <section className="home-shell home-section" id="products">
-          <div className="panel">
-            <header className="panel-header">Shop by Game</header>
+        <section className="home-shell home-section" id="products" aria-label="Shop by game">
+          <div className="panel panel-flat">
             <div className="panel-body">
               <div className="game-tiles">
                 {categoryTiles.map((tile, i) => (
@@ -190,6 +221,67 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
         </section>
 
       </main>
+
+      {/* ── Ad-spot enquiry popup ── */}
+      {adspotOpen && (
+        <div
+          className="adspot-modal-overlay"
+          role="presentation"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setAdspotOpen(false);
+          }}
+        >
+          <div className="adspot-modal" role="dialog" aria-modal="true" aria-labelledby="adspot-modal-title">
+            <div className="adspot-modal-header">
+              <h3 id="adspot-modal-title">Advertise on Cheat Paradise</h3>
+              <button
+                type="button"
+                className="adspot-modal-close"
+                aria-label="Close"
+                onClick={() => setAdspotOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="adspot-modal-body">
+              <p className="adspot-modal-lead">
+                Three banner slots sit directly beneath the trust bar on our homepage — the first
+                thing every visitor sees above the store.
+              </p>
+              <dl className="adspot-modal-specs">
+                <div>
+                  <dt>Banner size</dt>
+                  <dd>550 × 90</dd>
+                </div>
+                <div>
+                  <dt>Placement</dt>
+                  <dd>Homepage, above the fold</dd>
+                </div>
+                <div>
+                  <dt>Slots</dt>
+                  <dd>3 available</dd>
+                </div>
+                <div>
+                  <dt>Formats</dt>
+                  <dd>PNG, JPG, WEBP or GIF</dd>
+                </div>
+              </dl>
+              <p className="adspot-modal-note">
+                Open a ticket in our Discord to check availability and pricing. Send your artwork and
+                destination link and we&apos;ll have the spot live the same day.
+              </p>
+              <a
+                className="btn-primary adspot-modal-cta"
+                href={DISCORD_INVITE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Enquire on Discord
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
 
       <SiteFooter />
     </div>

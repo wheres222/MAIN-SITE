@@ -539,6 +539,146 @@ select::-ms-expand { display: none; }
 .trust-bar-item strong { color: var(--text-primary); font-weight: 700; }
 .trust-bar-sep { width: 1px; height: 14px; background: var(--border-strong); }
 
+/* ── Rentable ad spots ────────────────────────────────────────────────────
+ * Three 550×90 banners in a row. Three of them plus the gaps need 1674px, so
+ * this section breaks out of the 1080px .home-shell and runs on its own wider
+ * track — on a viewport of 1714px or more each outline is a true 550×90, and
+ * below that it scales down by aspect ratio. Stacks under 700px, where a
+ * third of the row is too narrow for the label. */
+.adspots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: min(1674px, calc(100% - 40px));
+  margin: 28px auto 0;
+  justify-items: center;
+}
+.adspot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 550px;
+  aspect-ratio: 550 / 90;
+  padding: 10px 12px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 0;
+  background: var(--surface-1);
+  cursor: pointer;
+  transition: border-color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+.adspot:hover {
+  border-color: var(--border-accent);
+  background: var(--surface-2);
+}
+.adspot-label {
+  font-family: var(--font-brand);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+.adspot-size {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+@media (max-width: 700px) { .adspots { grid-template-columns: 1fr; } }
+
+/* Ad-spot enquiry popup — square-cornered to match the spots themselves */
+.adspot-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  overflow-y: auto;
+  background: rgba(2, 4, 8, 0.82);
+}
+.adspot-modal {
+  width: min(520px, 100%);
+  border: 1px solid var(--global-outline);
+  background: var(--surface-2);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+}
+.adspot-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--global-outline);
+}
+.adspot-modal-header h3 {
+  margin: 0;
+  font-family: var(--font-brand);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+.adspot-modal-close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+}
+.adspot-modal-close:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+.adspot-modal-body { padding: 18px; }
+.adspot-modal-lead,
+.adspot-modal-note {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.adspot-modal-specs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  background: var(--border);
+}
+.adspot-modal-specs > div {
+  padding: 10px 12px;
+  background: var(--surface-1);
+}
+.adspot-modal-specs dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.adspot-modal-specs dd {
+  margin: 4px 0 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.adspot-modal-cta {
+  display: block;
+  margin-top: 16px;
+  text-align: center;
+}
+
+@media (max-width: 480px) { .adspot-modal-specs { grid-template-columns: 1fr; } }
+
 /* Shop-by-game tiles */
 .game-tiles {
   display: grid;
@@ -549,7 +689,7 @@ select::-ms-expand { display: none; }
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: 0;
   overflow: hidden;
   background: var(--surface-2);
   text-decoration: none;
@@ -580,6 +720,10 @@ select::-ms-expand { display: none; }
 }
 .game-tile-name { font-size: 0.88rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .game-tile-price { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; flex: 0 0 auto; }
+
+/* Square-cornered panel variant — used by the shop-by-game grid so the
+   surrounding box matches its square tiles. */
+.panel-flat { border-radius: 0; }
 
 @media (max-width: 900px) { .game-tiles { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 640px) { .game-tiles { grid-template-columns: repeat(2, 1fr); } }

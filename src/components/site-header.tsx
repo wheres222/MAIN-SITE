@@ -122,6 +122,7 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
             <nav className="site-nav" aria-label="Main navigation">
               <Link className={pathname === "/" ? "active" : ""} href="/">Home</Link>
               <Link className={pathname.startsWith("/products") ? "active" : ""} href="/products">Products</Link>
+              <Link className={pathname.startsWith("/guide") ? "active" : ""} href="/guide">Guides</Link>
               <Link className={pathname.startsWith("/status") ? "active" : ""} href="/status">Status</Link>
             </nav>
           </div>
