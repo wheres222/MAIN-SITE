@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ next?: string }>;
+  searchParams?: Promise<{ next?: string; error?: string }>;
 }) {
   const params = searchParams ? await searchParams : {};
   const next = params.next && params.next.startsWith("/") ? params.next : "/account";
-  return <AuthPage defaultTab="login" next={next} />;
+  return <AuthPage defaultTab="login" next={next} initialError={params.error ?? ""} />;
 }

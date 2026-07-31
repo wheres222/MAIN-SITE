@@ -3,20 +3,66 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import styles from "./auth-page.module.css";
 
 interface AuthPageProps {
   defaultTab?: "login" | "register";
   next?: string;
+  /** Message forwarded by /api/auth/callback when the OAuth round-trip fails. */
+  initialError?: string;
 }
+
+/**
+ * Turn the provider/config failures into something a human can act on.
+ * Supabase returns "Unsupported provider: provider is not enabled" when the
+ * provider exists but has not been switched on in the project dashboard, which
+ * is by far the most common reason these buttons appear broken.
+ */
+function describeAuthError(message: string, provider: string): string {
+  if (/provider is not enabled|unsupported provider/i.test(message)) {
+    return `${provider} sign-in is not enabled on this Supabase project yet.`;
+  }
+  return message;
+}
+
+/**
+ * Discord and Google sign-in are wired up but greyed out until their providers
+ * are enabled on the Supabase project. Flip this to true to turn them back on —
+ * nothing else needs changing.
+ */
+const SOCIAL_LOGIN_ENABLED: boolean = false;
+
+const PASSWORD_RULES = [
+  { key: "length",  label: "At least 8 characters",       test: (pw: string) => pw.length >= 8 },
+  { key: "number",  label: "At least 1 number",           test: (pw: string) => /\d/.test(pw) },
+  { key: "special", label: "At least 1 special character", test: (pw: string) => /[^a-zA-Z0-9]/.test(pw) },
+] as const;
 
 function checkPassword(pw: string) {
   return {
-    length:  pw.length >= 8,
-    number:  /\d/.test(pw),
-    special: /[^a-zA-Z0-9]/.test(pw),
+    length:  PASSWORD_RULES[0].test(pw),
+    number:  PASSWORD_RULES[1].test(pw),
+    special: PASSWORD_RULES[2].test(pw),
   };
+}
+
+/** Checkbox that ticks itself once its rule passes. Not an <input> — it is a
+ *  status readout, not something the user can toggle. */
+function PasswordRule({ met, label }: { met: boolean; label: string }) {
+  return (
+    <li className={met ? styles.pwCheckPass : styles.pwCheckFail}>
+      <span className={`${styles.pwCheckbox} ${met ? styles.pwCheckboxOn : ""}`} aria-hidden="true">
+        {met && (
+          <svg viewBox="0 0 24 24" fill="none" width="10" height="10">
+            <path d="M20 6 9 17l-5-5" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </span>
+      <span>{label}</span>
+      <span className={styles.pwCheckState}>{met ? "met" : "remaining"}</span>
+    </li>
+  );
 }
 
 function Field({
@@ -62,13 +108,13 @@ const IconTag = (
   </svg>
 );
 
-export function AuthPage({ defaultTab = "login", next = "/account" }: AuthPageProps) {
+export function AuthPage({ defaultTab = "login", next = "/account", initialError = "" }: AuthPageProps) {
   const router = useRouter();
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
+  const [loginError, setLoginError] = useState(initialError);
   const [loginLoading, setLoginLoading] = useState(false);
 
   const [regEmail, setRegEmail] = useState("");
@@ -87,25 +133,34 @@ export function AuthPage({ defaultTab = "login", next = "/account" }: AuthPagePr
 
   const pwChecks = checkPassword(regPassword);
   const pwTouched = regPassword.length > 0;
-  const pwValid = pwChecks.length && pwChecks.number && pwChecks.special;
+  const pwMetCount = PASSWORD_RULES.filter((rule) => pwChecks[rule.key]).length;
+  const pwValid = pwMetCount === PASSWORD_RULES.length;
 
-  async function handleDiscordLogin() {
-    setDiscordLoading(true); setLoginError(""); setRegError("");
+  async function handleOAuthLogin(
+    provider: "discord" | "google",
+    setLoading: (v: boolean) => void
+  ) {
+    setLoginError(""); setRegError("");
+    // Without this the SDK happily redirects to the placeholder host, the
+    // browser lands on a domain that does not resolve, and the button looks
+    // like it silently did nothing.
+    if (!isSupabaseConfigured) {
+      setLoginError(
+        "Sign-in is not configured on this deployment — NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are missing."
+      );
+      return;
+    }
+    setLoading(true);
+    const label = provider === "discord" ? "Discord" : "Google";
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "discord",
+      provider,
       options: { redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}` },
     });
-    if (error) { setLoginError(error.message); setDiscordLoading(false); }
+    if (error) { setLoginError(describeAuthError(error.message, label)); setLoading(false); }
   }
 
-  async function handleGoogleLogin() {
-    setGoogleLoading(true); setLoginError(""); setRegError("");
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}` },
-    });
-    if (error) { setLoginError(error.message); setGoogleLoading(false); }
-  }
+  const handleDiscordLogin = () => handleOAuthLogin("discord", setDiscordLoading);
+  const handleGoogleLogin = () => handleOAuthLogin("google", setGoogleLoading);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -138,17 +193,18 @@ export function AuthPage({ defaultTab = "login", next = "/account" }: AuthPagePr
     } finally { setRegLoading(false); }
   }
 
+  const socialDisabled = !SOCIAL_LOGIN_ENABLED || discordLoading || googleLoading;
   const socialFieldset = (
     <fieldset className="fieldset">
       <legend className="fieldset-legend">Or continue with</legend>
-      <div className={styles.socialRow}>
-        <button type="button" className={styles.socialBtn} onClick={handleDiscordLogin} disabled={discordLoading || googleLoading} aria-label="Continue with Discord">
+      <div className={`${styles.socialRow} ${SOCIAL_LOGIN_ENABLED ? "" : styles.socialRowOff}`}>
+        <button type="button" className={styles.socialBtn} onClick={handleDiscordLogin} disabled={socialDisabled} aria-label="Continue with Discord">
           <svg viewBox="0 0 127.14 96.36" fill="currentColor" width="20" height="20" aria-hidden>
             <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/>
           </svg>
           Discord
         </button>
-        <button type="button" className={styles.socialBtn} onClick={handleGoogleLogin} disabled={discordLoading || googleLoading} aria-label="Continue with Google">
+        <button type="button" className={styles.socialBtn} onClick={handleGoogleLogin} disabled={socialDisabled} aria-label="Continue with Google">
           <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden>
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -158,6 +214,9 @@ export function AuthPage({ defaultTab = "login", next = "/account" }: AuthPagePr
           Google
         </button>
       </div>
+      {!SOCIAL_LOGIN_ENABLED && (
+        <p className={styles.socialNote}>Social sign-in is coming soon — use your email and password for now.</p>
+      )}
     </fieldset>
   );
 
@@ -212,11 +271,18 @@ export function AuthPage({ defaultTab = "login", next = "/account" }: AuthPagePr
                     <Field id="reg-email" type="email" placeholder="Email address" value={regEmail} onChange={setRegEmail} icon={IconMail} autoComplete="email" required />
                     <Field id="reg-password" type="password" placeholder="Password" value={regPassword} onChange={setRegPassword} icon={IconLock} autoComplete="new-password" required />
                     {pwTouched && (
-                      <ul className={styles.pwChecklist}>
-                        <li className={pwChecks.length ? styles.pwCheckPass : styles.pwCheckFail}><span className={styles.pwCheckIcon}>{pwChecks.length ? "✓" : "○"}</span>At least 8 characters</li>
-                        <li className={pwChecks.number ? styles.pwCheckPass : styles.pwCheckFail}><span className={styles.pwCheckIcon}>{pwChecks.number ? "✓" : "○"}</span>At least 1 number</li>
-                        <li className={pwChecks.special ? styles.pwCheckPass : styles.pwCheckFail}><span className={styles.pwCheckIcon}>{pwChecks.special ? "✓" : "○"}</span>At least 1 special character</li>
-                      </ul>
+                      <div className={styles.pwPanel} aria-live="polite">
+                        <p className={styles.pwSummary}>
+                          {pwMetCount === PASSWORD_RULES.length
+                            ? "All requirements met"
+                            : `${pwMetCount} of ${PASSWORD_RULES.length} requirements met — ${PASSWORD_RULES.length - pwMetCount} remaining`}
+                        </p>
+                        <ul className={styles.pwChecklist}>
+                          {PASSWORD_RULES.map((rule) => (
+                            <PasswordRule key={rule.key} met={pwChecks[rule.key]} label={rule.label} />
+                          ))}
+                        </ul>
+                      </div>
                     )}
                     <Field id="reg-confirm" type="password" placeholder="Confirm password" value={regConfirm} onChange={setRegConfirm} icon={IconLock} autoComplete="new-password" required />
                     <Field id="reg-referral" type="text" placeholder="Referral code (optional)" value={regReferral} onChange={(v) => setRegReferral(v.toUpperCase())} icon={IconTag} />

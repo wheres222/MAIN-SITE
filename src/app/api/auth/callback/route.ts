@@ -23,9 +23,17 @@ export async function GET(request: NextRequest) {
   const publicOrigin =
     forwardedHost ? `https://${forwardedHost}` : origin;
 
+  /** Send the user back to the login form with something to read, rather than
+   *  dropping them on the homepage silently signed-out. */
+  const failTo = (message: string) =>
+    NextResponse.redirect(
+      `${publicOrigin}/login?error=${encodeURIComponent(message)}`
+    );
+
   if (oauthError) {
-    console.error("[auth/callback] provider error:", oauthError, searchParams.get("error_description"));
-    return NextResponse.redirect(`${publicOrigin}/`);
+    const description = searchParams.get("error_description");
+    console.error("[auth/callback] provider error:", oauthError, description);
+    return failTo(description || oauthError);
   }
 
   if (code) {
@@ -40,8 +48,8 @@ export async function GET(request: NextRequest) {
     }
 
     console.error("[auth/callback] exchangeCodeForSession failed:", error.message);
+    return failTo(error.message);
   }
 
-  // Fallback — something went wrong, send home
-  return NextResponse.redirect(`${publicOrigin}/`);
+  return failTo("Sign-in did not complete — no authorization code was returned.");
 }
