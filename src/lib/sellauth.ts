@@ -1,6 +1,7 @@
 import "server-only";
 import { mockStorefrontData } from "@/lib/mock-data";
 import { toGameSlug } from "@/lib/game-slug";
+import { withoutHiddenProducts } from "@/lib/hidden-products";
 import {
   bannersToCategories,
   bannersToGroups,
@@ -1429,7 +1430,9 @@ export async function getStorefrontData(): Promise<StorefrontData> {
       return product;
     });
 
-    const productsFinal = await enrichProductsFromDetails(productsClean);
+    const productsFinal = withoutHiddenProducts(
+      await enrichProductsFromDetails(productsClean)
+    );
 
     const productDerivedGroups = ensureGroupsFromProducts(productsFinal);
     const productDerivedCategories = ensureCategoriesFromProducts(productsFinal);

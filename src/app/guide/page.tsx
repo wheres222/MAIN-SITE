@@ -6,45 +6,13 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { buildCategoryTiles, canonicalGroupSlug } from "@/lib/category-tiles";
 import { productHref, productSlugFromName } from "@/lib/product-route";
+import { guideForProduct } from "@/lib/product-guides";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
-// ─── Product guides ───────────────────────────────────────────────────────────
-// Every product in the sidebar renders an empty placeholder until you add its
-// guide here. Key the map on the product slug — the same slug used in the
-// product URL, /products/<slug> — and the value is whatever JSX you want in the
-// content pane. For example:
-//
-//   const PRODUCT_GUIDES: Record<string, React.ReactNode> = {
-//     "rust-external": (
-//       <>
-//         <h3>Before you launch</h3>
-//         <p>Disable Secure Boot in BIOS, then run the loader as administrator.</p>
-//         <ul className="guide-list">
-//           <li>Overlay keybind is <strong>INSERT</strong>.</li>
-//         </ul>
-//       </>
-//     ),
-//   };
-//
-// Styled building blocks available inside a guide (plain markup, no imports):
-//   <h3>…</h3>                              section heading
-//   <p>…</p>                                body copy
-//   <ul className="guide-list"><li>…        bulleted list with accent dots
-//   <code>…</code>                          inline code
-//   <div className="guide-step">            numbered step —
-//     <div className="guide-step-num">1</div>
-//     <div className="guide-step-body"><strong>Title</strong><div>…</div></div>
-//   </div>
-//   <div className="guide-note">…</div>     accent callout
-//   <div className="guide-warn">…</div>     amber warning callout
-// ─────────────────────────────────────────────────────────────────────────────
-
-const PRODUCT_GUIDES: Record<string, React.ReactNode> = {};
-
 // ─── General setup sections ───────────────────────────────────────────────────
 // The non-product guides, shown under "Setup Guide" at the top of the sidebar.
-// Same deal — fill in the content field of any section you want to write.
+// Per-product guides live in @/lib/product-guides.
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface GuideSection {
@@ -54,13 +22,69 @@ interface GuideSection {
   content: React.ReactNode;
 }
 
+function InstallingTheLoader() {
+  return (
+    <>
+      <h3>Download being blocked by your browser</h3>
+      <p>
+        If the download is stopped before it ever reaches your disk, work through these in order.
+      </p>
+
+      <div className="guide-step">
+        <div className="guide-step-num">1</div>
+        <div className="guide-step-body"><strong>Disable browser security</strong></div>
+      </div>
+      <div className="guide-step">
+        <div className="guide-step-num">2</div>
+        <div className="guide-step-body"><strong>Disable Windows SmartScreen</strong></div>
+      </div>
+      <div className="guide-step">
+        <div className="guide-step-num">3</div>
+        <div className="guide-step-body">
+          <strong>Create an antivirus exclusion for a folder</strong>
+          <div>Give the folder a random name.</div>
+        </div>
+      </div>
+      <div className="guide-step">
+        <div className="guide-step-num">4</div>
+        <div className="guide-step-body">
+          <strong>Download the product to that folder</strong>
+        </div>
+      </div>
+
+      <figure className="guide-figure">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/guides/download-blocked.png"
+          alt="Microsoft Edge showing a downloaded .zip blocked as unsafe by Microsoft Defender SmartScreen"
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption>What the block looks like in Edge.</figcaption>
+      </figure>
+
+      <div className="guide-note">
+        <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden className="guide-note-icon">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
+          <path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <span>
+          <strong>Reason:</strong> since cheats often modify memory, inject code, or hook functions,
+          they share behavioural similarity with malware like trojans or RATs. Heuristic analysis
+          spots this &quot;suspicious&quot; behaviour — modifying another process&apos;s memory — and
+          raises a red flag, even though you authorised the action.
+        </span>
+      </div>
+    </>
+  );
+}
+
 const SECTIONS: GuideSection[] = [
   { id: "getting-started", title: "Getting Started", icon: "🚀", content: null },
   { id: "create-account", title: "Creating an Account", icon: "👤", content: null },
   { id: "purchasing", title: "Buying a Product", icon: "💳", content: null },
-  { id: "installation", title: "Installing the Loader", icon: "⚙️", content: null },
+  { id: "installation", title: "Installing the Loader", icon: "⚙️", content: <InstallingTheLoader /> },
   { id: "bios-setup", title: "BIOS Setup", icon: "🖥️", content: null },
-  { id: "safety", title: "Staying Undetected", icon: "🛡️", content: null },
   { id: "troubleshooting", title: "Troubleshooting", icon: "🔧", content: null },
   { id: "hwid-spoofer", title: "HWID Spoofer Guide", icon: "🔀", content: null },
 ];
@@ -158,8 +182,7 @@ export default function GuidePage() {
     );
   }
 
-  const productGuide =
-    activeProduct ? PRODUCT_GUIDES[productSlugFromName(activeProduct.product.name, activeProduct.product.id)] : null;
+  const productGuide = activeProduct ? guideForProduct(activeProduct.product) : null;
   const sectionGuide = activeSection?.content ?? null;
 
   return (
@@ -574,6 +597,58 @@ export default function GuidePage() {
         }
         .guide-note-icon { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
         .guide-warn-icon { color: #d4b83a; flex-shrink: 0; margin-top: 1px; }
+
+        /* Screenshot inside a guide */
+        .guide-figure {
+          margin: 16px 0;
+        }
+        .guide-figure img {
+          display: block;
+          max-width: 100%;
+          height: auto;
+          border: 1px solid var(--border);
+          background: var(--surface-1);
+        }
+        .guide-figure figcaption {
+          margin-top: 6px;
+          font-size: 0.76rem;
+          color: var(--text-dim);
+        }
+
+        /* Multi-line commands */
+        .guide-code {
+          margin: 0 0 16px;
+          padding: 12px 14px;
+          overflow-x: auto;
+          border: 1px solid var(--border);
+          background: var(--surface-2);
+          font-size: 0.8rem;
+          line-height: 1.6;
+          color: var(--text-secondary);
+        }
+        .guide-code code { font-family: monospace; white-space: pre; }
+
+        /* Error -> fix pairs */
+        .guide-fixes {
+          margin: 0 0 16px;
+          border: 1px solid var(--border);
+        }
+        .guide-fixes > div {
+          padding: 12px 14px;
+          background: var(--surface-1);
+        }
+        .guide-fixes > div + div { border-top: 1px solid var(--border); }
+        .guide-fixes dt {
+          font-size: 0.88rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+        .guide-fixes dd {
+          margin: 5px 0 0;
+          font-size: 0.9rem;
+          line-height: 1.6;
+          color: var(--text-muted);
+        }
 
         /* Empty placeholder — shown until a guide is written */
         .guide-empty {
