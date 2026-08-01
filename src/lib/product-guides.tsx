@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Code, Fixes, Note, Step, Warn } from "@/components/guide-blocks";
 import { productSlugFromName } from "@/lib/product-route";
 
 /**
@@ -11,59 +12,6 @@ import { productSlugFromName } from "@/lib/product-route";
  *
  * Slug matches win, so a single product can override its family's guide.
  */
-
-function Step({ n, title, children }: { n: number; title: string; children?: ReactNode }) {
-  return (
-    <div className="guide-step">
-      <div className="guide-step-num">{n}</div>
-      <div className="guide-step-body">
-        <strong>{title}</strong>
-        {children ? <div>{children}</div> : null}
-      </div>
-    </div>
-  );
-}
-
-function Note({ children }: { children: ReactNode }) {
-  return (
-    <div className="guide-note">
-      <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden className="guide-note-icon">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
-        <path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      </svg>
-      <span>{children}</span>
-    </div>
-  );
-}
-
-function Warn({ children }: { children: ReactNode }) {
-  return (
-    <div className="guide-warn">
-      <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden className="guide-warn-icon">
-        <path d="M12 9v4M12 17h.01M10.3 3.6L2.2 18a2 2 0 0 0 1.7 3h16.2a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      <span>{children}</span>
-    </div>
-  );
-}
-
-/** Error → fix pairs, which every one of these guides ends with. */
-function Fixes({ items }: { items: { problem: string; fix: ReactNode }[] }) {
-  return (
-    <dl className="guide-fixes">
-      {items.map((item) => (
-        <div key={item.problem}>
-          <dt>{item.problem}</dt>
-          <dd>{item.fix}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
-function Code({ children }: { children: ReactNode }) {
-  return <pre className="guide-code"><code>{children}</code></pre>;
-}
 
 // ── Ancient ──────────────────────────────────────────────────────────────────
 
@@ -189,7 +137,7 @@ const ARCANE_GUIDE = (
 
     <h3>Before activating your key</h3>
     <ul className="guide-list">
-      <li>Install the required libraries.</li>
+      <li>Install the DirectX and Visual C++ runtimes from the <strong>Downloads</strong> guide.</li>
       <li>Read these instructions all the way through.</li>
       <li>Restart your computer before launching the software — this is mandatory.</li>
       <li>Disable Intel Rapid Storage Technology in BIOS.</li>
@@ -210,7 +158,7 @@ const ARCANE_GUIDE = (
 
     <h3>Visible check — CS2 only</h3>
     <ul className="guide-list">
-      <li>Download the maps archive and unzip the <code>Maps</code> folder to <code>C:\ProgramData\TdgDsOv9~PCu\CS2</code>, creating those folders yourself if they do not exist.</li>
+      <li>Ask support for the maps archive, then unzip its <code>Maps</code> folder to <code>C:\ProgramData\TdgDsOv9~PCu\CS2</code>, creating those folders yourself if they do not exist.</li>
       <li>In the cheat menu choose MISC → Visible Check Type → Map Ray Tracer.</li>
       <li>Then MISC → Map Selector, and pick the map you are playing.</li>
     </ul>
@@ -246,12 +194,12 @@ const ARCANE_GUIDE = (
     <h3>Common errors</h3>
     <Fixes
       items={[
-        { problem: "General library error", fix: "Install the latest libraries. On AMD, close every AMD process in Task Manager (Radeon, AMDSrv, AMDOW, CPUMetrics and the rest), extract Libs.rar over C:\\Program Files\\AMD\\CNext\\CNext replacing the DLLs, then restart AMD Software and re-enable performance metrics. If a file says it is open in another program, an AMD process is still running." },
+        { problem: "General library error", fix: <>Install the runtimes from the <strong>Downloads</strong> guide. On AMD, close every AMD process in Task Manager (Radeon, AMDSrv, AMDOW, CPUMetrics and the rest), extract Libs.rar over <code>C:\Program Files\AMD\CNext\CNext</code> replacing the DLLs, then restart AMD Software and re-enable performance metrics. If a file says it is open in another program, an AMD process is still running.</> },
         { problem: "\"Failed to map memory\"", fix: "With under 12 GB of RAM, ask your retailer for a refund. Otherwise disable all startup programs and reboot. If it persists, use AutoRuns to disable everything under CurrentVersion\\Run." },
-        { problem: "Loader closes with no error", fix: "Install the required libraries." },
+        { problem: "Loader closes with no error", fix: <>Install the runtimes from the <strong>Downloads</strong> guide.</> },
         { problem: "Menu visible but not clickable", fix: "Run the overlay as administrator, run Steam without admin rights, and disable third-party overlays — keep only NVIDIA or AMD. Disable the EA App overlay if you launch through it." },
         { problem: "Windows 10 — \"Make sure all antiviruses are disabled\"", fix: "Uninstall third-party antivirus, disable real-time protection, disable SmartScreen." },
-        { problem: "Windows 11 — \"Make sure all antiviruses are disabled\"", fix: "Download both files, run Turn_ON and accept the registry change, restart. Then run Turn_OFF, accept, and restart again. If that fails, confirm your antivirus is removed and real-time protection is off." },
+        { problem: "Windows 11 — \"Make sure all antiviruses are disabled\"", fix: "Ask support for the Turn_ON / Turn_OFF registry pair. Run Turn_ON, accept the registry change and restart; then run Turn_OFF, accept, and restart again. If that fails, confirm your antivirus is fully removed and real-time protection is off." },
         { problem: "Menus disappear in game, or visuals stop working", fix: "If the game just patched, wait for an update. Verify the game files, though a full reinstall is better. Then contact support." },
         { problem: "\"AES instruction set is not supported\"", fix: "Your processor lacks AES and this cannot be fixed. Contact support for a refund." },
         { problem: "\"Please enable Intel VT-X in the BIOS\"", fix: "In BIOS, enable \"Intel virtualization technology\" or \"Intel VT-X\"." },
@@ -386,12 +334,73 @@ const STEALTH_RUST_GUIDE = (
   </>
 );
 
+// ── NFA (temporary) accounts ─────────────────────────────────────────────────
+
+const NFA_ACCOUNT_GUIDE = (
+  <>
+    <p>
+      NFA stands for <strong>Not Full Access</strong> — you get the login, but not the recovery
+      options or original email. These are meant to be used the moment you buy them.
+    </p>
+
+    <Warn>
+      No refunds if the account is invalid minutes or hours after purchase. Expiry is not up to us.
+    </Warn>
+
+    <h3>Do</h3>
+    <ul className="guide-list">
+      <li>Use the account as soon as you buy it.</li>
+      <li>Set yourself to invisible once in game — it lasts longer that way.</li>
+      <li>Use the loader that comes with the account. It only signs you into the Steam account.</li>
+    </ul>
+
+    <h3>Do not</h3>
+    <ul className="guide-list">
+      <li>
+        Do not log in just to &quot;check&quot; the account. Logging in can refresh or break the
+        token and make it go invalid sooner.
+      </li>
+      <li>Do not log in today if you want to use it tomorrow.</li>
+      <li>Do not log out — once you do, the account becomes invalid.</li>
+    </ul>
+
+    <h3>What to expect</h3>
+    <ul className="guide-list">
+      <li>An account can last anywhere from a minute to a couple of weeks.</li>
+      <li>Hours played are real, not boosted.</li>
+      <li>Accounts occasionally pick up a delayed game ban earned by the previous user.</li>
+      <li>Once an NFA account is banned or recovered by its original owner, there is no recovery.</li>
+    </ul>
+
+    <Note>
+      The loader has nothing to do with Rust bans and nothing to do with the game itself — it only
+      signs you into the Steam account.
+    </Note>
+
+    <h3>Why players use them</h3>
+    <p>
+      These accounts suit short-term or risky play without touching your main profile: if you are
+      banned you can be back in game immediately, and the low price reflects the limited access and
+      disposable nature. Delivery is automated so you can cycle through accounts quickly.
+    </p>
+    <p>
+      Recorded playtime matters on servers that filter by account age and hours. An account with
+      hours on it looks more legitimate and is less likely to be kicked or reported on sight —
+      helpful on low-activity servers where admin action follows community reports. It does not stop
+      anti-cheat detection, only the social side of it. Accounts with a clean Steam record and no
+      visible bans, plus at least ten hours of play to clear new-player filters, hold up best.
+    </p>
+  </>
+);
+
 // ── Matching ─────────────────────────────────────────────────────────────────
 
 const SLUG_GUIDES: Record<string, ReactNode> = {
   "crusader-r6-full": CRUSADER_R6_GUIDE,
   "predator-cs2": PREDATOR_CS2_GUIDE,
   "stealth-rust": STEALTH_RUST_GUIDE,
+  "rust-temporary-account": NFA_ACCOUNT_GUIDE,
+  "arc-raiders-temporary-account": NFA_ACCOUNT_GUIDE,
 };
 
 const FAMILY_GUIDES: { match: RegExp; content: ReactNode }[] = [

@@ -7,87 +7,12 @@ import { SiteHeader } from "@/components/site-header";
 import { buildCategoryTiles, canonicalGroupSlug } from "@/lib/category-tiles";
 import { productHref, productSlugFromName } from "@/lib/product-route";
 import { guideForProduct } from "@/lib/product-guides";
+import { SETUP_SECTIONS as SECTIONS } from "@/lib/setup-guides";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
-// ─── General setup sections ───────────────────────────────────────────────────
-// The non-product guides, shown under "Setup Guide" at the top of the sidebar.
-// Per-product guides live in @/lib/product-guides.
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface GuideSection {
-  id: string;
-  title: string;
-  icon: string;
-  content: React.ReactNode;
-}
-
-function InstallingTheLoader() {
-  return (
-    <>
-      <h3>Download being blocked by your browser</h3>
-      <p>
-        If the download is stopped before it ever reaches your disk, work through these in order.
-      </p>
-
-      <div className="guide-step">
-        <div className="guide-step-num">1</div>
-        <div className="guide-step-body"><strong>Disable browser security</strong></div>
-      </div>
-      <div className="guide-step">
-        <div className="guide-step-num">2</div>
-        <div className="guide-step-body"><strong>Disable Windows SmartScreen</strong></div>
-      </div>
-      <div className="guide-step">
-        <div className="guide-step-num">3</div>
-        <div className="guide-step-body">
-          <strong>Create an antivirus exclusion for a folder</strong>
-          <div>Give the folder a random name.</div>
-        </div>
-      </div>
-      <div className="guide-step">
-        <div className="guide-step-num">4</div>
-        <div className="guide-step-body">
-          <strong>Download the product to that folder</strong>
-        </div>
-      </div>
-
-      <figure className="guide-figure">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/guides/download-blocked.png"
-          alt="Microsoft Edge showing a downloaded .zip blocked as unsafe by Microsoft Defender SmartScreen"
-          loading="lazy"
-          decoding="async"
-        />
-        <figcaption>What the block looks like in Edge.</figcaption>
-      </figure>
-
-      <div className="guide-note">
-        <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden className="guide-note-icon">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-        <span>
-          <strong>Reason:</strong> since cheats often modify memory, inject code, or hook functions,
-          they share behavioural similarity with malware like trojans or RATs. Heuristic analysis
-          spots this &quot;suspicious&quot; behaviour — modifying another process&apos;s memory — and
-          raises a red flag, even though you authorised the action.
-        </span>
-      </div>
-    </>
-  );
-}
-
-const SECTIONS: GuideSection[] = [
-  { id: "getting-started", title: "Getting Started", icon: "🚀", content: null },
-  { id: "create-account", title: "Creating an Account", icon: "👤", content: null },
-  { id: "purchasing", title: "Buying a Product", icon: "💳", content: null },
-  { id: "installation", title: "Installing the Loader", icon: "⚙️", content: <InstallingTheLoader /> },
-  { id: "bios-setup", title: "BIOS Setup", icon: "🖥️", content: null },
-  { id: "troubleshooting", title: "Troubleshooting", icon: "🔧", content: null },
-  { id: "hwid-spoofer", title: "HWID Spoofer Guide", icon: "🔀", content: null },
-];
+// Setup sections live in @/lib/setup-guides; per-product guides in
+// @/lib/product-guides.
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -495,9 +420,10 @@ export default function GuidePage() {
           border: 1px solid var(--border);
           border-radius: 4px;
           padding: 1px 6px;
-          font-size: 0.88em;
-          color: var(--accent-hover);
-          font-family: monospace;
+          font-size: 0.86em;
+          color: #fff;
+          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+          word-break: break-word;
         }
         .guide-link { color: var(--accent-hover); text-decoration: underline; text-underline-offset: 3px; }
 
@@ -615,18 +541,79 @@ export default function GuidePage() {
           color: var(--text-dim);
         }
 
-        /* Multi-line commands */
+        /* Multi-line commands. Sits on the page surface rather than a raised one
+           so it reads as a terminal, and scrolls itself instead of stretching
+           the content column when a line is long. */
+        .guide-code-wrap { position: relative; }
         .guide-code {
           margin: 0 0 16px;
-          padding: 12px 14px;
+          padding: 18px 20px;
+          padding-right: 92px;   /* clear the copy button */
           overflow-x: auto;
           border: 1px solid var(--border);
-          background: var(--surface-2);
-          font-size: 0.8rem;
-          line-height: 1.6;
-          color: var(--text-secondary);
+          border-left: 2px solid var(--border-strong);
+          background: var(--surface-0);
+          font-size: 0.88rem;
+          line-height: 1.95;
+          color: #fff;
+          tab-size: 2;
         }
-        .guide-code code { font-family: monospace; white-space: pre; }
+        .guide-copy {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 5px 10px;
+          border: 1px solid var(--border-strong);
+          background: var(--surface-2);
+          color: var(--text-secondary);
+          font-size: 0.72rem;
+          font-weight: 600;
+          letter-spacing: 0.04em;
+          cursor: pointer;
+          transition: color var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+        }
+        .guide-copy:hover { color: var(--text-primary); border-color: var(--border-accent); }
+        .guide-copy-done { color: var(--accent); border-color: var(--border-accent); }
+        .guide-code code {
+          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+          white-space: pre;
+          color: inherit;
+          background: none;
+          border: 0;
+          padding: 0;
+          font-size: inherit;
+        }
+
+        /* Download row */
+        .guide-download {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin-bottom: 10px;
+          padding: 14px 16px;
+          border: 1px solid var(--border);
+          background: var(--surface-1);
+        }
+        .guide-download-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+        .guide-download-body strong { font-size: 0.92rem; color: var(--text-primary); }
+        .guide-download-body span { font-size: 0.82rem; color: var(--text-muted); }
+        .guide-download-btn {
+          flex: 0 0 auto;
+          padding: 8px 18px;
+          background: var(--accent);
+          color: var(--accent-ink);
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          text-decoration: none;
+          transition: filter var(--dur-base) var(--ease-out);
+        }
+        .guide-download-btn:hover { filter: brightness(1.1); }
 
         /* Error -> fix pairs */
         .guide-fixes {
