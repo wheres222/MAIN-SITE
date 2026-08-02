@@ -5,12 +5,10 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { LazyVideo } from "@/components/lazy-video";
+import { EspCompare } from "@/components/esp-compare";
+import { ReviewCards } from "@/components/review-cards";
 
 // Lazy-load heavy below-fold components so they don't bloat the initial JS bundle
-const ReviewsMarquee = dynamic(
-  () => import("@/components/reviews-marquee").then((m) => ({ default: m.ReviewsMarquee })),
-  { ssr: false }
-);
 const DiscordShowcase = dynamic(
   () => import("@/components/discord-showcase").then((m) => ({ default: m.DiscordShowcase })),
   { ssr: false }
@@ -23,6 +21,18 @@ import { DISCORD_INVITE_URL } from "@/lib/links";
 import { buildCategoryTiles } from "@/lib/category-tiles";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
+
+/**
+ * TEST: replaces the full "Shop by Game" tile grid on the homepage with two
+ * tall cover cards. Set to false to bring the live category tiles back — that
+ * is the only change needed.
+ */
+const CATEGORY_CARDS_ONLY = true;
+
+const CATEGORY_CARDS = [
+  { slug: "rust",        name: "Rust",        image: "/category-cards/rust.png" },
+  { slug: "arc-raiders", name: "ARC Raiders", image: "/category-cards/arc-raiders.png" },
+] as const;
 
 function money(value: number | null, currency = "USD"): string {
   if (value === null) return "N/A";
@@ -127,6 +137,23 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
 
         {/* ── Shop by Game ── */}
         <section className="home-shell home-section" id="products" aria-label="Shop by game">
+          {CATEGORY_CARDS_ONLY ? (
+            <div className="cat-cards">
+              {CATEGORY_CARDS.map((card) => (
+                <Link key={card.slug} href={categoryHref(card.slug)} className="cat-card">
+                  <Image
+                    className="cat-card-img"
+                    src={card.image}
+                    alt={`${card.name} cheats`}
+                    width={1080}
+                    height={1920}
+                    sizes="(max-width: 720px) 44vw, 280px"
+                    priority
+                  />
+                </Link>
+              ))}
+            </div>
+          ) : (
           <div className="panel panel-flat">
             <div className="panel-body">
               <div className="game-tiles">
@@ -169,19 +196,28 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
               </div>
             </div>
           </div>
+          )}
         </section>
 
-        {/* ── Gameplay footage (below products) ── */}
+        {/* ── Before/after: what the anti-cheat sees vs what you see ── */}
+        <section className="home-shell home-section-lg" aria-label="Anti-cheat comparison">
+          <EspCompare />
+        </section>
+
+        {/* ── Reviews ── */}
+        <ReviewCards />
+
+        {/* ── Gameplay footage (below the reviews) ── */}
         <section className="home-shell footage-section" aria-label="Gameplay footage">
           <div className="footage-grid">
             {([
-              { label: "FORTNITE FOOTAGE",    src: "/footage/fortnite.mp4", poster: "/footage/fortnite-poster.webp" },
-              { label: "ARC RAIDERS FOOTAGE", src: "/footage/arc.mp4",      poster: "/footage/arc-poster.webp" },
-              { label: "RUST FOOTAGE",        src: "/footage/rust.mp4",     poster: "/footage/rust-poster.webp" },
+              { label: "Fortnite",    src: "/footage/fortnite.mp4", poster: "/footage/fortnite-poster.webp" },
+              { label: "ARC Raiders", src: "/footage/arc.mp4",      poster: "/footage/arc-poster.webp" },
+              { label: "Rust",        src: "/footage/rust.mp4",     poster: "/footage/rust-poster.webp" },
             ] as const).map(({ label, src, poster }) => (
               <div key={label} className="footage-card">
-                <LazyVideo className="footage-video" src={src} poster={poster} ariaLabel={label} />
-                <div className="footage-label">
+                <LazyVideo className="footage-video" src={src} poster={poster} ariaLabel={`${label} gameplay footage`} />
+                <div className="media-pill footage-label">
                   <span className="footage-dot" aria-hidden="true" />
                   <span>{label}</span>
                 </div>
@@ -190,11 +226,8 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
           </div>
         </section>
 
-        {/* ── Reviews slider ── */}
-        <ReviewsMarquee />
-
         {/* ── FAQ ── */}
-        <section className="home-shell home-section" id="faq">
+        <section className="home-shell home-section-lg" id="faq">
           <div className="panel">
             <header className="panel-header">Frequently Asked Questions</header>
             <div className="panel-body home-faq">
@@ -216,7 +249,7 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
         </section>
 
         {/* ── Discord community (lazy-loads on scroll) ── */}
-        <section className="home-shell home-section">
+        <section className="home-shell home-section-lg home-section-last">
           <DiscordShowcase />
         </section>
 

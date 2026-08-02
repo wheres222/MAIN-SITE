@@ -382,6 +382,15 @@ select::-ms-expand { display: none; }
 /* ── Homepage layout ─────────────────────────────────────────────────────── */
 .home-shell { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
 .home-section { margin-top: 28px; }
+/* Wider rhythm for the stacked sections below the product grid, where each
+   block is a distinct thing rather than part of one group. */
+.home-section-lg { margin-top: 64px; }
+/* Matching room under the last block before the footer. */
+.home-section-last { margin-bottom: 64px; }
+@media (max-width: 720px) {
+  .home-section-lg { margin-top: 44px; }
+  .home-section-last { margin-bottom: 44px; }
+}
 
 /* Hero — full-bleed background art. The source has deep negative space on the
    left, so the copy sits there and the figures stay clear on the right. */
@@ -691,6 +700,278 @@ select::-ms-expand { display: none; }
 }
 
 @media (max-width: 480px) { .adspot-modal-specs { grid-template-columns: 1fr; } }
+
+/* ── Fanned review screenshots ────────────────────────────────────────────
+ * Three cards overlapping: the middle one square on and in front, the outer
+ * two rotated away and tucked behind. Hovering any card straightens it, lifts
+ * it and raises it above the others. CSS-only — no state to hydrate. */
+.review-fan-section {
+  margin-top: 64px;
+  overflow: hidden;   /* the rotated corners overhang the shell */
+}
+.review-fan-heading {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.review-fan-heading h2 {
+  margin: 0;
+  font-family: var(--font-brand);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.review-fan-heading p {
+  margin: 8px 0 0;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+.review-fan {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Pull the cards together so they overlap rather than sit in a row. */
+  gap: 0;
+  padding: 20px;
+}
+.review-fan-card {
+  flex: 0 0 auto;
+  width: min(380px, 34vw);
+  margin: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.75);
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    box-shadow var(--dur-slow) var(--ease-out);
+  will-change: transform;
+}
+.review-fan-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Resting fan. The outer two rotate away and slide inward under the middle. */
+.review-fan-left {
+  z-index: 1;
+  transform: rotate(-5deg) translateX(9%) scale(0.94);
+}
+.review-fan-mid {
+  z-index: 3;
+  transform: rotate(0deg) scale(1);
+}
+.review-fan-right {
+  z-index: 1;
+  transform: rotate(5deg) translateX(-9%) scale(0.94);
+}
+
+/* Hover: straighten, grow, and come to the front. */
+.review-fan-card:hover,
+.review-fan-card:focus-within {
+  z-index: 5;
+  box-shadow: 0 26px 60px -20px rgba(0, 0, 0, 0.85);
+}
+.review-fan-left:hover,
+.review-fan-left:focus-within {
+  transform: rotate(0deg) translateX(9%) scale(1.06);
+}
+.review-fan-mid:hover,
+.review-fan-mid:focus-within {
+  transform: rotate(0deg) scale(1.06);
+}
+.review-fan-right:hover,
+.review-fan-right:focus-within {
+  transform: rotate(0deg) translateX(-9%) scale(1.06);
+}
+
+/* Stacking a fan on a phone just makes three tiny unreadable cards, so below
+   900px they become a plain scrollable row at legible width. */
+@media (max-width: 900px) {
+  .review-fan {
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 8px 20px 24px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .review-fan-card {
+    width: min(320px, 82vw);
+    scroll-snap-align: center;
+  }
+  .review-fan-left,
+  .review-fan-mid,
+  .review-fan-right { transform: none; z-index: auto; }
+  .review-fan-left:hover,
+  .review-fan-mid:hover,
+  .review-fan-right:hover,
+  .review-fan-left:focus-within,
+  .review-fan-mid:focus-within,
+  .review-fan-right:focus-within { transform: none; }
+}
+
+/* ── Before/after comparison slider ───────────────────────────────────────
+ * The "before" image is clipped from the right edge back to the divider, so
+ * only clip-path changes as the slider moves. --split is set inline by the
+ * component. */
+.esp-compare { margin: 0; }
+.esp-compare-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  box-shadow: var(--card-shadow);
+}
+.esp-compare-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.esp-compare-before {
+  clip-path: inset(0 calc(100% - var(--split)) 0 0);
+}
+
+/* Caption pill laid over media — shared by the comparison slider and the
+   gameplay footage cards so both read as the same component. */
+.media-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(5, 5, 6, 0.82);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.esp-compare-label {
+  position: absolute;
+  top: 14px;
+  z-index: 3;
+}
+.esp-compare-label-left  { left: 14px; }
+.esp-compare-label-right { right: 14px; }
+
+.esp-compare-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--split);
+  z-index: 4;
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  pointer-events: none;
+}
+.esp-compare-handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff;
+  color: #101012;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+/* Invisible but fully functional — drives --split for pointer, touch and
+   keyboard alike. */
+.esp-compare-range {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: ew-resize;
+}
+.esp-compare-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: ew-resize;
+}
+.esp-compare-range::-moz-range-thumb {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  cursor: ew-resize;
+}
+.esp-compare-range:focus-visible { outline: none; }
+.esp-compare-range:focus-visible + .esp-compare-divider .esp-compare-handle,
+.esp-compare-frame:has(.esp-compare-range:focus-visible) .esp-compare-handle {
+  box-shadow: 0 0 0 3px var(--border-accent), 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+@media (max-width: 640px) {
+  .media-pill { font-size: 0.72rem; padding: 5px 9px; }
+  .esp-compare-label { top: 10px; }
+  .esp-compare-label-left  { left: 10px; }
+  .esp-compare-label-right { right: 10px; }
+  .esp-compare-handle { width: 34px; height: 34px; }
+  .footage-label { top: 10px; left: 10px; }
+}
+
+/* ── Tall category cover cards ────────────────────────────────────────────
+ * Two portrait covers standing in for the tile grid. The 9:16 aspect matches
+ * the source art exactly, so nothing gets cropped and the game logo along the
+ * bottom edge stays intact. */
+.cat-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  justify-items: center;
+}
+.cat-card {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2xl);
+  background: var(--surface-1);
+  box-shadow: var(--card-shadow);
+  transition: transform var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+.cat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-accent);
+  box-shadow: var(--card-shadow-hover);
+}
+.cat-card-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (max-width: 480px) { .cat-cards { gap: 12px; } }
 
 /* Shop-by-game tiles */
 .game-tiles {
@@ -2288,8 +2569,12 @@ select::-ms-expand { display: none; }
 
 /* ── Gameplay footage showcase ───────────────────────── */
 .footage-section {
-  margin-top: 28px;
+  margin-top: 64px;
   margin-bottom: 0;
+}
+@media (max-width: 720px) {
+  .footage-section,
+  .review-fan-section { margin-top: 44px; }
 }
 
 .footage-grid {
@@ -2319,39 +2604,21 @@ select::-ms-expand { display: none; }
   display: block;
 }
 
-/* Bottom gradient so label stays readable over any footage */
-.footage-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 50%,
-    rgba(5, 7, 18, 0.72) 100%
-  );
-  pointer-events: none;
-}
-
+/* Game name, in the same pill the comparison slider uses. The pill carries its
+   own backdrop, so the old bottom-gradient scrim is no longer needed. */
 .footage-label {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  top: 14px;
+  left: 14px;
   z-index: 2;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 11px 14px 13px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.09em;
-  color: #ffffff;
-  text-transform: uppercase;
+  gap: 8px;
 }
 
 .footage-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent);

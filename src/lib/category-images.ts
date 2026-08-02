@@ -12,7 +12,7 @@ export const CATEGORY_IMAGES: Record<string, string> = {
   "dayz":               "/category/dayz_v6.png",
   "fivem":              "/category/fivem_v6.png",
   "escape-from-tarkov": "/category/tarkov_v3.png",
-  "delta-force":        "/category/delta_force_v1.png",
+  "delta-force":        "/category/delta_force_v2.png",
   "hwid-spoofers":      "/category/spoofer_v3.png",
   "accounts":           "/category/accounts_v3.png",
 };
@@ -31,6 +31,9 @@ export const CATEGORY_TILES: { slug: string; name: string }[] = [
   { slug: "fivem",              name: "FiveM" },
   { slug: "escape-from-tarkov", name: "Escape From Tarkov" },
   { slug: "delta-force",        name: "Delta Force" },
+  // Palworld has no curated artwork yet — listed here purely so its SellAuth
+  // group name ("palworld") renders capitalised.
+  { slug: "palworld",           name: "Palworld" },
   { slug: "hwid-spoofers",      name: "HWID Spoofer" },
   { slug: "accounts",           name: "Accounts" },
 ];

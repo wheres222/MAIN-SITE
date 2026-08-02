@@ -1017,12 +1017,6 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
             <h1>{product.name}</h1>
 
             <div className={styles.badgeRow}>
-              <span className={styles.badgeInstant}>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-                </svg>
-                Instant Delivery
-              </span>
               <span className={styles.badgeUndetected}>
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
