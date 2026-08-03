@@ -23,11 +23,13 @@ import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-cl
 import type { StorefrontData } from "@/types/sellauth";
 
 /**
- * TEST: replaces the full "Shop by Game" tile grid on the homepage with two
- * tall cover cards. Set to false to bring the live category tiles back — that
- * is the only change needed.
+ * Swaps the full "Shop by Game" tile grid on the homepage for the tall cover
+ * cards below. Off while the cover art is still being made — with only Rust
+ * and ARC Raiders drawn, turning this on hides the rest of the catalogue.
+ *
+ * Set to true once every category in CATEGORY_CARDS has artwork.
  */
-const CATEGORY_CARDS_ONLY = true;
+const CATEGORY_CARDS_ONLY = false;
 
 const CATEGORY_CARDS = [
   { slug: "rust",        name: "Rust",        image: "/category-cards/rust.png" },
