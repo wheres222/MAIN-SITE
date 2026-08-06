@@ -57,7 +57,8 @@ export interface SellAuthPaymentMethod {
 
 export interface StorefrontData {
   success: boolean;
-  provider: "sellauth" | "mock";
+  /** "supabase" is the self-hosted shop_* catalog; "mock" is the demo fallback. */
+  provider: "sellauth" | "supabase" | "mock";
   message: string;
   products: SellAuthProduct[];
   groups: SellAuthGroup[];
