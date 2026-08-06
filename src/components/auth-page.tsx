@@ -205,7 +205,7 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
     if (regPassword !== regConfirm) { setRegError("Passwords do not match."); return; }
     setRegLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: regEmail, password: regPassword,
         options: {
           emailRedirectTo: `${window.location.origin}/api/auth/callback`,
@@ -213,6 +213,22 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
         },
       });
       if (error) { setRegError(error.message); return; }
+
+      // A session comes back only when email confirmation is switched off in
+      // Supabase — the account is already live and signed in. Telling those
+      // users to check their inbox left them waiting for a mail that is never
+      // sent, so send them straight into the site instead.
+      if (data.session) {
+        router.push(next);
+        router.refresh();
+        return;
+      }
+
+      // No session means a confirmation mail was requested. Deliberately the
+      // same wording whether or not the address was already registered —
+      // Supabase returns success with an empty `identities` array for existing
+      // accounts precisely so the response can't be used to test which emails
+      // have signed up, and a different message here would undo that.
       setRegSuccess("Check your email for a confirmation link.");
     } finally { setRegLoading(false); }
   }
