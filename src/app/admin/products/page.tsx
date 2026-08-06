@@ -1,6 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { requireRole } from "@/lib/auth/guard";
 import { AdminProductsManager } from "@/components/admin-products-manager";
 
 export const dynamic = "force-dynamic";
@@ -11,13 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminProductsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-
-  if (!user || !adminEmail || user.email?.toLowerCase() !== adminEmail) {
-    redirect("/");
-  }
+  await requireRole("staff");
 
   return <AdminProductsManager />;
 }

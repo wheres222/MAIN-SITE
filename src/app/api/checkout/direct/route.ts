@@ -2,7 +2,8 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createNowPayment, CURRENCY_MAP, ALLOWED_CURRENCIES } from "@/lib/nowpayments";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, after, type NextRequest } from "next/server";
+import { recordSecurityEvent } from "@/lib/security/events";
 import { createHash } from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -69,6 +70,18 @@ export async function POST(request: NextRequest) {
   // ── 0. Rate limit ───────────────────────────────────────────────────────────
   const ip = clientIp(request);
   if (isRateLimited(ip)) {
+    after(() =>
+      recordSecurityEvent({
+        kind: "rate_limited",
+        severity: "medium",
+        ip,
+        userAgent: request.headers.get("user-agent"),
+        method: request.method,
+        path: "/api/checkout/direct",
+        statusCode: 429,
+        detail: { limiter: "checkout-direct" },
+      })
+    );
     return bad("Too many checkout attempts. Please wait a minute.", 429);
   }
 

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
+import { recordSecurityEvent } from "@/lib/security/events";
 import { createSellAuthCheckout, isSellAuthConfigured, SellAuthRequestError } from "@/lib/sellauth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createNowPayment, CURRENCY_MAP, ALLOWED_CURRENCIES } from "@/lib/nowpayments";
@@ -123,6 +124,18 @@ export async function POST(request: Request) {
     cleanupLocks(locks, now);
     cleanupRates(rates, now);
     if (isRateLimited(rates, rateKey, now)) {
+      after(() =>
+        recordSecurityEvent({
+          kind: "rate_limited",
+          severity: "medium",
+          ip: clientIp(request),
+          userAgent: request.headers.get("user-agent"),
+          method: request.method,
+          path: "/api/checkout",
+          statusCode: 429,
+          detail: { limiter: "checkout", max: CHECKOUT_RATE_LIMIT_MAX },
+        })
+      );
       return NextResponse.json(
         { success: false, message: "Too many checkout attempts. Please wait a minute and try again." },
         { status: 429 }

@@ -1,6 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
+import { headers } from "next/headers";
+import { after } from "next/server";
 import type { Metadata } from "next";
+import { clientCountry, clientIp, noteBurst, recordSecurityEvent } from "@/lib/security/events";
 
 export const metadata: Metadata = {
   title: "404 — Page Not Found | CheatParadise",
@@ -8,7 +11,46 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function NotFound() {
+/** A sweep is many distinct 404s from one IP in a short window. */
+const SWEEP_THRESHOLD = 12;
+
+/**
+ * src/proxy.ts runs before the route resolves, so it cannot see a 404. This
+ * page can — it renders for every miss, which makes it the only place path
+ * enumeration is observable.
+ *
+ * Individual 404s are noise (stale links, old bookmarks) so they are not
+ * written; only crossing the sweep threshold produces an event.
+ */
+async function trackNotFound(): Promise<void> {
+  try {
+    const h = await headers();
+    const ip = clientIp(h);
+    if (!ip) return;
+
+    const crossed = noteBurst(`404:${ip}`, SWEEP_THRESHOLD);
+    if (crossed === null) return;
+
+    after(() =>
+      recordSecurityEvent({
+        kind: "not_found_sweep",
+        severity: "high",
+        ip,
+        country: clientCountry(h),
+        userAgent: h.get("user-agent"),
+        path: h.get("referer"),
+        statusCode: 404,
+        detail: { misses: crossed, windowMinutes: 5 },
+      })
+    );
+  } catch {
+    // The 404 page must render regardless.
+  }
+}
+
+export default async function NotFound() {
+  await trackNotFound();
+
   return (
     <div className="nf-root">
       <div className="nf-card">

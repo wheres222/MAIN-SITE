@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getViewer, hasRole } from "@/lib/auth/guard";
 import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ export const dynamic = "force-dynamic";
  * Returns a shop order and its line items.
  * Only accessible to:
  *   - The authenticated user who placed the order (user_id match)
- *   - Admin (ADMIN_EMAIL env var match)
+ *   - Staff and owners (profiles.role), for support lookups
  *
  * Guests (no user_id on the order) can't retrieve via this endpoint —
  * they receive their keys by email at delivery time.
@@ -45,12 +46,11 @@ export async function GET(
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
   }
 
-  // Access control — must own the order or be admin
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const isAdmin = adminEmail && user.email?.toLowerCase() === adminEmail;
-  const isOwner = order.user_id === user.id;
+  // Access control — must have placed the order, or be staff handling support
+  const isOrderOwner = order.user_id === user.id;
+  const isStaff = hasRole(await getViewer(), "staff");
 
-  if (!isAdmin && !isOwner) {
+  if (!isStaff && !isOrderOwner) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

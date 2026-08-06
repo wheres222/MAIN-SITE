@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct } from "@/types/sellauth";
 
@@ -131,10 +129,8 @@ export function AdminStatusManager() {
   const overrideCount = Object.keys(overrides).length;
 
   return (
-    <div className="marketplace-page">
-      <SiteHeader activeTab="none" />
-
-      <main className="shell subpage-wrap" style={{ maxWidth: 900 }}>
+    // Page chrome (header/footer/sidebar) comes from src/app/admin/layout.tsx
+    <main style={{ maxWidth: 900 }}>
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
           <h1
@@ -523,9 +519,6 @@ curl -X PUT https://cheatparadise.gg/api/status/rust \\
             )}
           </div>
         )}
-      </main>
-
-      <SiteFooter />
-    </div>
+    </main>
   );
 }

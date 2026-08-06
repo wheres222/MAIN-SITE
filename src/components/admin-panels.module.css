@@ -1,0 +1,227 @@
+.header {
+  margin-bottom: 22px;
+}
+.title {
+  color: var(--text-primary);
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0 0 5px;
+}
+.subtitle {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  margin: 0;
+  max-width: 70ch;
+  line-height: 1.5;
+}
+
+/* ─── Stat tiles ──────────────────────────────────────── */
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.stat {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.statLabel {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.statValue {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.statValueDanger { color: var(--accent-hover); }
+.statHint {
+  display: block;
+  margin-top: 5px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* ─── Cards ───────────────────────────────────────────── */
+.card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+.cardTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+/* ─── Tables ──────────────────────────────────────────── */
+.tableWrap {
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+.table th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.65rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table td {
+  padding: 9px 10px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  vertical-align: top;
+}
+.table tr:last-child td {
+  border-bottom: none;
+}
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+/* ─── Badges ──────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.sevHigh {
+  background: rgba(239, 27, 53, 0.16);
+  color: #ff6b7d;
+  border: 1px solid rgba(239, 27, 53, 0.4);
+}
+.sevMedium {
+  background: rgba(255, 176, 32, 0.14);
+  color: #ffc357;
+  border: 1px solid rgba(255, 176, 32, 0.35);
+}
+.sevLow {
+  background: rgba(140, 145, 160, 0.12);
+  color: var(--text-muted);
+  border: 1px solid rgba(140, 145, 160, 0.28);
+}
+
+/* ─── Controls ────────────────────────────────────────── */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+.select,
+.input {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-family: inherit;
+}
+.select:focus,
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.button {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ─── States ──────────────────────────────────────────── */
+.empty,
+.loading {
+  padding: 28px 10px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+.error {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(239, 27, 53, 0.1);
+  border: 1px solid rgba(239, 27, 53, 0.32);
+  color: #ff8a9f;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.notice {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(98, 171, 255, 0.08);
+  border: 1px solid rgba(98, 171, 255, 0.28);
+  color: #9ecbff;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* ─── Bar chart ───────────────────────────────────────── */
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 130px;
+  padding-top: 8px;
+}
+.bar {
+  flex: 1;
+  min-width: 4px;
+  background: linear-gradient(180deg, var(--accent-hover), var(--accent-dark));
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+  position: relative;
+}
+.barLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
