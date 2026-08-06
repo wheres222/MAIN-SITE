@@ -66,8 +66,22 @@ security definer
 set search_path = public
 as $$
 begin
+  -- Direct database access — the Supabase SQL editor, psql, migrations — opens
+  -- a plain Postgres connection with no JWT, so auth.role() is null. Those
+  -- sessions are already superuser-level and this trigger was never what
+  -- defended against them; refusing here only made it impossible to create the
+  -- first owner, since bootstrapping happens in exactly that context.
+  --
+  -- Requests through PostgREST always carry a role — 'anon', 'authenticated'
+  -- or 'service_role' — and those are the ones this guard exists for. The
+  -- attack it blocks is a signed-in customer calling the API with the public
+  -- anon key, which is still caught below.
+  if auth.role() is null then
+    return new;
+  end if;
+
   -- Service role (server-side code, webhooks) is always allowed.
-  if coalesce(auth.role(), '') = 'service_role' then
+  if auth.role() = 'service_role' then
     return new;
   end if;
 
