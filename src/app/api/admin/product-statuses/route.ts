@@ -1,11 +1,11 @@
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { getViewer, hasRole } from "@/lib/auth/guard";
 import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 // ─── Auth ──────────────────────────────────────────────────────────────────
-// Accepts either an admin session cookie OR an Authorization: Bearer <BOT_API_KEY> header.
+// Accepts either a staff session cookie OR an Authorization: Bearer <BOT_API_KEY> header.
 async function checkAuth(request: NextRequest): Promise<boolean> {
   // Method 1: bot API key (used by the Discord bot)
   const botKey = process.env.BOT_API_KEY?.trim();
@@ -14,14 +14,8 @@ async function checkAuth(request: NextRequest): Promise<boolean> {
     if (authHeader === `Bearer ${botKey}`) return true;
   }
 
-  // Method 2: admin session cookie
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  if (!adminEmail) return false;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user?.email?.toLowerCase() === adminEmail;
+  // Method 2: staff-or-above session cookie
+  return hasRole(await getViewer(), "staff");
 }
 
 // ─── Discord outbound webhook ──────────────────────────────────────────────

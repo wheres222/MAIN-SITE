@@ -1,23 +1,14 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { denyUnlessRole } from "@/lib/auth/guard";
 import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-async function checkAdmin(): Promise<boolean> {
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  if (!adminEmail) return false;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.email?.toLowerCase() === adminEmail;
-}
-
 // GET — fetch all categories + products + variants for the admin panel
 export async function GET() {
-  if (!(await checkAdmin())) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const denied = await denyUnlessRole("staff");
+  if (denied) return denied;
 
   const db = createAdminClient();
 
@@ -33,9 +24,8 @@ export async function GET() {
 
 // PATCH — update a single product or variant field
 export async function PATCH(request: NextRequest) {
-  if (!(await checkAdmin())) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const denied = await denyUnlessRole("staff");
+  if (denied) return denied;
 
   const body = (await request.json()) as Record<string, unknown>;
   const { table, id, updates } = body;
@@ -61,9 +51,8 @@ export async function PATCH(request: NextRequest) {
 
 // DELETE — remove a product (cascades to variants)
 export async function DELETE(request: NextRequest) {
-  if (!(await checkAdmin())) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  const denied = await denyUnlessRole("staff");
+  if (denied) return denied;
 
   const { searchParams } = new URL(request.url);
   const table = searchParams.get("table");

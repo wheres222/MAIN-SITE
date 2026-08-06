@@ -8,6 +8,7 @@ import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import { mockStorefrontData } from "@/lib/mock-data";
+import { summariseStatuses } from "@/lib/product-status";
 import type { StorefrontData } from "@/types/sellauth";
 
 interface StatusOverride {
@@ -94,16 +95,17 @@ export function StatusRouteClient({ initialData }: StatusRouteClientProps) {
     [data?.warnings]
   );
 
-  // Live overall-system summary, derived from the realtime status overrides.
-  const summary = useMemo(() => {
-    const vals = Object.values(statusOverrides).map((o) => o.status);
-    if (vals.includes("detected")) return { color: "#ef4444", label: "Some products are detected" };
-    if (vals.includes("updating")) return { color: "#fbbf24", label: "Some products are updating" };
-    return { color: "#43c601", label: "All Systems Operational" };
-  }, [statusOverrides]);
-
   // Fall back to mock catalog if SellAuth is unreachable so the board always renders
   const displayData = data ?? (!loading ? mockStorefrontData : null);
+
+  // Summarised over the products actually on the board, not over every key in
+  // the override map — the KeyHub feed indexes its whole catalogue, most of
+  // which we don't sell, so summarising the map made the banner report
+  // detections that appear nowhere on screen.
+  const summary = useMemo(
+    () => summariseStatuses(displayData?.products ?? [], statusOverrides),
+    [displayData?.products, statusOverrides]
+  );
 
   return (
     <div className="marketplace-page">

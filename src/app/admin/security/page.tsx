@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/auth/guard";
-import { AdminStatusManager } from "@/components/admin-status-manager";
+import { AdminSecurityPanel } from "@/components/admin-security-panel";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Admin Status",
+  title: "Security",
   robots: { index: false, follow: false },
 };
 
-export default async function AdminStatusPage() {
-  await requireRole("staff");
+export default async function AdminSecurityPage() {
+  await requireRole("owner");
 
-  return <AdminStatusManager />;
+  return <AdminSecurityPanel />;
 }

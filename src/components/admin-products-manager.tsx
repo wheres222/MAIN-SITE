@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -215,9 +213,8 @@ export function AdminProductsManager() {
   const activeProducts = products.filter(p => p.is_active).length;
 
   return (
-    <div className="marketplace-page">
-      <SiteHeader activeTab="none" />
-      <main className="shell subpage-wrap" style={{ maxWidth: 960 }}>
+    // Page chrome (header/footer/sidebar) comes from src/app/admin/layout.tsx
+    <main style={{ maxWidth: 960 }}>
 
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
@@ -505,8 +502,6 @@ export function AdminProductsManager() {
             )}
           </div>
         )}
-      </main>
-      <SiteFooter />
-    </div>
+    </main>
   );
 }

@@ -33,6 +33,29 @@ function describeAuthError(message: string, provider: string): string {
  */
 const SOCIAL_LOGIN_ENABLED: boolean = false;
 
+/**
+ * Shown instead of letting a request go out to the placeholder Supabase host,
+ * which fails DNS and surfaces as a bare "NetworkError when attempting to fetch
+ * resource" that says nothing about the actual cause.
+ */
+const NOT_CONFIGURED_MESSAGE =
+  "Accounts are not configured on this deployment — NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are missing.";
+
+/**
+ * Auth runs browser → Supabase directly, so our own server never sees a failed
+ * login and cannot count them. This tells it. Fire-and-forget: a failure to
+ * report must never surface to the person trying to sign in, and no credential
+ * or entered email is ever sent.
+ */
+function reportAuthFailure(context: "login" | "register"): void {
+  void fetch("/api/security/report", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ kind: "auth_failure", context }),
+    keepalive: true,
+  }).catch(() => undefined);
+}
+
 const PASSWORD_RULES = [
   { key: "length",  label: "At least 8 characters",       test: (pw: string) => pw.length >= 8 },
   { key: "number",  label: "At least 1 number",           test: (pw: string) => /\d/.test(pw) },
@@ -145,9 +168,7 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
     // browser lands on a domain that does not resolve, and the button looks
     // like it silently did nothing.
     if (!isSupabaseConfigured) {
-      setLoginError(
-        "Sign-in is not configured on this deployment — NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are missing."
-      );
+      setLoginError(NOT_CONFIGURED_MESSAGE);
       return;
     }
     setLoading(true);
@@ -164,10 +185,12 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setLoginError(""); setLoginLoading(true);
+    setLoginError("");
+    if (!isSupabaseConfigured) { setLoginError(NOT_CONFIGURED_MESSAGE); return; }
+    setLoginLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPassword });
-      if (error) { setLoginError(error.message); return; }
+      if (error) { setLoginError(error.message); reportAuthFailure("login"); return; }
       router.push(next); router.refresh();
     } finally { setLoginLoading(false); }
   }
@@ -175,13 +198,14 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     setRegError("");
+    if (!isSupabaseConfigured) { setRegError(NOT_CONFIGURED_MESSAGE); return; }
     if (!pwChecks.length)  { setRegError("Password must be at least 8 characters."); return; }
     if (!pwChecks.number)  { setRegError("Password must contain at least one number."); return; }
     if (!pwChecks.special) { setRegError("Password must contain at least one special character."); return; }
     if (regPassword !== regConfirm) { setRegError("Passwords do not match."); return; }
     setRegLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: regEmail, password: regPassword,
         options: {
           emailRedirectTo: `${window.location.origin}/api/auth/callback`,
@@ -189,6 +213,22 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
         },
       });
       if (error) { setRegError(error.message); return; }
+
+      // A session comes back only when email confirmation is switched off in
+      // Supabase — the account is already live and signed in. Telling those
+      // users to check their inbox left them waiting for a mail that is never
+      // sent, so send them straight into the site instead.
+      if (data.session) {
+        router.push(next);
+        router.refresh();
+        return;
+      }
+
+      // No session means a confirmation mail was requested. Deliberately the
+      // same wording whether or not the address was already registered —
+      // Supabase returns success with an empty `identities` array for existing
+      // accounts precisely so the response can't be used to test which emails
+      // have signed up, and a different message here would undo that.
       setRegSuccess("Check your email for a confirmation link.");
     } finally { setRegLoading(false); }
   }

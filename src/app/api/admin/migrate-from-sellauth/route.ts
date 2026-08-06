@@ -1,18 +1,10 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { denyUnlessRole } from "@/lib/auth/guard";
 import { getStorefrontData } from "@/lib/sellauth";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-
-async function checkAdmin(): Promise<boolean> {
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  if (!adminEmail) return false;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.email?.toLowerCase() === adminEmail;
-}
 
 function toSlug(name: string): string {
   return name
@@ -22,9 +14,9 @@ function toSlug(name: string): string {
 }
 
 export async function POST() {
-  if (!(await checkAdmin())) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  // Owner-only: bulk-writes the catalogue, not something staff should trigger.
+  const denied = await denyUnlessRole("owner");
+  if (denied) return denied;
 
   const db = createAdminClient();
 

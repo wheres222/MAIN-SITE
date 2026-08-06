@@ -1,17 +1,9 @@
 import "server-only";
-import { createClient } from "@/lib/supabase/server";
+import { denyUnlessRole } from "@/lib/auth/guard";
 import { getStorefrontData } from "@/lib/sellauth";
 import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
-
-async function checkAdmin(): Promise<boolean> {
-  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  if (!adminEmail) return false;
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.email?.toLowerCase() === adminEmail;
-}
 
 // ── CSV helpers ───────────────────────────────────────────────────────────────
 
@@ -40,9 +32,9 @@ function toCsvRow(values: unknown[]): string {
  * format=csv   →  Flat CSV, one row per variant (importable into spreadsheets)
  */
 export async function GET(request: NextRequest) {
-  if (!(await checkAdmin())) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
+  // Owner-only: this is a bulk export of the entire catalogue.
+  const denied = await denyUnlessRole("owner");
+  if (denied) return denied;
 
   const format = request.nextUrl.searchParams.get("format") ?? "json";
   if (format !== "json" && format !== "csv") {

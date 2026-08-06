@@ -1,5 +1,6 @@
 import "server-only";
 import { mockStorefrontData } from "@/lib/mock-data";
+import { getSupabaseCatalog } from "@/lib/supabase-catalog";
 import { toGameSlug } from "@/lib/game-slug";
 import { withoutHiddenProducts } from "@/lib/hidden-products";
 import {
@@ -1251,6 +1252,14 @@ function mergeBySlug<T extends { name: string }>(
 
 export async function getStorefrontData(): Promise<StorefrontData> {
   if (!isSellAuthConfigured()) {
+    // The self-hosted Supabase catalog is the real store now that products have
+    // been migrated off SellAuth. It has to be tried here and not only inside
+    // /api/storefront: server-rendered pages call this function directly, and
+    // whatever it returns gets primed into the shared client cache, so falling
+    // straight to the demo catalog made every page show placeholder products.
+    const catalog = await getSupabaseCatalog();
+    if (catalog) return catalog;
+
     return {
       ...mockStorefrontData,
       fetchedAt: new Date().toISOString(),
@@ -1541,6 +1550,24 @@ export async function getStorefrontData(): Promise<StorefrontData> {
           ...(error instanceof Error ? [error.message] : []),
         ],
         fetchedAt: stale.fetchedAt,
+      };
+    }
+
+    // No warm cache to serve. Real products from our own catalog beat the demo
+    // one, so a SellAuth outage degrades to the Supabase store rather than to
+    // placeholder listings customers can't buy.
+    const catalog = await getSupabaseCatalog();
+    if (catalog) {
+      return {
+        ...catalog,
+        message:
+          error instanceof Error
+            ? `SellAuth failed: ${error.message}`
+            : "SellAuth request failed.",
+        warnings: [
+          "SellAuth API failed, serving the Supabase catalog instead.",
+          ...(error instanceof Error ? [error.message] : []),
+        ],
       };
     }
 

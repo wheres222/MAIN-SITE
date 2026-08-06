@@ -1,14 +1,53 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, after, type NextRequest } from "next/server";
+import { detectThreats, isAdminPath } from "@/lib/security/detect";
+import {
+  clientCountry,
+  clientIp,
+  recordDetections,
+  recordSecurityEvent,
+} from "@/lib/security/events";
 
 // ── Maintenance mode ─────────────────────────────────────────────────────────
-const MAINTENANCE_MODE  = false;               // ← flip to false to go live
-const PREVIEW_SECRET    = "cp-preview-2025";   // ← ?preview=<this> grants access
+const MAINTENANCE_MODE  = false;               // ← flip to true to close the site
 const PREVIEW_COOKIE    = "cp_preview";
 const MAINTENANCE_PATH  = "/maintenance";
 
+/**
+ * ?preview=<secret> grants access while maintenance mode is on.
+ *
+ * Read from the environment, never inlined: this file is committed, so a
+ * literal here is a published bypass token for anyone who reads the repo.
+ * When the variable is unset the bypass is disabled outright rather than
+ * degrading to an empty-string match that `?preview=` would satisfy.
+ */
+const PREVIEW_SECRET = process.env.MAINTENANCE_PREVIEW_SECRET?.trim() || null;
+
 export async function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
+
+  // ── Security telemetry ─────────────────────────────────────────────────────
+  // detectThreats is pure string work on every request; the Supabase write only
+  // happens when something actually matched, and runs inside after() so it is
+  // off the response path entirely.
+  const threats = detectThreats({
+    method: request.method,
+    path: pathname,
+    query: request.nextUrl.search.replace(/^\?/, ""),
+    userAgent: request.headers.get("user-agent") ?? "",
+  });
+
+  if (threats.length > 0) {
+    const context = {
+      ip: clientIp(request.headers),
+      country: clientCountry(request.headers),
+      userAgent: request.headers.get("user-agent"),
+      method: request.method,
+      path: pathname,
+      query: request.nextUrl.search.replace(/^\?/, ""),
+    };
+    after(() => recordDetections(threats, context));
+  }
 
   // Always pass through maintenance page + static assets
   const isPassthrough =
@@ -22,8 +61,10 @@ export async function proxy(request: NextRequest) {
     /\.(ico|png|jpg|jpeg|webp|svg|gif|css|js|woff2?)$/.test(pathname);
 
   if (!isPassthrough) {
+    const attempted = searchParams.get("preview");
+
     // Grant preview access via ?preview=<secret> — set cookie + redirect clean
-    if (searchParams.get("preview") === PREVIEW_SECRET) {
+    if (PREVIEW_SECRET !== null && attempted === PREVIEW_SECRET) {
       const url = request.nextUrl.clone();
       url.searchParams.delete("preview");
       const res = NextResponse.redirect(url);
@@ -34,6 +75,22 @@ export async function proxy(request: NextRequest) {
         maxAge: 60 * 60 * 24 * 7, // 7 days
       });
       return res;
+    }
+
+    // A wrong guess is someone trying to get behind the maintenance gate.
+    if (attempted !== null) {
+      after(() =>
+        recordSecurityEvent({
+          kind: "preview_secret_failed",
+          severity: "medium",
+          ip: clientIp(request.headers),
+          country: clientCountry(request.headers),
+          userAgent: request.headers.get("user-agent"),
+          method: request.method,
+          path: pathname,
+          detail: { configured: PREVIEW_SECRET !== null },
+        })
+      );
     }
 
     // Maintenance gate: redirect everyone without the preview cookie
@@ -76,6 +133,25 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Every touch of the admin surface is recorded, allowed or not. The guard in
+  // src/lib/auth/guard.ts records the *denials*; this records the attempt, so a
+  // probe against /admin still leaves a trace even when it never reaches a page.
+  if (isAdminPath(pathname)) {
+    after(() =>
+      recordSecurityEvent({
+        kind: "admin_access",
+        severity: user ? "low" : "medium",
+        ip: clientIp(request.headers),
+        country: clientCountry(request.headers),
+        userAgent: request.headers.get("user-agent"),
+        method: request.method,
+        path: pathname,
+        userId: user?.id ?? null,
+        detail: { authenticated: Boolean(user) },
+      })
+    );
+  }
 
   // Protect /account — redirect unauthenticated users to login
   if (!user && pathname.startsWith("/account")) {
