@@ -3,8 +3,12 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import { productHref, productSlugFromName } from "@/lib/product-route";
-import { toGameSlug } from "@/lib/game-slug";
+import { productHref } from "@/lib/product-route";
+import {
+  findStatusOverride,
+  inferStatusKind,
+  statusLabel,
+} from "@/lib/product-status";
 import type {
   SellAuthCategory,
   SellAuthGroup,
@@ -98,31 +102,6 @@ function categoryLogoForName(groupName: string): string {
   if (source.includes("account")) return "/pd/accounts.png";
 
   return "/pd/misc.svg";
-}
-
-function inferStatus(product: SellAuthProduct): ProductStatusMeta {
-  const operationalText = normalized(
-    `${product.name} ${product.description} ${product.variants.map((variant) => variant.name).join(" ")}`
-  );
-
-  if (/(detected|disabled|offline|down|banned|unsafe)/i.test(operationalText)) {
-    return {
-      kind: "detected",
-      label: "DETECTED",
-    };
-  }
-
-  if (/(updating|testing|maintenance|patching|investigating|beta)/i.test(operationalText)) {
-    return {
-      kind: "updating",
-      label: "UPDATING",
-    };
-  }
-
-  return {
-    kind: "undetected",
-    label: "UNDETECTED",
-  };
 }
 
 function pickCategoryName(
@@ -224,28 +203,11 @@ export function ProductStatusBoard({
 
             <ul className={styles.productList}>
               {category.items.map(({ key, product }) => {
-                // Match overrides by numeric ID, full slug, or bare game name
-                const slug = productSlugFromName(product.name, product.id);
-                const simpleName = product.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
-                const groupSlug = toGameSlug(product.groupName || product.categoryName || "");
-                const override =
-                  // Exact SellAuth product ID (set via admin panel or keyhub external_ref)
-                  statusOverrides[String(product.id)] ??
-                  // Full product name slug (e.g. "rust-external-lite")
-                  statusOverrides[slug] ??
-                  statusOverrides[simpleName] ??
-                  // Game/category name slug (e.g. "rust") — matches keyhub items keyed by game name
-                  (groupSlug ? statusOverrides[groupSlug] : undefined);
-                const status: ProductStatusMeta = override
-                  ? {
-                      kind: override.status,
-                      label: override.status === "undetected"
-                        ? "UNDETECTED"
-                        : override.status === "detected"
-                        ? "DETECTED"
-                        : "UPDATING",
-                    }
-                  : inferStatus(product);
+                // Resolution lives in @/lib/product-status so the banner above
+                // the board and these rows can never disagree.
+                const override = findStatusOverride(product, statusOverrides);
+                const kind = override?.status ?? inferStatusKind(product);
+                const status: ProductStatusMeta = { kind, label: statusLabel(kind) };
 
                 const lastUpdate = override?.updated_at
                   ? formatRelative(override.updated_at)
