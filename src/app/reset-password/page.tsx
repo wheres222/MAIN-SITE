@@ -2,9 +2,18 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./reset-password.module.css";
+
+/**
+ * Captured at import time on purpose. Supabase's browser client clears the URL
+ * hash the moment it is constructed — which happens during render — so by the
+ * time an effect runs there is nothing left to read. Module scope executes
+ * first, which is the only reliable place to see what the link carried.
+ */
+const INITIAL_HASH =
+  typeof window !== "undefined" ? window.location.hash.replace(/^#/, "") : "";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -14,19 +23,76 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [ready, setReady] = useState(false);
   const [done, setDone] = useState(false);
+  /** Set once we know there is no recovery session, so we can stop waiting. */
+  const [checked, setChecked] = useState(false);
+  const [linkError, setLinkError] = useState("");
+
+  // Refs because the sign-out-on-leave cleanup runs after unmount, when the
+  // state values it closed over would be stale.
+  const completedRef = useRef(false);
+  const readyRef = useRef(false);
+  readyRef.current = ready;
 
   const supabase = createClient();
 
-  // Supabase puts the recovery token in the URL hash; the client SDK
-  // exchanges it automatically on load and fires an AUTH_STATE_CHANGE
-  // with event "PASSWORD_RECOVERY".
+  // Supabase puts the recovery token in the URL and the client SDK redeems it
+  // on load, firing PASSWORD_RECOVERY. Listening for that event alone was not
+  // enough for two reasons:
+  //
+  //   1. The redemption can complete before this effect runs, so the event
+  //      fires with nobody subscribed and the page waits on "Verifying link…"
+  //      for ever.
+  //   2. On a refresh the token is already spent. No event is ever emitted
+  //      again, so the page hung there permanently even though a valid
+  //      recovery session existed.
+  //
+  // Asking for the session directly covers both: if one exists, the link was
+  // good and the form should be shown. The listener stays for the case where
+  // redemption finishes after mount.
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setReady(true);
-      }
+    let active = true;
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!active) return;
+      if (event === "PASSWORD_RECOVERY" || session) setReady(true);
     });
-    return () => subscription.unsubscribe();
+
+    void (async () => {
+      // An error in the URL (expired or already-used link) must surface as an
+      // error rather than an indefinite spinner. Supabase puts it in the hash;
+      // the query string is checked too since the TokenHash template style
+      // reports failures there instead.
+      const params = new URLSearchParams(INITIAL_HASH || window.location.search);
+      const urlError = params.get("error_description") || params.get("error");
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!active) return;
+
+      if (session) {
+        setReady(true);
+        return;
+      }
+      if (urlError) setLinkError(urlError);
+      setChecked(true);
+    })();
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  // A recovery link grants a real, usable session — that is how Supabase
+  // implements it. So abandoning this page half-way used to leave the visitor
+  // silently signed in without ever setting a password, turning a reset link
+  // into a permanent skeleton key for anyone who could read the mailbox.
+  // Leaving without finishing now ends the session.
+  useEffect(() => {
+    return () => {
+      if (!completedRef.current && readyRef.current) {
+        void supabase.auth.signOut();
+      }
+    };
   }, [supabase]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -49,6 +115,7 @@ export default function ResetPasswordPage() {
         setError(error.message);
         return;
       }
+      completedRef.current = true;
       setDone(true);
       setTimeout(() => router.push("/account"), 2500);
     } finally {
@@ -76,13 +143,20 @@ export default function ResetPasswordPage() {
             <h1 className={styles.title}>Password updated</h1>
             <p className={styles.subtitle}>Your password has been changed. Redirecting you to your account…</p>
           </>
+        ) : !ready && checked ? (
+          <>
+            <h1 className={styles.title}>This link didn&apos;t work</h1>
+            <p className={styles.subtitle}>
+              {linkError
+                ? `${linkError}. `
+                : "Reset links are single-use and expire after a short time. "}
+              <Link href="/forgot-password" className={styles.link}>Request a new one</Link>.
+            </p>
+          </>
         ) : !ready ? (
           <>
             <h1 className={styles.title}>Verifying link…</h1>
-            <p className={styles.subtitle}>
-              Please wait while we verify your reset link. If nothing happens, your link may have expired —{" "}
-              <Link href="/forgot-password" className={styles.link}>request a new one</Link>.
-            </p>
+            <p className={styles.subtitle}>Please wait while we verify your reset link.</p>
           </>
         ) : (
           <>
