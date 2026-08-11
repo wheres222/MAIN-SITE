@@ -83,6 +83,8 @@ export interface KeyhubStatusEntry {
   updated_at: string;
   /** Kept for the debug view so mismatches are diagnosable. */
   source_name: string;
+  /** Which layer produced this entry, for /admin/status and the debug view. */
+  source: "keyhub";
 }
 
 export function isKeyhubConfigured(): boolean {
@@ -178,6 +180,7 @@ export function buildKeyhubStatusMap(
       note: product.statusLabel ?? null,
       updated_at: product.lastUpdatedAt || now,
       source_name: product.name,
+      source: "keyhub",
     };
 
     for (const key of indexKeysFor(product)) {

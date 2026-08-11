@@ -70,18 +70,6 @@ const NAV: NavItem[] = [
     ),
   },
   {
-    href: "/admin/products",
-    label: "Products",
-    exact: false,
-    minRole: "staff",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden width="16" height="16">
-        <path d="M4 8l8-4 8 4-8 4-8-4z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M4 8v8l8 4 8-4V8" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-      </svg>
-    ),
-  },
-  {
     href: "/admin/status",
     label: "Status",
     exact: false,
