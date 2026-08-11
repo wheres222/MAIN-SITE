@@ -33,13 +33,6 @@ const CRYPTOS = [
     icon: <text x="12" y="16" textAnchor="middle" fontSize="8" fontWeight="bold" fill="currentColor">XRP</text> },
 ];
 
-const GAME_METHODS = [
-  { id: "rust",  label: "RUST",   provider: "bandit.camp", disabled: false },
-  { id: "csgo",  label: "CS:GO",  provider: "Skinify",     disabled: true  },
-  { id: "dota2", label: "DOTA 2", provider: "Skinify",     disabled: true  },
-  { id: "tf2",   label: "TF2",    provider: "Skinify",     disabled: true  },
-];
-
 interface PaymentResult {
   payment_id: string;
   pay_address: string;
@@ -61,6 +54,7 @@ export function DepositModal({ onClose }: DepositModalProps) {
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const cryptoSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -165,48 +159,48 @@ export function DepositModal({ onClose }: DepositModalProps) {
           <div className={styles.body}>
             <h2 className={styles.title}>Choose a deposit method</h2>
 
-            <div className={styles.gameGrid}>
-              {GAME_METHODS.map((g) => (
-                <button
-                  key={g.id}
-                  type="button"
-                  className={`${styles.gameCard} ${g.disabled ? styles.gameCardDisabled : styles.gameCardActive}`}
-                  disabled={g.disabled}
-                >
-                  <div className={styles.gameImg} />
-                  {g.disabled && <span className={styles.disabledLabel}>DISABLED</span>}
-                  {!g.disabled && <span className={styles.bonusBadge}>+45%</span>}
-                  <div className={styles.gameInfo}>
-                    <span className={styles.gameName}>{g.label}</span>
-                    <span className={styles.gameProvider}>{g.provider}</span>
-                  </div>
-                </button>
-              ))}
+            <div className={styles.methodRow}>
+              {/* Card deposits need a Stripe flow that credits the balance on
+                  webhook confirmation. /api/account/deposit/create only speaks
+                  to NOWPayments today, so this stays disabled rather than
+                  offering a button that cannot take money. */}
+              <button
+                type="button"
+                className={`${styles.methodCard} ${styles.methodCardDisabled}`}
+                disabled
+              >
+                <span className={styles.methodIcon} aria-hidden>
+                  <svg viewBox="0 0 24 24" fill="none" width="26" height="26">
+                    <rect x="2.5" y="5" width="19" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+                    <path d="M2.5 9.5h19" stroke="currentColor" strokeWidth="1.7" />
+                    <path d="M6 14.5h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                  </svg>
+                </span>
+                <span className={styles.methodName}>Stripe</span>
+                <span className={styles.methodDesc}>Card &amp; Apple Pay</span>
+                <span className={styles.methodBadge}>Coming soon</span>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.methodCard} ${styles.methodCardActive}`}
+                onClick={() =>
+                  cryptoSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+              >
+                <span className={styles.methodIcon} aria-hidden>
+                  <svg viewBox="0 0 24 24" fill="none" width="26" height="26">
+                    <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.7" />
+                    <path d="M10 8h3a2 2 0 1 1 0 4h-3m0 0h3.4a2 2 0 1 1 0 4H10m0-8v8m0-8H9m1 8H9m2-10v2m0 8v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                <span className={styles.methodName}>Crypto</span>
+                <span className={styles.methodDesc}>11 coins accepted</span>
+                <span className={styles.methodBadgeActive}>Available</span>
+              </button>
             </div>
 
-            <div className={styles.cashRow}>
-              <div className={styles.cashSection}>
-                <div className={styles.cashHeader}>
-                  <span className={styles.sectionLabel}>Cash deposits</span>
-                  <span className={styles.freeCrateBadge}>FREE CRATE</span>
-                </div>
-                <button type="button" className={`${styles.cashCard} ${styles.cashCardDisabled}`} disabled>
-                  <div className={styles.cashImg} />
-                  <span className={styles.bonusBadge}>+45%</span>
-                </button>
-              </div>
-              <div className={styles.cashSection}>
-                <div className={styles.cashHeader}>
-                  <span className={styles.sectionLabel}>Buy giftcards</span>
-                </div>
-                <button type="button" className={`${styles.cashCard} ${styles.cashCardDisabled}`} disabled>
-                  <div className={styles.cashImg} />
-                  <span className={styles.bonusBadge}>+40%</span>
-                </button>
-              </div>
-            </div>
-
-            <div className={styles.cryptoHeader}>
+            <div className={styles.cryptoHeader} ref={cryptoSectionRef}>
               <span className={styles.sectionLabel}>Cryptocurrencies</span>
               <span className={styles.bonusBadgeAlt}>+45%</span>
             </div>
