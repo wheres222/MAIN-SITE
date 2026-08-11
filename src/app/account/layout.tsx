@@ -86,6 +86,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+  const [isStaff, setIsStaff] = useState(false);
   const supabase = createClient();
 
   useEffect(() => {
@@ -98,7 +99,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("username")
+        .select("username, role")
         .eq("id", user.id)
         .single();
 
@@ -110,6 +111,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         "User";
 
       setDisplayName(name);
+      const role = (profile as { role?: string } | null)?.role;
+      setIsStaff(role === "staff" || role === "owner");
     }
     load();
   }, [pathname]);
@@ -165,6 +168,25 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                   </Link>
                 );
               })}
+
+              {/* Shown only to staff and owners. This is convenience, not
+                  security: the markup ships in the client bundle either way, so
+                  hiding it reveals nothing on its own. requireRole() in
+                  src/app/admin/layout.tsx is what actually refuses anyone who
+                  follows the link without the role. */}
+              {isStaff && (
+                <Link href="/admin" className={styles.navItem}>
+                  <span className={styles.navIcon}>
+                    <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden>
+                      <rect x="3" y="3" width="7" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+                      <rect x="14" y="3" width="7" height="5" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+                      <rect x="14" y="11" width="7" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+                      <rect x="3" y="15" width="7" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+                    </svg>
+                  </span>
+                  Dashboard
+                </Link>
+              )}
 
               <button
                 type="button"

@@ -21,6 +21,8 @@ export type EventKind =
   | "admin_access"
   | "admin_denied"
   | "preview_secret_failed"
+  | "ip_blocked"
+  | "account_moderated"
   | "auth_failure"
   | "auth_failure_burst"
   | "rate_limited"

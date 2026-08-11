@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createNowPayment, CURRENCY_MAP, ALLOWED_CURRENCIES } from "@/lib/nowpayments";
 import { NextResponse, after, type NextRequest } from "next/server";
 import { recordSecurityEvent } from "@/lib/security/events";
+import { denyIfModerated } from "@/lib/auth/guard";
 import { createHash } from "crypto";
 
 export const dynamic = "force-dynamic";
@@ -84,6 +85,10 @@ export async function POST(request: NextRequest) {
     );
     return bad("Too many checkout attempts. Please wait a minute.", 429);
   }
+
+  // A suspended or banned account must not be able to spend money.
+  const moderated = await denyIfModerated("purchase");
+  if (moderated) return moderated;
 
   // ── 1. Optional auth (guests allowed; we capture email for delivery) ─────────
   const supabase = await createClient();

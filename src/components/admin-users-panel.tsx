@@ -4,12 +4,14 @@ import { useCallback, useEffect, useState } from "react";
 import styles from "./admin-panels.module.css";
 
 type Role = "user" | "staff" | "owner";
+type AccountStatus = "active" | "suspended" | "banned";
 
 interface AdminUser {
   id: string;
   username: string | null;
   email: string | null;
   role: Role;
+  status?: AccountStatus;
   balance: number | null;
   createdAt: string;
   lastSignInAt: string | null;
@@ -81,6 +83,43 @@ export function AdminUsersPanel({ viewerId }: { viewerId: string | null }) {
     }
   }
 
+  async function changeStatus(userId: string, status: AccountStatus) {
+    if (status !== "active") {
+      const note = window.prompt(
+        status === "banned"
+          ? "Ban this account? They will be signed out and refused at login.\n\nReason (kept on the account):"
+          : "Suspend this account? They keep order history and support, but cannot check out.\n\nReason:",
+        ""
+      );
+      if (note === null) return;
+      void applyStatus(userId, status, note);
+      return;
+    }
+    void applyStatus(userId, status, "");
+  }
+
+  async function applyStatus(userId: string, status: AccountStatus, note: string) {
+    setSaving((prev) => ({ ...prev, [userId]: true }));
+    setError("");
+    try {
+      const res = await fetch("/api/admin/moderation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "set-status", userId, status, note }),
+      });
+      const json = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setError(json.error ?? "Could not change that status.");
+        return;
+      }
+      setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status } : u)));
+    } catch {
+      setError("Could not reach the server.");
+    } finally {
+      setSaving((prev) => ({ ...prev, [userId]: false }));
+    }
+  }
+
   const filtered = search.trim()
     ? users.filter(
         (u) =>
@@ -145,6 +184,7 @@ export function AdminUsersPanel({ viewerId }: { viewerId: string | null }) {
                   <th>Joined</th>
                   <th>Last sign-in</th>
                   <th>Role</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -173,6 +213,27 @@ export function AdminUsersPanel({ viewerId }: { viewerId: string | null }) {
                           <option value="user">user</option>
                           <option value="staff">staff</option>
                           <option value="owner">owner</option>
+                        </select>
+                      </td>
+                      <td>
+                        {/* Status is separate from role on purpose: role is what
+                            they may do, status is whether they may do anything.
+                            Suspended keeps order history and support reachable,
+                            which is what makes it usable while investigating. */}
+                        <select
+                          className={styles.select}
+                          value={user.status ?? "active"}
+                          disabled={isSelf || saving[user.id]}
+                          title={
+                            isSelf ? "You cannot moderate your own account" : undefined
+                          }
+                          onChange={(e) =>
+                            void changeStatus(user.id, e.target.value as AccountStatus)
+                          }
+                        >
+                          <option value="active">active</option>
+                          <option value="suspended">suspended — no checkout</option>
+                          <option value="banned">banned — no sign-in</option>
                         </select>
                       </td>
                     </tr>
