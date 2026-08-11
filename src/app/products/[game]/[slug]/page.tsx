@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { permanentRedirect } from "next/navigation";
 import { ProductRouteClient } from "@/components/product-route-client";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { getStorefrontData } from "@/lib/sellauth";
-import { productSlugFromName } from "@/lib/product-route";
+import {
+  findProductByRoute,
+  productGameName,
+  productHref,
+  productSeoTitle,
+} from "@/lib/product-route";
 import { buildProductSchemas } from "@/lib/product-schemas";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
@@ -11,25 +17,32 @@ export const revalidate = 300;
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
+type RouteParams = Promise<{ game: string; slug: string }>;
+
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: RouteParams;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { game, slug } = await params;
 
   try {
     const storefront = await getStorefrontData();
-    const product = storefront.products.find(
-      (p) => productSlugFromName(p.name, p.id) === slug.toLowerCase()
-    );
+    const product = findProductByRoute(storefront.products, game, slug);
 
     if (product) {
-      const title = product.name;
+      // Title and description lead with product + game because that is the
+      // shape of the queries these pages compete for ("ancient arc raiders",
+      // "crusader r6"). The old title was the bare product name, which matched
+      // only half of any such search.
+      const gameName = productGameName(product);
+      const title = productSeoTitle(product);
       const description =
         product.description ||
-        `Buy ${product.name} with instant delivery and secure checkout on Cheat Paradise.`;
-      const canonical = `/products/${productSlugFromName(product.name, product.id)}`;
+        (gameName
+          ? `Buy ${product.name} for ${gameName} — undetected, instant delivery and secure checkout on Cheat Paradise.`
+          : `Buy ${product.name} with instant delivery and secure checkout on Cheat Paradise.`);
+      const canonical = productHref(product);
 
       return {
         title,
@@ -61,12 +74,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function ProductSlugPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+export default async function ProductSlugPage({ params }: { params: RouteParams }) {
+  const { game, slug } = await params;
 
   // generateMetadata already called getStorefrontData() for this request —
   // the module-level cache means this second call is free (no extra fetch).
@@ -81,11 +90,17 @@ export default async function ProductSlugPage({
   // initial HTML response — Googlebot picks this up immediately, no JS needed.
   let resolvedProduct: SellAuthProduct | null = null;
   if (initialData) {
-    const normalizedSlug = slug.toLowerCase();
-    resolvedProduct =
-      initialData.products.find(
-        (p) => productSlugFromName(p.name, p.id) === normalizedSlug
-      ) || null;
+    resolvedProduct = findProductByRoute(initialData.products, game, slug);
+
+    // One canonical URL per product. A resolvable-but-non-canonical path (an
+    // un-stripped leaf, or the wrong case) redirects rather than serving the
+    // same product at two addresses and splitting its ranking.
+    if (resolvedProduct) {
+      const canonical = productHref(resolvedProduct);
+      if (canonical !== `/products/${game}/${slug}`) {
+        permanentRedirect(canonical);
+      }
+    }
   }
 
   const schemas =

@@ -5,7 +5,13 @@ import { useParams, usePathname, useRouter, useSearchParams } from "next/navigat
 import { useEffect, useMemo, useState } from "react";
 import { ProductDetailPage } from "@/components/product-detail-page";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
-import { productHref, productSlugFromName } from "@/lib/product-route";
+import {
+  findProductByRoute,
+  productDisplayName,
+  productHref,
+  productSeoTitle,
+  productSlugFromName,
+} from "@/lib/product-route";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
 
@@ -58,7 +64,7 @@ interface ProductRouteClientProps {
 export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const params = useParams<{ slug?: string | string[] }>();
+  const params = useParams<{ game?: string | string[]; slug?: string | string[] }>();
   const router = useRouter();
 
   const pidRaw = (searchParams.get("pid") || "").trim();
@@ -82,11 +88,33 @@ export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}
         ? params.slug[0] || ""
         : "";
 
+  // URLs are /products/{game}/{product}; the product is the third segment.
+  // Before the game segment existed it was the second, so a two-part path is
+  // read as a bare product slug and still resolves.
   const slugFromPathname = (() => {
     const parts = (pathname || "").split("/").filter(Boolean);
     if (parts[0] !== "products") return "";
-    return parts[1] ? safeDecoded(parts[1]) : "";
+    const leaf = parts[2] || parts[1] || "";
+    return leaf ? safeDecoded(leaf) : "";
   })();
+
+  const gameFromParams =
+    typeof params?.game === "string"
+      ? params.game
+      : Array.isArray(params?.game)
+        ? params.game[0] || ""
+        : "";
+
+  const requestedGame = safeDecoded(
+    (
+      gameFromParams ||
+      ((pathname || "").split("/").filter(Boolean)[0] === "products" &&
+      (pathname || "").split("/").filter(Boolean).length > 2
+        ? (pathname || "").split("/").filter(Boolean)[1]
+        : "") ||
+      ""
+    ).trim()
+  );
 
   const requestedSlug = safeDecoded(
     (
@@ -150,12 +178,25 @@ export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}
     if (!requestedSlug) return null;
 
     const normalizedSlug = requestedSlug.toLowerCase();
+
+    // Game + leaf is the canonical form and disambiguates products that share
+    // a name across games — an "Ancient" for Rust and one for Arc Raiders.
+    if (requestedGame) {
+      const byRoute = findProductByRoute(
+        storefront.products,
+        requestedGame,
+        normalizedSlug
+      );
+      if (byRoute) return byRoute;
+    }
+
+    // Bare slug: a pre-restructure link, or a product whose name is unique.
     return (
       storefront.products.find(
         (item) => productSlugFromName(item.name, item.id) === normalizedSlug
       ) || null
     );
-  }, [storefront, productId, requestedSlug]);
+  }, [storefront, productId, requestedSlug, requestedGame]);
 
   useEffect(() => {
     if (!product || typeof window === "undefined") return;
@@ -167,9 +208,9 @@ export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}
       product.description ||
       `Buy ${product.name} with instant delivery and secure checkout on ${siteName}.`;
 
-    document.title = product.name;
+    document.title = productSeoTitle(product);
     upsertMeta({ key: "name", value: "description" }, description);
-    upsertMeta({ key: "property", value: "og:title" }, product.name);
+    upsertMeta({ key: "property", value: "og:title" }, productDisplayName(product));
     upsertMeta({ key: "property", value: "og:description" }, description);
     upsertMeta({ key: "property", value: "og:url" }, canonicalUrl);
     if (product.image) {

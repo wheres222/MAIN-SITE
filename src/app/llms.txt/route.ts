@@ -1,5 +1,6 @@
 import { getStorefrontData } from "@/lib/sellauth";
 import { allGameSeoSlugs, gameSeoContentFor } from "@/lib/game-seo-content";
+import { productDisplayName, productHref } from "@/lib/product-route";
 
 export const revalidate = 1800;
 
@@ -32,11 +33,10 @@ export async function GET() {
   const featuredProducts = (storefront?.products ?? [])
     .slice(0, 12)
     .map((p) => {
-      const slug = p.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-      return `- [${p.name}](${siteUrl}/products/${slug || `product-${p.id}`})`;
+      // productHref rather than a local slugify: this file is read by AI
+      // crawlers, so pointing them at the pre-restructure URL would feed them
+      // links that now only 301.
+      return `- [${productDisplayName(p)}](${siteUrl}${productHref(p)})`;
     })
     .join("\n");
 

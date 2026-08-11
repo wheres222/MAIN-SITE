@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { canonicalGameSlug, toGameSlug } from "@/lib/game-slug";
 import { getStorefrontData } from "@/lib/sellauth";
-import { productSlugFromName } from "@/lib/product-route";
+import { productHref } from "@/lib/product-route";
 import { gameSeoContentFor, allGameSeoSlugs } from "@/lib/game-seo-content";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
     const productEntries = storefront.products.map((product) => ({
-      url: `${siteUrl}/products/${productSlugFromName(product.name, product.id)}`,
+      url: `${siteUrl}${productHref(product)}`,
       lastModified: now,
       changeFrequency: "daily" as const,
       priority: 0.75,

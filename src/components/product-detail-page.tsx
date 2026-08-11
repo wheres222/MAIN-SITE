@@ -6,6 +6,7 @@ import { Breadcrumb } from "@/components/breadcrumb";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { categoryHref } from "@/lib/category-href";
+import { productDisplayName } from "@/lib/product-route";
 import { variantsFor } from "@/lib/cart";
 import type { SellAuthPaymentMethod, SellAuthProduct, SellAuthVariant } from "@/types/sellauth";
 import styles from "./product-detail-page.module.css";
@@ -1014,7 +1015,9 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
           </div>
 
           <article className={styles.buyColumn}>
-            <h1>{product.name}</h1>
+            {/* Includes the game so the H1 matches the whole query, not half
+                of it — "ancient arc raiders" rather than just "ancient". */}
+            <h1>{productDisplayName(product)}</h1>
 
             <div className={styles.badgeRow}>
               <span className={styles.badgeUndetected}>
