@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { canonicalGameSlug, toGameSlug } from "@/lib/game-slug";
 import { getStorefrontData } from "@/lib/sellauth";
 import { productHref } from "@/lib/product-route";
+import { blogPostsByDate } from "@/lib/blog-posts";
 import { gameSeoContentFor, allGameSeoSlugs } from "@/lib/game-seo-content";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
@@ -67,6 +68,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
+    const blogEntries = blogPostsByDate().map((post) => ({
+      url: `${siteUrl}/blog/${post.slug}`,
+      lastModified: new Date(post.updated),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+
     const productEntries = storefront.products.map((product) => ({
       url: `${siteUrl}${productHref(product)}`,
       lastModified: now,
@@ -74,7 +82,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.75,
     }));
 
-    return [...baseEntries, ...landingEntries, ...categoryEntries, ...productEntries];
+    return [
+      ...baseEntries,
+      ...landingEntries,
+      ...categoryEntries,
+      ...productEntries,
+      ...blogEntries,
+    ];
   } catch {
     return [...baseEntries, ...landingEntries];
   }
