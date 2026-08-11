@@ -120,9 +120,12 @@ const nextConfig: NextConfig = {
               // script-src — explicit allowlist of CDNs we load JS from.
               // jsdelivr powers @widgetbot/html-embed. posthog hosts the
               // analytics SDK + config. googletagmanager + google-analytics
-              // power the gtag snippet in src/app/layout.tsx.
-              "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.posthog.com https://www.googletagmanager.com https://www.google-analytics.com",
-              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+              // power the gtag snippet in src/app/layout.tsx. assistify.chat
+              // serves the support widget mounted by <AssistifyScript> — it was
+              // missing here, so the widget was refused on every page load and
+              // support chat never appeared for anyone.
+              "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.posthog.com https://www.googletagmanager.com https://www.google-analytics.com https://assistify.chat https://*.assistify.chat",
+              "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://assistify.chat https://*.assistify.chat",
               "img-src 'self' data: https:",
               "font-src 'self' data:",
               "media-src 'self' blob:",
@@ -132,7 +135,8 @@ const nextConfig: NextConfig = {
               "connect-src 'self' https: wss:",
               // frame-src — domains we're allowed to embed iframes from.
               // widgetbot.io renders the Discord chat embed via e.widgetbot.io.
-              "frame-src https://odysee.com https://www.youtube.com https://player.vimeo.com https://e.widgetbot.io https://*.widgetbot.io",
+              // assistify.chat mounts its support chat in an iframe.
+              "frame-src https://odysee.com https://www.youtube.com https://player.vimeo.com https://e.widgetbot.io https://*.widgetbot.io https://assistify.chat https://*.assistify.chat",
               "frame-ancestors 'none'",
             ].join("; "),
           },
