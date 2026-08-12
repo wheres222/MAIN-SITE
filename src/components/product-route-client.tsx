@@ -14,6 +14,7 @@ import {
 } from "@/lib/product-route";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
+import type { ProductSeoContent } from "@/lib/product-seo-content";
 
 function upsertMeta(
   selector: { key: "name" | "property"; value: string },
@@ -59,9 +60,10 @@ function safeDecoded(value: string): string {
 
 interface ProductRouteClientProps {
   initialData?: StorefrontData | null;
+  seoContent?: ProductSeoContent | null;
 }
 
-export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}) {
+export function ProductRouteClient({ initialData, seoContent }: ProductRouteClientProps = {}) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const params = useParams<{ game?: string | string[]; slug?: string | string[] }>();
@@ -261,6 +263,10 @@ export function ProductRouteClient({ initialData }: ProductRouteClientProps = {}
   // schema spec disallows that.
 
   return (
-    <ProductDetailPage product={product} paymentMethods={storefront.paymentMethods} />
+    <ProductDetailPage
+      product={product}
+      paymentMethods={storefront.paymentMethods}
+      seoContent={seoContent}
+    />
   );
 }
