@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { AFFILIATE_TIERS } from "@/lib/affiliate-program";
 import styles from "../account.module.css";
 
 interface Profile {
@@ -19,13 +20,10 @@ interface Referral {
   created_at: string;
 }
 
-const TIERS = [
-  { name: "Tier 1", kickback: "1%",   threshold: 0 },
-  { name: "Tier 2", kickback: "1.5%", threshold: 100 },
-  { name: "Tier 3", kickback: "2%",   threshold: 1000 },
-  { name: "Tier 4", kickback: "2.5%", threshold: 2500 },
-  { name: "Tier 5", kickback: "3%",   threshold: 5000 },
-];
+// Shared with the public /affiliates pages. A duplicated table here would drift
+// the moment rates changed, and a recruitment page advertising a rate this
+// dashboard does not pay is worse than no recruitment page at all.
+const TIERS = AFFILIATE_TIERS;
 
 function getTier(totalEarned: number) {
   let tier = TIERS[0];

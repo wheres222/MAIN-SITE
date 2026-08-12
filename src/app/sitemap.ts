@@ -3,6 +3,7 @@ import { canonicalGameSlug, toGameSlug } from "@/lib/game-slug";
 import { getStorefrontData } from "@/lib/sellauth";
 import { productHref } from "@/lib/product-route";
 import { blogPostsByDate } from "@/lib/blog-posts";
+import { AFFILIATE_GUIDES } from "@/lib/affiliate-guides";
 import { gameSeoContentFor, allGameSeoSlugs } from "@/lib/game-seo-content";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
@@ -41,6 +42,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     };
   });
 
+  // Authored content does not depend on the storefront, so it is built outside
+  // the try. Inside it, a SellAuth or Supabase failure would drop every blog
+  // and affiliate URL from the sitemap for as long as the outage lasted.
+  const affiliateEntries: MetadataRoute.Sitemap = [
+    {
+      url: `${siteUrl}/affiliates`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    },
+    ...AFFILIATE_GUIDES.map((guide) => ({
+      url: `${siteUrl}/affiliates/${guide.slug}`,
+      lastModified: new Date(guide.updated),
+      changeFrequency: "monthly" as const,
+      priority: 0.55,
+    })),
+  ];
+
+  const blogEntries: MetadataRoute.Sitemap = blogPostsByDate().map((post) => ({
+    url: `${siteUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.updated),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   try {
     const storefront = await getStorefrontData();
 
@@ -68,12 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
-    const blogEntries = blogPostsByDate().map((post) => ({
-      url: `${siteUrl}/blog/${post.slug}`,
-      lastModified: new Date(post.updated),
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
+
 
     const productEntries = storefront.products.map((product) => ({
       url: `${siteUrl}${productHref(product)}`,
@@ -88,8 +109,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...categoryEntries,
       ...productEntries,
       ...blogEntries,
+      ...affiliateEntries,
     ];
   } catch {
-    return [...baseEntries, ...landingEntries];
+    return [...baseEntries, ...landingEntries, ...blogEntries, ...affiliateEntries];
   }
 }
