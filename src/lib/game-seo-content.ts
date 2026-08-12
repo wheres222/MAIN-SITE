@@ -1203,6 +1203,84 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
     ],
     lastTested: "Stock verified · July 2026",
   },
+  {
+    // Palworld was the one category in the storefront with no landing content,
+    // so /categories/palworld rendered ~126 words with no headings and no FAQ
+    // while every other game had a full page.
+    slug: "palworld",
+    displayName: "Palworld",
+    title: "Palworld Cheats — Undetected ESP, Pal Spawner & Item Hacks 2026",
+    metaDescription:
+      "Buy undetected Palworld cheats with instant delivery. Palworld hacks with full ESP, pal and item spawning, speed and infinite stamina — tested on the current build.",
+    h1: "Palworld Cheats — ESP, Pal Spawner & Item Hacks",
+    lead:
+      "Buy undetected Palworld cheats with instant delivery. Every Palworld hack covers full world ESP, pal and item spawning, movement options and resource control — updated after each patch and tested on the current build before release.",
+    sections: [
+      {
+        heading: "What do the Palworld cheats include?",
+        body:
+          "Palworld is a survival game before it is a shooter, so the features that matter are the ones that remove grind rather than win duels. Full ESP shows pals, players, ore nodes, chests and dungeon entrances through terrain, which turns a map you would otherwise comb on foot into a route you can plan. Spawning covers pals — including alphas and rare variants — plus items and resources, so a build that would take an evening of farming happens immediately.",
+        bullets: {
+          heading: "Palworld cheat features",
+          items: [
+            "Full ESP: pals, players, ore, chests, dungeons",
+            "Pal spawner including alphas and rare variants",
+            "Item and resource spawning",
+            "Movement: speed, infinite stamina, no fall damage",
+            "Instant capture and catch-rate options",
+            "Configurable in-game menu",
+          ],
+        },
+      },
+      {
+        heading: "Does it work in multiplayer and on dedicated servers?",
+        body:
+          "Single-player and self-hosted worlds are the safest place to use anything here, because you own the save and nobody else is affected. On dedicated and community servers the picture changes: many run their own admin tooling and logging, and spawning items on a shared server is the fastest way to be noticed regardless of whether any anti-cheat flagged you. Feature toggles exist so you can run ESP alone where the server is strict.",
+      },
+      {
+        heading: "Are Palworld cheats undetected in 2026?",
+        body:
+          "Palworld does not ship an aggressive kernel anti-cheat in the way competitive shooters do, which makes detection risk lower than on Rust or Siege. That is not the same as no risk — servers log, admins watch, and Pocketpair have patched exploit surfaces before. Every build here is tested against the current game version before release and the live status for each product is on our Status page.",
+      },
+      {
+        heading: "Best undetected Palworld cheats — why buy from Cheat Paradise",
+        body:
+          "Instant delivery, free updates for the life of your subscription, and 24/7 Discord support. Pay by card or crypto and your licence lands in your dashboard the moment payment confirms.",
+        bullets: {
+          heading: "Every Palworld purchase includes",
+          items: [
+            "Instant automated delivery",
+            "Free updates after game patches",
+            "Single-player and server feature toggles",
+            "24/7 Discord support",
+          ],
+        },
+      },
+    ],
+    faqs: [
+      {
+        q: "Are Palworld cheats safe to use?",
+        a: "Lower risk than competitive shooters, because Palworld does not run a kernel-level anti-cheat. Risk is not zero — dedicated servers log activity and admins ban manually. Check the live status on our Status page before each session.",
+      },
+      {
+        q: "Can I use these in single-player?",
+        a: "Yes, and it is the safest way to use them. You own the save, no other player is affected, and there is no server admin to notice.",
+      },
+      {
+        q: "Will spawning items corrupt my save?",
+        a: "Not in normal use, but back up your save before spawning large quantities. Extreme values can behave unpredictably after a game update changes how an item is stored.",
+      },
+      {
+        q: "Do the cheats survive Palworld updates?",
+        a: "Builds are updated after each patch. A product is marked Updating on the Status page while its rebuild is in progress — running an outdated build after a patch is the most common way things break.",
+      },
+      {
+        q: "What payment methods can I use?",
+        a: "Card payments via Stripe, plus Bitcoin, Ethereum, Litecoin, USDT and more via crypto. You can also pay from your account balance.",
+      },
+    ],
+    lastTested: "Tested on the current Palworld build · August 2026",
+  },
 ];
 
 export function gameSeoContentFor(slug: string): GameSeoContent | undefined {
