@@ -7,6 +7,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { categoryHref } from "@/lib/category-href";
 import { productDisplayName } from "@/lib/product-route";
+import { ProductSeoSections } from "@/components/product-seo-sections";
+import type { ProductSeoContent } from "@/lib/product-seo-content";
 import { variantsFor } from "@/lib/cart";
 import type { SellAuthPaymentMethod, SellAuthProduct, SellAuthVariant } from "@/types/sellauth";
 import styles from "./product-detail-page.module.css";
@@ -14,6 +16,8 @@ import styles from "./product-detail-page.module.css";
 interface ProductDetailPageProps {
   product: SellAuthProduct;
   paymentMethods: SellAuthPaymentMethod[];
+  /** Editorial content for this product, when one has been written. */
+  seoContent?: ProductSeoContent | null;
 }
 
 interface RequirementItem {
@@ -729,7 +733,7 @@ function featureIconSvg(title: string) {
   );
 }
 
-export function ProductDetailPage({ product, paymentMethods }: ProductDetailPageProps) {
+export function ProductDetailPage({ product, paymentMethods, seoContent }: ProductDetailPageProps) {
   const variants = useMemo(() => variantsFor(product), [product]);
   const [selectedVariantId, setSelectedVariantId] = useState<number>(
     variants[0]?.id || product.id
@@ -1103,6 +1107,16 @@ export function ProductDetailPage({ product, paymentMethods }: ProductDetailPage
               </div>
             )}
           </section>
+        )}
+
+        {/* Editorial content, when this product has any. Inside <main> so it is
+            part of the initial HTML rather than appended after the footer. */}
+        {seoContent && (
+          <ProductSeoSections
+            content={seoContent}
+            productName={product.name}
+            gameName={product.groupName || product.categoryName || ""}
+          />
         )}
       </main>
 

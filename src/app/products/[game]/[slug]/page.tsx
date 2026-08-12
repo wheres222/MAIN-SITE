@@ -11,6 +11,7 @@ import {
   productSeoTitle,
 } from "@/lib/product-route";
 import { buildProductSchemas } from "@/lib/product-schemas";
+import { productSeoContentFor } from "@/lib/product-seo-content";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 
 export const revalidate = 300;
@@ -103,8 +104,30 @@ export default async function ProductSlugPage({ params }: { params: RouteParams 
     }
   }
 
-  const schemas =
-    resolvedProduct ? buildProductSchemas(resolvedProduct, siteUrl) : [];
+  const seoContent = resolvedProduct
+    ? productSeoContentFor(resolvedProduct)
+    : null;
+
+  const schemas = resolvedProduct
+    ? buildProductSchemas(resolvedProduct, siteUrl)
+    : [];
+
+  // FAQPage only when the product actually has questions rendered on the page.
+  // Marking up questions that do not appear in the visible content is a
+  // structured-data violation, not a shortcut.
+  if (seoContent && seoContent.faqs.length > 0) {
+    schemas.push(
+      JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: seoContent.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: { "@type": "Answer", text: faq.a },
+        })),
+      })
+    );
+  }
 
   return (
     <>
@@ -116,7 +139,7 @@ export default async function ProductSlugPage({ params }: { params: RouteParams 
         />
       ))}
       <Suspense fallback={<SubpageSkeleton rows={5} />}>
-        <ProductRouteClient initialData={initialData} />
+        <ProductRouteClient initialData={initialData} seoContent={seoContent} />
       </Suspense>
     </>
   );
