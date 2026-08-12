@@ -25,7 +25,10 @@ export default function InvoicesPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {
@@ -40,7 +43,7 @@ export default function InvoicesPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [supabase]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();

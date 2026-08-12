@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import styles from "../account.module.css";
 import pStyles from "./settings.module.css";
@@ -23,7 +23,10 @@ export default function SettingsPage() {
   const [notice, setNotice] = useState({ text: "", type: "" });
   const [saving, setSaving] = useState(false);
 
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   const pwChecks = checkPassword(newPassword);
   const pwTouched = newPassword.length > 0;
@@ -33,7 +36,7 @@ export default function SettingsPage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) setEmail(user.email || "");
     });
-  }, []);
+  }, [supabase]);
 
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();

@@ -3,7 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./account.module.css";
 
@@ -27,7 +27,10 @@ export default function AccountOverviewPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {
@@ -49,7 +52,7 @@ export default function AccountOverviewPage() {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [supabase]);
 
   if (loading) return <div className={styles.loading}><div className={styles.spinner} /></div>;
 

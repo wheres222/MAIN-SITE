@@ -6,7 +6,6 @@ import { SiteHeader } from "@/components/site-header";
 import { ProductStatusBoard } from "@/components/product-status-board";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
-import { formatStorefrontWarnings } from "@/lib/storefront-warnings";
 import { mockStorefrontData } from "@/lib/mock-data";
 import { summariseStatuses } from "@/lib/product-status";
 import type { StorefrontData } from "@/types/sellauth";
@@ -90,11 +89,6 @@ export function StatusRouteClient({ initialData }: StatusRouteClientProps) {
     };
   }, []);
 
-  const warningMessages = useMemo(
-    () => formatStorefrontWarnings(data?.warnings || []),
-    [data?.warnings]
-  );
-
   // Fall back to mock catalog if SellAuth is unreachable so the board always renders
   const displayData = data ?? (!loading ? mockStorefrontData : null);
 
@@ -140,6 +134,27 @@ export function StatusRouteClient({ initialData }: StatusRouteClientProps) {
             </div>
           </section>
         </div>
+
+        {/* On failure the board falls back to the demo catalogue, so without
+            this a visitor sees placeholder products presented as real ones. */}
+        {error ? (
+          <div style={{ width: "min(820px, calc(100% - 32px))", margin: "0 auto 18px" }}>
+            <p
+              style={{
+                margin: 0,
+                padding: "10px 14px",
+                borderRadius: 8,
+                background: "rgba(239,27,53,0.1)",
+                border: "1px solid rgba(239,27,53,0.32)",
+                color: "#ff8a9f",
+                fontSize: "0.82rem",
+              }}
+            >
+              Live catalogue unavailable — showing a placeholder list. Statuses
+              below may not reflect the products we currently sell.
+            </p>
+          </div>
+        ) : null}
 
         {loading ? <SubpageSkeleton rows={5} /> : null}
 

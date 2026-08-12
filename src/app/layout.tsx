@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway } from "next/font/google";
-import localFont from "next/font/local";
 import Script from "next/script";
 import { AssistifyScript } from "@assistifychat/widget/react";
 import "./globals.css";
@@ -22,18 +21,6 @@ const raleway = Raleway({
   weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
   variable: "--font-raleway",
-  preload: true,
-});
-
-const satoshi = localFont({
-  src: [
-    { path: "../../public/fonts/satoshi/Satoshi-400.woff2", weight: "400", style: "normal" },
-    { path: "../../public/fonts/satoshi/Satoshi-500.woff2", weight: "500", style: "normal" },
-    { path: "../../public/fonts/satoshi/Satoshi-700.woff2", weight: "700", style: "normal" },
-    { path: "../../public/fonts/satoshi/Satoshi-900.woff2", weight: "900", style: "normal" },
-  ],
-  variable: "--font-satoshi",
-  display: "swap",
   preload: true,
 });
 
@@ -129,7 +116,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${inter.variable} ${satoshi.variable} ${raleway.variable}`}>
+    <html lang="en" className={`${inter.variable} ${raleway.variable}`}>
       <head>
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />

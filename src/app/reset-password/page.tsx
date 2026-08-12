@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./reset-password.module.css";
 
@@ -33,7 +33,10 @@ export default function ResetPasswordPage() {
   const readyRef = useRef(false);
   readyRef.current = ready;
 
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   // Supabase puts the recovery token in the URL and the client SDK redeems it
   // on load, firing PASSWORD_RECOVERY. Listening for that event alone was not

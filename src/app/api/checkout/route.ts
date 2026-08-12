@@ -185,7 +185,7 @@ export async function POST(request: Request) {
     }
 
     // ── Route: Supabase + NOWPayments (crypto) ────────────────────────────────
-    return await handleCryptoCheckout(body, sanitizedItems, dedupeKey, locks, idempotencyKey);
+    return await handleCryptoCheckout(body, sanitizedItems, dedupeKey, locks);
 
   } catch (error) {
     if (dedupeKey) locks.delete(dedupeKey);
@@ -317,7 +317,6 @@ async function handleCryptoCheckout(
   sanitizedItems: { productId: number; quantity: number; variantId?: number }[],
   dedupeKey: string,
   locks: Map<string, LockState>,
-  idempotencyKey: string,
 ): Promise<NextResponse> {
 
   // Validate email
