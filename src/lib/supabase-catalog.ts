@@ -30,7 +30,19 @@ function numericId(sellauthId: string | null | undefined, uuid: string): number 
   if (sellauthId && /^\d+$/.test(String(sellauthId))) {
     return parseInt(String(sellauthId), 10);
   }
-  return parseInt(uuid.replace(/-/g, "").slice(0, 8), 16) % 2_000_000;
+
+  // FNV-1a over the whole UUID. The previous version took the first 8 hex
+  // characters, so any two ids sharing a prefix produced the same number — and
+  // a collision is not cosmetic here: the id keys React lists, and it keys the
+  // per-product status overrides, so two products would share one status.
+  // Offset past 1,000,000 to stay clear of real SellAuth ids, which are small
+  // sequential integers.
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < uuid.length; i++) {
+    hash ^= uuid.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return 1_000_000 + (hash % 1_000_000_000);
 }
 
 /**

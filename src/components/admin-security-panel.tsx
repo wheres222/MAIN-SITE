@@ -68,6 +68,64 @@ export function AdminSecurityPanel() {
   const [kind, setKind] = useState("");
   const [ip, setIp] = useState("");
 
+  const [blockedIps, setBlockedIps] = useState<Set<string>>(new Set());
+  const [busyIp, setBusyIp] = useState("");
+
+  const loadBlocks = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/moderation");
+      if (!res.ok) return;
+      const json = (await res.json()) as { blocks: { ip: string }[] };
+      setBlockedIps(new Set(json.blocks.map((b) => b.ip)));
+    } catch {
+      // Non-fatal: the log is still readable without block state.
+    }
+  }, []);
+
+  /**
+   * Blocking asks for a reason. It is the field that makes the decision
+   * reviewable later, and an unexplained block is one nobody dares undo.
+   */
+  async function toggleBlock(target: string, currentlyBlocked: boolean) {
+    let reason: string | null = "";
+    if (!currentlyBlocked) {
+      reason = window.prompt(
+        `Block ${target}?\n\nSupport and policy pages stay reachable so a wrongly blocked customer can still contact you.\n\nReason:`,
+        "Automated scanning"
+      );
+      if (reason === null) return;
+    }
+
+    setBusyIp(target);
+    setError("");
+    try {
+      const res = await fetch("/api/admin/moderation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          currentlyBlocked
+            ? { action: "unblock-ip", ip: target }
+            : { action: "block-ip", ip: target, reason }
+        ),
+      });
+      const json = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setError(json.error ?? "Could not change the block.");
+        return;
+      }
+      setBlockedIps((prev) => {
+        const next = new Set(prev);
+        if (currentlyBlocked) next.delete(target);
+        else next.add(target);
+        return next;
+      });
+    } catch {
+      setError("Could not reach the server.");
+    } finally {
+      setBusyIp("");
+    }
+  }
+
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -98,7 +156,8 @@ export function AdminSecurityPanel() {
 
   useEffect(() => {
     void load();
-  }, [load]);
+    void loadBlocks();
+  }, [load, loadBlocks]);
 
   const high = summary?.bySeverity.high ?? 0;
 
@@ -204,20 +263,34 @@ export function AdminSecurityPanel() {
                 </tr>
               </thead>
               <tbody>
-                {summary.topIps.map((row) => (
-                  <tr key={row.ip}>
-                    <td className={styles.mono}>{row.ip}</td>
-                    <td>{row.count}</td>
-                    <td>
-                      <button
-                        className={styles.button}
-                        onClick={() => setIp(row.ip)}
-                      >
-                        Inspect
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {summary.topIps.map((row) => {
+                  const blocked = blockedIps.has(row.ip);
+                  return (
+                    <tr key={row.ip}>
+                      <td className={styles.mono}>
+                        {row.ip}
+                        {blocked && (
+                          <span className={`${styles.badge} ${styles.sevHigh}`} style={{ marginLeft: 8 }}>
+                            blocked
+                          </span>
+                        )}
+                      </td>
+                      <td>{row.count}</td>
+                      <td style={{ display: "flex", gap: 6 }}>
+                        <button className={styles.button} onClick={() => setIp(row.ip)}>
+                          Inspect
+                        </button>
+                        <button
+                          className={styles.button}
+                          disabled={busyIp === row.ip}
+                          onClick={() => void toggleBlock(row.ip, blocked)}
+                        >
+                          {busyIp === row.ip ? "…" : blocked ? "Unblock" : "Block"}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

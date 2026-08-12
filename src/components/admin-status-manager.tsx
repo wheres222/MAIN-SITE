@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
+import { findStatusOverride, inferStatusKind } from "@/lib/product-status";
 import type { SellAuthProduct } from "@/types/sellauth";
 
 type StatusKind = "undetected" | "updating" | "detected";
@@ -45,18 +46,47 @@ function fmt(iso: string) {
   });
 }
 
+/** One entry of the merged public feed served by /api/status-feed. */
+interface FeedEntry {
+  status: StatusKind;
+  note: string | null;
+  updated_at: string;
+  source: "default" | "keyhub" | "manual";
+}
+
+const SOURCE_LABEL: Record<string, { label: string; color: string }> = {
+  keyhub:   { label: "KeyHub (live)",   color: "#62abff" },
+  manual:   { label: "Manual override", color: "#ffc357" },
+  default:  { label: "Static default",  color: "#8a8a90" },
+  inferred: { label: "Inferred",        color: "#5a606e" },
+};
+
 export function AdminStatusManager() {
   const [products, setProducts] = useState<SellAuthProduct[]>([]);
   const [overrides, setOverrides] = useState<Record<string, StatusOverride>>({});
+  /** The merged feed the public board renders from, keyed the same way. */
+  const [feed, setFeed] = useState<Record<string, FeedEntry>>({});
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [feedback, setFeedback] = useState<Record<string, "ok" | "err">>({});
   const [search, setSearch] = useState("");
+  const [sourceFilter, setSourceFilter] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const loadFeed = useCallback(async () => {
+    try {
+      const res = await fetch("/api/status-feed", { cache: "no-store" });
+      const json = (await res.json()) as { statuses?: Record<string, FeedEntry> };
+      setFeed(json.statuses ?? {});
+    } catch {
+      setFeed({});
+    }
+  }, []);
 
   useEffect(() => {
     Promise.all([
       fetchStorefrontClient(),
       fetch("/api/product-statuses").then((r) => r.json()),
+      loadFeed(),
     ]).then(([storefront, rows]) => {
       setProducts(storefront.products ?? []);
       const map: Record<string, StatusOverride> = {};
@@ -68,13 +98,43 @@ export function AdminStatusManager() {
       setOverrides(map);
       setLoading(false);
     });
-  }, []);
+  }, [loadFeed]);
+
+  /**
+   * What the public board is showing for a product right now, resolved with the
+   * exact same helper the board itself uses so this page cannot drift from it.
+   */
+  const resolveLive = useCallback(
+    (product: SellAuthProduct) => {
+      const hit = findStatusOverride(product, feed) as FeedEntry | undefined;
+      return {
+        status: hit?.status ?? inferStatusKind(product),
+        source: hit?.source ?? "inferred",
+        note: hit?.note ?? null,
+        updated_at: hit?.updated_at ?? null,
+      };
+    },
+    [feed]
+  );
 
   const filtered = useMemo(() => {
-    if (!search.trim()) return products;
-    const q = search.toLowerCase();
-    return products.filter((p) => p.name.toLowerCase().includes(q));
-  }, [products, search]);
+    const q = search.trim().toLowerCase();
+    return products.filter((p) => {
+      if (q && !p.name.toLowerCase().includes(q)) return false;
+      if (sourceFilter && resolveLive(p).source !== sourceFilter) return false;
+      return true;
+    });
+  }, [products, search, sourceFilter, resolveLive]);
+
+  /** Where the live statuses are coming from across the whole catalogue. */
+  const sourceTally = useMemo(() => {
+    const tally: Record<string, number> = {};
+    for (const product of products) {
+      const s = resolveLive(product).source;
+      tally[s] = (tally[s] ?? 0) + 1;
+    }
+    return tally;
+  }, [products, resolveLive]);
 
   async function setStatus(product: SellAuthProduct, status: StatusKind) {
     const id = String(product.id);
@@ -356,11 +416,60 @@ curl -X PUT https://cheatparadise.gg/api/status/rust \\
             background: "#0f1117",
             color: "#eef3ff",
             fontSize: "0.9rem",
-            marginBottom: 12,
+            marginBottom: 10,
             outline: "none",
             boxSizing: "border-box",
           }}
         />
+
+        {/* Where every product's live status is coming from. Doubles as a
+            filter — click a source to see only the products it covers. */}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12, alignItems: "center" }}>
+          <span style={{ color: "#8e98ab", fontSize: "0.72rem" }}>
+            {products.length} products ·
+          </span>
+          {(["keyhub", "manual", "default", "inferred"] as const).map((src) => {
+            const count = sourceTally[src] ?? 0;
+            if (count === 0) return null;
+            const active = sourceFilter === src;
+            return (
+              <button
+                key={src}
+                type="button"
+                onClick={() => setSourceFilter(active ? "" : src)}
+                style={{
+                  background: active ? "rgba(98,171,255,0.16)" : "#0f1117",
+                  border: `1px solid ${active ? "#3d6ea8" : "#2a2d36"}`,
+                  borderRadius: 999,
+                  padding: "3px 10px",
+                  color: SOURCE_LABEL[src].color,
+                  fontSize: "0.68rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                {SOURCE_LABEL[src].label}: {count}
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => void loadFeed()}
+            style={{
+              marginLeft: "auto",
+              background: "#0f1117",
+              border: "1px solid #2a2d36",
+              borderRadius: 8,
+              padding: "4px 12px",
+              color: "#8e98ab",
+              fontSize: "0.7rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Refresh feed
+          </button>
+        </div>
 
         {/* Product list */}
         {loading ? (
@@ -372,6 +481,7 @@ curl -X PUT https://cheatparadise.gg/api/status/rust \\
             {filtered.map((product) => {
               const id = String(product.id);
               const override = overrides[id];
+              const live = resolveLive(product);
               const isSaving = Boolean(saving[id]);
               const fb = feedback[id];
 
@@ -401,29 +511,68 @@ curl -X PUT https://cheatparadise.gg/api/status/rust \\
                       }}
                     >
                       {product.name}
+                      {product.groupName || product.categoryName ? (
+                        <span style={{ color: "#4a5060", fontWeight: 500 }}>
+                          {" · "}{product.groupName || product.categoryName}
+                        </span>
+                      ) : null}
                     </span>
-                    {override ? (
+
+                    {/* What the public board is serving for this product right
+                        now, and which layer it came from. */}
+                    <span
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        marginTop: 4,
+                        flexWrap: "wrap",
+                      }}
+                    >
                       <span
                         style={{
-                          display: "block",
-                          color: STATUS_CONFIG[override.status].color,
-                          fontSize: "0.7rem",
-                          marginTop: 2,
-                          opacity: 0.85,
+                          color: STATUS_CONFIG[live.status].color,
+                          background: STATUS_CONFIG[live.status].bg,
+                          border: `1px solid ${STATUS_CONFIG[live.status].border}`,
+                          borderRadius: 999,
+                          padding: "1px 8px",
+                          fontSize: "0.62rem",
+                          fontWeight: 700,
+                          letterSpacing: "0.04em",
                         }}
                       >
-                        {STATUS_CONFIG[override.status].label} · set {fmt(override.updated_at)}
+                        {STATUS_CONFIG[live.status].label}
                       </span>
-                    ) : (
+                      <span
+                        style={{
+                          color: SOURCE_LABEL[live.source]?.color ?? "#5a606e",
+                          fontSize: "0.66rem",
+                        }}
+                      >
+                        {SOURCE_LABEL[live.source]?.label ?? live.source}
+                      </span>
+                      {live.updated_at && (
+                        <span style={{ color: "#4a5060", fontSize: "0.66rem" }}>
+                          · {fmt(live.updated_at)}
+                        </span>
+                      )}
+                      {live.note && live.source === "keyhub" && (
+                        <span style={{ color: "#4a5060", fontSize: "0.66rem" }}>
+                          · {live.note}
+                        </span>
+                      )}
+                    </span>
+
+                    {override && (
                       <span
                         style={{
                           display: "block",
-                          color: "#4a5060",
-                          fontSize: "0.7rem",
-                          marginTop: 2,
+                          color: "#ffc357",
+                          fontSize: "0.66rem",
+                          marginTop: 3,
                         }}
                       >
-                        Auto-inferred
+                        Your override is active — it wins over the KeyHub feed.
                       </span>
                     )}
                   </div>

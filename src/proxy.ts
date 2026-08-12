@@ -1,9 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, after, type NextRequest } from "next/server";
 import { detectThreats, isAdminPath } from "@/lib/security/detect";
+import { isBlocked } from "@/lib/security/blocklist";
 import {
   clientCountry,
   clientIp,
+  linkAccountIp,
   recordDetections,
   recordSecurityEvent,
 } from "@/lib/security/events";
@@ -23,6 +25,22 @@ const MAINTENANCE_PATH  = "/maintenance";
  */
 const PREVIEW_SECRET = process.env.MAINTENANCE_PREVIEW_SECRET?.trim() || null;
 
+/**
+ * Routes a blocked visitor can still reach. Mobile carriers and home broadband
+ * put many people behind one address, so an IP block will eventually catch
+ * someone innocent — leaving support reachable is the difference between a
+ * customer who can tell you and one who silently leaves.
+ */
+function isAppealPath(pathname: string): boolean {
+  return (
+    pathname.startsWith("/support") ||
+    pathname.startsWith("/contact-us") ||
+    pathname.startsWith("/blocked") ||
+    pathname.startsWith("/terms-of-service") ||
+    pathname.startsWith("/privacy-policy")
+  );
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
 
@@ -37,9 +55,11 @@ export async function proxy(request: NextRequest) {
     userAgent: request.headers.get("user-agent") ?? "",
   });
 
+  const ip = clientIp(request.headers);
+
   if (threats.length > 0) {
     const context = {
-      ip: clientIp(request.headers),
+      ip,
       country: clientCountry(request.headers),
       userAgent: request.headers.get("user-agent"),
       method: request.method,
@@ -47,6 +67,39 @@ export async function proxy(request: NextRequest) {
       query: request.nextUrl.search.replace(/^\?/, ""),
     };
     after(() => recordDetections(threats, context));
+  }
+
+  // ── Blocklist ──────────────────────────────────────────────────────────────
+  // Served from an in-memory snapshot, so this is a Set lookup rather than a
+  // query. Support and policy pages stay reachable so a wrongly blocked
+  // customer has a route back to you.
+  if (!isAppealPath(pathname) && !pathname.startsWith("/_next/") && isBlocked(ip)) {
+    after(() =>
+      recordSecurityEvent({
+        kind: "ip_blocked",
+        severity: "low",
+        ip,
+        country: clientCountry(request.headers),
+        userAgent: request.headers.get("user-agent"),
+        method: request.method,
+        path: pathname,
+        statusCode: 403,
+        detail: { enforced: true },
+      })
+    );
+
+    return new NextResponse(
+      `Access to this site has been blocked.\n\nIf you believe this is a mistake, contact support: ${request.nextUrl.origin}/support`,
+      {
+        status: 403,
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          // Never let a block be cached by a CDN — unblocking must take effect
+          // as soon as the snapshot refreshes.
+          "Cache-Control": "no-store, must-revalidate",
+        },
+      }
+    );
   }
 
   // Always pass through maintenance page + static assets
@@ -133,6 +186,13 @@ export async function proxy(request: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Record which addresses an account signs in from. One row per (account, ip)
+  // pair, upserted, so this tracks distinct locations rather than traffic —
+  // that is what makes multi-account abuse and shared-IP rings visible.
+  if (user && ip) {
+    after(() => linkAccountIp(user.id, ip));
+  }
 
   // Every touch of the admin surface is recorded, allowed or not. The guard in
   // src/lib/auth/guard.ts records the *denials*; this records the attempt, so a

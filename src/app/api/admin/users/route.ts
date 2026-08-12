@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
 
   const { data: profiles, error } = await db
     .from("profiles")
-    .select("id, username, role, balance, created_at")
+    .select("id, username, role, status, balance, created_at")
     .order("created_at", { ascending: false })
     .limit(500);
 
@@ -41,6 +41,7 @@ export async function GET(request: NextRequest) {
     id: p.id,
     username: p.username,
     role: p.role as Role,
+    status: (p as { status?: string }).status ?? "active",
     balance: p.balance,
     createdAt: p.created_at,
     email: emailById.get(p.id) ?? null,

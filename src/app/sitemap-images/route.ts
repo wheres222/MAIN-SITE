@@ -1,7 +1,7 @@
 import { getStorefrontData } from "@/lib/sellauth";
 import { canonicalGameSlug } from "@/lib/game-slug";
 import { gameSeoContentFor } from "@/lib/game-seo-content";
-import { productSlugFromName } from "@/lib/product-route";
+import { productHref } from "@/lib/product-route";
 
 export const revalidate = 600;
 
@@ -50,7 +50,7 @@ export async function GET() {
       ? `${siteUrl}/categories/${slug}`
       : `${siteUrl}/categories?slug=${encodeURIComponent(slug)}`;
 
-    const productUrl = `${siteUrl}/products/${productSlugFromName(product.name, product.id)}`;
+    const productUrl = `${siteUrl}${productHref(product)}`;
 
     if (product.image) {
       const arr = pageImages.get(pageUrl) || [];

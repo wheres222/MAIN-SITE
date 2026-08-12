@@ -17,11 +17,19 @@ export const dynamic = "force-dynamic";
  * auto-inferred statuses (all products show as Undetected).
  */
 
+/**
+ * Which layer supplied a status. Surfaced so /admin/status can show where the
+ * value the public board is displaying actually came from — without it a manual
+ * override and a live KeyHub reading look identical.
+ */
+export type StatusSource = "default" | "keyhub" | "manual";
+
 interface StatusEntry {
   product_id: string;
   status: StatusKind;
   note: string | null;
   updated_at: string;
+  source: StatusSource;
 }
 
 // ── Supabase ──────────────────────────────────────────────────────────────────
@@ -43,6 +51,7 @@ async function fetchSupabaseStatuses(): Promise<Record<string, StatusEntry>> {
         status: row.status as StatusKind,
         note: row.note ?? null,
         updated_at: row.updated_at ?? new Date().toISOString(),
+        source: "manual",
       };
     }
     return result;
@@ -58,7 +67,7 @@ function buildStaticStatuses(): Record<string, StatusEntry> {
   const now = new Date().toISOString();
   const result: Record<string, StatusEntry> = {};
   for (const [slug, status] of Object.entries(STATIC_STATUS_DEFAULTS)) {
-    result[slug] = { product_id: slug, status, note: null, updated_at: now };
+    result[slug] = { product_id: slug, status, note: null, updated_at: now, source: "default" };
   }
   return result;
 }

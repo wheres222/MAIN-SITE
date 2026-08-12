@@ -104,6 +104,22 @@ export async function recordSecurityEvent(
   }
 }
 
+/**
+ * Note that an account was seen from an address. Upsert via RPC so concurrent
+ * requests from the same account cannot lose a hit to a read-modify-write race.
+ * Silent on failure for the same reason as recordSecurityEvent: telemetry must
+ * never break a page load.
+ */
+export async function linkAccountIp(userId: string, ip: string): Promise<void> {
+  if (!loggingEnabled()) return;
+  try {
+    const db = createAdminClient();
+    await db.rpc("touch_account_ip", { p_user_id: userId, p_ip: ip });
+  } catch {
+    // Migration not applied yet, or Supabase unavailable.
+  }
+}
+
 export async function recordDetections(
   detections: Detection[],
   context: Omit<SecurityEventInput, "kind" | "severity" | "detail">

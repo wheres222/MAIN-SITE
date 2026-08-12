@@ -11,13 +11,20 @@ export type Role = "user" | "staff" | "owner";
 /** Ranked so a check is a comparison rather than a set membership test. */
 const RANK: Record<Role, number> = { user: 0, staff: 1, owner: 2 };
 
+export type AccountStatus = "active" | "suspended" | "banned";
+
 export interface Viewer {
   userId: string | null;
   email: string | null;
   role: Role;
+  /**
+   * Moderation state, distinct from role: role is what someone may do, status
+   * is whether they may do anything at all.
+   */
+  status: AccountStatus;
 }
 
-const ANONYMOUS: Viewer = { userId: null, email: null, role: "user" };
+const ANONYMOUS: Viewer = { userId: null, email: null, role: "user", status: "active" };
 
 /**
  * Resolve the current session's role.
@@ -55,23 +62,57 @@ export async function getViewer(): Promise<Viewer> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role")
+    .select("role, status")
     .eq("id", user.id)
     .maybeSingle();
 
+  // Defaults to "active" so an unapplied migration can't lock everyone out.
+  const status = ((profile as { status?: string } | null)?.status ??
+    "active") as AccountStatus;
+
   const stored = profile?.role as Role | undefined;
   if (stored && stored in RANK) {
-    return { userId: user.id, email, role: stored };
+    return { userId: user.id, email, role: stored, status };
   }
 
   const bootstrapEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   const role: Role = bootstrapEmail && email === bootstrapEmail ? "owner" : "user";
 
-  return { userId: user.id, email, role };
+  return { userId: user.id, email, role, status };
 }
 
 export async function getViewerRole(): Promise<Role> {
   return (await getViewer()).role;
+}
+
+/**
+ * Refuse a banned account, and a suspended one where money is involved.
+ *
+ * Returns a response to send back, or null to continue. Suspended is
+ * deliberately narrower than banned: they keep their order history and their
+ * route to support, which is what makes it usable while investigating rather
+ * than only after deciding.
+ */
+export async function denyIfModerated(
+  scope: "purchase" | "any" = "any"
+): Promise<NextResponse | null> {
+  const viewer = await getViewer();
+
+  if (viewer.status === "banned") {
+    return NextResponse.json(
+      { error: "This account has been suspended. Contact support if you believe this is a mistake." },
+      { status: 403 }
+    );
+  }
+
+  if (scope === "purchase" && viewer.status === "suspended") {
+    return NextResponse.json(
+      { error: "Purchases are paused on this account. Contact support." },
+      { status: 403 }
+    );
+  }
+
+  return null;
 }
 
 export function hasRole(viewer: Viewer, minimum: Role): boolean {
