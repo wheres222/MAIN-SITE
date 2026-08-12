@@ -513,225 +513,6 @@ function tabDescription(title: string): string {
   return TAB_DESCRIPTIONS[title.toLowerCase().trim()] ?? "";
 }
 
-function featureIconSvg(title: string) {
-  const value = normalizeLabel(title);
-
-  if (value.includes("aim")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="6.6" stroke="currentColor" strokeWidth="1.8" />
-        <circle cx="12" cy="12" r="1.9" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (value.includes("weapon")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M5.1 11.3h6.6l2.1-2.1h3.6l1.5 1.5-1.5 1.6h-3.6l-2.1 2.1H8.9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M6 11.3V9.6M7.7 11.3V9.6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("player exploit")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="9.2" cy="9" r="2.2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M5.6 16.4c1-1.8 2.2-2.6 3.6-2.6s2.6.8 3.6 2.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <path d="m16.2 7.5 1.2 2.2 2.5.3-1.8 1.8.5 2.6-2.4-1.1-2.2 1.2.3-2.6-1.9-1.7 2.5-.5 1.3-2.2Z" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (value.includes("player esp") || value.includes("player")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="8.1" cy="10" r="2.1" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M4.8 16.2c.9-1.6 2.1-2.3 3.3-2.3 1.3 0 2.5.7 3.3 2.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <circle cx="15.9" cy="10.4" r="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M13.2 16.4c.7-1.4 1.6-2 2.7-2 .9 0 1.8.4 2.6 1.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("entity")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="7.2" cy="9.2" r="1.6" fill="currentColor" />
-        <circle cx="11.2" cy="7.3" r="1.6" fill="currentColor" />
-        <circle cx="15.1" cy="7.9" r="1.6" fill="currentColor" />
-        <circle cx="17.4" cy="11.4" r="1.6" fill="currentColor" />
-        <path d="M6.5 15c1.5-1.6 3.1-2.4 5-2.4 1.8 0 3.5.8 5 2.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("resource")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="m7.2 16.6 6.6-6.6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-        <path d="m12.8 7.8 3.6-3.6 2.2 2.2-3.6 3.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M5.6 18.2 8.8 15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("radar")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.7" />
-        <path d="M12 12 16.5 7.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        <circle cx="12" cy="12" r="1.8" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (value.includes("loot")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="5.1" y="7.5" width="13.8" height="9.6" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M10.2 10.4h3.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("vehicle")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M5.1 13.6h13.8l-1.4-4.6H6.5l-1.4 4.6Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-        <circle cx="8.3" cy="15.9" r="1.5" fill="currentColor" />
-        <circle cx="15.7" cy="15.9" r="1.5" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (value.includes("food")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 7.3c2.9 0 5.2 2.2 5.2 5.2 0 3.2-2.3 5.8-5.2 5.8s-5.2-2.6-5.2-5.8c0-3 2.3-5.2 5.2-5.2Z" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M12 7.3c0-1.6.9-2.9 2.4-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("trap")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="6.8" stroke="currentColor" strokeWidth="1.7" />
-        <path d="M12 8.6v4.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-        <circle cx="12" cy="15.8" r="1" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (value.includes("item")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="m12 4.9 6.1 3.4V15L12 18.5 5.9 15V8.3L12 4.9Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M12 4.9v6.4m0 0 6.1-3m-6.1 3-6.1-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("movement")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="14.4" cy="6.8" r="1.5" fill="currentColor" />
-        <path d="m9.4 12.5 2.9-2.1 2.4 1.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <path d="m8.1 16.8 2.8-2.3 2.2 1.2M12.9 13.4l2.7 3.2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("config")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M12 4.8v2M12 17.2v2M19.2 12h-2M6.8 12h-2M17.1 6.9l-1.4 1.4M8.3 15.7l-1.4 1.4M17.1 17.1l-1.4-1.4M8.3 8.3 6.9 6.9" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("setting")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M6 6.7h12M6 12h12M6 17.3h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <circle cx="9" cy="6.7" r="1.4" fill="currentColor" />
-        <circle cx="14.7" cy="12" r="1.4" fill="currentColor" />
-        <circle cx="10.8" cy="17.3" r="1.4" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (value.includes("trigger")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="6.8" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M12 7.6v2.4M12 14v2.4M7.6 12H10M14 12h2.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <circle cx="12" cy="12" r="1.4" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (value.includes("npc")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="7" y="6.5" width="10" height="8" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <circle cx="10" cy="10.4" r="1" fill="currentColor" />
-        <circle cx="14" cy="10.4" r="1" fill="currentColor" />
-        <path d="M9.2 17.4h5.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("world")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M4.8 12h14.4M12 4.8c1.9 2 1.9 12.4 0 14.4M12 4.8c-1.9 2-1.9 12.4 0 14.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("visual") || value === "esp" || value.endsWith(" esp")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M3.8 12s2.9-4.6 8.2-4.6 8.2 4.6 8.2 4.6-2.9 4.6-8.2 4.6S3.8 12 3.8 12Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-        <circle cx="12" cy="12" r="2" fill="currentColor" />
-      </svg>
-    );
-  }
-
-  if (value.includes("misc") || value.includes("other")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="5.2" y="7" width="13.6" height="10.4" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M8.4 7V5.6h7.2V7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <path d="M9.3 11.1h5.4M9.3 13.9h3.4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (value.includes("info") || value.includes("general")) {
-    return (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.6" />
-        <circle cx="12" cy="9" r="1" fill="currentColor" />
-        <path d="M12 11.6v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="5.2" y="5.2" width="5.4" height="5.4" rx="1" fill="currentColor" />
-      <rect x="13.4" y="5.2" width="5.4" height="5.4" rx="1" fill="currentColor" />
-      <rect x="5.2" y="13.4" width="5.4" height="5.4" rx="1" fill="currentColor" />
-      <rect x="13.4" y="13.4" width="5.4" height="5.4" rx="1" fill="currentColor" />
-    </svg>
-  );
-}
 
 export function ProductDetailPage({ product, paymentMethods, seoContent }: ProductDetailPageProps) {
   const variants = useMemo(() => variantsFor(product), [product]);
@@ -751,10 +532,8 @@ export function ProductDetailPage({ product, paymentMethods, seoContent }: Produ
     () => (videoPreview ? videoEmbedUrl(videoPreview.url) : null),
     [videoPreview]
   );
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [openTabs, setOpenTabs] = useState<string[]>([]);
 
   const showRequirements = !isAccountsOrVpnProduct(product);
 
@@ -774,16 +553,9 @@ export function ProductDetailPage({ product, paymentMethods, seoContent }: Produ
       ]
     : [];
 
-  const hasDetailSections =
-    showRequirements ||
-    detailContent.featureTabs.length > 0;
+
 
   useEffect(() => {
-    setOpenTabs([]);
-  }, [detailContent.featureTabs, product.id]);
-
-  useEffect(() => {
-    setActiveImageIndex(0);
     setLightboxOpen(false);
   }, [product.id]);
 
@@ -832,10 +604,7 @@ export function ProductDetailPage({ product, paymentMethods, seoContent }: Produ
   const selectedVariant =
     variants.find((variant) => variant.id === selectedVariantId) || variants[0] || null;
 
-  const selectedUnitPrice =
-    selectedVariant?.price ?? variants[0]?.price ?? product.price ?? 0;
 
-  const paymentMethod = paymentMethods[0]?.id || "crypto";
 
   function resolveCheckoutQuantity() {
     const variantMinimum =
@@ -926,13 +695,6 @@ export function ProductDetailPage({ product, paymentMethods, seoContent }: Produ
     }
   }
 
-  function toggleTab(title: string) {
-    setOpenTabs((previous) =>
-      previous.includes(title)
-        ? previous.filter((item) => item !== title)
-        : [...previous, title]
-    );
-  }
 
   return (
     <div className={styles.page}>

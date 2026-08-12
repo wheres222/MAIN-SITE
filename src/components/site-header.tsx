@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { DepositModal } from "@/components/deposit-modal";
@@ -30,7 +30,10 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
   const router = useRouter();
   const pathname = usePathname() || "/";
 
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function loadUser() {
@@ -77,7 +80,7 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [supabase]);
 
   // Close dropdown on outside click
   useEffect(() => {

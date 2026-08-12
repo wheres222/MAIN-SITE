@@ -16,6 +16,22 @@ const eslintConfig = defineConfig([
     // deploy, so the Next/TypeScript rules (no-require-imports) don't apply.
     "discord-bot/**",
   ]),
+  {
+    rules: {
+      // A leading underscore is the conventional way to say "this binding is
+      // deliberately unused" — a prop kept for API compatibility, a positional
+      // argument that has to exist so a later one can be reached. Flagging
+      // those buries the genuinely dead code the rule exists to surface.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

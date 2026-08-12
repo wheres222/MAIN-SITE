@@ -383,7 +383,8 @@ export function AdminProductsManager() {
                           <button
                             onClick={() => setExpandedProducts(prev => {
                               const next = new Set(prev);
-                              next.has(product.id) ? next.delete(product.id) : next.add(product.id);
+                              if (next.has(product.id)) next.delete(product.id);
+                                else next.add(product.id);
                               return next;
                             })}
                             style={{

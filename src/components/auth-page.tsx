@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useState, type ReactNode, useMemo } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import styles from "./auth-page.module.css";
 
@@ -152,7 +152,10 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
   const [discordLoading, setDiscordLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   const pwChecks = checkPassword(regPassword);
   const pwTouched = regPassword.length > 0;

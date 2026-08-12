@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import styles from "./account-modal.module.css";
@@ -38,7 +38,10 @@ interface Order {
 export function AccountModal({ onClose }: AccountModalProps) {
   const router = useRouter();
   const overlayRef = useRef<HTMLDivElement>(null);
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   const [section, setSection] = useState<Section>("overview");
   const [displayName, setDisplayName] = useState("");
@@ -83,7 +86,7 @@ export function AccountModal({ onClose }: AccountModalProps) {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

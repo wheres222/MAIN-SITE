@@ -2,7 +2,7 @@
 
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import styles from "../account.module.css";
 
@@ -44,7 +44,10 @@ export default function ReferralsPage() {
   const [cashingOut, setCashingOut] = useState(false);
   const [cashoutNotice, setCashoutNotice] = useState({ text: "", type: "" });
 
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   async function load() {
     const { data: { user } } = await supabase.auth.getUser();

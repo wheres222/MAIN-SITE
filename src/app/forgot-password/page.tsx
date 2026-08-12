@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./forgot-password.module.css";
 
@@ -11,7 +11,10 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

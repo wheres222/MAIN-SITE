@@ -21,19 +21,25 @@
 }
 
 /* ── Unified design tokens ───────────────────────────────────────────────── */
-/* Fonts: Satoshi (display) + Inter (UI/body). Both loaded via next/font in   */
-/* src/app/layout.tsx — no @font-face needed here.                            */
+/* Fonts: Raleway (brand/display) + Inter (UI/body). Both loaded via next/font */
+/* in src/app/layout.tsx — no @font-face needed here.                          */
 
 :root {
-  /* ── Fonts ───────────────────────────────────────────────────────────── */
-  --font-display: var(--font-satoshi), "Satoshi", var(--font-inter), Inter, system-ui, sans-serif;
-  --font-body:    var(--font-inter), Inter, var(--font-satoshi), "Satoshi", system-ui, sans-serif;
-  /* Brand font — Raleway, matching gamesense's wordmark stack (Helvetica Neue / Arial fallbacks). */
+  /* ── Fonts ─────────────────────────────────────────────────────────────
+   * Two families, deliberately:
+   *   Raleway  — brand, headings and display. By far the most used (29 rules).
+   *   Inter    — body copy and UI.
+   *
+   * Satoshi was a third face used by only five rules while shipping four
+   * self-hosted weight files, so it cost more to load than it earned. Its uses
+   * now resolve to the brand face, which is what "display" should have meant.
+   */
   --font-brand:   var(--font-raleway), "Raleway", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --font-body:    var(--font-inter), Inter, system-ui, sans-serif;
 
-  /* Legacy font aliases — point at the new system so existing rules keep working */
+  /* Aliases kept so existing rules keep working without a sweeping rename. */
+  --font-display:       var(--font-brand);
   --font-main:          var(--font-body);
-  --font-heading:       var(--font-brand);
   --font-hero-selected: var(--font-brand);
 
   /* ── Type scale ──────────────────────────────────────────────────────── */
@@ -196,9 +202,6 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
-body {
-  --font-hero-selected: var(--font-display);
-}
 
 /* ── Ambient layers — aurora (behind) + film grain (above) ───────────────── */
 /* Both are fixed AND promoted to their own compositor layer via translateZ(0).*/
@@ -536,23 +539,6 @@ select::-ms-expand { display: none; }
   .home-hero-cta { justify-content: center; }
 }
 
-/* Trust bar */
-.trust-bar {
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-1);
-}
-.trust-bar-inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  padding: 12px 20px;
-}
-.trust-bar-item { font-size: 0.85rem; color: var(--text-muted); white-space: nowrap; }
-.trust-bar-item strong { color: var(--text-primary); font-weight: 700; }
-.trust-bar-sep { width: 1px; height: 14px; background: var(--border-strong); }
 
 /* ── Rentable ad spots ────────────────────────────────────────────────────
  * Three 550×90 banners in a row. Three of them plus the gaps need 1674px, so
@@ -3396,8 +3382,7 @@ select::-ms-expand { display: none; }
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .home-section,
-    .footage-section,
-    .trust-bar-inner {
+    .footage-section {
       animation: reveal-up 0.7s var(--ease-out) both;
       animation-timeline: view();
       animation-range: entry 0% entry 42%;

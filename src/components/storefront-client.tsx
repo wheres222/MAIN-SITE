@@ -109,19 +109,6 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
           </div>
         </section>
 
-        {/* ── Trust bar ── */}
-        <div className="trust-bar">
-          <div className="home-shell trust-bar-inner">
-            <span className="trust-bar-item"><strong>14,000+</strong> orders delivered</span>
-            <span className="trust-bar-sep" aria-hidden="true" />
-            <span className="trust-bar-item"><strong>4.9★</strong> average rating</span>
-            <span className="trust-bar-sep" aria-hidden="true" />
-            <span className="trust-bar-item"><strong>Instant</strong> delivery</span>
-            <span className="trust-bar-sep" aria-hidden="true" />
-            <span className="trust-bar-item"><strong>24/7</strong> Discord support</span>
-          </div>
-        </div>
-
         {/* ── Ad spots — rentable placements ── */}
         <section className="adspots" aria-label="Advertising spots">
           {[0, 1, 2].map((i) => (

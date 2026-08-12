@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -87,7 +87,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const [isStaff, setIsStaff] = useState(false);
-  const supabase = createClient();
+  // Memoised: createClient() returns a new object each call, so building it
+  // inline made every render produce a fresh client and made it unusable as an
+  // effect dependency.
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     async function load() {
@@ -115,7 +118,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
       setIsStaff(role === "staff" || role === "owner");
     }
     load();
-  }, [pathname]);
+  }, [pathname, supabase]);
 
   function requestSignOut() {
     setShowSignOutConfirm(true);
