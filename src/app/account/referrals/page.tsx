@@ -122,7 +122,7 @@ export default function ReferralsPage() {
         <h1 className={styles.pageTitle}>Affiliates</h1>
         <p className={styles.pageSub}>
           Invite others and earn a kickback every time they make a purchase under your code.
-          Level up your tier and earn up to 3% kickback from each order!
+          Level up your tier and earn up to {AFFILIATE_TIERS[AFFILIATE_TIERS.length - 1].kickback} kickback from each order!
         </p>
       </div>
 

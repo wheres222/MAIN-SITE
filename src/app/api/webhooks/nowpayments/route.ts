@@ -1,5 +1,6 @@
 import { createHmac } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { creditReferral } from "@/lib/referrals";
 import { NextResponse, type NextRequest } from "next/server";
 import { sendDepositConfirmedEmail, sendOrderKeysEmail, sendOrderDeliveredEmail } from "@/lib/email";
 import { deliverOrder } from "@/lib/delivery";
@@ -155,6 +156,10 @@ async function handleShopOrder(
   }
 
   log.info("Shop order marked paid", { orderId: order.id, email: order.email });
+
+  // See the note in the Stripe webhook: after the lock, guarded again by a
+  // unique order_id, and never allowed to break fulfilment.
+  await creditReferral(admin, order.user_id, order.id, order.total_usd);
 
   // ── Fetch order items for delivery ──────────────────────────────────────────
   const { data: items } = await admin
