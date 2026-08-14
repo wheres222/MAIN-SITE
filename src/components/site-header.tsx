@@ -5,7 +5,6 @@ import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { DepositModal } from "@/components/deposit-modal";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export type NavTab = "store" | "status" | "support" | "guide" | "loaders" | "videos" | "none";
@@ -20,7 +19,6 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [balance, setBalance] = useState<number | null>(null);
-  const [showDeposit, setShowDeposit] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -131,11 +129,12 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
           <div className="nav-row-actions">
             {isLoggedIn ? (
               <div className="nav-user-group">
-                {/* Balance bar */}
-                <button
-                  type="button"
+                {/* Balance bar. A link to a real page rather than a popup, so
+                    the deposit flow is shareable, back-button-friendly, and
+                    doesn't trap the page behind an overlay. */}
+                <Link
+                  href="/account/deposit"
                   className="nav-balance-btn"
-                  onClick={() => setShowDeposit(true)}
                   aria-label="Add account balance"
                 >
                   <span className="nav-balance-label">BALANCE</span>
@@ -146,7 +145,7 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
                       <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
                     </svg>
                   </span>
-                </button>
+                </Link>
 
                 {/* Avatar dropdown */}
                 <div className="nav-avatar-wrap" ref={dropdownRef}>
@@ -218,10 +217,6 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
       </div>
       {/* Skip-link target — placed after the nav so keyboard users land here */}
       <span id="main-content" aria-hidden="true" />
-
-      {showDeposit && (
-        <DepositModal onClose={() => setShowDeposit(false)} />
-      )}
 
       {showSignOutConfirm && (
         <ConfirmDialog

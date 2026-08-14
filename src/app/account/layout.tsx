@@ -66,6 +66,17 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/account/deposit",
+    exact: false,
+    label: "Deposit",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
+        <rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M12 10v6M9 13h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
     href: "/account/referrals",
     exact: false,
     label: "Referrers",
