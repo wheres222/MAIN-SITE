@@ -14,16 +14,20 @@
   padding: 28px 20px 48px;
 }
 
+/* Was capped at 1060px, which left most of a modern display empty while the
+   tables inside scrolled horizontally. 1440 matches the widest common laptop
+   without letting text run to unreadable line lengths on an ultrawide — the
+   content columns inside cap themselves separately. */
 .panel {
   width: 100%;
-  max-width: 1060px;
+  max-width: 1440px;
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 240px 1fr;
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
-  min-height: 620px;
+  min-height: 640px;
 }
 
 /* ─── Sidebar ─────────────────────────────────────────── */
@@ -141,7 +145,7 @@
 
 /* ─── Content ─────────────────────────────────────────── */
 .content {
-  padding: 26px 28px;
+  padding: 30px 34px;
   min-width: 0;
   overflow: hidden;
   background: var(--surface-1);

@@ -63,7 +63,9 @@
 /* ─── Stats row ────────────────────────────────────────── */
 .statsRow {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  /* 130px produced a row of eight cramped tiles once the panel widened; 200
+     keeps three or four substantial cards instead. */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 10px;
   margin-bottom: 22px;
 }
@@ -457,7 +459,9 @@
 .emptyBtn:hover { background: var(--accent-dark); }
 
 /* ─── Forms ────────────────────────────────────────────── */
-.form { display: flex; flex-direction: column; gap: 14px; max-width: 460px; }
+/* Forms stay narrow on purpose — a full-width input is harder to scan, not
+   easier — but 460px was tight for an email field. */
+.form { display: flex; flex-direction: column; gap: 16px; max-width: 560px; }
 .twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .field { display: flex; flex-direction: column; gap: 5px; }
 .label { font-size: 0.74rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
