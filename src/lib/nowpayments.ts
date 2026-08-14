@@ -16,11 +16,8 @@ export const CURRENCY_MAP: Record<string, string> = {
   sol:  "sol",
   ltc:  "ltc",
   usdt: "usdttrc20",
-  usdc: "usdc",
   bnb:  "bnb",
-  doge: "doge",
-  trx:  "trx",
-  xrp:  "xrp",
+  busd: "busd",
 };
 
 export const ALLOWED_CURRENCIES = Object.keys(CURRENCY_MAP);

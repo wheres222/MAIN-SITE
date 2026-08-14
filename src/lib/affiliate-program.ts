@@ -16,12 +16,22 @@ export interface AffiliateTier {
   threshold: number;
 }
 
+/**
+ * Rates were 1%–3%, against a 10%–20% norm for this niche. At that level the
+ * programme recruited nobody: a creator comparing offers sees the number before
+ * anything else, and 1% reads as not worth the effort — which it is.
+ *
+ * These must stay in step with referral_rate_for() in
+ * supabase/migrations/referral_commissions.sql. That function is what actually
+ * pays; this table is only what the pages display. If they disagree, the site
+ * is advertising a rate it does not honour.
+ */
 export const AFFILIATE_TIERS: AffiliateTier[] = [
-  { name: "Tier 1", kickback: "1%", threshold: 0 },
-  { name: "Tier 2", kickback: "1.5%", threshold: 100 },
-  { name: "Tier 3", kickback: "2%", threshold: 1000 },
-  { name: "Tier 4", kickback: "2.5%", threshold: 2500 },
-  { name: "Tier 5", kickback: "3%", threshold: 5000 },
+  { name: "Tier 1", kickback: "10%", threshold: 0 },
+  { name: "Tier 2", kickback: "12.5%", threshold: 250 },
+  { name: "Tier 3", kickback: "15%", threshold: 1000 },
+  { name: "Tier 4", kickback: "17.5%", threshold: 2500 },
+  { name: "Tier 5", kickback: "20%", threshold: 5000 },
 ];
 
 export const AFFILIATE_TOP_RATE = AFFILIATE_TIERS[AFFILIATE_TIERS.length - 1].kickback;

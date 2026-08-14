@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { creditReferral } from "@/lib/referrals";
 import { constructStripeEvent } from "@/lib/stripe";
 import { deliverOrder } from "@/lib/delivery";
 import { sendOrderKeysEmail, sendOrderDeliveredEmail } from "@/lib/email";
@@ -158,6 +159,13 @@ async function fulfillShopOrder(
   }
 
   logger.info("Stripe payment confirmed — beginning fulfillment", { orderId });
+
+  // Credit the referrer, if this buyer was referred. Placed after the lock so
+  // it runs exactly once per order — and guarded again by a unique order_id in
+  // referral_commissions, so a retry that somehow got past the lock still
+  // cannot pay twice. Failures are logged, never thrown: a commission problem
+  // must not stop the customer receiving what they paid for.
+  await creditReferral(admin, order.user_id, orderId, order.total_usd);
 
   // ── Fetch line items ────────────────────────────────────────────────────────
   const { data: items } = await admin

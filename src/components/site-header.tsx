@@ -5,8 +5,6 @@ import Link from "next/link";
 import { type ReactNode, useEffect, useRef, useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { DepositModal } from "@/components/deposit-modal";
-import { AccountModal } from "@/components/account-modal";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export type NavTab = "store" | "status" | "support" | "guide" | "loaders" | "videos" | "none";
@@ -21,9 +19,7 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [balance, setBalance] = useState<number | null>(null);
-  const [showDeposit, setShowDeposit] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showAccountModal, setShowAccountModal] = useState(false);
   const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -133,11 +129,12 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
           <div className="nav-row-actions">
             {isLoggedIn ? (
               <div className="nav-user-group">
-                {/* Balance bar */}
-                <button
-                  type="button"
+                {/* Balance bar. A link to a real page rather than a popup, so
+                    the deposit flow is shareable, back-button-friendly, and
+                    doesn't trap the page behind an overlay. */}
+                <Link
+                  href="/account/deposit"
                   className="nav-balance-btn"
-                  onClick={() => setShowDeposit(true)}
                   aria-label="Add account balance"
                 >
                   <span className="nav-balance-label">BALANCE</span>
@@ -148,7 +145,7 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
                       <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
                     </svg>
                   </span>
-                </button>
+                </Link>
 
                 {/* Avatar dropdown */}
                 <div className="nav-avatar-wrap" ref={dropdownRef}>
@@ -171,14 +168,13 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
 
                   {showDropdown && (
                     <div className="nav-dropdown" role="menu" aria-label="Account options">
-                      <button
-                        type="button"
-                        role="menuitem"
-                        className="nav-dropdown-item"
-                        onClick={() => { setShowDropdown(false); setShowAccountModal(true); }}
-                      >
+                      {/* A page, like every other item in this menu. The
+                          dashboard used to open in a modal, which meant the
+                          same content was implemented twice and the cramped
+                          copy was the one most people saw. */}
+                      <Link href="/account" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
                         Dashboard
-                      </button>
+                      </Link>
                       <Link href="/account/settings" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
                         Settings
                       </Link>
@@ -221,14 +217,6 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
       </div>
       {/* Skip-link target — placed after the nav so keyboard users land here */}
       <span id="main-content" aria-hidden="true" />
-
-      {showDeposit && (
-        <DepositModal onClose={() => setShowDeposit(false)} />
-      )}
-
-      {showAccountModal && (
-        <AccountModal onClose={() => setShowAccountModal(false)} />
-      )}
 
       {showSignOutConfirm && (
         <ConfirmDialog

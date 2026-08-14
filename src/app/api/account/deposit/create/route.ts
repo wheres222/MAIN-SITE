@@ -9,12 +9,8 @@ const CURRENCY_MAP: Record<string, string> = {
   sol:  "sol",
   ltc:  "ltc",
   usdt: "usdttrc20",
-  usdc: "usdc",
   bnb:  "bnb",
   busd: "busd",
-  doge: "doge",
-  trx:  "trx",
-  xrp:  "xrp",
 };
 
 const ALLOWED_CURRENCIES = Object.keys(CURRENCY_MAP);
