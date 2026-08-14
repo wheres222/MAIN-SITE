@@ -267,6 +267,36 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         body:
           "The habit that gives people away here is movement, not aim. Walking directly to a container you have no line of sight to, or taking a route that avoids a squad you should not know about, reads as impossible knowledge to anyone watching.\n\nInformation is only quiet if you act on it patiently. Taking a slightly worse route that looks like a decision, rather than the optimal one that looks like a readout, is the difference between a quiet raid and a report.\n\nUse an account you can lose, and consider a temporary account if you are only playing a few sessions — it costs less than risking one with progress attached.",
       },
+      {
+        heading: "Why extraction shooters change what a cheat is worth",
+        body:
+          "ARC Raiders is an extraction game, and the economics of that genre are what make cheats valuable here in a way they are not in a respawn shooter. Every raid is an investment: the kit you carried in, the time you spent, and whatever you have picked up since. Dying does not cost you thirty seconds — it costs all of it.\n\nThat asymmetry changes which features matter. In a game with respawns, an aimbot converts fights into kills and that is most of the value. In an extraction game the highest-value decision is which fights to have at all, and the second is whether you can reach an extract before someone else reaches you. Both are information problems.\n\nIt also changes the shape of a good session. A raid where you saw three squads, avoided all of them and left with a full bag is a better outcome than one where you won two fights and lost the third. Information supports the first pattern. Aim assistance mostly supports the second, which is the one that ends in a report.",
+        bullets: {
+          heading: "What actually decides a raid",
+          items: [
+            "Knowing which squads are between you and an extract",
+            "Loot value information, so you carry what pays for the raid",
+            "ARC machine positions — the environmental threat other players forget",
+            "Extract availability and timing",
+            "Aim assistance — useful in a fight you should probably have avoided",
+          ],
+        },
+      },
+      {
+        heading: "A newer game means a moving target",
+        body:
+          "ARC Raiders is recent, and that has practical consequences worth stating plainly. Embark are still actively developing both the game and its enforcement, which means the patterns people rely on from mature titles do not apply yet.\n\nBuilds are rebuilt more often here because the game itself changes more often. A status that was accurate last week is genuinely less reliable than the equivalent claim about a five-year-old title, and the gap between a patch and a working build is more likely to be measured in days than hours. Checking the live status immediately before a session matters more on this game than on almost any other in the catalogue.\n\nEnforcement patterns are also still forming. Retroactive bans covering earlier activity are a normal tool for a developer building out anti-cheat, so a quiet month is not evidence that anything was safe. Treat progression on this game as more disposable than you would on an established title, not less.",
+        bullets: {
+          heading: "Playing a title with immature enforcement",
+          items: [
+            "Status changes faster — check it the day you play, not the week",
+            "Longer pauses after patches while builds are rebuilt",
+            "Retroactive bans are a realistic possibility",
+            "A quiet session tells you less here than on a mature game",
+            "Temporary accounts make more sense than usual on a title like this",
+          ],
+        },
+      },
     ],
     faqs: [
       {
@@ -395,6 +425,36 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         body:
           "Siege shows the player who killed you exactly what happened, which makes it one of the least forgiving games for obvious behaviour. A single pre-fire through a soft wall is enough for a clip.\n\nThe habit that gets people banned is tracking. Following an operator through a wall, or turning to a flank before any sound justifies it, is visible in the killcam and unmistakable. Information is only safe if you act on it with a plausible delay.\n\nUse an account with no rank or operator unlocks you would miss. Siege bans are permanent and take the whole account with them, and unlocks represent a substantial amount of time.",
       },
+      {
+        heading: "BattlEye and MouseTrap — two separate systems",
+        body:
+          "Siege runs BattlEye, and alongside it Ubisoft operate MouseTrap, which is a different kind of system and frequently confused with the anti-cheat itself. BattlEye looks for cheat software. MouseTrap looks at input — specifically, whether mouse movement has the characteristics of a human hand or of something generating it.\n\nThat distinction matters when you configure an aimbot on this game. MouseTrap does not need to find your software to act on you; it can act on how your crosshair moves. Snapping corrections, perfectly linear tracking and superhuman flick timing are the input signatures it exists to identify, and no amount of staying external hides them.\n\nWhich is why smoothing is a safety setting on Siege rather than a comfort one. An aimbot configured to feel good is an aimbot configured to look generated, and on this game those are the same setting turned two different ways.",
+        bullets: {
+          heading: "Two systems, two kinds of exposure",
+          items: [
+            "BattlEye: detects cheat software, kernel-level, standard ban path",
+            "MouseTrap: analyses input patterns rather than software",
+            "MouseTrap originally targeted controller-on-PC input translation",
+            "Smoothing and a narrow FOV address input analysis; staying external does not",
+            "Killcams give the community a third, entirely human review path",
+          ],
+        },
+      },
+      {
+        heading: "Why information beats aim on Siege specifically",
+        body:
+          "Siege is not a game where duels are won by whoever aims faster. Time-to-kill is short enough that the player who knew first almost always wins, and there is no respawn to soften a mistake. Rounds are decided before most fights start.\n\nThat makes the information features unusually valuable here. Knowing which side of the wall a defender is holding, where the cameras are, whether a Kapkan is on the door you were about to breach — each of those changes a decision rather than a reaction. Drone and defuser tracking alone decide more rounds than any aimbot setting.\n\nIt also means the gadget layer is where Siege-specific value sits. Every operator brings hardware to the map, and half the game is finding it before it finds you. A cheat that shows you traps, cameras and breach placements is playing Siege's actual game. One that snaps your crosshair to heads is playing a different game badly and getting you clipped doing it.",
+        bullets: {
+          heading: "Ranked by value on Siege",
+          items: [
+            "Gadget ESP — cameras, traps, Kapkans, breach charges",
+            "Drone and defuser tracking — decides more rounds than aim",
+            "Operator ESP with visibility state through soft walls",
+            "Health and armour, for judging whether a push is survivable",
+            "Aimbot — highest risk under MouseTrap, lowest marginal value",
+          ],
+        },
+      },
     ],
     faqs: [
       {
@@ -521,6 +581,35 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         heading: "Protecting your Fortnite account",
         body:
           "Use a fresh account with nothing on it. This is repeated everywhere and skipped constantly, and it is the difference between an inconvenience and losing a locker you spent years and real money filling.\n\nDo not link the throwaway account to the email, payment method or console profile attached to your main. Epic associate accounts through more signals than most people expect, and a hardware fingerprint is only one of them.\n\nPlay like someone who is not cheating. Fortnite's replay system means opponents can review exactly what you did from any angle, and a report backed by a replay carries considerably more weight than a report alone.",
+      },
+      {
+        heading: "How Fortnite's anti-cheat actually works",
+        body:
+          "Fortnite runs two anti-cheats at once. BattlEye and Easy Anti-Cheat both ship with the game, both load kernel-level components, and both are actively maintained against a title that patches more often than almost anything else on the market.\n\nThe practical effect of running two is not that detection is twice as likely — it is that the surface you have to stay clear of is wider, and that driver conflicts are far more common than on single-anti-cheat games. A setup that runs cleanly on Rust will frequently refuse to start here, and the cause is usually a second kernel driver rather than the cheat itself.\n\nThe other thing to understand is Epic's replay system. Every match is recorded and any player can watch it back from any angle, including yours. That gives Epic a review path most games do not have: a report arrives with the evidence already attached. It is why aim configuration matters more on Fortnite than the raw quality of the aimbot does.",
+        bullets: {
+          heading: "What you are actually up against",
+          items: [
+            "BattlEye and EAC running simultaneously, both with kernel components",
+            "Frequent patches — builds pause for rebuilds more often than on other games",
+            "Full match replays available to every player in the lobby",
+            "Account and hardware bans, with hardware bans persisting across new accounts",
+            "Driver conflicts as the most common cause of a failed launch",
+          ],
+        },
+      },
+      {
+        heading: "Zero Build versus Build — they need different settings",
+        body:
+          "These are effectively two different games and the same configuration does not serve both. In Build modes, fights are decided by who controls height and who can rebuild through pressure. Information about where someone is has a short shelf life, because the geometry changes every two seconds, and an aimbot spends most of a fight tracking a target behind a freshly placed wall.\n\nZero Build is the opposite. Cover is fixed, positioning is permanent for the length of the fight, and knowing where three people are is worth more than any amount of aim. ESP is close to decisive there, and aim assistance carries most of its risk for a fraction of its usual value.\n\nIf you are buying for one mode, buy for the mode you actually play. If you play both, keep two profiles and switch — that is what the profile system is for, and it is the difference between a setup that helps and one that fights you.",
+        bullets: {
+          heading: "Configuring per mode",
+          items: [
+            "Build: shorter ESP draw distance, visibility checks on, aim assist narrow",
+            "Zero Build: longer draw distance, loot filtering higher, aim assist minimal",
+            "Both: smoothing high enough to survive a replay from any angle",
+            "Ranked in either mode: the quieter profile, always",
+          ],
+        },
       },
     ],
     faqs: [
@@ -911,6 +1000,35 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         body:
           "Activision ban at both account and hardware level, and they are more willing to hardware ban than most publishers. That makes a spoofer relevant here in a way it is not for every game, and it makes running anything on your main account a genuinely poor decision.\n\nBecause Ricochet applies silent mitigations, the usual advice to \"stop when something feels off\" is harder to follow — the whole point of a mitigation is that it does not announce itself. Treat a run of games where your shots do not register as a reason to stop, not a reason to push through.\n\nCheck live product status before every session. Call of Duty patches frequently and builds are rebuilt often.",
       },
+      {
+        heading: "Ricochet's mitigations: when the game breaks on purpose",
+        body:
+          "Call of Duty is the one game here where being caught does not necessarily mean being banned. Ricochet applies mitigations to suspected cheaters instead — deliberately degrading the game rather than removing you from it.\n\nDamage that does nothing is the best known: your rounds register as hits and take no health. Cloaking makes you invisible to the suspected cheater so they are effectively fighting ghosts. Others include disabled parachutes and being quarantined into lobbies made up largely of other flagged players, which produces matches that feel strange in a way people notice long before they understand.\n\nThe reason this matters is that it inverts the usual advice. On most games a quiet session means nothing happened. On Call of Duty, a session where your shots stop registering means something has already happened — you are flagged, and the ban is a decision that has not been taken yet. That is the moment to stop, not the moment to reinstall and try a different loader.",
+        bullets: {
+          heading: "Signs you are already flagged",
+          items: [
+            "Bullets consistently registering as hits with no damage",
+            "Opponents behaving as though they cannot see you at all",
+            "Lobbies where a majority of players are obviously cheating",
+            "Equipment or traversal failing without explanation",
+            "Any of these repeating across sessions rather than once",
+          ],
+        },
+      },
+      {
+        heading: "Warzone and multiplayer need different configurations",
+        body:
+          "Warzone is a battle royale with 150 players, long sightlines, armour plates and a shrinking circle. Multiplayer is six-versus-six on small maps with instant respawns. The features that matter barely overlap, and running one profile across both is how people end up with a setup that is loud in one mode and useless in the other.\n\nIn Warzone, information is the product. Loot and contract awareness in the first two minutes decides whether you have a kit worth fighting with; knowing which direction a third team is rotating from decides whether you survive the second circle. Ballistic compensation matters because engagements happen at ranges where bullet travel is real.\n\nIn multiplayer, engagements are close and constant, respawn timers make individual deaths cheap, and there is far less to know. That reduces what ESP is worth and increases the temptation to lean on aim assistance — which is exactly the wrong instinct, because a short-map killcam shows everything.",
+        bullets: {
+          heading: "Two profiles, not one",
+          items: [
+            "Warzone: long ESP range, loot and contract filtering, ballistic compensation",
+            "Multiplayer: short ESP range, minimal aim assistance, killcams see everything",
+            "Warzone deaths are expensive; multiplayer deaths cost seconds",
+            "Ranked play in either mode draws the most reports",
+          ],
+        },
+      },
     ],
     faqs: [
       {
@@ -1039,6 +1157,34 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         body:
           "Community admins watch logs. Repeated perfect routing to loot buildings, or arriving at a stash nobody else has found, is visible in movement data without any client-side detection at all.\n\nDayZ's slow pace works in your favour here. There is time to take a plausible route, to search buildings you already know are empty, and to behave like someone who is genuinely searching. The players who get removed are usually the ones who stopped bothering.\n\nUse an account you can lose, and expect that a server ban and a global ban are separate events with separate causes.",
       },
+      {
+        heading: "Official servers versus community servers",
+        body:
+          "DayZ has two enforcement worlds and people routinely confuse them. Official servers run BattlEye with global bans: get caught there and the ban follows your account everywhere BattlEye enforces for DayZ. Community servers add their own layer — admin tools, logging, whitelists, and staff who spectate.\n\nThe counter-intuitive part is that community servers are usually the harder problem. BattlEye is software looking for software; an admin is a person looking at behaviour, and behaviour is what a cheat changes. An admin who watches you walk to three buried stashes in an hour does not need a detection to act.\n\nThe flip side is scope. A community ban costs you that server. A global ban costs you every official server permanently. Which risk matters more depends entirely on where you actually play, and it is worth deciding that before you configure anything.",
+        bullets: {
+          heading: "Two different threat models",
+          items: [
+            "Official: BattlEye, global bans, software-based detection",
+            "Community: admin review, log analysis, per-server bans",
+            "Community servers often have whitelists and application processes worth losing",
+            "Behaviour is the risk on community servers; software is the risk on official",
+          ],
+        },
+      },
+      {
+        heading: "What a cheat is actually worth on DayZ",
+        body:
+          "More than on most games, and for a reason particular to this one. DayZ has the worst ratio of time invested to time lost in the genre: six hours of careful play, and a single unseen player ends the character with everything on it. There is no insurance and no stash you did not build yourself.\n\nThat asymmetry is why player ESP dominates the value ranking here. It is not about winning fights — it is about not entering the ninety per cent of fights that were never worth taking. A player you saw at 300 metres is a player you simply walked around.\n\nStash and tent information is the second half of it. DayZ's real economy is buried in treelines, and finding another group's stash is close to random without help. That single feature changes a wipe more than any aim setting, and unlike aim it produces nothing another player can see, record or report.",
+        bullets: {
+          heading: "Where the value actually sits",
+          items: [
+            "Avoiding fights you never saw coming — the main cause of lost characters",
+            "Stash and tent locations — the hidden economy of every server",
+            "Vehicle tracking, which is otherwise pure luck",
+            "Medical and ammunition filtering, since an untreated injury ends a character",
+          ],
+        },
+      },
     ],
     faqs: [
       {
@@ -1153,6 +1299,35 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         heading: "Server rules, admins and getting removed",
         body:
           "On FiveM you are not evading an anti-cheat so much as an administrator. That changes the strategy entirely: it is about not producing the events an admin notices, not about defeating a scanner.\n\nActions that write to server logs — teleports, spawned vehicles, impossible movement — are the ones that get caught, because an admin can query them after the fact. Passive features that only change what you see are far harder to establish.\n\nBans on RP servers are typically permanent and tied to a character you may have invested months in, which is its own argument for restraint.",
+      },
+      {
+        heading: "Why FiveM is a different problem from every other game here",
+        body:
+          "There is no kernel anti-cheat. That single fact changes everything about how this works. FiveM is GTA V running on community-hosted servers, and the protection is server-side scripts plus staff, not a driver inspecting your machine.\n\nServer-side detection watches events, not software. When your client tells the server you moved 400 metres in one tick, or that a vehicle now exists that nobody spawned through a legitimate route, that is an event a script can flag and an admin can query afterwards. Nothing scanned your process to work that out.\n\nThe practical rule that follows is simple and it is the opposite of the advice for anti-cheat games: features that only change what you see are extremely hard to catch, and features that change the world state are logged the moment you use them. On Rust the question is whether the anti-cheat can find your software. On FiveM the question is whether the server can explain what just happened.",
+        bullets: {
+          heading: "How detection works here",
+          items: [
+            "Server-side scripts flag unexplained events, not installed software",
+            "Admin log review happens after the fact, sometimes days later",
+            "Read-only features leave nothing in a log",
+            "State-changing features write an entry every time they are used",
+            "Serious cases can escalate to CFX account and hardware bans",
+          ],
+        },
+      },
+      {
+        heading: "Roleplay servers and what you actually stand to lose",
+        body:
+          "The economics of FiveM are unlike anything else on this site. A serious roleplay server involves an application, a whitelist interview, and then months of building a character with property, a business and a reputation among people who know them. That is what a ban costs — not a Steam account you can replace for the price of the game.\n\nThose servers also have the largest and most attentive staff teams in the ecosystem, and a community culture that reports rather than shrugs. Players there are invested in the fiction, and someone breaking it is reported quickly and specifically.\n\nWhich is why the sensible use here is narrow: information that improves how you play, on servers where you are not risking something irreplaceable. Anyone using a menu visibly on a whitelisted RP server is not going to be there long, and no configuration changes that.",
+        bullets: {
+          heading: "Before you use anything on an RP server",
+          items: [
+            "Understand that the ban is permanent and takes the character with it",
+            "Whitelist applications and interviews are not quickly replaced",
+            "Staff teams review logs and respond to reports properly",
+            "Per-server profiles exist because what survives varies enormously",
+          ],
+        },
       },
     ],
     faqs: [
@@ -1398,6 +1573,36 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         body:
           "Reusing anything from the banned identity. A fresh hardware fingerprint attached to the same email, payment card or Steam account rebuilds the link immediately — the machine is only one of the ways they find you.\n\nLogging into the old account after spoofing \"just to check\" hands them a direct mapping between the new fingerprint and the banned one. It is the single most common way people waste a spoofer.\n\nRunning it after the game or anti-cheat has already started changes nothing, because the identifiers were read at launch. And skipping a required reboot means driver-level changes never took effect at all — \"it said it worked\" is not the same as it having worked.",
       },
+      {
+        heading: "Permanent versus session-based spoofers",
+        body:
+          "The two products here solve different problems, and buying the wrong one is the most common mistake on this category. A permanent spoofer changes the machine's identifiers once and keeps them changed across reboots. A session-based spoofer applies fresh identifiers each time you run it and leaves nothing behind.\n\nIf your situation is \"my PC is hardware banned and I want to play again\", the permanent one is the simpler answer. You set it up, you reboot, and the machine presents as a different one from then on. There is no per-session step to forget.\n\nIf your situation is \"I cycle accounts and expect some of them to be banned\", session-based is the better fit. Each run is a new identity, so a ban attached to last week's session does not attach to this week's. The cost is discipline: forget to run it once and your real identifiers are read, which is all it takes to link everything together.",
+        bullets: {
+          heading: "Choosing between them",
+          items: [
+            "Permanent: one setup, persists across reboots, best for recovering a banned PC",
+            "Session-based: fresh identity per run, best for cycling accounts",
+            "Permanent is more invasive; use the restore point rather than undoing it manually",
+            "Session-based punishes forgetting — one missed run undoes the benefit",
+            "Check which anti-cheat a spoofer targets before buying: EAC coverage is not BattlEye or Vanguard coverage",
+          ],
+        },
+      },
+      {
+        heading: "What a hardware ban actually is",
+        body:
+          "It helps to be precise, because \"HWID ban\" gets used loosely. When an anti-cheat bans hardware, it is not banning a component in any physical sense. It has collected a set of identifiers your system reports — disk serials, motherboard and SMBIOS values, MAC addresses, and on newer systems TPM-derived values — combined them into a fingerprint, and refused that fingerprint.\n\nThis is why reinstalling Windows does nothing. A fresh install reports the same serials from the same hardware, so the fingerprint is unchanged. It is also why replacing one component sometimes works and usually does not: publishers rarely rely on a single identifier, so changing one leaves the rest of the match intact.\n\nA spoofer intercepts those reads at driver level and returns different values. That is the whole mechanism — nothing is modified physically, and nothing about your account changes. Which is exactly why a spoofer without a new account accomplishes nothing at all.",
+        bullets: {
+          heading: "What gets fingerprinted",
+          items: [
+            "Disk and volume serial numbers",
+            "Motherboard, BIOS and SMBIOS identifiers",
+            "Network adapter MAC addresses",
+            "GPU and peripheral identifiers on some anti-cheats",
+            "TPM-derived values on Windows 11 systems",
+          ],
+        },
+      },
     ],
     faqs: [
       {
@@ -1533,6 +1738,35 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         heading: "Sensible caution on Delta Force",
         body:
           "Because the enforcement picture is immature, the safest posture is the conservative one you would use on a game with mature anti-cheat. Assume detection is possible, assume bans can be retroactive, and use an account whose loss would not matter.\n\nLarge-scale modes have a quiet advantage: with many players and a lot happening, individual behaviour attracts less scrutiny than in a five-versus-five where every action is observed. That is not a licence to be obvious, but it does mean restrained play goes unnoticed more easily.\n\nAvoid stacking multiple tools from different providers. Conflicts cause crashes, and crashes attract attention.",
+      },
+      {
+        heading: "What ACE is, and why the setup differs from other games",
+        body:
+          "Delta Force runs Anti-Cheat Expert, usually shortened to ACE — a kernel-level anti-cheat used across a number of Tencent-published titles. Most players here have never dealt with it, and that unfamiliarity causes more failed installs than anything technical.\n\nACE loads a driver before the game starts and is noticeably stricter about co-loaded drivers than EAC or BattlEye. Setups that work fine elsewhere — a second bypass left installed, an overlay, remnants of a cheat you stopped using months ago — will prevent it from launching rather than producing a useful error message. The first troubleshooting step on this game is almost always removing something else, not reinstalling what you just bought.\n\nIt is also worth knowing that ACE's documentation and community knowledge are thinner in English than for the Western anti-cheats. That means fewer people have written up what works, and more of the guidance you find online is guesswork. Follow the supplied instructions rather than a forum post.",
+        bullets: {
+          heading: "Before your first launch",
+          items: [
+            "Remove other kernel-level tools entirely, not just disable them",
+            "Reboot after removals — a disabled driver may still be loaded",
+            "Confirm Secure Boot state matches the supplied instructions",
+            "Launch the spoofer, then the game, then the loader, in that order",
+            "Expect a failure to launch to mean a conflict rather than a broken build",
+          ],
+        },
+      },
+      {
+        heading: "Warfare and Operations are different risk profiles",
+        body:
+          "Delta Force ships two very different modes and they do not carry the same exposure. Warfare is large-scale combined-arms combat — many players, vehicles, objectives, and a great deal happening at once. Individual behaviour is genuinely harder to scrutinise there, and a restrained setup blends into the noise.\n\nOperations is an extraction mode, and extraction modes change the psychology completely. Players lose real gear when they die, which makes them study how they died. A death that does not make sense gets clipped, discussed and reported in a way an unremarkable Warfare death never does.\n\nThe sensible arrangement is the one that follows from that: information-heavy and aim-light in Operations, where scrutiny is highest and knowing where people are is worth the most anyway. Warfare tolerates more, but tolerating more is not a reason to use more.",
+        bullets: {
+          heading: "Configuring per mode",
+          items: [
+            "Operations: ESP and extraction awareness, minimal aim assistance",
+            "Warfare: longer draw distances and vehicle tracking, still restrained aim",
+            "Operations deaths cost gear, so they get investigated",
+            "Keep separate profiles rather than adjusting settings each session",
+          ],
+        },
       },
     ],
     faqs: [
@@ -1796,6 +2030,118 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
       },
     ],
     lastTested: "Tested on the current Palworld build · August 2026",
+  },
+  {
+    // Valorant had two products in the catalogue and no landing page at all,
+    // so neither appeared in the sitemap and neither had anything to rank
+    // with. Category pages are generated from this file, so a missing entry
+    // means a missing page rather than a thin one.
+    slug: "valorant",
+    displayName: "Valorant",
+    title: "Valorant Cheats — ESP & Aim Assist vs Vanguard 2026",
+    metaDescription:
+      "Valorant cheats explained honestly: how Riot Vanguard's boot-start kernel driver works, why a spoofer is mandatory, and what ESP realistically gets you.",
+    h1: "Valorant Cheats — ESP, Aim Assist and the Vanguard Problem",
+    lead:
+      "Valorant is the hardest game on this site to cheat on. Riot Vanguard is a signed kernel driver that starts with Windows, before anything you load, and Riot's hardware bans are permanent. Cheats for Valorant exist and work, but every one of them needs a spoofer and hardware you are prepared to lose.",
+    sections: [
+      {
+        heading: "Why is Valorant harder to cheat on than other games?",
+        body:
+          "Because Vanguard is not an anti-cheat that runs alongside the game. It is a kernel-mode driver configured to start at boot, which means it is already resident before any loader, spoofer or overlay you launch afterwards. EAC and BattlEye start when the game does; Vanguard starts when Windows does.\n\nThat ordering is the entire difference. On Rust or Apex, software loaded before the anti-cheat has a structural advantage. On Valorant there is no \"before\" — you are always loading into a system that is already being watched.\n\nRiot also enforce differently. Bans are hardware-based, permanent in practice, and applied without the wave delay common on Facepunch or Respawn titles.",
+        bullets: {
+          heading: "What makes Vanguard different",
+          items: [
+            "Boot-start kernel driver — resident before anything you launch",
+            "System-wide visibility, not just the game process",
+            "Requires Secure Boot and TPM 2.0 on Windows 11",
+            "Blocks a long list of drivers regardless of what they are for",
+            "Hardware bans, applied immediately rather than in waves",
+          ],
+        },
+      },
+      {
+        heading: "Secure Boot: the conflict nobody explains before you buy",
+        body:
+          "Almost every cheat on this site asks you to disable Secure Boot. Vanguard on Windows 11 requires Secure Boot to be enabled, and refuses to let the game start without it. Those two requirements are in direct opposition, and reconciling them is the whole of a Valorant setup.\n\nThis is the single most common reason a Valorant purchase fails on arrival. People apply the routine that worked for their Rust cheat, Valorant refuses to launch, and they assume the product is broken. It is not — the setup for this game is genuinely different and the supplied instructions have to be followed exactly rather than adapted.\n\nIf you are not willing to follow a setup procedure precisely, Valorant is the wrong game to buy a cheat for.",
+      },
+      {
+        heading: "Do I need a spoofer for Valorant?",
+        body:
+          "Yes, without meaningful exception. Vanguard collects hardware identifiers from boot, and Riot ban on them permanently rather than banning an account and moving on.\n\nThe practical consequence is that a Valorant ban does not cost you an account, it costs you the machine's clean status. A new account on the same hardware will be banned as soon as it is recognised, and no amount of reinstalling Windows changes what the motherboard reports.\n\nBuying a Valorant cheat without a spoofer is, in effect, buying a permanent hardware ban with a few days of play attached.",
+        bullets: {
+          heading: "Before you play Valorant with anything loaded",
+          items: [
+            "A spoofer, applied before the game — not optional here",
+            "An account with nothing on it: no skins, no battle pass",
+            "Hardware whose clean status you can afford to lose",
+            "The supplied setup instructions, followed exactly",
+            "The live status on the product page, checked that day",
+          ],
+        },
+      },
+      {
+        heading: "What Valorant cheats can realistically do",
+        body:
+          "Information, mostly, and that is not a consolation prize. Valorant is a game of five-second decisions made on incomplete information: is the site taken, is their ultimate up, is the lurker rotating. ESP answers those, and none of it appears in anyone else's point of view.\n\nAim assistance exists in these products and it is deliberately restrained — narrow field of view, heavy smoothing, body targeting by default. That restraint is not a limitation, it is the only configuration that survives contact with Valorant's playerbase. Every match is recorded, the community reports constantly, and a snapping aimbot is identified from a killcam within one round.\n\nThe realistic value is knowing things. The realistic risk comes almost entirely from aim.",
+        bullets: {
+          heading: "Ranked by value on Valorant",
+          items: [
+            "Agent ESP with visibility state — the site-take decision",
+            "Ability and ultimate tracking — decides whether a round is winnable",
+            "Spike carrier and plant location",
+            "Economy indication — is this a save round or a full buy",
+            "Aim assistance — highest risk, and the reason most people are caught",
+          ],
+        },
+      },
+      {
+        heading: "How people actually get banned on Valorant",
+        body:
+          "Two paths, and they are not equally likely for everyone. The first is detection: Vanguard finds something, and the ban is immediate and hardware-wide. The second is review after a report, which on Valorant is unusually effective because every match has a full recording and the playerbase is quick to escalate.\n\nMost people are caught by the second path, not the first. A detected build takes everyone using it at once and there is nothing you can do about that beyond checking status before you play. Being obvious is a choice you make round by round.\n\nThe accounts that last are the ones playing at a level slightly above their own rather than at a level nobody in the lobby believes.",
+      },
+      {
+        heading: "Which Valorant product should I buy?",
+        body:
+          "There are two here and the difference is straightforward. Nocturnal includes restrained aim assistance alongside its ESP; UnnamedTech Valorant External concentrates on information and utility awareness without it.\n\nIf you are new to cheating on Valorant, the external information-first option is the better starting point — it removes the behaviour that gets people reported while keeping the part that actually wins rounds. If you understand the risk and want aim assistance as well, Nocturnal is the one that has it.\n\nNeither is a low-risk purchase, and any page telling you otherwise about a Vanguard-protected game is selling rather than informing.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Are Valorant cheats undetected?",
+        a: "Builds are undetected until they are not, and on Valorant that window is shorter than on any other game listed here. Check the live status on the product page immediately before you play — it syncs from the supplier feed rather than being edited by hand.",
+      },
+      {
+        q: "Can Vanguard detect a cheat that loads before it?",
+        a: "Vanguard starts with Windows, so on a normal system there is nothing that loads before it. That ordering is exactly what makes Valorant harder than EAC or BattlEye titles.",
+      },
+      {
+        q: "Do I need to disable Secure Boot for Valorant?",
+        a: "Vanguard on Windows 11 requires Secure Boot enabled, which is the opposite of what most loaders here ask for. Resolving that conflict is the setup, and the supplied instructions for this game differ from every other product on the site.",
+      },
+      {
+        q: "Will Riot ban my hardware?",
+        a: "That is Riot's standard enforcement, and it is permanent in practice. A new account on the same machine will not help you, which is why a spoofer is treated as a requirement rather than an accessory.",
+      },
+      {
+        q: "Is ESP-only safer on Valorant?",
+        a: "Against detection, no — a detected build is detected regardless of which features you enabled. Against being reported and reviewed, substantially, because there is nothing visible in a killcam.",
+      },
+      {
+        q: "Can I use a Valorant cheat on my main account?",
+        a: "No. Riot bans are permanent, take everything on the account, and are not realistically appealable. Use an account with nothing on it.",
+      },
+      {
+        q: "Why does my game refuse to launch after installing?",
+        a: "Nearly always Secure Boot, TPM, or another kernel driver Vanguard refuses to load alongside. Work through the supplied setup steps in order before contacting support — a routine borrowed from another game will not apply.",
+      },
+      {
+        q: "How fast is delivery?",
+        a: "Instant. The licence lands in your dashboard and email as soon as payment confirms; crypto typically clears in a few minutes.",
+      },
+    ],
+    lastTested: "Tested against the current Vanguard build · August 2026",
+    heroImage: "/banners/valorant.webp",
   },
 ];
 
