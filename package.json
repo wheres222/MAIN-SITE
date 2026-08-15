@@ -15,6 +15,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "seo:coverage": "node scripts/check-seo-coverage.mjs",
     "security:scan": "python3 scripts/scan-secrets.py",
     "security:scan:staged": "python3 scripts/scan-secrets.py --staged",
     "security:install-hook": "bash scripts/install-security-hook.sh"
