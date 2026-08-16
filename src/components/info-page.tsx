@@ -4,7 +4,13 @@ import { SiteHeader } from "@/components/site-header";
 
 interface InfoSection {
   heading: string;
-  body: string[];
+  /**
+   * ReactNode rather than string so a paragraph can contain a real anchor.
+   * The blog's "see the current lineup" pointer used to print the category
+   * path as plain text, which meant no editorial page linked to any category
+   * page and none of them passed a crawlable link.
+   */
+  body: React.ReactNode[];
 }
 
 interface InfoPageProps {

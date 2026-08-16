@@ -312,6 +312,91 @@ BLOG_POSTS.push(
         a: "The opposite. Population, scrutiny and report volume all peak in the days after a forced wipe, and that is a natural moment to action a backlog of detections.",
       },
     ],
+  },
+  {
+    // Exists partly to give /categories/hell-let-loose an internal link. The
+    // "Shop by Game" tiles are built from products, so a category with nothing
+    // stocked is reachable only from the sitemap — and an orphaned page ranks
+    // badly however well it is written.
+    slug: "hell-let-loose-cheats-what-actually-wins",
+    title: "Hell Let Loose Cheats: What Actually Wins Matches",
+    seoTitle: "Hell Let Loose Cheats 2026 — Garrisons, Artillery and What Works",
+    description:
+      "Hell Let Loose is decided by garrisons and information, not gunfights. What a Hell Let Loose cheat is actually worth, why aimbot barely matters, and how EAC plus community admins enforce.",
+    published: "2026-08-16",
+    updated: "2026-08-16",
+    readingMinutes: 9,
+    relatedGameSlug: "hell-let-loose",
+    lead:
+      "Hell Let Loose is fifty players a side across two kilometres, and the team that wins is almost always the team that knew where the enemy's garrisons were. That makes it one of the few games where a cheat's aim features are close to irrelevant and its information features decide matches outright.",
+    sections: [
+      {
+        heading: "Garrisons are the whole game",
+        body: [
+          "A garrison is an enemy infantry spawn placed somewhere on the map by an officer who deliberately hid it. Take an objective while one is standing nearby and the enemy is back on you within thirty seconds. Destroy it first and the objective often falls without a serious fight.",
+          "Finding them is the hardest information problem in the game. A recon player crawls through a field for ten minutes hoping to spot a structure in a treeline before someone spots them. Whole matches turn on whether that worked.",
+          "Which is why garrison ESP is not one feature among many here — it is the reason to consider a cheat for this game at all. It converts the slowest, most luck-dependent job on the map into something you simply know.",
+          "It is also the feature whose consequences are most visible. A team whose garrisons keep dying within a minute of being placed notices, and starts talking about it in chat. Knowing where one is and attacking it four minutes later looks like recon; doing it in ninety seconds looks like what it is.",
+        ],
+      },
+      {
+        heading: "Why an aimbot barely helps in Hell Let Loose",
+        body: [
+          "Time-to-kill is close to instant. One rifle round to the torso kills at most ranges, there is no armour to chew through, and the player who fired first wins. Tracking a target faster does not help much when the duel was decided by who was positioned better.",
+          "The weapons actively fight an aimbot as well. Iron sights, real bullet drop at the ranges where fights happen, sway tied to stance and stamina, and no crosshair when hip-firing. Settings that feel natural in an arena shooter look obviously wrong here.",
+          "And there are fifty enemies who might be watching. In a game where everyone shoots slowly and deliberately, a snap is conspicuous in a way it simply is not in Warzone.",
+          "The honest summary: aim assistance on this game spends most of your safety margin to buy an advantage the game does not really reward.",
+        ],
+      },
+      {
+        heading: "Artillery is where information turns into map control",
+        body: [
+          "Hell Let Loose artillery is aimed by hand. You get a gun, a grid map and a table converting distance to elevation in mils. No lock-on, no impact marker, nothing telling you whether the last shell hit anything.",
+          "So a normal artillery player walks shells onto a target across two minutes and forty rounds, usually with a spotter calling corrections. A gunner who already knows the exact grid does not need any of that — the first pair land, and the enemy loses a garrison that took ten minutes to establish.",
+          "This is the highest-leverage use of information in the game and it is completely invisible from outside. Nothing about a squad leader calling a grid reference looks unusual to anyone watching, which is not true of a single suspicious kill.",
+        ],
+      },
+      {
+        heading: "The real threat is the admin, not EasyAntiCheat",
+        body: [
+          "Hell Let Loose runs Easy Anti-Cheat — kernel-level, the same as Rust and Apex — and an EAC ban is a permanent game ban visible on your Steam profile.",
+          "But nearly all Hell Let Loose is played on community servers, and those have admins in the match, Discord report channels, and a seeding community that knows the regulars by name. That is a human review layer acting on suspicion, with no detection required.",
+          "The practical consequence: this game punishes visible knowledge more than it punishes software. Walking to three hidden garrisons in one match is invisible to EAC and extremely visible to an admin.",
+          "The large server networks also share ban lists. A ban from one major community can reach several servers rather than just the one you were playing on.",
+        ],
+      },
+      {
+        heading: "How to run it without becoming a story in someone's Discord",
+        body: [
+          "Delay everything. Act on information the way a player who found it legitimately would — a few minutes later, from a plausible direction, having actually looked.",
+          "Call things out instead of acting alone. Marking a garrison and taking a squad to it looks like a squad leader doing their job, and it spreads the outcome across a team rather than one suspiciously effective player.",
+          "Do not be perfect. Nobody finds every garrison. A player who does, match after match, is the one admins start watching.",
+          "Use an account you can lose, and check the live status the day you play rather than the week you bought.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Do Hell Let Loose cheats work in 2026?",
+        a: "Yes, and the game runs Easy Anti-Cheat like Rust and Apex. Detection status is per-build and changes — check a live status page the day you play rather than trusting any sales claim.",
+      },
+      {
+        q: "What is the most useful feature for Hell Let Loose?",
+        a: "Garrison and outpost ESP, comfortably. Garrisons are hidden enemy spawns, finding them is the hardest job in the game, and destroying them is how objectives actually fall.",
+      },
+      {
+        q: "Is an aimbot worth it in Hell Let Loose?",
+        a: "Less than in almost any other game. One shot kills, iron sights and bullet drop fight the aimbot, and fifty enemies can watch you use it.",
+      },
+      {
+        q: "Can server admins tell?",
+        a: "They cannot scan your machine, but they spectate, read reports and notice patterns — and on this game that is how most people are caught. Community servers with active admins are the norm here, not the exception.",
+      },
+      {
+        q: "Do I need a spoofer?",
+        a: "Only if the machine has already carried an EAC ban. Those reach hardware, and buying a new copy of the game will not get you back in.",
+      },
+    ],
   }
 );
 

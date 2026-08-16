@@ -142,18 +142,6 @@ export default async function CategoryLandingPage({
       },
       {
         "@context": "https://schema.org",
-        "@type": "ItemList",
-        name: `${content.displayName} Cheats`,
-        numberOfItems: products.length,
-        itemListElement: products.slice(0, 20).map((product, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          url: `${siteUrl}${productHref(product)}`,
-          name: product.name,
-        })),
-      },
-      {
-        "@context": "https://schema.org",
         "@type": "CollectionPage",
         name: content.title,
         description: content.metaDescription,
@@ -165,6 +153,24 @@ export default async function CategoryLandingPage({
         publisher: { "@type": "Organization", name: "Cheat Paradise", url: siteUrl },
       },
     );
+
+    // Only when there is something to list. A landing page can legitimately
+    // exist before the catalogue does, and an ItemList declaring zero items is
+    // a structured-data error rather than an empty list.
+    if (products.length > 0) {
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        name: `${content.displayName} Cheats`,
+        numberOfItems: products.length,
+        itemListElement: products.slice(0, 20).map((product, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${siteUrl}${productHref(product)}`,
+          name: product.name,
+        })),
+      });
+    }
   }
 
   return (
@@ -177,6 +183,15 @@ export default async function CategoryLandingPage({
         group={group}
         products={products}
         title={content?.h1}
+        emptyNotice={
+          content ? (
+            <>
+              We do not have {content.displayName} products listed yet. The guide below is
+              still worth reading — it covers what these cheats do and how enforcement works
+              on this game. Ask in Discord support for what is coming and when.
+            </>
+          ) : undefined
+        }
         seoFooter={
           content ? (
             <>

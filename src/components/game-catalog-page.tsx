@@ -14,6 +14,13 @@ interface GameCatalogPageProps {
   products: SellAuthProduct[];
   seoContent?: React.ReactNode;
   seoFooter?: React.ReactNode;
+  /**
+   * Shown instead of "No products found" when the category genuinely has
+   * nothing stocked yet — as opposed to a search that matched nothing. A
+   * landing page can exist before the catalogue does, and "no products found"
+   * reads like a bug rather than an answer.
+   */
+  emptyNotice?: React.ReactNode;
   /** Keyword-rich H1 override for SEO landing pages (defaults to group.name). */
   title?: string;
 }
@@ -68,7 +75,7 @@ const IconShield = (
   <svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.4 3 8.4 7 9.5 4-1.1 7-5.1 7-9.5V6l-7-3Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /><path d="m9 12 2 2 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
 
-export function GameCatalogPage({ group, products, seoContent, seoFooter, title }: GameCatalogPageProps) {
+export function GameCatalogPage({ group, products, seoContent, seoFooter, emptyNotice, title }: GameCatalogPageProps) {
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -159,9 +166,12 @@ export function GameCatalogPage({ group, products, seoContent, seoFooter, title 
             );
           })}
 
-          {filtered.length === 0 && (
-            <p className={styles.empty}>No products found{query ? " for your search" : " for this category"}.</p>
-          )}
+          {filtered.length === 0 &&
+            (products.length === 0 && emptyNotice ? (
+              <div className={styles.empty}>{emptyNotice}</div>
+            ) : (
+              <p className={styles.empty}>No products found{query ? " for your search" : " for this category"}.</p>
+            ))}
         </div>
 
         {seoContent}
