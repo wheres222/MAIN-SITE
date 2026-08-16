@@ -113,7 +113,13 @@ export async function fetchKeyhubProducts(): Promise<KeyhubProduct[]> {
   });
 
   if (!res.ok) {
-    throw new Error(`KeyHub /products responded ${res.status}`);
+    // The status alone does not distinguish a wrong key from a revoked one, and
+    // KeyHub puts that in the body. Truncated so a large error page cannot end
+    // up in a response or a log line.
+    const detail = await res.text().catch(() => "");
+    throw new Error(
+      `KeyHub /products responded ${res.status}${detail ? `: ${detail.slice(0, 200)}` : ""}`
+    );
   }
 
   const payload = (await res.json()) as { products?: KeyhubProduct[] };
@@ -193,12 +199,46 @@ export function buildKeyhubStatusMap(
   return result;
 }
 
-export async function getKeyhubStatuses(): Promise<Record<string, KeyhubStatusEntry>> {
-  if (!isKeyhubConfigured()) return {};
-  try {
-    return buildKeyhubStatusMap(await fetchKeyhubProducts());
-  } catch {
-    // The board must keep rendering from Supabase + static defaults.
-    return {};
+export interface KeyhubFetchResult {
+  statuses: Record<string, KeyhubStatusEntry>;
+  /** Why the feed is empty, when it is. Null on success. */
+  error: string | null;
+  /** Products KeyHub returned, before status mapping dropped any. */
+  productCount: number;
+}
+
+/**
+ * As getKeyhubStatuses, but reports why it came back empty.
+ *
+ * The swallowed error here cost real time: with a key set but wrong, the debug
+ * view showed `configured: true, count: 0` and nothing else, which is
+ * indistinguishable from KeyHub returning an empty catalogue. A 401 and a
+ * network failure and an unexpected payload shape all looked identical.
+ */
+export async function getKeyhubStatusesDetailed(): Promise<KeyhubFetchResult> {
+  if (!isKeyhubConfigured()) {
+    return { statuses: {}, error: "KEYHUB_API_KEY is not set", productCount: 0 };
   }
+  try {
+    const products = await fetchKeyhubProducts();
+    return {
+      statuses: buildKeyhubStatusMap(products),
+      error:
+        products.length === 0
+          ? "KeyHub returned 200 with no products — check the key's account and scopes"
+          : null,
+      productCount: products.length,
+    };
+  } catch (err) {
+    // The board must keep rendering from Supabase + static defaults.
+    return {
+      statuses: {},
+      error: err instanceof Error ? err.message : String(err),
+      productCount: 0,
+    };
+  }
+}
+
+export async function getKeyhubStatuses(): Promise<Record<string, KeyhubStatusEntry>> {
+  return (await getKeyhubStatusesDetailed()).statuses;
 }
