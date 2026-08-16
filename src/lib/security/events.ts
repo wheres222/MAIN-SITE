@@ -71,7 +71,10 @@ export async function recordSecurityEvent(
     const db = createAdminClient();
     const ip = event.ip ?? null;
 
-    await db.from("security_events").insert({
+    // Same trap as linkAccountIp: supabase-js resolves with an `error` field
+    // instead of rejecting, so an insert that fails on a missing column or an
+    // RLS policy would have looked like a success to the try/catch below.
+    const { error } = await db.from("security_events").insert({
       kind: event.kind,
       severity: event.severity,
       ip,
@@ -85,6 +88,8 @@ export async function recordSecurityEvent(
       status_code: event.statusCode ?? null,
       detail: event.detail ?? {},
     });
+
+    if (error) throw new Error(error.message);
 
     if (event.severity === "high") {
       await sendSecurityAlert({
@@ -114,10 +119,50 @@ export async function linkAccountIp(userId: string, ip: string): Promise<void> {
   if (!loggingEnabled()) return;
   try {
     const db = createAdminClient();
-    await db.rpc("touch_account_ip", { p_user_id: userId, p_ip: ip });
-  } catch {
-    // Migration not applied yet, or Supabase unavailable.
+    const { error } = await db.rpc("touch_account_ip", {
+      p_user_id: userId,
+      p_ip: ip,
+    });
+    // Supabase returns RPC failures in `error` rather than throwing, so the
+    // old bare try/catch could not see the most likely failure of all: the
+    // function not existing because moderation_and_ip_blocking.sql was never
+    // applied. Every signed-in request called it, every call failed, and the
+    // only symptom was an account-IP table that stayed empty forever.
+    if (error) throw new Error(error.message);
+  } catch (err) {
+    // Still non-fatal — telemetry must never break a page load — but no longer
+    // invisible. Throttled because this runs on every authenticated request and
+    // an unthrottled log would bury everything else.
+    warnOccasionally("account-ip", "failed to link account to IP", err);
   }
+}
+
+// ── Throttled warnings ───────────────────────────────────────────────────────
+//
+// Follows the globalThis pattern used by the rate limiter and the blocklist
+// snapshot: per-instance, no storage, and safe on the edge runtime where the
+// structured logger is unavailable.
+
+const WARN_INTERVAL_MS = 5 * 60_000;
+
+function warnStore(): Record<string, number> {
+  const g = globalThis as typeof globalThis & {
+    __securityWarnAt?: Record<string, number>;
+  };
+  if (!g.__securityWarnAt) g.__securityWarnAt = {};
+  return g.__securityWarnAt;
+}
+
+function warnOccasionally(key: string, message: string, err: unknown): void {
+  const store = warnStore();
+  const now = Date.now();
+  if (store[key] && now - store[key] < WARN_INTERVAL_MS) return;
+  store[key] = now;
+
+  console.warn("[security] " + message, {
+    error: err instanceof Error ? err.message : String(err),
+    hint: "If this reads like a missing function or relation, apply supabase/migrations/moderation_and_ip_blocking.sql",
+  });
 }
 
 export async function recordDetections(
