@@ -32,8 +32,8 @@ import type { StorefrontData } from "@/types/sellauth";
 const CATEGORY_CARDS_ONLY = false;
 
 const CATEGORY_CARDS = [
-  { slug: "rust",        name: "Rust",        image: "/category-cards/rust.png" },
-  { slug: "arc-raiders", name: "ARC Raiders", image: "/category-cards/arc-raiders.png" },
+  { slug: "rust",        name: "Rust",        image: "/category-cards/rust.avif" },
+  { slug: "arc-raiders", name: "ARC Raiders", image: "/category-cards/arc-raiders.avif" },
 ] as const;
 
 function money(value: number | null, currency = "USD"): string {
@@ -45,7 +45,14 @@ function money(value: number | null, currency = "USD"): string {
   }).format(value);
 }
 
-export function StorefrontClient({ initialData }: { initialData?: StorefrontData | null }) {
+export function StorefrontClient({
+  initialData,
+  seoContent,
+}: {
+  initialData?: StorefrontData | null;
+  /** Server-rendered long-form copy, passed down so it stays in the initial HTML. */
+  seoContent?: React.ReactNode;
+}) {
   const [storefront, setStorefront] = useState<StorefrontData | null>(initialData ?? null);
   const [adspotOpen, setAdspotOpen] = useState(false);
 
@@ -241,6 +248,12 @@ export function StorefrontClient({ initialData }: { initialData?: StorefrontData
         <section className="home-shell home-section-lg home-section-last">
           <DiscordShowcase />
         </section>
+
+        {/* Long-form copy. Server-rendered from the parent so it is in the
+            initial HTML — the landing page had 336 words and one H2, which is
+            the thinnest surface on the site now that the category and product
+            pages have been filled in. */}
+        {seoContent}
 
       </main>
 

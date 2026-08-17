@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { StorefrontClient } from "@/components/storefront-client";
+import { HomeSeoSections } from "@/components/home-seo-sections";
 import { getStorefrontData } from "@/lib/sellauth";
 import type { StorefrontData } from "@/types/sellauth";
 
@@ -131,7 +132,7 @@ export default async function Home() {
           dangerouslySetInnerHTML={{ __html: json }}
         />
       ))}
-      <StorefrontClient initialData={initialData} />
+      <StorefrontClient initialData={initialData} seoContent={<HomeSeoSections />} />
     </>
   );
 }

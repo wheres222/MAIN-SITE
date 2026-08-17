@@ -62,7 +62,11 @@ export function getLocalCategoryBanners(limit = 18): LocalCategoryBanner[] {
   return ORDERED_BANNERS.slice(0, limit).map((item, index) => ({
     name: item.name,
     slug: item.slug,
-    imageUrl: `/pd/${item.slug}.${"ext" in item ? item.ext : "png"}`,
+    // AVIF by default: the PNGs behind these banners were 700KB-1.1MB each and
+    // were transcoded to ~30KB. Entries that carry an explicit `ext` (SVGs)
+    // keep it. This path is built at runtime, so it was invisible to the
+    // find-and-replace that moved the literal references over.
+    imageUrl: `/pd/${item.slug}.${"ext" in item ? item.ext : "avif"}`,
     groupId: GROUP_ID_BASE + index + 1,
     categoryId: CATEGORY_ID_BASE + index + 1,
   }));

@@ -81,6 +81,29 @@ const nextConfig: NextConfig = {
         source: "/status-icons/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
+      // These five directories were serving on the default short TTL, which is
+      // most of what PageSpeed's "use efficient cache lifetimes" was counting.
+      // Same version-in-filename convention as the others, so immutable is safe.
+      {
+        source: "/hero/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/compare/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/category-cards/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/pd-hover/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/banners/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
       {
         source: "/games/:path*",
         headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],

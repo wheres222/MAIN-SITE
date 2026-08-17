@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { NextResponse, type NextRequest } from "next/server";
+import { after, NextResponse, type NextRequest } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
+import { clientIp, recordSecurityEvent } from "@/lib/security/events";
 
 // NOWPayments currency tickers differ from our display names
 const CURRENCY_MAP: Record<string, string> = {
@@ -15,6 +17,11 @@ const CURRENCY_MAP: Record<string, string> = {
 
 const ALLOWED_CURRENCIES = Object.keys(CURRENCY_MAP);
 
+// A ceiling existed nowhere on this route. NOWPayments would happily quote an
+// address for a six-figure invoice, and the row it writes is what the webhook
+// later credits.
+const MAX_USD = 500;
+
 export async function POST(request: NextRequest) {
   // 1. Authenticate user
   const supabase = await createClient();
@@ -23,7 +30,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // 2. Parse + validate body
+  // 2. Rate limit before touching the provider or the database. Keyed on the
+  // user, matching the card route.
+  const limit = rateLimit("deposit", user.id, { windowMs: 10 * 60_000, max: 8 });
+  if (limit.limited) {
+    after(() =>
+      recordSecurityEvent({
+        kind: "rate_limited",
+        severity: "medium",
+        ip: clientIp(request.headers),
+        path: "/api/account/deposit/create",
+        method: "POST",
+        userId: user.id,
+        detail: { attempts: limit.count },
+      })
+    );
+    return NextResponse.json(
+      { error: "Too many deposit attempts. Please wait a few minutes." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+    );
+  }
+
+  // 3. Parse + validate body
   let body: unknown;
   try { body = await request.json(); } catch {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
@@ -33,6 +61,12 @@ export async function POST(request: NextRequest) {
 
   if (typeof amount !== "number" || amount < 1 || !isFinite(amount)) {
     return NextResponse.json({ error: "Minimum deposit is $1.00" }, { status: 422 });
+  }
+  if (amount > MAX_USD) {
+    return NextResponse.json(
+      { error: `Maximum deposit is $${MAX_USD.toLocaleString()}` },
+      { status: 422 }
+    );
   }
   if (typeof currency !== "string" || !ALLOWED_CURRENCIES.includes(currency)) {
     return NextResponse.json({ error: "Unsupported currency" }, { status: 422 });
