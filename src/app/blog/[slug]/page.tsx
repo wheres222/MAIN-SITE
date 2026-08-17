@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { InfoPage } from "@/components/info-page";
 import { allBlogSlugs, blogPostBySlug } from "@/lib/blog-posts";
@@ -103,9 +104,17 @@ export default async function BlogPostPage({
       heading: "Check before you buy",
       body: [
         "Live detection status for every product is on the status page, updated automatically from our supplier feed rather than by hand.",
-        post.relatedGameSlug
-          ? `The current lineup is at /categories/${post.relatedGameSlug}, and every product page shows its own status.`
-          : "Every product page shows its own live status.",
+        post.relatedGameSlug ? (
+          <>
+            The current lineup is on the{" "}
+            <Link href={`/categories/${post.relatedGameSlug}`}>
+              {post.relatedGameSlug.replace(/-/g, " ")} cheats page
+            </Link>
+            , and every product page shows its own status.
+          </>
+        ) : (
+          "Every product page shows its own live status."
+        ),
       ],
     },
   ];

@@ -46,6 +46,13 @@ export function canonicalGameSlug(value: string): string {
     return "fivem";
   }
 
+  // "HLL" is what the community and most supplier catalogues call it, so a
+  // product named "Ancient HLL" has to resolve to the same slug as the
+  // category page or the two never link up.
+  if (compact === "hll" || compact.includes("hellletloose")) {
+    return "hell-let-loose";
+  }
+
   if (compact.includes("deltaforce") || compact === "df" || compact.includes("hawkops")) {
     return "delta-force";
   }
