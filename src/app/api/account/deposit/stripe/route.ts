@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 /** Matches the crypto route's floor, and caps a single card top-up. */
 const MIN_USD = 1;
-const MAX_USD = 2500;
+const MAX_USD = 150;
 
 /**
  * Start a card deposit.

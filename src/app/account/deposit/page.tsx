@@ -41,6 +41,13 @@ type Method = "crypto" | "card";
 
 const PRESET_AMOUNTS = ["$5", "$10", "$25", "$50", "$100"];
 
+/**
+ * Kept in step with the API routes, which enforce the real limits — this is
+ * only so the cap is visible before someone types a number the server will
+ * reject.
+ */
+const MAX_BY_METHOD = { card: 150, crypto: 500 } as const;
+
 export default function DepositPage() {
   const [step, setStep] = useState<Step>("choose");
   const [method, setMethod] = useState<Method>("crypto");
@@ -319,6 +326,7 @@ export default function DepositPage() {
               id="deposit-amount"
               type="number"
               min="1"
+              max={MAX_BY_METHOD[method]}
               step="0.01"
               className={styles.input}
               placeholder="0.00"
@@ -339,7 +347,10 @@ export default function DepositPage() {
                 </button>
               ))}
             </div>
-            <span className={styles.inputHint}>Minimum deposit: $1.00</span>
+            <span className={styles.inputHint}>
+              Minimum $1.00 · maximum ${MAX_BY_METHOD[method]}.00 per{" "}
+              {method === "card" ? "card payment" : "crypto deposit"}
+            </span>
           </div>
 
           {error && <p className={styles.errorMsg}>{error}</p>}

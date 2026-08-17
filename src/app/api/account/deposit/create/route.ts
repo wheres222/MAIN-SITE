@@ -20,7 +20,7 @@ const ALLOWED_CURRENCIES = Object.keys(CURRENCY_MAP);
 // A ceiling existed nowhere on this route. NOWPayments would happily quote an
 // address for a six-figure invoice, and the row it writes is what the webhook
 // later credits.
-const MAX_USD = 10000;
+const MAX_USD = 500;
 
 export async function POST(request: NextRequest) {
   // 1. Authenticate user
