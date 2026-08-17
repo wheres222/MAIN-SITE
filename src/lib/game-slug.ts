@@ -49,7 +49,14 @@ export function canonicalGameSlug(value: string): string {
   // "HLL" is what the community and most supplier catalogues call it, so a
   // product named "Ancient HLL" has to resolve to the same slug as the
   // category page or the two never link up.
-  if (compact === "hll" || compact.includes("hellletloose")) {
+  //
+  // Exact match, not `includes`. productLeafSlug canonicalises every contiguous
+  // run of words in a product name longest-first to find the game, so an
+  // `includes` test made the whole of "Hell Let Loose Fellas" match itself —
+  // stripping the entire name and leaving nothing for the URL. The leaf then
+  // fell back to the full slug and produced
+  // /products/hell-let-loose/hell-let-loose-fellas.
+  if (compact === "hll" || compact === "hellletloose") {
     return "hell-let-loose";
   }
 

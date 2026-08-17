@@ -37,11 +37,13 @@ interface PaymentResult {
 }
 
 type Step = "choose" | "amount" | "paying";
+type Method = "crypto" | "card";
 
 const PRESET_AMOUNTS = ["$5", "$10", "$25", "$50", "$100"];
 
 export default function DepositPage() {
   const [step, setStep] = useState<Step>("choose");
+  const [method, setMethod] = useState<Method>("crypto");
   const [selectedCrypto, setSelectedCrypto] = useState<typeof CRYPTOS[0] | null>(null);
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,6 +53,14 @@ export default function DepositPage() {
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const cryptoSectionRef = useRef<HTMLDivElement>(null);
+  const [returnStatus, setReturnStatus] = useState<"success" | "cancelled" | null>(null);
+
+  // Read once on mount rather than via useSearchParams, which would force this
+  // page into a Suspense boundary for a banner that only matters on return.
+  useEffect(() => {
+    const status = new URLSearchParams(window.location.search).get("status");
+    if (status === "success" || status === "cancelled") setReturnStatus(status);
+  }, []);
 
   // Countdown timer when on paying step
   useEffect(() => {
@@ -73,10 +83,50 @@ export default function DepositPage() {
   }
 
   function selectCrypto(coin: typeof CRYPTOS[0]) {
+    setMethod("crypto");
     setSelectedCrypto(coin);
     setAmount("");
     setError("");
     setStep("amount");
+  }
+
+  function selectCard() {
+    setMethod("card");
+    setSelectedCrypto(null);
+    setAmount("");
+    setError("");
+    setStep("amount");
+  }
+
+  /**
+   * Card deposits hand off to Stripe Checkout. Nothing is credited here — the
+   * webhook does that after Stripe confirms payment, which is why returning
+   * from Checkout shows "processing" rather than a new balance.
+   */
+  async function handleCardCheckout(e: React.FormEvent) {
+    e.preventDefault();
+    const parsed = parseFloat(amount);
+    if (!parsed || parsed < 1) { setError("Minimum deposit is $1.00"); return; }
+
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/account/deposit/stripe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: parsed }),
+      });
+      const data = await res.json() as { url?: string; error?: string };
+      if (!res.ok || !data.url) {
+        setError(data.error || "Could not start card payment. Try again.");
+        return;
+      }
+      window.location.href = data.url;
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleGetAddress(e: React.FormEvent) {
@@ -123,23 +173,38 @@ export default function DepositPage() {
       <div className={account.pageHead}>
         <h1 className={account.pageTitle}>Deposit</h1>
         <p className={account.pageSub}>
-          Top up your balance with crypto. Funds are credited automatically once the
-          payment confirms on-chain.
+          Top up your balance by card or crypto. Funds are credited automatically once
+          the payment confirms.
         </p>
       </div>
+
+      {/* Stripe sends people back here after Checkout. The balance is credited by
+          the webhook, not by this page, so a successful return means "paid and
+          processing" rather than "already in your balance" — saying otherwise
+          would have people refreshing and thinking money was lost. */}
+      {returnStatus === "success" && (
+        <div className={styles.infoNote} style={{ marginBottom: 18 }}>
+          <span>
+            <strong>Payment received.</strong> Your balance updates as soon as Stripe
+            confirms it — usually within a few seconds. Refresh if it has not appeared
+            after a minute, and contact support if it still has not.
+          </span>
+        </div>
+      )}
+      {returnStatus === "cancelled" && (
+        <p className={styles.errorMsg} style={{ marginBottom: 18 }}>
+          Card payment cancelled. Nothing was charged.
+        </p>
+      )}
 
       {/* ── STEP 1: Choose method ────────────────────────────── */}
       {step === "choose" && (
         <div className={styles.body}>
           <div className={styles.methodRow}>
-            {/* Card deposits need a Stripe flow that credits the balance on
-                webhook confirmation. /api/account/deposit/create only speaks
-                to NOWPayments today, so this stays disabled rather than
-                offering a button that cannot take money. */}
             <button
               type="button"
-              className={`${styles.methodCard} ${styles.methodCardDisabled}`}
-              disabled
+              className={`${styles.methodCard} ${styles.methodCardActive}`}
+              onClick={selectCard}
             >
               <span className={styles.methodIcon} aria-hidden>
                 <svg viewBox="0 0 24 24" fill="none" width="26" height="26">
@@ -148,9 +213,9 @@ export default function DepositPage() {
                   <path d="M6 14.5h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
                 </svg>
               </span>
-              <span className={styles.methodName}>Stripe</span>
-              <span className={styles.methodDesc}>Card &amp; Apple Pay</span>
-              <span className={styles.methodBadge}>Coming soon</span>
+              <span className={styles.methodName}>Card</span>
+              <span className={styles.methodDesc}>Visa, Mastercard &amp; Apple Pay</span>
+              <span className={styles.methodBadgeActive}>Available</span>
             </button>
 
             <button
@@ -202,8 +267,11 @@ export default function DepositPage() {
       )}
 
       {/* ── STEP 2: Enter amount ─────────────────────────────── */}
-      {step === "amount" && selectedCrypto && (
-        <form className={styles.body} onSubmit={handleGetAddress}>
+      {step === "amount" && (method === "card" || selectedCrypto) && (
+        <form
+          className={styles.body}
+          onSubmit={method === "card" ? handleCardCheckout : handleGetAddress}
+        >
           <div className={styles.stepHeader}>
             <button type="button" className={styles.backBtn} onClick={goBack}>
               <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden>
@@ -211,20 +279,39 @@ export default function DepositPage() {
               </svg>
               Back
             </button>
-            <h2 className={styles.stepTitle}>Deposit {selectedCrypto.label}</h2>
+            <h2 className={styles.stepTitle}>
+              {method === "card" ? "Deposit by card" : `Deposit ${selectedCrypto?.label}`}
+            </h2>
           </div>
 
-          <div className={styles.selectedCoinRow}>
-            <div className={styles.cryptoIcon} style={{ background: selectedCrypto.color, width: 44, height: 44 }}>
-              <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden style={{ color: selectedCrypto.textColor }}>
-                {selectedCrypto.icon}
-              </svg>
+          {method === "card" ? (
+            <div className={styles.selectedCoinRow}>
+              <div className={styles.cryptoIcon} style={{ background: "#635bff", width: 44, height: 44 }}>
+                <svg viewBox="0 0 24 24" fill="none" width="24" height="24" aria-hidden style={{ color: "#fff" }}>
+                  <rect x="2.5" y="5" width="19" height="14" rx="2.5" stroke="currentColor" strokeWidth="1.7" />
+                  <path d="M2.5 9.5h19" stroke="currentColor" strokeWidth="1.7" />
+                </svg>
+              </div>
+              <div>
+                <div className={styles.selectedCoinName}>Card payment</div>
+                <div className={styles.selectedCoinMeta}>
+                  Secured by Stripe · balance credited automatically
+                </div>
+              </div>
             </div>
-            <div>
-              <div className={styles.selectedCoinName}>{selectedCrypto.label}</div>
-              <div className={styles.selectedCoinMeta}>{selectedCrypto.id.toUpperCase()} · +45% bonus</div>
+          ) : selectedCrypto ? (
+            <div className={styles.selectedCoinRow}>
+              <div className={styles.cryptoIcon} style={{ background: selectedCrypto.color, width: 44, height: 44 }}>
+                <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden style={{ color: selectedCrypto.textColor }}>
+                  {selectedCrypto.icon}
+                </svg>
+              </div>
+              <div>
+                <div className={styles.selectedCoinName}>{selectedCrypto.label}</div>
+                <div className={styles.selectedCoinMeta}>{selectedCrypto.id.toUpperCase()} · +45% bonus</div>
+              </div>
             </div>
-          </div>
+          ) : null}
 
           <div className={styles.field}>
             <label htmlFor="deposit-amount" className={styles.fieldLabel}>Amount (USD)</label>
@@ -258,7 +345,13 @@ export default function DepositPage() {
           {error && <p className={styles.errorMsg}>{error}</p>}
 
           <button type="submit" className={styles.primaryBtn} disabled={loading}>
-            {loading ? <span className={styles.btnSpinner} /> : "Get Payment Address →"}
+            {loading ? (
+              <span className={styles.btnSpinner} />
+            ) : method === "card" ? (
+              "Continue to payment →"
+            ) : (
+              "Get Payment Address →"
+            )}
           </button>
         </form>
       )}

@@ -91,6 +91,50 @@ export async function createStripeCheckoutSession(params: {
 }
 
 /**
+ * Checkout session for a balance top-up rather than a product purchase.
+ *
+ * Kept separate from createStripeCheckoutSession because the webhook routes on
+ * which metadata key is present: shop_order_id fulfils an order and delivers
+ * keys, deposit_id credits a balance. One session must never carry both.
+ */
+export async function createStripeDepositSession(params: {
+  depositId: string;
+  usdAmount: number;
+  customerEmail?: string;
+  successUrl: string;
+  cancelUrl: string;
+}): Promise<{ sessionId: string; url: string }> {
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    customer_email: params.customerEmail || undefined,
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        quantity: 1,
+        price_data: {
+          currency: "usd",
+          unit_amount: Math.round(params.usdAmount * 100),
+          product_data: {
+            name: "Account balance top-up",
+            description: "CheatParadise — credited to your account balance",
+          },
+        },
+      },
+    ],
+    metadata: { deposit_id: params.depositId },
+    success_url: params.successUrl,
+    cancel_url: params.cancelUrl,
+    expires_at: Math.floor(Date.now() / 1000) + 30 * 60,
+    payment_intent_data: {
+      statement_descriptor_suffix: "CHEATPARADISE",
+      metadata: { deposit_id: params.depositId },
+    },
+  });
+
+  return { sessionId: session.id, url: session.url ?? "" };
+}
+
+/**
  * Verify a Stripe webhook signature and return the parsed event.
  * Throws if the signature is invalid.
  */

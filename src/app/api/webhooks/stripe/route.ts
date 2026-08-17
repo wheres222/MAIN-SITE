@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { creditReferral } from "@/lib/referrals";
 import { constructStripeEvent } from "@/lib/stripe";
 import { deliverOrder } from "@/lib/delivery";
-import { sendOrderKeysEmail, sendOrderDeliveredEmail } from "@/lib/email";
+import { sendOrderKeysEmail, sendOrderDeliveredEmail, sendDepositConfirmedEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { NextResponse, type NextRequest } from "next/server";
 import type Stripe from "stripe";
@@ -58,9 +58,18 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ ok: true });
       }
 
+      // Two kinds of session arrive here. A balance top-up carries deposit_id
+      // and credits a balance; an order carries shop_order_id and delivers
+      // keys. Deposits are checked first because they are the cheaper mistake
+      // to get wrong — a session should never carry both.
+      const depositId = session.metadata?.deposit_id;
+      if (depositId) {
+        return creditStripeDeposit(depositId, session, admin);
+      }
+
       const orderId = session.metadata?.shop_order_id;
       if (!orderId) {
-        logger.warn("checkout.session.completed: missing shop_order_id in metadata", {
+        logger.warn("checkout.session.completed: no deposit_id or shop_order_id in metadata", {
           sessionId: session.id,
         });
         return NextResponse.json({ ok: true });
@@ -108,6 +117,101 @@ export async function POST(request: NextRequest) {
     default:
       return NextResponse.json({ ok: true });
   }
+}
+
+// ── Balance top-ups ───────────────────────────────────────────────────────────
+
+/**
+ * Credit a card deposit.
+ *
+ * Two rules, both learned from the crypto side: credit the amount recorded when
+ * the deposit was started rather than anything the webhook reports, and claim
+ * the row with a conditional update before touching the balance. Stripe retries
+ * webhooks, and without the lock a retry that arrives while the first is still
+ * running credits the customer twice.
+ */
+async function creditStripeDeposit(
+  depositId: string,
+  session: Stripe.Checkout.Session,
+  admin: ReturnType<typeof createAdminClient>
+) {
+  const { data: deposit, error } = await admin
+    .from("deposits")
+    .select("id, user_id, usd_amount, status")
+    .eq("id", depositId)
+    .single();
+
+  if (error || !deposit) {
+    logger.error("Stripe deposit not found", { depositId, sessionId: session.id });
+    return NextResponse.json({ ok: true });
+  }
+
+  if (deposit.status !== "pending") {
+    logger.info("Deposit already processed — skipping", { depositId, status: deposit.status });
+    return NextResponse.json({ ok: true });
+  }
+
+  // Sanity check against what Stripe actually collected. A mismatch means the
+  // session was not the one we created for this row, so credit nothing and
+  // leave it for a human.
+  const paidUsd = (session.amount_total ?? 0) / 100;
+  if (Math.abs(paidUsd - Number(deposit.usd_amount)) > 0.01) {
+    logger.error("Stripe deposit amount mismatch — not crediting", {
+      depositId,
+      expected: deposit.usd_amount,
+      paid: paidUsd,
+    });
+    await admin.from("deposits").update({ status: "failed" }).eq("id", depositId);
+    return NextResponse.json({ ok: true });
+  }
+
+  const { data: locked, error: lockErr } = await admin
+    .from("deposits")
+    .update({ status: "confirmed", tx_hash: session.payment_intent as string | null })
+    .eq("id", depositId)
+    .eq("status", "pending")
+    .select("id");
+
+  if (lockErr) {
+    logger.error("Failed to lock deposit", { depositId, err: lockErr.message });
+    return NextResponse.json({ error: "DB error" }, { status: 500 });
+  }
+
+  if (!locked || locked.length === 0) {
+    logger.info("Deposit lock not acquired — already credited", { depositId });
+    return NextResponse.json({ ok: true });
+  }
+
+  const { error: rpcErr } = await admin.rpc("credit_user_balance", {
+    p_user_id: deposit.user_id,
+    p_amount: deposit.usd_amount,
+  });
+
+  if (rpcErr) {
+    // Put the row back so a retry can credit it, rather than leaving a customer
+    // who paid with a deposit marked confirmed and no money added.
+    await admin.from("deposits").update({ status: "pending" }).eq("id", depositId);
+    logger.error("credit_user_balance failed for Stripe deposit", {
+      depositId,
+      err: rpcErr.message,
+    });
+    return NextResponse.json({ error: "Balance update failed" }, { status: 500 });
+  }
+
+  logger.info("Stripe deposit credited", {
+    depositId,
+    userId: deposit.user_id,
+    amount: deposit.usd_amount,
+  });
+
+  const email = session.customer_email ?? session.customer_details?.email ?? null;
+  if (email) {
+    sendDepositConfirmedEmail(email, Number(deposit.usd_amount)).catch((e) =>
+      logger.error("Deposit email failed", { depositId, err: String(e) })
+    );
+  }
+
+  return NextResponse.json({ ok: true });
 }
 
 // ── Fulfillment ───────────────────────────────────────────────────────────────
