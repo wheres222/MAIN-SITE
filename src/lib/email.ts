@@ -12,7 +12,7 @@ export interface EmailPayload {
 
 async function sendEmail(payload: EmailPayload): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
-  const from = (process.env.RESEND_FROM_EMAIL?.trim()) || "CheatParadise <noreply@cheatparadise.gg>";
+  const from = (process.env.RESEND_FROM_EMAIL?.trim()) || "Cheat Paradise <noreply@cheatparadise.com>";
 
   if (!apiKey) {
     console.info("[email] RESEND_API_KEY not set — email suppressed:", payload.subject, "→", payload.to);
