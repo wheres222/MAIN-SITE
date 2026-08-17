@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { STATIC_STATUS_DEFAULTS } from "@/lib/status-defaults";
-import { getKeyhubStatuses, isKeyhubConfigured, type StatusKind } from "@/lib/keyhub";
+import { logger } from "@/lib/logger";
+import { denyUnlessRole } from "@/lib/auth/guard";
+import { getKeyhubStatusesDetailed, isKeyhubConfigured, type StatusKind } from "@/lib/keyhub";
 
 export const dynamic = "force-dynamic";
 
@@ -77,10 +79,22 @@ function buildStaticStatuses(): Record<string, StatusEntry> {
 export async function GET(request: Request) {
   const debug = new URL(request.url).searchParams.get("debug") === "1";
 
-  const [supabaseStatuses, keyhubStatuses] = await Promise.all([
+  const [supabaseStatuses, keyhub] = await Promise.all([
     fetchSupabaseStatuses(),
-    getKeyhubStatuses(),
+    getKeyhubStatusesDetailed(),
   ]);
+
+  const keyhubStatuses = keyhub.statuses;
+
+  // Logged unconditionally, not only under ?debug=1. A silently empty feed
+  // means the board is showing inferred statuses rather than real ones, and
+  // the only visible symptom is that nothing ever changes.
+  if (keyhub.error) {
+    logger.warn("KeyHub status feed unavailable", {
+      route: "api/status-feed",
+      err: keyhub.error,
+    });
+  }
 
   const staticStatuses = buildStaticStatuses();
 
@@ -92,6 +106,12 @@ export async function GET(request: Request) {
   };
 
   if (debug) {
+    // Staff only. This view names which integrations are configured and now
+    // carries the provider's own error text — useful to whoever runs the site,
+    // free reconnaissance for anyone else. The board itself stays public.
+    const denied = await denyUnlessRole("staff");
+    if (denied) return denied;
+
     const hasSupabase = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
 
     // Which KeyHub product produced each key, and the spread of resulting
@@ -107,6 +127,8 @@ export async function GET(request: Request) {
         static: { count: Object.keys(staticStatuses).length },
         keyhub: {
           configured: isKeyhubConfigured(),
+          error: keyhub.error,
+          productsReturned: keyhub.productCount,
           count: Object.keys(keyhubStatuses).length,
           byStatus,
           sample: Object.entries(keyhubStatuses)
