@@ -1,12 +1,13 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Breadcrumb } from "@/components/breadcrumb";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { categoryHref } from "@/lib/category-href";
-import { productDisplayName } from "@/lib/product-route";
+import { productDisplayName, productHref } from "@/lib/product-route";
 import { ProductSeoSections } from "@/components/product-seo-sections";
 import type { ProductSeoContent } from "@/lib/product-seo-content";
 import { variantsFor } from "@/lib/cart";
@@ -18,6 +19,8 @@ interface ProductDetailPageProps {
   paymentMethods: SellAuthPaymentMethod[];
   /** Editorial content for this product, when one has been written. */
   seoContent?: ProductSeoContent | null;
+  /** Other products for the same game, for sideways navigation. */
+  relatedProducts?: SellAuthProduct[];
 }
 
 interface RequirementItem {
@@ -514,7 +517,7 @@ function tabDescription(title: string): string {
 }
 
 
-export function ProductDetailPage({ product, paymentMethods, seoContent }: ProductDetailPageProps) {
+export function ProductDetailPage({ product, paymentMethods, seoContent, relatedProducts = [] }: ProductDetailPageProps) {
   const variants = useMemo(() => variantsFor(product), [product]);
   const [selectedVariantId, setSelectedVariantId] = useState<number>(
     variants[0]?.id || product.id
@@ -879,6 +882,28 @@ export function ProductDetailPage({ product, paymentMethods, seoContent }: Produ
             productName={product.name}
             gameName={product.groupName || product.categoryName || ""}
           />
+        )}
+
+        {/* Sideways navigation. Every product page linked to its category and
+            nowhere else, which left each one a dead end for a visitor arriving
+            from search — and kept the catalogue's internal links entirely
+            top-down. */}
+        {relatedProducts.length > 0 && (
+          <section className={styles.relatedSection} aria-labelledby="related-products">
+            <h2 id="related-products" className={styles.relatedTitle}>
+              Other {product.groupName || product.categoryName || "cheats"} options
+            </h2>
+            <ul className={styles.relatedList}>
+              {relatedProducts.map((other) => (
+                <li key={other.id}>
+                  <Link href={productHref(other)} className={styles.relatedLink}>
+                    <span className={styles.relatedName}>{other.name}</span>
+                    <span className={styles.relatedArrow} aria-hidden="true">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
       </main>
 

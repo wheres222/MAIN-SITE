@@ -8,6 +8,7 @@ import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import {
   findProductByRoute,
   productDisplayName,
+  productGameSlug,
   productHref,
   productSeoTitle,
   productSlugFromName,
@@ -257,6 +258,19 @@ export function ProductRouteClient({ initialData, seoContent }: ProductRouteClie
     );
   }
 
+  // Every other product for the same game. Product pages linked out to their
+  // category and to nothing else, so 35 pages sat as leaves — a visitor who
+  // landed on one from search had no route sideways, and no authority moved
+  // between them. Six is enough to be useful without turning the page into a
+  // link farm.
+  const relatedProducts = storefront.products
+    .filter(
+      (candidate) =>
+        candidate.id !== product.id &&
+        productGameSlug(candidate) === productGameSlug(product)
+    )
+    .slice(0, 6);
+
   // JSON-LD schemas are emitted server-side from src/app/products/[slug]/page.tsx
   // via buildProductSchemas() — see src/lib/product-schemas.ts. Don't duplicate
   // them here or Googlebot will see two copies and the canonical product
@@ -267,6 +281,7 @@ export function ProductRouteClient({ initialData, seoContent }: ProductRouteClie
       product={product}
       paymentMethods={storefront.paymentMethods}
       seoContent={seoContent}
+      relatedProducts={relatedProducts}
     />
   );
 }
