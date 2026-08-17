@@ -37,32 +37,11 @@ function priceRange(product: SellAuthProduct): { min: number; max: number } | nu
   return { min: Math.min(...prices), max: Math.max(...prices) };
 }
 
-// Deterministic pseudo-values so a product always shows the same rating/reviews.
-function seeded(id: number, salt: number, min: number, max: number): number {
-  const seed = Math.abs((id * salt) % 1000) / 1000;
-  return min + seed * (max - min);
-}
-function ratingFor(p: SellAuthProduct): number { return Number(seeded(p.id, 37, 4.55, 4.95).toFixed(2)); }
-function reviewsFor(p: SellAuthProduct): number { return Math.round(seeded(p.id, 53, 40, 620) / 5) * 5; }
-
 function archTag(p: SellAuthProduct): string | null {
   const text = `${p.name} ${p.description ?? ""}`.toLowerCase();
   if (/\binternal\b/.test(text)) return "Internal";
   if (/\bexternal\b/.test(text)) return "External";
   return null;
-}
-
-function StarRow({ value }: { value: number }) {
-  const filled = Math.round(value);
-  return (
-    <span className={styles.stars} aria-label={`${value} out of 5`}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <svg key={i} viewBox="0 0 24 24" width="15" height="15" className={i < filled ? styles.starOn : styles.starOff} aria-hidden="true">
-          <path d="m12 2.4 2.9 5.88 6.48.95-4.69 4.57 1.11 6.46L12 17.2l-5.8 3.06 1.1-6.46L2.6 9.23l6.5-.95L12 2.4Z" fill="currentColor" />
-        </svg>
-      ))}
-    </span>
-  );
 }
 
 const IconOS = (
@@ -115,8 +94,6 @@ export function GameCatalogPage({ group, products, seoContent, seoFooter, emptyN
         <div className={styles.rows}>
           {filtered.map((product) => {
             const range = priceRange(product);
-            const rating = ratingFor(product);
-            const reviews = reviewsFor(product);
             const arch = archTag(product);
             return (
               <article key={product.id} className={styles.row}>
@@ -145,11 +122,12 @@ export function GameCatalogPage({ group, products, seoContent, seoFooter, emptyN
                     <span className={styles.statusOk}>{IconShield} Undetected</span>
                   </div>
 
-                  <div className={styles.rating}>
-                    <StarRow value={rating} />
-                    <span className={styles.ratingNum}>{rating.toFixed(2)}</span>
-                    <span className={styles.ratingCount}>/ {reviews}+</span>
-                  </div>
+                  {/* Star ratings removed. They were generated from the product
+                      id — a number between 4.55 and 4.95 and a review count
+                      between 40 and 620, for products nobody had reviewed. That
+                      is invented social proof shown to customers, and the
+                      matching AggregateRating markup was a Google policy
+                      violation. Wire real reviews and this comes back. */}
                 </div>
 
                 <div className={styles.rowRight}>
