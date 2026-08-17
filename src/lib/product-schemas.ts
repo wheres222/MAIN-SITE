@@ -4,27 +4,19 @@ import { productHref } from "@/lib/product-route";
 import type { SellAuthProduct } from "@/types/sellauth";
 
 /**
- * Deterministic placeholder rating helpers.
+ * No AggregateRating is emitted, deliberately.
  *
- * The catalog page already shows star ratings derived from the product id
- * (see game-catalog-page.tsx `scoreFromId`). Until real review data is wired
- * up (Trustpilot, in-house reviews, etc.), schema markup must match the
- * displayed value or Google will flag the rating data as inconsistent.
+ * These pages used to carry one built from the product id — a rating between
+ * 3.6 and 5.0 and a review count between 14 and 87, for products nobody had
+ * reviewed. Google's structured data policy requires marked-up ratings to come
+ * from real reviews that are visible on the page; invented ones are grounds for
+ * a manual action against the whole site, which costs far more than the star
+ * snippet is worth.
  *
- * REPLACE these helpers with real aggregate review data once available.
+ * When real reviews exist — Trustpilot's API, or an in-house table — build
+ * aggregateRating from those numbers and render the same values on the page.
+ * Until then this stays absent.
  */
-function scoreFromId(id: number, salt: number, min: number, max: number): number {
-  const seed = Math.abs((id * salt) % 100) / 100;
-  return min + seed * (max - min);
-}
-
-function ratingFor(product: SellAuthProduct): number {
-  return Number(scoreFromId(product.id, 17, 3.6, 5).toFixed(1));
-}
-
-function reviewCountFor(product: SellAuthProduct): number {
-  return Math.floor(scoreFromId(product.id, 31, 14, 87));
-}
 
 function categorySlugFor(product: SellAuthProduct): string {
   const source = product.categoryName || product.groupName || "";
@@ -63,8 +55,6 @@ export function buildProductSchemas(
   siteUrl: string
 ): string[] {
   const productUrl = `${siteUrl}${productHref(product)}`;
-  const rating = ratingFor(product);
-  const reviewCount = reviewCountFor(product);
   const price =
     typeof product.price === "number"
       ? product.price.toFixed(2)
@@ -73,15 +63,6 @@ export function buildProductSchemas(
     typeof product.stock === "number" && product.stock <= 0
       ? "https://schema.org/OutOfStock"
       : "https://schema.org/InStock";
-
-  const aggregateRating = {
-    "@type": "AggregateRating",
-    ratingValue: rating.toFixed(1),
-    bestRating: "5",
-    worstRating: "1",
-    ratingCount: reviewCount,
-    reviewCount,
-  };
 
   // ── Product schema ─────────────────────────────────────────────────────────
   const productSchema = {
@@ -97,7 +78,6 @@ export function buildProductSchemas(
     category: product.categoryName || product.groupName || "Gaming Software",
     image: product.image ? [product.image] : undefined,
     url: productUrl,
-    aggregateRating,
     offers: {
       "@type": "Offer",
       priceCurrency: product.currency || "USD",
@@ -127,7 +107,6 @@ export function buildProductSchemas(
     applicationSubCategory: "Gaming Enhancement",
     url: productUrl,
     image: product.image || undefined,
-    aggregateRating,
     offers: {
       "@type": "Offer",
       priceCurrency: product.currency || "USD",
