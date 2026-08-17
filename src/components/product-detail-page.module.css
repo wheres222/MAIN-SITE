@@ -444,3 +444,68 @@
   .lightboxArrowRight { right: 8px; }
   .lightboxClose { top: 10px; right: 10px; }
 }
+
+/* ── Related products ──────────────────────────── */
+/* Sideways links to the other products for this game. Deliberately a plain
+   list rather than a second card grid: it sits below the editorial content,
+   where the job is to offer a next step, not to re-sell the catalogue. */
+.relatedSection {
+  margin: 34px 0 8px;
+  padding-top: 26px;
+  border-top: 1px solid var(--border);
+}
+
+.relatedTitle {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 14px;
+}
+
+.relatedList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+}
+
+.relatedLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.12s, background 0.12s, color 0.12s;
+}
+.relatedLink:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.relatedName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatedArrow {
+  flex: 0 0 auto;
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .relatedList { grid-template-columns: 1fr; }
+}

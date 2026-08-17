@@ -138,6 +138,40 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         body:
           "Most Rust bans do not begin with a scanner. They begin with a clip. Rust has an unusually engaged community that records, reviews and escalates, and walking directly to a buried stash in front of another player is more damaging than anything in your config.\n\nUse an account you can lose. Rust hours and reputation do not transfer, and a game ban is visible on your Steam profile permanently. Check the live status immediately before each session rather than the night before — detection status is a moment-in-time claim that goes stale in hours.\n\nThe days straight after a forced wipe are the worst window to run anything you are unsure about. Population is at its highest, so is report volume, and it is the natural moment for a backlog of detections to be actioned.",
       },
+      {
+        heading: "Solo, duo and group play need different setups",
+        body:
+          "How you play Rust changes which features earn their place more than most people expect. A solo lives or dies on not being seen. A ten-man group has enough eyes that information is partly solved already, and the constraint becomes raid throughput.\n\nAs a solo, player ESP with a long draw distance is the entire product. You are avoiding every fight that is not on your terms, and the difference between a good solo wipe and a dead character on day one is usually a group you did not see crossing a field. Resource and node ESP matters second, because time spent farming is time exposed and a solo cannot afford a bad farming route.\n\nIn a group, sleeper and container information moves to the front. The group already has map coverage; what it lacks is knowing which of forty visible bases is worth the explosives. Container ESP is what turns a wipe from grinding sulfur into taking someone else's.\n\nThe aimbot is the feature that scales worst with group size. In a ten-man fight there are nine other people who can be blamed for a good shot; there are also nine people watching, several of whom will clip it.",
+        bullets: {
+          heading: "What to prioritise",
+          items: [
+            "Solo: long-range player ESP, node routes, quiet recoil control",
+            "Duo: player ESP plus sleeper awareness for opportunistic raids",
+            "Group: container and TC information, since map coverage is solved",
+            "Any size: profiles you can dial down for populated servers",
+          ],
+        },
+      },
+      {
+        heading: "Monthly wipes, force wipes and when builds break",
+        body:
+          "Rust's schedule is the reason its cheats behave differently from every other game here. Facepunch ship a forced wipe on the first Thursday of each month alongside a client update, and that update is what breaks builds. Between forced wipes there are weekly optional wipes that change nothing technically — server resets, not new code.\n\nThe practical consequence is a predictable dead window. A client patch lands, offsets move, and products go into Updating while they are rebuilt. Usually that is hours; occasionally it is longer if Facepunch changed something structural. Anyone selling you a Rust cheat that has never gone down through a force wipe is selling you a product that has not been updated.\n\nIt also means the start of a wipe — the exact moment a cheat is most valuable, when everyone is racing for the same resources — is the moment a build is most likely to be unavailable or freshly rebuilt and least proven. That is worth planning around rather than discovering at 8pm on wipe day.\n\nCheck the status page before wipe rather than after. If a product is Updating, the answer is to farm normally for a few hours, not to run a build nobody has confirmed.",
+        bullets: {
+          heading: "The Rust update rhythm",
+          items: [
+            "First Thursday monthly: forced wipe plus client patch — the one that breaks builds",
+            "Weekly optional wipes: server resets, no technical impact",
+            "Expect Updating status for hours after a force wipe",
+            "Ban waves cluster in the days following a force wipe",
+            "A cheat that never pauses through a patch is a cheat nobody is maintaining",
+          ],
+        },
+      },
+      {
+        heading: "What Rust cheats cannot do",
+        body:
+          "Worth stating plainly, because the sales pages in this niche rarely do. No Rust cheat gives you resources you did not gather, spawns items, or edits a server's data — Rust is authoritative server-side, so everything on offer reads state or assists input. Anyone advertising item spawning for vanilla Rust is describing something that does not exist.\n\nNothing here makes you immune to raiding. Container ESP tells you what is inside a base; it does not stop someone rocketing yours while you sleep. The same asymmetry that makes information valuable cuts both ways.\n\nAnd no product removes the account risk. External design avoids the checks aimed at injected code, quiet configuration lowers your report rate, and neither is the same as safety. The realistic outcome of cheating on Rust across a long enough period is a banned account — the question is how many wipes you get first, and whether the account was one you cared about.",
+      },
     ],
     faqs: [
       {
@@ -455,6 +489,25 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
           ],
         },
       },
+      {
+        heading: "Ranked, unlocks and what a Siege ban actually costs",
+        body:
+          "Siege accounts accumulate value in a way that catches people out. Operators are unlocked individually and there are dozens of them; a mature account represents hundreds of hours or a substantial amount of money, and none of it transfers. A permanent ban resets you to the starting roster on a new account, which is a materially worse experience than simply starting a new account in most other games.\n\nRanked progression compounds that. Placement on a fresh account puts you in lobbies against players who also just started, which is a different game from the one you were playing, and climbing back takes weeks even for a good player.\n\nUbisoft also ban permanently and are not known for reversing decisions on appeal. There is no wave-and-warn pattern to rely on here, and no equivalent of Ricochet's mitigations to tip you off that something is wrong before enforcement lands.\n\nSo the calculation is unusually stark: use an account whose operator roster you would not miss, and accept that a ban means starting the unlock grind again rather than just buying the game a second time.",
+        bullets: {
+          heading: "Before you run anything on Siege",
+          items: [
+            "An account with no operator unlocks or rank you would miss",
+            "No linked payment method, and nothing bought on it",
+            "Expect permanent enforcement with no appeal worth relying on",
+            "Check live status the day you play — Siege patches on a season cadence",
+          ],
+        },
+      },
+      {
+        heading: "Seasons, mid-season patches and when builds pause",
+        body:
+          "Siege runs on a four-season year with mid-season updates in between, and both can move what a cheat reads. Major season patches — new operator, map rework, engine changes — are the ones that reliably break builds and put products into Updating while they are rebuilt.\n\nSiege X in particular changed enough under the hood that anything reading the game needed rebuilding rather than adjusting. That is the pattern to expect from any structural update: not a few hours of downtime, but a genuine rebuild.\n\nThe test-server period before a season launch is a useful signal for anyone paying attention. Changes visible there are changes coming to live, and a provider who is already talking about them is a provider doing the work. One who says nothing until the day the product stops loading is telling you how they operate.\n\nThe practical habit is the same as on Rust: check status before the session rather than after the patch notes, and treat the first days of a new season as the window where nothing is proven yet.",
+      },
     ],
     faqs: [
       {
@@ -746,6 +799,40 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         body:
           "The realistic failure mode in Counter-Strike is a teammate or opponent watching your demo, not an automated flag. Players in this game have an unusually accurate sense of what a human crosshair does, and pre-firing an angle you have no information for is obvious in review.\n\nRestraint is the whole strategy. Losing rounds you could have won, taking fights the normal way, and occasionally missing are what keep a demo unremarkable. Every additional feature you enable makes that harder to maintain.\n\nUse a separate Steam account with no games attached that you would miss, and never link it to your main through shared payment details or a family group.",
       },
+      {
+        heading: "FACEIT and ESEA are a different game entirely",
+        body:
+          "This is the single most important thing on the page and most CS2 cheat listings never mention it. Where you play decides your risk far more than which product you buy.\n\nValve matchmaking runs VAC, plus VAC Live, which watches for behavioural signals during a match and can end it. It is comparatively relaxed, bans in waves, and is the environment most \"undetected\" claims are quietly referring to.\n\nFACEIT and ESEA run their own kernel-level anti-clients that you install separately and that load before the game. They are stricter than VAC by a wide margin, they are actively developed against exactly this market, and they ban permanently. Treat a status of Undetected as a statement about Valve matchmaking unless the product explicitly says otherwise — and if you play third-party leagues, assume nothing transfers.\n\nThere is also Premier, Valve's ranked mode with Trust Factor weighting. Trust Factor is opaque by design, but a new account, a lack of purchase history and reports from opponents all push you into worse lobbies with more cheaters — which raises your report volume further. The spiral is real, and it starts with a fresh throwaway account.",
+        bullets: {
+          heading: "Three different risk environments",
+          items: [
+            "Valve casual and Premier: VAC and VAC Live, wave bans, most permissive",
+            "Trust Factor: opaque, but a new account starts you low and reports push you lower",
+            "FACEIT: separate kernel anti-cheat, loads before the game, permanent bans",
+            "ESEA: same model as FACEIT, historically aggressive",
+            "An Undetected status usually means Valve matchmaking unless stated otherwise",
+          ],
+        },
+      },
+      {
+        heading: "Why demos make CS2 unusually unforgiving",
+        body:
+          "Every competitive Counter-Strike match produces a demo, and any player can download and replay it from any point of view — including yours. That is a review mechanism most games do not have, and it is why the CS2 community is better than any other at identifying cheats from footage alone.\n\nWhat that catches is not wallhacks, which are genuinely hard to prove from a demo. It catches aim: the flick that starts before the model is visible, the crosshair that tracks through smoke, the spray transfer nobody makes twice. A demo lets someone step frame by frame through the exact moment, and they will.\n\nThe practical rule is that aim assistance on CS2 should be configured so it does not survive scrutiny as evidence — heavy smoothing, narrow field of view, body targeting. And the information features should be acted on with the same delay you would use in any other game: rotating before a sound justifies it is visible in a demo as clearly as an aimbot is.\n\nOverwatch-style community review has come and gone across Counter-Strike's history, but the demo system underneath it has not, and neither has the playerbase's habit of using it.",
+      },
+      {
+        heading: "Skins, trade bans and what a CS2 ban really costs",
+        body:
+          "CS2 is the one game in this catalogue where the account can be worth more than the computer. Inventories run to thousands of pounds, and a VAC ban does not delete them — it strands them. The items stay in an account that can no longer play on secure servers, and Steam's rules prevent selling the account legitimately.\n\nSo the standard advice to use a throwaway account is not the usual caution here. Do not sign into a cheat-running account with anything of value attached, do not trade to it from your main, and do not link it to the same phone number. Steam trade history is public and it is the first place anyone looks to connect two accounts.\n\nA VAC ban is also permanently visible on the profile, which matters in a game where trading with strangers is normal and a banned profile is treated as untrustworthy. That reputational cost outlasts any wipe or season.",
+        bullets: {
+          heading: "Keeping the two separate",
+          items: [
+            "A fresh account with no inventory, and no trades to or from your main",
+            "Different email, different phone number, no family sharing",
+            "Prime status bought separately if you need it — never shared",
+            "Accept that Trust Factor will be poor and lobbies worse as a result",
+          ],
+        },
+      },
     ],
     faqs: [
       {
@@ -872,6 +959,39 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         heading: "Playing without getting reported in Apex",
         body:
           "The spectate feature is the thing to plan around. Someone you killed can watch you for the remainder of the match, so behaviour that would go unnoticed elsewhere is observed here as a matter of course.\n\nThat makes tracking through walls the single most damaging habit. Holding an angle you should have no reason to hold, or turning to a flanker before there is any audio cue, is exactly what a spectating opponent notices and clips.\n\nUse an account with no heirlooms or purchase history attached. Apex bans are account-level and take cosmetics with them, and Respawn are not known for reversing them.",
+      },
+      {
+        heading: "Why third parties decide Apex games",
+        body:
+          "Apex is a three-squad problem pretending to be a two-squad one. Almost every fight you take is audible to at least one other team, and the squad that wins the opening engagement is frequently the squad that dies thirty seconds later with no shields and no cover.\n\nThat is where information changes the game rather than the fight. Knowing a third squad is rotating in from the north is the difference between disengaging with a knock and losing all three of you to a team you never heard. It is also the piece of information good Apex players spend the most effort trying to infer from audio, and the piece they are wrong about most often.\n\nSquad grouping in the ESP is the feature that makes this usable. Ten enemy boxes on screen is noise; three squads of three with one clearly separate is a decision. That distinction is worth more in ranked than any aim setting, because ranked rewards placement and punishes exactly the fight you should have left.\n\nKnocked-versus-dead is the second piece. Pushing a squad that is genuinely two-down is how you win; pushing one that has already picked their teammate up is how a game ends.",
+        bullets: {
+          heading: "Information that changes decisions, not aim",
+          items: [
+            "Squad grouping — a third party looks nothing like the team you are fighting",
+            "Knocked and downed state, which decides whether the push is real",
+            "Shield tier, so you know whether a fight is even",
+            "Ring timing against enemy positions for rotations",
+          ],
+        },
+      },
+      {
+        heading: "Legends, abilities and what a cheat does not solve",
+        body:
+          "Apex has a legend roster with abilities that a cheat interacts with awkwardly, and being honest about that is more useful than a feature list. Bangalore smoke, Caustic gas and Bloodhound scans all change what is visible to whom — and an ESP that shows you players through smoke is exactly the situation where a spectating opponent notices something is wrong, because they know you should not have that information.\n\nMovement is the other half. Apex rewards momentum, tap-strafing, wall bounces and zip rotations more than any other battle royale, and none of that is something a cheat gives you. A player with perfect information and poor movement still loses to a good player, because the good player is somewhere you cannot shoot.\n\nWhich shapes what is worth buying. Information features raise your floor considerably — fewer deaths to squads you never saw, better rotations, cleaner third-party avoidance. Aim features raise your ceiling in duels you should often have avoided. On a game with this much movement, the floor is where the value is.",
+      },
+      {
+        heading: "Ranked, cheaters and the state of Apex lobbies",
+        body:
+          "Apex has an unusually visible cheating problem at high ranks, particularly in certain regions, and that cuts both ways for anyone reading this page.\n\nIt means detection status matters more than usual: Respawn are under sustained pressure over this and EAC updates land accordingly. A build that was fine last month is not evidence about this month, and the gap between a detection and a wave can be weeks — which is exactly how people convince themselves their account is safe right up until it is not.\n\nIt also means reports carry less individual weight in lobbies where everyone is reporting everyone, but that is not the protection it sounds like. Wave enforcement means your session going quietly tells you nothing at all.\n\nThe practical posture: a throwaway account, restrained settings in ranked, and the status page checked the day you play rather than the week you bought.",
+        bullets: {
+          heading: "Sensible Apex habits",
+          items: [
+            "A separate account — bans take cosmetics and heirlooms with them",
+            "Quieter profile in ranked, where scrutiny and report volume peak",
+            "Check status before each session; EAC updates land often on this title",
+            "Treat a quiet week as meaningless — Respawn ban in waves",
+          ],
+        },
       },
     ],
     faqs: [
@@ -1455,6 +1575,40 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         heading: "Playing carefully in Tarkov",
         body:
           "The behaviour that draws attention in Tarkov is not aim, it is impossible knowledge. Walking directly to a hidden stash, holding an extract before anyone approaches, or looting a specific container across the map is what gets reported and reviewed.\n\nStatistical caution matters too. A survival rate far above the norm is visible to Battlestate without any client-side detection at all, and extracting from every raid with a full bag is its own signal.\n\nUse an account you can lose, and check live status before each session — Tarkov patches frequently and builds are rebuilt often after each one.",
+      },
+      {
+        heading: "The economy is the game, and it is where the value is",
+        body:
+          "Tarkov is an inventory management game with shooting in it. A raid where you kill five players and extract with ammunition is a worse raid than one where you avoid everybody and leave with two graphics cards. Anyone treating this as a shooter first has misunderstood what their stash is losing.\n\nThat is why loot value filtering is the highest-value feature here and not a convenience. Set a threshold and a dorm room shows the two items worth taking instead of forty that are not; a Labs run becomes a route rather than a search. It converts the game's most tedious loop — opening containers to find nothing — into a decision about which containers to open at all.\n\nQuest items are the other half. Task progression is the actual campaign of Tarkov, and a substantial share of the difficulty is that quest items spawn in specific places you have to learn or look up between raids. Seeing them directly removes the part of progression that is memorisation rather than skill.\n\nAnd the flea market makes all of this legible to Battlestate. Extract value that does not match your raid history, or a sales pattern that implies knowledge you should not have, is a signal that exists in their data whether or not any anti-cheat noticed you.",
+        bullets: {
+          heading: "Ranked by value on Tarkov",
+          items: [
+            "Loot value filtering — turns searching into routing",
+            "Quest item indicators, which remove the memorisation half of progression",
+            "PMC and player-Scav separation, since mistaking one ends raids",
+            "Extract awareness and timing",
+            "Aim assistance — the most visible thing you can run on the most watched game here",
+          ],
+        },
+      },
+      {
+        heading: "Wipes, patches and why status changes so often",
+        body:
+          "Tarkov wipes. Every few months Battlestate reset every account's progress, stash and traders, usually alongside a substantial patch, and the game people are playing after a wipe is genuinely a different one from the week before.\n\nFor anything running alongside the game, a wipe patch is the event that breaks builds — offsets move, structures change, and products go into Updating until they are rebuilt. That window is also when the game is most popular and when a cheat feels most useful, which is exactly the pressure that gets people to run an unproven build on day one of a wipe. It is the worst time to do that.\n\nWipes also reset the statistical baseline Battlestate compare you against. Early wipe, everyone is poor and unarmoured; a player extracting high-value kit consistently in week one stands out against the population far more than the same behaviour in month three.\n\nThe rhythm to internalise: patch lands, builds pause, wave enforcement follows the reopening. Check status the day you play, and be least adventurous in the first fortnight of a wipe.",
+        bullets: {
+          heading: "The Tarkov cycle",
+          items: [
+            "Wipe patches break builds — expect an Updating window",
+            "Population and scrutiny peak immediately after a wipe",
+            "Statistical outliers are most visible when everyone else is poor",
+            "Ban waves are public, named, and follow patches",
+          ],
+        },
+      },
+      {
+        heading: "Editions, EOD and the account you should be using",
+        body:
+          "Tarkov editions are not cosmetic. They carry stash size, starting gear and trader standing, and the higher tiers cost real money — the top editions are among the most expensive purchases in PC gaming. A ban takes all of it, permanently, with no realistic appeal.\n\nSo the throwaway-account advice has a sharper edge here than anywhere else on this site. Running anything on an EOD or Unheard account is putting a three-figure purchase behind a coin flip. Buy a standard account for it, accept the smaller stash, and keep the expensive one clean.\n\nBattlestate also publish ban waves with account names, which is a deliberate deterrent and works better than most publishers' silence. If you want to know how seriously they take this, that publicity is the answer.\n\nThe one piece of good news: Tarkov has no hardware-ban reputation on the scale of Riot or Activision, so a fresh account is generally a viable restart. That is not a reason to be careless — it is a reason not to risk the edition you paid for.",
       },
     ],
     faqs: [
