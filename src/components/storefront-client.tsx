@@ -32,8 +32,8 @@ import type { StorefrontData } from "@/types/sellauth";
 const CATEGORY_CARDS_ONLY = false;
 
 const CATEGORY_CARDS = [
-  { slug: "rust",        name: "Rust",        image: "/category-cards/rust.png" },
-  { slug: "arc-raiders", name: "ARC Raiders", image: "/category-cards/arc-raiders.png" },
+  { slug: "rust",        name: "Rust",        image: "/category-cards/rust.avif" },
+  { slug: "arc-raiders", name: "ARC Raiders", image: "/category-cards/arc-raiders.avif" },
 ] as const;
 
 function money(value: number | null, currency = "USD"): string {

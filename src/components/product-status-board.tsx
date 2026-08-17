@@ -81,25 +81,25 @@ function categoryKey(value: string): string {
 function categoryLogoForName(groupName: string): string {
   const source = normalized(groupName);
 
-  if (source.includes("apex")) return "/pd/apex.png";
-  if (source.includes("arc")) return "/pd/arc-raiders.png";
-  if (source.includes("delta force") || source.includes("delta-force")) return "/pd/delta-force.png";
-  if (source.includes("battlefield") || source.includes("bf")) return "/pd/call-of-duty.png";
-  if (source.includes("valorant") || source.includes("val")) return "/pd/valorant.png";
-  if (source.includes("rust")) return "/pd/rust.png";
-  if (source.includes("rainbow") || source.includes("r6")) return "/pd/rainbow-six-siege.png";
-  if (source.includes("call of duty") || source.includes("cod")) return "/pd/call-of-duty.png";
-  if (source.includes("fortnite")) return "/pd/fortnite.png";
-  if (source.includes("counter") || source.includes("cs2")) return "/pd/counter-strike-2.png";
-  if (source.includes("escape from tarkov") || source.includes("tarkov") || source.includes("eft")) return "/pd/escape-from-tarkov.png";
-  if (source.includes("rocket") && source.includes("league")) return "/pd/rocket-league.png";
-  if (source.includes("fivem")) return "/pd/fivem.png";
-  if (source.includes("roblox")) return "/pd/roblox.png";
-  if (source.includes("pubg")) return "/pd/pubg.png";
-  if (source.includes("league") || source.includes("lol")) return "/pd/lol.png";
-  if (source.includes("hwid")) return "/pd/hwid-spoofers.png";
-  if (source.includes("vpn")) return "/pd/vpns.png";
-  if (source.includes("account")) return "/pd/accounts.png";
+  if (source.includes("apex")) return "/pd/apex.avif";
+  if (source.includes("arc")) return "/pd/arc-raiders.avif";
+  if (source.includes("delta force") || source.includes("delta-force")) return "/pd/delta-force.avif";
+  if (source.includes("battlefield") || source.includes("bf")) return "/pd/call-of-duty.avif";
+  if (source.includes("valorant") || source.includes("val")) return "/pd/valorant.avif";
+  if (source.includes("rust")) return "/pd/rust.avif";
+  if (source.includes("rainbow") || source.includes("r6")) return "/pd/rainbow-six-siege.avif";
+  if (source.includes("call of duty") || source.includes("cod")) return "/pd/call-of-duty.avif";
+  if (source.includes("fortnite")) return "/pd/fortnite.avif";
+  if (source.includes("counter") || source.includes("cs2")) return "/pd/counter-strike-2.avif";
+  if (source.includes("escape from tarkov") || source.includes("tarkov") || source.includes("eft")) return "/pd/escape-from-tarkov.avif";
+  if (source.includes("rocket") && source.includes("league")) return "/pd/rocket-league.avif";
+  if (source.includes("fivem")) return "/pd/fivem.avif";
+  if (source.includes("roblox")) return "/pd/roblox.avif";
+  if (source.includes("pubg")) return "/pd/pubg.avif";
+  if (source.includes("league") || source.includes("lol")) return "/pd/lol.avif";
+  if (source.includes("hwid")) return "/pd/hwid-spoofers.avif";
+  if (source.includes("vpn")) return "/pd/vpns.avif";
+  if (source.includes("account")) return "/pd/accounts.avif";
 
   return "/pd/misc.svg";
 }

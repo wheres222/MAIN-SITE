@@ -23,7 +23,7 @@ export function EspCompare() {
         {/* After — full cheat overlay, sits underneath */}
         <Image
           className="esp-compare-img"
-          src="/compare/visible-to-you.png"
+          src="/compare/visible-to-you.avif"
           alt="The same scene with the cheat overlay active: enemies outlined through walls with distance and name tags"
           width={1920}
           height={1080}
@@ -33,7 +33,7 @@ export function EspCompare() {
         {/* Before — clean frame, clipped to the left of the divider */}
         <Image
           className="esp-compare-img esp-compare-before"
-          src="/compare/anticheat-sees.png"
+          src="/compare/anticheat-sees.avif"
           alt="The scene as the anti-cheat sees it, with no overlay drawn"
           width={1920}
           height={1080}

@@ -2,7 +2,9 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createStripeDepositSession } from "@/lib/stripe";
 import { logger } from "@/lib/logger";
-import { NextResponse, type NextRequest } from "next/server";
+import { rateLimit } from "@/lib/rate-limit";
+import { clientIp, recordSecurityEvent } from "@/lib/security/events";
+import { after, NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +30,28 @@ export async function POST(request: NextRequest) {
 
   if (authErr || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Keyed on the user rather than the IP: this route already requires a
+  // session, and a shared IP (a university, a phone network) should not stop
+  // one customer topping up because another just did.
+  const limit = rateLimit("deposit", user.id, { windowMs: 10 * 60_000, max: 8 });
+  if (limit.limited) {
+    after(() =>
+      recordSecurityEvent({
+        kind: "rate_limited",
+        severity: "medium",
+        ip: clientIp(request.headers),
+        path: "/api/account/deposit/stripe",
+        method: "POST",
+        userId: user.id,
+        detail: { attempts: limit.count },
+      })
+    );
+    return NextResponse.json(
+      { error: "Too many deposit attempts. Please wait a few minutes." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+    );
   }
 
   if (!process.env.STRIPE_SECRET_KEY) {

@@ -67,7 +67,7 @@ function SupportCtaIcon({ type }: { type: SupportIcon }) {
   if (type === "discord") {
     return (
       <Image
-        src="/social/discord.png"
+        src="/social/discord.avif"
         alt=""
         aria-hidden="true"
         width={28}
