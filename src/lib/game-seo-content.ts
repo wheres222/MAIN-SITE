@@ -2403,6 +2403,40 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
         body:
           "A fair question, and the answer depends on what frustrates you. If your complaint is that you lose duels, this is not the game where a cheat fixes that — the time-to-kill is too fast and the duel was decided by who was positioned better.\n\nIf your complaint is the thing most Hell Let Loose players actually complain about — that matches are decided by information you have no way to get, that you spend twenty minutes crawling through a field to find one garrison, that a competent enemy commander runs circles around a team with no recon — then this is a game where information tooling changes the experience substantially.\n\nIt is also a slower game than most on this site, and that cuts both ways. There is time to act on what you know without looking impossible, which makes restraint easier. And there is time for other people to watch you, which makes carelessness more expensive.",
       },
+      {
+        heading: "Which Hell Let Loose cheat should I buy?",
+        body:
+          "Three products, and the choice is genuinely straightforward because they are built for different things rather than priced for different wallets.\n\nFellas is the main one. Full garrison and outpost ESP, supply node tracking, player and armour information across the whole map, and restrained aim assistance. If you play the European maps — which is most people, most of the time — this is the product built for them.\n\nVietnam Fellas is for the Vietnam content. That is not a reskin: the maps are dense jungle rather than open farmland, engagement ranges collapse to a fraction of the base game, and tunnels and concealed positions hide things the standard draw distances are not tuned for. If Vietnam is where you play, buy the one built for it.\n\nArcane is the multi-game subscription — Hell Let Loose alongside Rust, Apex, CS2 and ARC Raiders on one payment. Competent on this game, not as deep as the dedicated products on the garrison and logistics layer. Worth it if your group rotates between titles, not if Hell Let Loose is all you play.",
+        bullets: {
+          heading: "Choosing quickly",
+          items: [
+            "European maps, want the full toolkit — Fellas",
+            "Vietnam maps — Vietnam Fellas, tuned for jungle sightlines",
+            "Play several games — Arcane, one subscription across all of them",
+            "Already hardware banned — a spoofer first, whichever you buy",
+          ],
+        },
+      },
+      {
+        heading: "Roles: what a cheat is worth as infantry, recon, armour or commander",
+        body:
+          "Hell Let Loose is a role game, and the same product is worth wildly different amounts depending on which one you play.\n\nAs a rifleman, honestly, it is worth the least. You are one of forty, your job is to hold ground and follow your squad lead, and knowing where a garrison is does not change your next thirty seconds. ESP keeps you alive crossing open ground; that is most of it.\n\nAs a squad leader it becomes decisive. You choose where the squad goes, where the outpost drops, and when to push — every one of those is an information decision, and being right about them repeatedly is what wins the match. This is the role where a cheat changes outcomes rather than survival odds.\n\nRecon is the role the product is effectively built for. The sniper's job is to find garrisons and report them; the difference between finding one a match and finding four is the difference between losing and winning, and that is exactly the job garrison ESP does.\n\nArmour cares about a narrower slice: where enemy tanks are, which way they are facing, and where the anti-tank infantry is waiting. That last one is the difference between a tank that lasts twenty minutes and one that dies to a satchel four minutes in.\n\nAs commander you are working from the map screen, and precise enemy positions turn your abilities from guesswork into placed strikes. It is also the role most visible to your own team — a commander who is always right gets discussed in Discord afterwards.",
+        bullets: {
+          heading: "Value by role",
+          items: [
+            "Recon — highest value, the product is built for this job",
+            "Squad leader — decisive, because every call is an information decision",
+            "Commander — turns abilities into placed strikes, but your team is watching",
+            "Armour — anti-tank positions matter more than enemy tanks do",
+            "Rifleman — lowest value, mostly staying alive across open ground",
+          ],
+        },
+      },
+      {
+        heading: "Do Hell Let Loose cheats work on Warfare, Offensive and Skirmish?",
+        body:
+          "Yes, all three, but they are worth different amounts and carry different risk.\n\nWarfare is the standard 50-versus-50 mode with a moving front and both teams building garrisons. It is where the information features are worth the most, because the map state changes constantly and nobody has a complete picture of it.\n\nOffensive gives one team fixed defensive positions and the other the job of pushing through them. Attacking, knowing where the defensive garrisons sit is close to decisive. Defending, it matters less — you already know roughly where the enemy is coming from.\n\nSkirmish is small-scale, single-objective, and far more intimate. Fewer players means every one of them is more likely to notice you, and a fight that resolves in two minutes leaves less room to act on information plausibly. It is the mode where restraint matters most and where the payoff is smallest.\n\nThe practical advice: run the fuller profile in Warfare where the map is large and chaotic, and the quiet one in Skirmish where you are one of a handful of people anyone is watching.",
+      },
     ],
     faqs: [
       {
