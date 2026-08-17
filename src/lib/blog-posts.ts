@@ -953,6 +953,156 @@ BLOG_POSTS.push({
   ],
 });
 
+BLOG_POSTS.push(
+  {
+    slug: "how-to-find-garrisons-hell-let-loose",
+    title: "How to Find Garrisons in Hell Let Loose",
+    seoTitle: "How to Find Garrisons in Hell Let Loose — Every Method That Works",
+    description:
+      "Garrisons decide Hell Let Loose matches and they are deliberately hidden. The legitimate methods that work, the tells most players miss, and where information tooling fits.",
+    published: "2026-08-18",
+    updated: "2026-08-18",
+    readingMinutes: 9,
+    relatedGameSlug: "hell-let-loose",
+    lead:
+      "Almost every Hell Let Loose match is decided by garrisons, and almost nobody is systematically good at finding them. Here is what actually works — starting with the methods that need nothing but attention.",
+    sections: [
+      {
+        heading: "Why garrisons decide the match",
+        body: [
+          "A garrison is an enemy infantry spawn placed by an officer, usually hidden in a treeline, behind a building, or in whatever fold of terrain looked unremarkable. Enemies spawn on it in numbers.",
+          "Capture the objective while one stands nearby and the enemy is back on top of you within thirty seconds, indefinitely. Destroy it first and the same objective often falls with barely a fight.",
+          "That asymmetry is the whole game. Teams that lose Hell Let Loose matches are usually not losing gunfights — they are attacking into an infinite respawn they never located.",
+        ],
+      },
+      {
+        heading: "Read the spawn flow",
+        body: [
+          "The most reliable free method is watching where enemies come from, repeatedly. Not one player — the pattern. If three separate contacts over two minutes all approach from the same treeline at the same angle, the garrison is behind it, usually within a hundred metres.",
+          "Pay attention to how quickly they come back. Enemies reappearing on the objective within about thirty seconds of dying are spawning close. A ninety-second gap means the nearest spawn is much further out and the point is more takeable than it feels.",
+          "Watch the direction people are facing when they arrive. A player who runs in already looking toward you came from a spawn on that axis; one who arrives disoriented has run a long way.",
+        ],
+      },
+      {
+        heading: "Use the map more aggressively than you probably do",
+        body: [
+          "Enemy garrisons are placed to cover objectives, and there are only so many sensible positions. Cover, a road for supply trucks, and enough distance to survive artillery — that combination narrows the candidates on any map to a handful.",
+          "Learn where your own team habitually places theirs on each map, then look at the mirrored positions. Both teams solve the same terrain problem the same way far more often than either would admit.",
+          "Watch for supply trucks. A garrison needs supplies dropped near it, so a truck driving away from the front toward nothing in particular has almost certainly just built one.",
+        ],
+      },
+      {
+        heading: "The recon role exists for exactly this",
+        body: [
+          "A recon squad's job is not kills. It is walking wide around a flank, finding what the rest of the team cannot see, and reporting it — and a competent recon pair is worth more than an extra infantry squad most matches.",
+          "Go wide. Garrisons sit behind the fighting, so the answer is almost never forward. Circle out two hundred metres past the flank and look back toward the objective from an angle nobody is watching.",
+          "Mark what you find, and say it out loud. A garrison nobody knows about is worth nothing, and command chat exists for exactly this.",
+          "Bring an engineer or someone with satchels if you can, or call artillery onto the grid. Finding it is half the job; removing it is the other half.",
+        ],
+      },
+      {
+        heading: "Where information tooling fits",
+        body: [
+          "Everything above works and costs nothing but patience. It is also slow, unreliable, and dependent on your teammates doing their part — which is why garrison ESP is the feature people buy Hell Let Loose products for.",
+          "It converts the hardest and most luck-dependent job in the game into something you simply know. That is a genuine advantage and there is no point pretending otherwise.",
+          "It also carries a specific risk on this game. Hell Let Loose runs Easy Anti-Cheat, but the thing that actually catches people is community server admins watching behaviour. A team whose garrisons keep dying within a minute of being placed notices, and says so.",
+          "If you go that route, the rule is delay. Act on what you know the way a recon player who found it legitimately would — a few minutes later, from a plausible direction, and called to your squad rather than soloed.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "How far apart can garrisons be placed?",
+        a: "They require a minimum distance from other friendly garrisons and proximity to supplies, which is why the sensible positions on any given map are limited. Learning those positions is most of the skill.",
+      },
+      {
+        q: "What is the fastest way to find one without tooling?",
+        a: "Watch where enemies repeatedly come from over a couple of minutes, then flank wide — two hundred metres past the fighting — and look back toward the objective from an angle nobody is covering.",
+      },
+      {
+        q: "Does destroying a garrison actually win the objective?",
+        a: "Frequently, yes. Without a nearby spawn the defenders have to run back, which turns an unwinnable point into a normal fight.",
+      },
+      {
+        q: "Is garrison ESP detectable?",
+        a: "It is software, so anti-cheat detection is possible like anything else. The more common way people are caught on this game is an admin noticing that garrisons keep being found within a minute of being placed.",
+      },
+    ],
+  },
+  {
+    slug: "hell-let-loose-anti-cheat-and-ban-risk",
+    title: "Hell Let Loose Anti-Cheat and Ban Risk, Explained",
+    seoTitle: "Hell Let Loose Anti-Cheat — EAC, Server Admins and Real Ban Risk",
+    description:
+      "Hell Let Loose runs EasyAntiCheat, but most bans come from community server admins rather than detection. How both work, and what actually gets accounts removed.",
+    published: "2026-08-18",
+    updated: "2026-08-18",
+    readingMinutes: 8,
+    relatedGameSlug: "hell-let-loose",
+    lead:
+      "Hell Let Loose has two enforcement layers and most guides only mention one. EasyAntiCheat looks for software. Community server admins look at behaviour — and on this game they catch far more people.",
+    sections: [
+      {
+        heading: "Layer one: EasyAntiCheat",
+        body: [
+          "The game ships with EAC, the same kernel-level anti-cheat used by Rust, Apex Legends and Fortnite. It loads with the game, runs at driver level, and looks for cheat software rather than at how you play.",
+          "An EAC ban on Hell Let Loose is a game ban tied to your Steam account. It shows on your Steam profile permanently and it does not affect your other games.",
+          "EAC also records hardware identifiers. If a machine has previously carried an EAC ban, a fresh copy of the game on that hardware will be recognised — which is what spoofers address, and why buying one after the fact is more expensive than before.",
+        ],
+      },
+      {
+        heading: "Layer two: the server admins, which is the one that matters",
+        body: [
+          "Nearly all Hell Let Loose is played on community-hosted servers. Those have admins who play in the match, spectate, read server logs, and run Discord report channels.",
+          "None of that requires a detection. An admin who watches you walk to three hidden garrisons in one match has all the evidence they need, and a server ban follows within the hour.",
+          "The large server networks share ban lists with each other. A ban from one major community frequently reaches several servers rather than the one you were playing on, which is a bigger practical loss than it sounds if you play regularly.",
+          "This is also why the game punishes visible knowledge more than it punishes software. What you run is EAC's problem; what you do is everyone else's.",
+        ],
+      },
+      {
+        heading: "What actually gets people removed",
+        body: [
+          "Speed. Acting on information faster than anyone could have found it legitimately is the single clearest tell, and it is the one nearly everybody trips over.",
+          "Consistency. Nobody finds every garrison. A player who finds all of them, match after match, is remembered — particularly on servers where the regulars know each other by name.",
+          "Being memorable for other reasons. Arguing in chat, teamkilling, or standing out socially puts your name in front of exactly the people able to review you.",
+          "Impossible shots. The time-to-kill is fast enough that aim rarely needs help, so an unnatural snap in a game where everyone shoots deliberately is conspicuous in a way it would not be in Warzone.",
+        ],
+      },
+      {
+        heading: "What reduces the risk",
+        body: [
+          "Delay. Act on what you know a few minutes later, from a direction that makes sense, having visibly looked.",
+          "Share it. Marking a garrison and taking a squad there looks like a squad leader doing their job, and spreads the outcome across a team rather than one suspiciously effective player.",
+          "Prefer information features to aim features. Nothing another player can see means nothing to report, and on this game the information is where the advantage was anyway.",
+          "Use an account you can lose, and check the live status the day you play rather than the week you bought.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Does Hell Let Loose use EasyAntiCheat?",
+        a: "Yes, kernel-level EAC, the same as Rust, Apex and Fortnite. A ban is a game ban on your Steam account and shows on your profile permanently.",
+      },
+      {
+        q: "Can server admins ban me without a detection?",
+        a: "Yes, and that is how most people are caught on this game. Admins spectate, read logs and act on reports — no anti-cheat involvement required.",
+      },
+      {
+        q: "Will a community ban follow me to other servers?",
+        a: "Often. The large server networks share ban lists, so a ban from a major community can reach several servers rather than one.",
+      },
+      {
+        q: "Do I need a HWID spoofer for Hell Let Loose?",
+        a: "Only if the machine has already carried an EAC ban. Those reach hardware, and buying a fresh copy of the game will not clear one.",
+      },
+      {
+        q: "Is ESP-only safer than an aimbot here?",
+        a: "Against EAC, no — a detected build is detected either way. Against the admins who catch most people, substantially, because there is nothing for anyone to watch.",
+      },
+    ],
+  }
+);
+
 export function allBlogSlugs(): string[] {
   return BLOG_POSTS.map((p) => p.slug);
 }

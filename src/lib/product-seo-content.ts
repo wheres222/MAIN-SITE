@@ -1,4 +1,4 @@
-import { productGameSlug, productLeafSlug } from "@/lib/product-route";
+import { productGameSlug, productLeafSlug, productSlugFromName } from "@/lib/product-route";
 
 /**
  * Per-product editorial content.
@@ -2524,6 +2524,235 @@ const CONTENT: ProductSeoContent[] = [
       },
     ],
   },
+  {
+    key: "hell-let-loose/fellas",
+    intro: [
+      "Fellas is the main Hell Let Loose product here: player ESP across the full two-kilometre map, garrison and outpost locations, supply node tracking, and restrained aim assistance. It is external, reading the game from a separate process rather than injecting into it, which keeps it clear of the checks Easy Anti-Cheat runs against its own memory.",
+      "The reason to buy it is the garrison layer. Everything else in a Hell Let Loose cheat is a nicety; knowing where the enemy's hidden infantry spawns are is the thing that decides matches, and it is the single hardest piece of information to get legitimately.",
+    ],
+    featureGroups: [
+      {
+        heading: "The map layer",
+        items: [
+          "Garrison ESP — enemy infantry spawns, including ones placed in treelines and behind buildings",
+          "Outpost ESP, which move constantly and are what keeps a squad pushing",
+          "Supply node locations for manpower, munitions and fuel",
+          "Supply drops and construction resources near the line",
+          "Commander ability placements once called in",
+        ],
+      },
+      {
+        heading: "Player and vehicle information",
+        items: [
+          "Infantry ESP with distance, readable at the ranges Hell Let Loose actually fights at",
+          "Role indication, so a recon sniper is distinguishable from a rifleman",
+          "Armour and transport tracking, including which direction a tank is facing",
+          "Visibility state through foliage, which is where most deaths in this game come from",
+        ],
+      },
+      {
+        heading: "Aim and configuration",
+        items: [
+          "Field-of-view-limited assist with heavy smoothing as the default",
+          "Bullet drop compensation for the long-range rifle engagements",
+          "Saveable profiles, so a quieter setup can be used on servers with active admins",
+          "Streamproof rendering and an adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "Hell Let Loose runs Easy Anti-Cheat, the same kernel-level anti-cheat as Rust and Apex. An EAC ban here is a game ban attached to your Steam account and visible on your profile permanently.",
+      "The bigger risk is not EAC. Almost all Hell Let Loose is played on community servers with admins in the match, Discord report channels, and a regular playerbase that knows each other by name. Admins act on behaviour, and no anti-cheat status protects you from that.",
+      "The specific behaviour that gets noticed is speed. A garrison you attack four minutes after a recon player could plausibly have found it is unremarkable; one you walk to across open ground within ninety seconds of it being placed is a report.",
+      "Large server networks share ban lists, so a ban from one major community can reach several servers rather than the one you were playing on.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam copy of Hell Let Loose",
+      "Administrator rights for the loader",
+      "No other kernel-level driver or bypass loaded",
+      "A spoofer if this machine has ever carried an EAC ban",
+    ],
+    chooseWhen: [
+      "You want the full toolkit — garrisons, nodes, players and armour — rather than a subset",
+      "You play regularly on the same servers and want profiles you can dial down",
+      "You squad-lead or run recon, where information converts directly into map control",
+    ],
+    chooseOther: [
+      "If you play the Vietnam expansion, Vietnam Fellas is built for its maps and factions rather than adapted to them.",
+      "If you also play Rust, Apex, CS2 or ARC Raiders, Arcane covers Hell Let Loose and those on one subscription.",
+    ],
+    faqs: [
+      {
+        q: "Does Fellas show garrisons?",
+        a: "Yes, and it is the reason to buy it. Garrisons are hidden enemy infantry spawns, finding them is the hardest information problem in the game, and destroying them is how objectives actually fall.",
+      },
+      {
+        q: "Will admins notice?",
+        a: "They notice behaviour, not software. Acting on information immediately is what gets people removed — take a plausible route, act a few minutes later, and call it to your squad rather than soloing every garrison.",
+      },
+      {
+        q: "Is the aimbot worth using in Hell Let Loose?",
+        a: "Less than in almost any other game. One rifle round kills at most ranges, iron sights and bullet drop fight it, and fifty enemies can watch you use it. The defaults are deliberately restrained.",
+      },
+      {
+        q: "Do I need a spoofer?",
+        a: "Only if the machine has already carried an EAC ban. Those reach hardware, and a fresh copy of the game will not clear one.",
+      },
+      {
+        q: "Does it work on community servers?",
+        a: "Nearly all Hell Let Loose servers are community-run, so yes. Those are also where admin scrutiny is highest, which is what the profile system is for.",
+      },
+    ],
+  },
+  {
+    key: "hell-let-loose/vietnam-fellas",
+    intro: [
+      "Vietnam Fellas covers Hell Let Loose's Vietnam content specifically — different maps, different factions, and a different shape of fight from the European theatre the base game is built around.",
+      "That distinction matters more than it sounds. Vietnam's maps are dense jungle rather than open farmland, engagement ranges collapse, and the tunnel and ambush play that defines the mode rewards knowing where people are far more than it rewards long-range aim.",
+    ],
+    featureGroups: [
+      {
+        heading: "Vietnam-specific information",
+        items: [
+          "Garrison and spawn ESP across the Vietnam maps",
+          "Tunnel and concealed position awareness, which the terrain hides completely",
+          "Faction-correct player identification, so friendly and enemy models are never confused in heavy foliage",
+          "Supply and resource tracking for the Vietnam logistics layer",
+        ],
+      },
+      {
+        heading: "Close-quarters awareness",
+        items: [
+          "Player ESP tuned for short sightlines, where a contact at forty metres is already inside the fight",
+          "Visibility state through dense vegetation — the single biggest difference from the European maps",
+          "Trap and ambush indicators",
+          "Vehicle and helicopter tracking where the mode uses them",
+        ],
+      },
+      {
+        heading: "Configuration",
+        items: [
+          "Draw distances tuned shorter than the base game, so the screen is readable in jungle",
+          "Saveable profiles per map",
+          "Streamproof rendering and an adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "Same enforcement picture as the base game: Easy Anti-Cheat plus community server admins, with the admins being the more likely way anyone is caught.",
+      "Vietnam servers tend to be a smaller, tighter community than the main game's, which cuts both ways — fewer players watching, but the regulars know each other and notice a new name that always knows where the ambush is.",
+      "Dense terrain makes impossible knowledge more obvious, not less. Walking directly to a concealed position in jungle is far harder to explain than the same move across open ground.",
+      "Use an account you can lose, and check the live status the day you play.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam copy of Hell Let Loose with the Vietnam content",
+      "Administrator rights for the loader",
+      "No other kernel-level driver loaded",
+    ],
+    chooseWhen: [
+      "You mainly play the Vietnam maps rather than the European ones",
+      "Close-quarters awareness in dense terrain is what actually kills you",
+      "You want draw distances tuned for jungle rather than farmland",
+    ],
+    chooseOther: [
+      "If you play the base game more than Vietnam, Fellas is the one built for those maps.",
+      "If you want one subscription across several games, Arcane covers Hell Let Loose alongside Rust, Apex and CS2.",
+    ],
+    faqs: [
+      {
+        q: "How is this different from the standard Hell Let Loose product?",
+        a: "It is built around the Vietnam maps and factions — shorter sightlines, jungle visibility, tunnel and ambush awareness — rather than the open European terrain the base product is tuned for.",
+      },
+      {
+        q: "Does it work on the base game maps too?",
+        a: "Check the product listing for the current coverage. If you split your time evenly, Fellas is the safer purchase for the base maps.",
+      },
+      {
+        q: "Is ESP more or less useful in jungle?",
+        a: "More useful and more conspicuous at once. Vegetation hides everyone, so knowing positions is worth more — and acting on it instantly is harder to pass off as observation.",
+      },
+      {
+        q: "Same anti-cheat?",
+        a: "Yes, Easy Anti-Cheat, plus the same community-server admin layer that catches most people on this game.",
+      },
+    ],
+  },
+  {
+    key: "hell-let-loose/arcane-external",
+    intro: [
+      "Arcane for Hell Let Loose is the multi-game option: one subscription that also covers Rust, Apex, CS2, ARC Raiders and Palworld. If your group rotates between games, it stops you buying separately each time somebody gets bored.",
+      "On Hell Let Loose specifically it covers the ground that matters — player ESP, garrison and node information, restrained aim assistance. What it does not have is the depth of a product built only for this game, and it is worth saying that rather than pretending the feature lists are identical.",
+    ],
+    featureGroups: [
+      {
+        heading: "Hell Let Loose features",
+        items: [
+          "Player ESP with distance across the full map",
+          "Garrison and outpost locations",
+          "Supply node tracking",
+          "Vehicle and armour indicators",
+        ],
+      },
+      {
+        heading: "Aim assistance",
+        items: [
+          "Field-of-view-limited assist with smoothing",
+          "Bullet drop compensation",
+          "Visibility checks before engaging",
+        ],
+      },
+      {
+        heading: "Cross-game",
+        items: [
+          "One subscription across the provider's supported titles",
+          "Per-game configuration profiles",
+          "A single loader for every covered game",
+        ],
+      },
+    ],
+    safety: [
+      "Easy Anti-Cheat, plus the community server admins who catch most people on this game. The guidance is the same as for any Hell Let Loose product: delay acting on what you know, call it to your squad, and do not find every garrison.",
+      "One consideration specific to multi-game subscriptions: a provider-wide detection takes every covered game offline at once. Breadth cuts both ways.",
+      "External, so nothing is injected into the game process.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam copy of Hell Let Loose",
+      "Administrator rights for the loader",
+    ],
+    chooseWhen: [
+      "You play several of the covered games and want one purchase",
+      "Hell Let Loose is part of your rotation rather than the only thing you play",
+      "A solid feature set is enough and you do not need the deepest one",
+    ],
+    chooseOther: [
+      "If Hell Let Loose is what you play, Fellas goes deeper on the garrison and logistics layer that decides matches.",
+      "If you play the Vietnam maps, Vietnam Fellas is built for them.",
+    ],
+    faqs: [
+      {
+        q: "Which games does one Arcane subscription cover?",
+        a: "Hell Let Loose, Rust, Apex, CS2, ARC Raiders and Palworld among others. The set changes over time, so check the current listing before buying specifically for one title.",
+      },
+      {
+        q: "Is it as good as the dedicated Hell Let Loose product?",
+        a: "It is competent and covers the important ground. A product built only for this game will generally go deeper on garrison and logistics tooling, which is the honest trade for the breadth.",
+      },
+      {
+        q: "If Hell Let Loose goes down, do the other games still work?",
+        a: "Usually yes, since builds are per game. A provider-wide detection is the case where everything pauses together.",
+      },
+      {
+        q: "Can I use different settings per game?",
+        a: "Yes, configuration profiles are per game.",
+      },
+    ],
+  },
 ];
 
 const BY_KEY = new Map(CONTENT.map((entry) => [entry.key, entry]));
@@ -2538,8 +2767,14 @@ export function productSeoContentFor(product: {
   groupName?: string | null;
   categoryName?: string | null;
 }): ProductSeoContent | null {
-  return productSeoContentByKey(
-    `${productGameSlug(product)}/${productLeafSlug(product)}`
+  const game = productGameSlug(product);
+  // Try the canonical leaf first, then the un-stripped slug. findProductByRoute
+  // already tolerates both forms, so a page can render under either — and an
+  // entry keyed to one of them would otherwise silently show nothing on the
+  // other, which is exactly how the Crusader entry stayed invisible.
+  return (
+    productSeoContentByKey(`${game}/${productLeafSlug(product)}`) ??
+    productSeoContentByKey(`${game}/${productSlugFromName(product.name, product.id)}`)
   );
 }
 
