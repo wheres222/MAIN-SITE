@@ -32,11 +32,24 @@ const nextConfig: NextConfig = {
       // canonical form; the legacy query-param URL self-redirects to the
       // clean URL via src/app/categories/page.tsx when a landing page exists.
 
-      // Legacy /games/* paths still redirect into the category route.
+      // www -> apex domain. Both hosts answered 200 with the canonical pointing
+      // at the apex domain, which Google handles correctly but crawls twice. A
+      // 308 spends that budget on pages instead.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.cheatparadise.com" }],
+        destination: "https://cheatparadise.com/:path*",
+        permanent: true,
+      },
+
+      // Legacy /games/* paths redirect straight to the clean category URL.
+      // This used to point at /categories?slug=:gameSlug, which — now that the
+      // query form itself redirects — would make every /games/* link a two-hop
+      // chain. Google follows chains but discounts them.
       {
         source: "/games/:gameSlug",
-        destination: "/categories?slug=:gameSlug",
-        permanent: false,
+        destination: "/categories/:gameSlug",
+        permanent: true,
       },
       {
         source: "/orders/mock",
