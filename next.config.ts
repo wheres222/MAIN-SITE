@@ -147,7 +147,11 @@ const nextConfig: NextConfig = {
               // serves the support widget mounted by <AssistifyScript> — it was
               // missing here, so the widget was refused on every page load and
               // support chat never appeared for anyone.
-              "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.posthog.com https://www.googletagmanager.com https://www.google-analytics.com https://assistify.chat https://*.assistify.chat",
+              // va.vercel-scripts.com is Vercel Analytics: on a Vercel deploy it
+              // serves from /_vercel/insights/script.js (same origin), but in dev —
+              // and any non-Vercel environment — it falls back to that host, so
+              // leaving it out breaks analytics everywhere except production.
+              "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.posthog.com https://www.googletagmanager.com https://www.google-analytics.com https://assistify.chat https://*.assistify.chat https://va.vercel-scripts.com",
               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://assistify.chat https://*.assistify.chat",
               "img-src 'self' data: https:",
               "font-src 'self' data:",
