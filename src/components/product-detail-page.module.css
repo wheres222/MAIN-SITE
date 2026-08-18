@@ -7,7 +7,7 @@
 }
 
 .shell {
-  width: min(1080px, calc(100% - 40px));
+  width: min(1320px, calc(100% - 40px));
   margin: 0 auto;
   padding-top: 88px;
   padding-bottom: 60px;
@@ -25,8 +25,8 @@
   display: grid;
   /* Was 0.78 / 1.22 — the preview column now takes an even share so the
      screenshots are actually legible at a glance. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 32px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 38px;
   align-items: stretch;
 }
 
@@ -87,7 +87,7 @@
 
 .thumbCard {
   position: relative;
-  width: 104px;
+  width: 132px;
   aspect-ratio: 16 / 10;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -446,12 +446,12 @@
 }
 
 /* ── Related products ──────────────────────────── */
-/* Sideways links to the other products for this game. Deliberately a plain
-   list rather than a second card grid: it sits below the editorial content,
-   where the job is to offer a next step, not to re-sell the catalogue. */
+/* Cover art rather than a text list: on a storefront the box art is how people
+   recognise a product, and a row of names asks them to read where they would
+   otherwise glance. */
 .relatedSection {
-  margin: 34px 0 8px;
-  padding-top: 26px;
+  margin: 40px 0 8px;
+  padding-top: 28px;
   border-top: 1px solid var(--border);
 }
 
@@ -461,7 +461,7 @@
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin: 0 0 14px;
+  margin: 0 0 16px;
 }
 
 .relatedList {
@@ -469,43 +469,54 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
 }
 
 .relatedLink {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 14px;
+  flex-direction: column;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 10px;
-  color: var(--text-primary);
-  font-size: 0.88rem;
-  font-weight: 600;
+  overflow: hidden;
   text-decoration: none;
-  transition: border-color 0.12s, background 0.12s, color 0.12s;
+  transition: border-color 0.12s, transform 0.12s;
 }
 .relatedLink:hover {
   border-color: var(--accent);
-  background: var(--accent-dim);
-  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.relatedThumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  background: var(--surface-3);
+}
+
+.relatedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 11px 13px 13px;
 }
 
 .relatedName {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
 }
+.relatedLink:hover .relatedName { color: var(--accent); }
 
-.relatedArrow {
-  flex: 0 0 auto;
-  opacity: 0.6;
-  font-size: 0.9rem;
+.relatedPrice {
+  font-size: 0.78rem;
+  color: var(--text-dim);
 }
 
 @media (max-width: 640px) {
-  .relatedList { grid-template-columns: 1fr; }
+  .relatedList { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 }
+
