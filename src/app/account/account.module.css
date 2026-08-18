@@ -1,18 +1,36 @@
+/* ═══════════════════════════════════════════════════════
+   Board styling.
+
+   The dashboard used to be a set of floating rounded cards, which read as a
+   different product from the storefront. This is the older board convention
+   instead: everything lives in a bordered box under a filled header bar, rows
+   are separated by hairlines rather than gaps, and corners are 2px so the
+   structure reads as a table rather than a stack of pills.
+
+   It matches what globals.css already does with .panel / .panel-header —
+   uppercase letterspaced kicker on --surface-2 with a divider under it — so
+   the account area now uses the same vocabulary as the rest of the site.
+   ═══════════════════════════════════════════════════════ */
+
 /* ─── Page header ──────────────────────────────────────── */
 .pageHead {
-  margin-bottom: 20px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+  padding: 11px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 2px;
 }
 .pageTitle {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 3px;
-  letter-spacing: -0.01em;
+  margin: 0 0 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
 }
 .pageSub {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-dim);
   margin: 0;
 }
@@ -35,22 +53,30 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ─── Section ──────────────────────────────────────────── */
-.section { margin-bottom: 24px; }
+/* A section is a bordered box; its head is the bar across the top of it, not a
+   floating label above it. That single change is most of the board look. */
+.section {
+  margin-bottom: 18px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--surface-1);
+  overflow: hidden;
+}
 .sectionHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
-  padding-bottom: 10px;
+  padding: 9px 14px;
+  background: var(--surface-2);
   border-bottom: 1px solid var(--border);
 }
 .sectionTitle {
-  font-size: 0.88rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
 }
 .seeAll {
   font-size: 0.76rem;
@@ -61,22 +87,27 @@
 .seeAll:hover { text-decoration: underline; }
 
 /* ─── Stats row ────────────────────────────────────────── */
+/* Stat tiles butt against each other with shared hairlines instead of floating
+   on gaps — the negative margin collapses the doubled borders so the row reads
+   as one strip of cells. */
 .statsRow {
   display: grid;
-  /* 130px produced a row of eight cramped tiles once the panel widened; 200
-     keeps three or four substantial cards instead. */
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
-  margin-bottom: 22px;
+  gap: 0;
+  margin-bottom: 18px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
 }
 .statCard {
-  padding: 14px 16px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--surface-1);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin: 0 -1px -1px 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 .statLabel {
   font-size: 0.68rem;
@@ -170,35 +201,40 @@
 .rowsSelect:focus { outline: none; border-color: var(--accent); }
 
 /* ─── Table ────────────────────────────────────────────── */
+/* A table inside a .section already sits in a bordered box, so it carries no
+   border of its own — otherwise every listing gets a double hairline. */
 .tableWrap {
   overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 0;
 }
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.82rem;
+  font-size: 0.81rem;
 }
 .table th {
   text-align: left;
-  padding: 10px 16px;
-  font-size: 0.68rem;
+  padding: 8px 14px;
+  font-size: 0.66rem;
   font-weight: 700;
   color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.09em;
   border-bottom: 1px solid var(--border);
-  background: var(--surface-3);
+  background: var(--surface-2);
+  white-space: nowrap;
 }
 .table td {
-  padding: 13px 16px;
+  padding: 10px 14px;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
 }
+/* Zebra striping. On a dense listing this does more for scannability than any
+   amount of spacing, and it is the thing that makes a table read as a board. */
+.table tbody tr:nth-child(even) td { background: var(--surface-2); }
 .table tr:last-child td { border-bottom: none; }
-.table tr:hover td { background: rgba(239, 27, 53,0.03); }
+.table tbody tr:hover td { background: var(--accent-dim); }
 
 .tdPrimary { color: var(--text-primary) !important; font-size: 0.82rem; }
 .tdSub { font-size: 0.74rem; color: var(--text-dim); margin-top: 2px; display: block; }
