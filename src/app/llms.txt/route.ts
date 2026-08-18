@@ -54,7 +54,7 @@ ${landingPageLines}
 
 - [Refund Policy](${siteUrl}/refund-policy): Strict no-refunds policy for digital goods. Re-delivery only in verified non-delivery cases. Chargebacks result in permanent ban.
 - [Terms of Service](${siteUrl}/terms-of-service): Risk acknowledgment, license terms, prohibited conduct. Users must be 18+.
-- [Privacy Policy](${siteUrl}/privacy-policy): Data collection, third-party services (Supabase, NowPayments, PostHog), user rights.
+- [Privacy Policy](${siteUrl}/privacy-policy): Data collection, third-party services (Supabase, NowPayments, Vercel, Google), user rights.
 
 ## About
 

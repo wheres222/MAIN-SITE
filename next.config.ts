@@ -141,20 +141,20 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self'",
               // script-src — explicit allowlist of CDNs we load JS from.
-              // jsdelivr powers @widgetbot/html-embed. posthog hosts the
-              // analytics SDK + config. googletagmanager + google-analytics
-              // power the gtag snippet in src/app/layout.tsx. assistify.chat
-              // serves the support widget mounted by <AssistifyScript> — it was
+              // jsdelivr powers @widgetbot/html-embed. googletagmanager and
+              // google-analytics power the gtag snippet in src/app/layout.tsx.
+              // assistify.chat serves the support widget mounted by
+              // <AssistifyScript> — it was
               // missing here, so the widget was refused on every page load and
               // support chat never appeared for anyone.
-              "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://*.posthog.com https://www.googletagmanager.com https://www.google-analytics.com https://assistify.chat https://*.assistify.chat",
+              "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com https://assistify.chat https://*.assistify.chat",
               "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://assistify.chat https://*.assistify.chat",
               "img-src 'self' data: https:",
               "font-src 'self' data:",
               "media-src 'self' blob:",
               // connect-src — wss: needed for Supabase realtime websocket.
-              // The wildcard https: already covers PostHog ingest, SellAuth,
-              // NowPayments, Supabase REST.
+              // The wildcard https: already covers SellAuth, NowPayments and
+              // Supabase REST.
               "connect-src 'self' https: wss:",
               // frame-src — domains we're allowed to embed iframes from.
               // widgetbot.io renders the Discord chat embed via e.widgetbot.io.

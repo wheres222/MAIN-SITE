@@ -3,7 +3,6 @@ import { Inter, Raleway } from "next/font/google";
 import Script from "next/script";
 import { AssistifyScript } from "@assistifychat/widget/react";
 import "./globals.css";
-import { PostHogProvider } from "@/components/posthog-provider";
 import { DISCORD_INVITE_URL } from "@/lib/links";
 
 const inter = Inter({
@@ -137,7 +136,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        <PostHogProvider>{children}</PostHogProvider>
+        {children}
         {/* lazyOnload keeps gtag (and its head preload hint) entirely off the
             critical path — it loads after everything else is done. */}
         <Script

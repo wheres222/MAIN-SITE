@@ -225,3 +225,22 @@
   font-size: 0.62rem;
   color: var(--text-muted);
 }
+
+/* ─── Card body + link ────────────────────────────────── */
+/* Added for the traffic page, which is now explanatory rather than a chart. */
+.cardBody {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+.cardBody strong { color: var(--text-primary); }
+
+.cardLink {
+  display: inline-block;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+.cardLink:hover { text-decoration: underline; }
