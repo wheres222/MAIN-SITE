@@ -15,6 +15,11 @@ export default async function LoginPage({
   searchParams?: Promise<{ next?: string; error?: string }>;
 }) {
   const params = searchParams ? await searchParams : {};
-  const next = params.next && params.next.startsWith("/") ? params.next : "/account";
+  // Rejects "//evil.example" as well as absolute URLs — a protocol-relative
+  // path passes a bare startsWith("/") check and still leaves the site.
+  const next =
+    params.next && params.next.startsWith("/") && !params.next.startsWith("//")
+      ? params.next
+      : "/account";
   return <AuthPage defaultTab="login" next={next} initialError={params.error ?? ""} />;
 }

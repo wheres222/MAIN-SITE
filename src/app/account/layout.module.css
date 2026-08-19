@@ -25,28 +25,35 @@
   grid-template-columns: 240px 1fr;
   background: var(--surface-1);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  /* 2px rather than 8: the account area is a board, and a board has corners.
+     Not 0 — a hairline border at exactly square reads as an unstyled table in
+     most browsers' rendering of thin dark borders. */
+  border-radius: 2px;
   overflow: hidden;
   min-height: 640px;
 }
 
 /* ─── Sidebar ─────────────────────────────────────────── */
+/* No inner padding: menu rows run edge to edge, the way a board's side panel
+   does, so the active row's accent bar sits flush against the panel border. */
 .sidebar {
   background: var(--surface-2);
   border-right: 1px solid var(--border);
-  padding: 18px 10px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
 }
 
+/* The identity block is the sidebar's own header bar. */
 .userBlock {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 4px 8px 16px;
+  padding: 14px 12px;
+  background: var(--surface-1);
   border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .avatar {
@@ -88,22 +95,25 @@
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 0;
   flex: 1;
 }
 
+/* Menu rows, not pills. Full-bleed, separated by hairlines, with the active
+   row marked by a solid accent bar down its left edge. */
 .navItem {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
-  border-radius: 8px;
+  border-radius: 0;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   font-weight: 500;
   text-decoration: none;
   border: none;
-  border-left: 2px solid transparent;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid var(--border);
   background: transparent;
   cursor: pointer;
   width: 100%;
@@ -144,8 +154,11 @@
 }
 
 /* ─── Content ─────────────────────────────────────────── */
+/* Tighter than the card layout it replaced. Boards are dense — the structure
+   comes from borders and header bars, so the padding does not also have to do
+   the work of separating things. */
 .content {
-  padding: 30px 34px;
+  padding: 22px 24px;
   min-width: 0;
   overflow: hidden;
   background: var(--surface-1);
