@@ -9,6 +9,23 @@ export const metadata: Metadata = {
   alternates: { canonical: "/register" },
 };
 
-export default function RegisterPage() {
-  return <AuthPage defaultTab="register" />;
+/**
+ * Only same-origin paths are honoured. `next` arrives in the URL and ends up in
+ * a redirect, so accepting `https://elsewhere.example` would turn this page into
+ * an open redirect — a phishing primitive that borrows our domain's
+ * credibility. Anything not starting with a single `/` falls back to /account.
+ */
+function safeNext(value: string | undefined): string {
+  if (!value) return "/account";
+  if (!value.startsWith("/") || value.startsWith("//")) return "/account";
+  return value;
+}
+
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
+  return <AuthPage defaultTab="register" next={safeNext(next)} />;
 }

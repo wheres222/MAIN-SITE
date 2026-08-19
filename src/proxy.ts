@@ -9,6 +9,7 @@ import {
   recordDetections,
   recordSecurityEvent,
 } from "@/lib/security/events";
+import { canonicalGameSlug } from "@/lib/game-slug";
 
 // ── Maintenance mode ─────────────────────────────────────────────────────────
 const MAINTENANCE_MODE  = false;               // ← flip to true to close the site
@@ -100,6 +101,33 @@ export async function proxy(request: NextRequest) {
         },
       }
     );
+  }
+
+  // ── Legacy /categories?slug=x → /categories/x ──────────────────────────────
+  //
+  // The page component tried to do this and never could: the route sets
+  // revalidate = 300, and a query string is not part of an ISR cache key, so
+  // every ?slug= request was served the cached /categories HTML and redirect()
+  // never ran. Search Console filed those URLs under "alternative page with
+  // proper canonical tag" pointing at /categories rather than at the landing
+  // page they meant to reach.
+  //
+  // Done here rather than in next.config because a config redirect re-appends
+  // the source query — producing /categories/rust?slug=rust, a fresh duplicate
+  // of the URL we were consolidating. Here the query is dropped, and the slug
+  // is canonicalised first so ?slug=r6 lands on rainbow-six-siege rather than
+  // on an alias URL.
+  if (pathname === "/categories") {
+    const legacySlug = searchParams.get("slug");
+    if (legacySlug) {
+      const canonical = canonicalGameSlug(legacySlug);
+      if (canonical) {
+        const url = request.nextUrl.clone();
+        url.pathname = `/categories/${canonical}`;
+        url.search = "";
+        return NextResponse.redirect(url, 308);
+      }
+    }
   }
 
   // Always pass through maintenance page + static assets

@@ -211,7 +211,11 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
       const { data, error } = await supabase.auth.signUp({
         email: regEmail, password: regPassword,
         options: {
-          emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+          // Carry the return path through the email link. Without it the
+          // callback falls back to /account, so anyone who signed up from a
+          // product page was dropped into the dashboard instead of the page
+          // they were reading. The OAuth branch above already did this.
+          emailRedirectTo: `${window.location.origin}/api/auth/callback?next=${encodeURIComponent(next)}`,
           data: { username: regUsername || undefined, referral_code_used: regReferral || undefined },
         },
       });

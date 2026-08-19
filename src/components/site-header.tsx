@@ -109,6 +109,13 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
 
   const initials = displayName.slice(0, 2).toUpperCase();
 
+  // Where the auth pages should send someone afterwards. Auth and callback
+  // routes are excluded so a round trip through them cannot make itself the
+  // destination.
+  const returnTo = /^\/(login|register|forgot-password|reset-password|api)/.test(pathname)
+    ? "/account"
+    : pathname;
+
   return (
     <>
       <div className={`nav-row${scrolled ? " nav-row--scrolled" : ""}`}>
@@ -203,11 +210,16 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
               </div>
             ) : (
               <div className="nav-auth-links">
-                <Link href="/login" className="nav-text-btn">
+                {/* Carry the current page so signing in or up returns here
+                    rather than dumping everyone in the dashboard. Someone
+                    reading a product page who registers wants to end up back on
+                    that product page. Auth routes themselves are excluded so a
+                    bounce between login and register cannot make next="/login". */}
+                <Link href={`/login?next=${encodeURIComponent(returnTo)}`} className="nav-text-btn">
                   Log In
                 </Link>
                 <span className="nav-text-sep" aria-hidden="true">/</span>
-                <Link href="/register" className="nav-text-btn">
+                <Link href={`/register?next=${encodeURIComponent(returnTo)}`} className="nav-text-btn">
                   Sign Up
                 </Link>
               </div>

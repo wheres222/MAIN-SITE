@@ -894,14 +894,43 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
               Other {product.groupName || product.categoryName || "cheats"} options
             </h2>
             <ul className={styles.relatedList}>
-              {relatedProducts.map((other) => (
-                <li key={other.id}>
-                  <Link href={productHref(other)} className={styles.relatedLink}>
-                    <span className={styles.relatedName}>{other.name}</span>
-                    <span className={styles.relatedArrow} aria-hidden="true">→</span>
-                  </Link>
-                </li>
-              ))}
+              {relatedProducts.map((other) => {
+                const prices = [
+                  typeof other.price === "number" ? other.price : null,
+                  ...(other.variants ?? []).map((v) =>
+                    typeof v.price === "number" ? v.price : null
+                  ),
+                ].filter((p): p is number => p !== null);
+                const from = prices.length ? Math.min(...prices) : null;
+
+                return (
+                  <li key={other.id}>
+                    <Link href={productHref(other)} className={styles.relatedLink}>
+                      {/* Plain <img>: product art comes from whatever host
+                          SellAuth hands us, and next/image throws on an
+                          unconfigured domain — which would blank the whole page
+                          rather than drop one thumbnail. */}
+                      <img
+                        className={styles.relatedThumb}
+                        src={other.image || "/placeholders/product-image-not-added.svg"}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        width={320}
+                        height={180}
+                      />
+                      <span className={styles.relatedInfo}>
+                        <span className={styles.relatedName}>{other.name}</span>
+                        {from !== null && (
+                          <span className={styles.relatedPrice}>
+                            from {money(from, other.currency || "USD")}
+                          </span>
+                        )}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         )}

@@ -3,6 +3,7 @@ import { Inter, Raleway } from "next/font/google";
 import Script from "next/script";
 import { AssistifyScript } from "@assistifychat/widget/react";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { DISCORD_INVITE_URL } from "@/lib/links";
 
 const inter = Inter({
@@ -146,6 +147,15 @@ export default function RootLayout({
         <Script id="gtag-init" strategy="lazyOnload">
           {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-9XTJ5HDH2M');`}
         </Script>
+        {/* Vercel Analytics. On a Vercel deployment the script is served from
+            /_vercel/insights/script.js and beacons go to /_vercel/insights/view,
+            both same-origin. Everywhere else — including local dev — it falls
+            back to va.vercel-scripts.com, which is why that host is in the CSP
+            script-src. Without it the console reports a blocked script and no
+            data is collected outside production.
+
+            With PostHog removed this and gtag are the only analytics left. */}
+        <Analytics />
         {assistifyWidgetId && <AssistifyScript widgetId={assistifyWidgetId} />}
       </body>
     </html>

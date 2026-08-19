@@ -115,6 +115,19 @@ export function ProductsCatalogClient({
       <SiteHeader activeTab="store" />
 
       <main className={styles.shell}>
+        {/* The page opened straight into a search box: no H1, and nothing
+            telling a crawler or a first-time visitor what the list is. Google
+            files a page like that under Soft 404 whatever else is on it. */}
+        <header className={styles.pageHead}>
+          <h1 className={styles.pageTitle}>All Game Cheats</h1>
+          <p className={styles.pageSub}>
+            Every product we stock, across <Link href="/categories">sixteen games</Link>{" "}
+            — externals, internals, HWID spoofers and accounts. Each product page
+            carries its own live detection status, requirements and setup notes.
+            Search or filter below.
+          </p>
+        </header>
+
         {/* Controls: skinny search + category filter */}
         <div className={styles.controls}>
           <input

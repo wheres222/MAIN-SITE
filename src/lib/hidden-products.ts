@@ -11,6 +11,15 @@
  */
 const HIDDEN_PRODUCT_NAMES = [
   "Krush Arc Raiders",
+
+  // Non-cheat listings pulled from the storefront: the VPN resales, the bulk
+  // email accounts and the donation button. They stay in SellAuth, so anyone
+  // holding a direct link or an existing order is unaffected — they just stop
+  // appearing on the site.
+  "Mails",
+  "IP Vanish Account",
+  "CyberGhost Account",
+  "Donation",
 ];
 
 function normalize(name: string): string {
