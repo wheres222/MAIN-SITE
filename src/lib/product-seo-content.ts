@@ -1293,81 +1293,6 @@ const CONTENT: ProductSeoContent[] = [
     ],
   },
   {
-    key: "call-of-duty/b07-wz-internal",
-    intro: [
-      "B07 / WZ Internal loads into the Call of Duty process rather than reading it from outside. That buys frame-accurate tracking, aim behaviour that follows targets rather than correcting toward them, and visuals drawn by the game's own renderer.",
-      "It also puts code inside a process guarded by a kernel-level anti-cheat that is actively looking for exactly that. This is the highest-exposure Call of Duty option on the site. Buy it for the performance with the risk understood, or buy the external instead.",
-    ],
-    featureGroups: [
-      {
-        heading: "Aimbot",
-        items: [
-          "Frame-accurate tracking with no polling gap between game state and correction",
-          "Configurable field of view, smoothing and bone selection",
-          "Bullet-drop and travel prediction at Warzone distances",
-          "Visibility checks against the game's own state",
-        ],
-      },
-      {
-        heading: "Visuals",
-        items: [
-          "ESP through the game's renderer — no separate overlay window",
-          "Player boxes, skeletons, health and plate state",
-          "Loot, contract and buy-station indicators",
-          "Chams and visibility colouring",
-        ],
-      },
-      {
-        heading: "Configuration",
-        items: [
-          "Warzone and multiplayer profiles",
-          "Per-feature toggles, so it can be run close to visuals-only",
-          "Adjustable menu key",
-        ],
-      },
-    ],
-    safety: [
-      "An internal cheat against Ricochet's kernel driver is the highest-risk combination available for this game. There is no configuration that makes it a low-risk purchase.",
-      "Use hardware and an account you have already written off, and load a spoofer first.",
-      "Ricochet's mitigations apply here as well — damage that does nothing or lobbies full of obvious cheaters means you are flagged. Stop at that point rather than adjusting settings.",
-      "Kernel driver conflicts cause mid-match crashes rather than clean errors. Nothing else kernel-level may be loaded.",
-    ],
-    requirements: [
-      "Windows 10 or 11, 64-bit",
-      "Secure Boot disabled",
-      "Battle.net or Steam copy of the current Call of Duty title",
-      "Administrator rights for the loader",
-      "A spoofer — treat this as required rather than recommended",
-    ],
-    chooseWhen: [
-      "You want the best aim and visual quality available for Call of Duty",
-      "The account and the machine are both disposable",
-      "You already run a spoofer as a matter of course",
-    ],
-    chooseOther: [
-      "If the account matters, Ancient COD is external and is the sensible default.",
-      "If you have not bought a spoofer, buy that first — this is not the product to run on clean hardware you care about.",
-    ],
-    faqs: [
-      {
-        q: "How much better is the aim than the external?",
-        a: "Noticeably. Internals read the real game state every frame, so tracking is smooth and projectile prediction is accurate rather than estimated. That is the entire reason to accept the extra risk.",
-      },
-      {
-        q: "Can I run it without a spoofer?",
-        a: "Technically yes. It is a bad idea — Activision hardware bans persist and this is the product most likely to earn one.",
-      },
-      {
-        q: "It crashes when the match loads.",
-        a: "Almost always another kernel-level driver conflicting with Ricochet: a second bypass, an overlay, or remnants of a previous cheat. Remove them and reboot.",
-      },
-      {
-        q: "Does it cover both Warzone and multiplayer?",
-        a: "Yes, with separate profiles.",
-      },
-    ],
-  },
-  {
     key: "dayz/ancient",
     intro: [
       "Ancient for DayZ is an external covering player ESP, item and vehicle information, and aim assistance. DayZ runs BattlEye, and the external design keeps it clear of the checks aimed at code loaded into the game.",
@@ -2750,6 +2675,812 @@ const CONTENT: ProductSeoContent[] = [
       {
         q: "Can I use different settings per game?",
         a: "Yes, configuration profiles are per game.",
+      },
+    ],
+  },
+  {
+    key: "dayz/arcane",
+    intro: [
+      "Arcane for DayZ is the multi-game option: one subscription that also covers Rust, Apex, CS2, ARC Raiders and Palworld. If your group rotates between survival games and shooters, it stops you buying separately each time.",
+      "On DayZ it covers what an external needs to cover — player ESP at the ranges this game actually fights at, item and vehicle information, and restrained aim assistance. The reason to pick it over a DayZ-only product is breadth, not a longer DayZ feature list.",
+    ],
+    featureGroups: [
+      {
+        heading: "Player and world information",
+        items: [
+          "Player ESP with distance and visibility state",
+          "Zombie and animal indicators",
+          "Vehicle tracking",
+          "Item ESP with category filtering",
+        ],
+      },
+      {
+        heading: "Aim assistance",
+        items: [
+          "Field-of-view-limited assist with smoothing",
+          "Bullet drop compensation at DayZ's long engagement ranges",
+          "Visibility checks before engaging",
+        ],
+      },
+      {
+        heading: "Cross-game",
+        items: [
+          "One subscription across the provider's supported titles",
+          "Per-game configuration profiles",
+          "A single loader for every covered game",
+        ],
+      },
+    ],
+    safety: [
+      "DayZ runs BattlEye on official servers, but community servers are where most people play and where most people are caught — admins spectate, read logs and act on suspicion without needing a detection.",
+      "A provider-wide detection takes every covered game offline at once. That is the trade for one subscription across several titles.",
+      "Long engagement ranges make aim assistance conspicuous here. A first-shot hit on a moving target at 400 metres is remembered and reported.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam copy of DayZ",
+      "Administrator rights for the loader",
+    ],
+    chooseWhen: [
+      "You play several of the covered games and want one purchase",
+      "DayZ is part of your rotation rather than the only thing you play",
+      "A solid feature set is enough and you do not need the deepest DayZ tooling",
+    ],
+    chooseOther: [
+      "If DayZ is what you play, Ancient DayZ goes deeper on the stash and base information that decides long wipes.",
+      "If you want the quietest possible option for a server you care about, a visuals-only product gives an admin nothing to watch.",
+    ],
+    faqs: [
+      {
+        q: "Which games does one Arcane subscription cover?",
+        a: "DayZ, Rust, Apex, CS2, ARC Raiders and Palworld among others. The set changes, so check the current listing before buying specifically for one title.",
+      },
+      {
+        q: "Is it as good as a DayZ-only cheat?",
+        a: "It covers the important ground competently. A product built only for DayZ generally goes deeper on stash and base information, which is the honest trade for the breadth.",
+      },
+      {
+        q: "Does it work on community servers?",
+        a: "Generally yes, but those servers have active admins who watch behaviour. They are the harder problem, not BattlEye.",
+      },
+      {
+        q: "Can I use different settings per game?",
+        a: "Yes, configuration profiles are per game.",
+      },
+    ],
+  },
+  {
+    key: "dayz/next",
+    intro: [
+      "Next for DayZ is an external focused on the information layer — players, vehicles, items and the stashes other groups have buried. It reads the game from a separate process rather than injecting into it, which keeps it clear of the checks BattlEye applies to loaded modules.",
+      "DayZ rewards knowing things more than it rewards shooting well. Six hours of careful play ends in two seconds to someone you never saw, and the fights you avoid are worth more than the ones you win.",
+    ],
+    featureGroups: [
+      {
+        heading: "Survival information",
+        items: [
+          "Player ESP with distance, readable at the ranges DayZ actually fights at",
+          "Stash and tent indicators — the hidden economy of every server",
+          "Vehicle tracking, which is otherwise close to luck",
+          "Zombie and animal awareness, since noise pulls players as well as infected",
+        ],
+      },
+      {
+        heading: "Loot filtering",
+        items: [
+          "Item ESP with category filtering",
+          "Weapon and ammunition highlighting",
+          "Medical supply filtering — on DayZ an untreated injury ends the character",
+        ],
+      },
+      {
+        heading: "Configuration",
+        items: [
+          "Adjustable draw distances so a town is readable rather than a wall of boxes",
+          "Streamproof rendering",
+          "Adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "Official servers apply global BattlEye bans; community servers apply their own, and the large networks share lists. Being clean on one says nothing about the other.",
+      "Admins act on movement patterns. Walking directly to a buried stash is visible in logs and needs no client-side detection to notice.",
+      "DayZ's pace works in your favour: there is time to take a plausible route and behave like someone who is genuinely searching. The players who get removed are the ones who stopped bothering.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam copy of DayZ",
+      "Administrator rights for the loader",
+    ],
+    chooseWhen: [
+      "Stash and vehicle information is what you actually want",
+      "You play long sessions and losing geared characters is what costs you",
+      "You would rather have information than aim assistance",
+    ],
+    chooseOther: [
+      "If you play several games, Arcane covers DayZ alongside Rust, Apex and CS2 on one subscription.",
+      "If you have already been hardware banned, buy a spoofer first — no cheat helps on flagged hardware.",
+    ],
+    faqs: [
+      {
+        q: "What is the most useful feature on DayZ?",
+        a: "Stash and tent information. Finding what another group buried is the difference between a week of grinding and a full kit in an afternoon, and unlike aim it produces nothing anyone can watch.",
+      },
+      {
+        q: "Will admins notice?",
+        a: "They notice routing. Arriving repeatedly at loot buildings or stashes nobody else has found is visible in movement data, so act on what you know at a plausible pace.",
+      },
+      {
+        q: "Does a community ban follow me?",
+        a: "A community ban is that server's own, though large networks share lists. A global BattlEye ban from official servers is separate.",
+      },
+      {
+        q: "Is it detected?",
+        a: "Check the live status shown on this page immediately before you play — it syncs from the supplier feed rather than being edited by hand.",
+      },
+    ],
+  },
+  {
+    key: "dayz/memez",
+    intro: [
+      "MEMEZ for DayZ is a full-featured external — player and item ESP, vehicle tracking, stash awareness and aim assistance in one package. It sits at the heavier end of the DayZ options here.",
+      "That means more to configure and more to be careful with. A product with everything switched on is a product that produces obvious behaviour, and on DayZ obvious behaviour is what admins act on rather than anything BattlEye finds.",
+    ],
+    featureGroups: [
+      {
+        heading: "Player and threat information",
+        items: [
+          "Player ESP with distance and visibility state",
+          "Zombie, animal and infected awareness",
+          "Vehicle and helicopter tracking where the server uses them",
+          "Base, tent and stash indicators",
+        ],
+      },
+      {
+        heading: "Loot and utility",
+        items: [
+          "Item ESP with category and rarity filtering",
+          "Weapon, ammunition and medical highlighting",
+          "Container and barrel awareness",
+        ],
+      },
+      {
+        heading: "Aim and configuration",
+        items: [
+          "Field-of-view-limited assist with smoothing",
+          "Ballistic compensation for DayZ's drop and zeroing",
+          "Saveable profiles — a quieter one for administered servers is the point of them",
+          "Streamproof rendering",
+        ],
+      },
+    ],
+    safety: [
+      "Community server admins are the real enforcement layer on DayZ. They spectate, read logs and ban on suspicion, and no anti-cheat status protects you from that.",
+      "The full feature set is the risk. Run the profile system rather than everything at once — on a server you want to keep playing on, information features alone are far harder to notice.",
+      "Official servers apply global BattlEye bans. Use an account you can lose either way.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam copy of DayZ",
+      "Administrator rights for the loader",
+      "No other kernel-level driver loaded",
+    ],
+    chooseWhen: [
+      "You want the complete toolkit rather than a subset",
+      "You are comfortable configuring features down rather than being given fewer",
+      "You play a mix of official and community servers and want profiles for both",
+    ],
+    chooseOther: [
+      "If you mainly want to know where people and stashes are, Next DayZ covers that without the extra surface.",
+      "If you play several games, Arcane covers DayZ on the same subscription as Rust, Apex and CS2.",
+    ],
+    faqs: [
+      {
+        q: "How is this different from the other DayZ products?",
+        a: "It is the fullest of them. Next concentrates on information; Arcane is the multi-game subscription; this one carries the complete feature set, which is worth more only if you actually use profiles to dial it down.",
+      },
+      {
+        q: "Is aim assistance worth using on DayZ?",
+        a: "Rarely. One round kills at most ranges and engagements are long and deliberate, so an assisted shot is conspicuous in a way it is not in a faster game.",
+      },
+      {
+        q: "Do I need a spoofer?",
+        a: "Only if this machine has already carried a BattlEye ban. On a clean machine a spoofer is another driver and another thing to conflict with.",
+      },
+      {
+        q: "Which servers is it safest on?",
+        a: "Nowhere is safe, but a large official server gives an admin less reason to look at you individually than a small community one where the regulars know each other.",
+      },
+    ],
+  },
+  {
+    key: "escape-from-tarkov/ancient-chams",
+    intro: [
+      "Ancient Chams is a visuals-only Tarkov product. Chams render players through walls in a solid colour using the game's own materials, and that is the whole feature set — no aimbot, no loot filtering, no radar.",
+      "On Tarkov that restriction is the point. The maps are dark, cluttered and full of foliage, so a solid coloured shape is legible where a box around a figure in a doorway is not — and nothing about it appears in another player's view.",
+    ],
+    featureGroups: [
+      {
+        heading: "Chams",
+        items: [
+          "Player chams through walls with configurable colours",
+          "Separate colouring for PMCs, player Scavs and AI Scavs — mistaking one for another is how raids end",
+          "Visibility-based colour changes, so you know when you are exposed",
+          "Distance-based fading to keep a compound readable",
+        ],
+      },
+      {
+        heading: "What it does not do",
+        items: [
+          "No aim assistance of any kind",
+          "No loot or container ESP",
+          "No radar or extract tooling",
+        ],
+      },
+      {
+        heading: "Configuration",
+        items: [
+          "Per-map profiles — Labs and Woods need different settings entirely",
+          "Streamproof rendering",
+          "Adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "Chams are rendered on your machine only. Nothing appears in another player's screen or in a clip of you, which removes the report-and-review path that catches most people.",
+      "It is not invisible to anti-cheat. BattlEye detects software rather than behaviour, and a detected visuals-only cheat is banned exactly like any other.",
+      "Battlestate also act on statistics — an implausible survival rate draws attention whether or not anything was detected.",
+      "Never run it on an EOD or Unheard account. Those cost more than most complete games and are not restored.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "A legitimate Escape From Tarkov account and install",
+      "Administrator rights for the loader",
+    ],
+    chooseWhen: [
+      "You want the quietest thing that still helps",
+      "Telling player Scavs from AI is what keeps costing you raids",
+      "You have been banned before and want to reduce how visible you are",
+    ],
+    chooseOther: [
+      "If you want loot value filtering — the feature that changes Tarkov most — CRYO covers considerably more.",
+      "If you want chams with a little more around them, Coffee Chams adds extract and boss awareness.",
+    ],
+    faqs: [
+      {
+        q: "Why chams instead of boxes?",
+        a: "Tarkov's environments are dark and cluttered. A solid coloured player shape is readable instantly; a box around a figure in a shadowed doorway often is not.",
+      },
+      {
+        q: "Can other players see them?",
+        a: "No. They render on your machine only, which is what makes this a low-visibility product.",
+      },
+      {
+        q: "Is visuals-only actually safer?",
+        a: "Against detection, no. Against being reported and reviewed, substantially — there is nothing to see in a recording of you.",
+      },
+      {
+        q: "Does it separate player Scavs from AI?",
+        a: "Yes, with distinct colouring, and that distinction alone prevents a large share of avoidable deaths.",
+      },
+    ],
+  },
+  {
+    key: "escape-from-tarkov/next-full",
+    intro: [
+      "Next Full is the complete Tarkov package: player and loot ESP, value filtering, extract and boss information, and aim assistance. It is the widest feature set on the Tarkov page here.",
+      "Tarkov is an inventory economics game with shooting in it, so the part that changes your stash is the loot layer rather than the combat one. Value filtering turns a dorm room from forty items into the two worth carrying out.",
+    ],
+    featureGroups: [
+      {
+        heading: "Loot and economy",
+        items: [
+          "Item ESP with flea-market value filtering",
+          "Container, stash and crate highlighting",
+          "Quest item indicators, which remove the memorisation half of task progression",
+          "Thresholds you can raise as your stash improves",
+        ],
+      },
+      {
+        heading: "Player information",
+        items: [
+          "PMC, player Scav and AI Scav separation with distinct colouring",
+          "Distance, visibility state and gear indication",
+          "Boss and raider awareness",
+        ],
+      },
+      {
+        heading: "Raid and aim",
+        items: [
+          "Extract indicators with availability state",
+          "Field-of-view-limited aim assistance with smoothing",
+          "Ballistic compensation for Tarkov's heavily modelled ammunition",
+          "Per-map profiles",
+        ],
+      },
+    ],
+    safety: [
+      "BattlEye plus Battlestate's own review. Tarkov ban waves are public, name accounts, and take the whole account including edition upgrades.",
+      "Aim assistance is the visible risk. Tarkov's community records constantly and a death to an impossible shot is posted and discussed within hours.",
+      "The economic trail matters as much as the gameplay one — extract value and flea activity that do not match your raid history are a pattern in their data.",
+      "Use a standard account. Never an EOD or Unheard one.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "A legitimate Escape From Tarkov account and install",
+      "Administrator rights for the loader",
+    ],
+    chooseWhen: [
+      "You want the full toolkit including aim assistance",
+      "Loot value filtering and quest items are what you are actually buying",
+      "You are progressing tasks and want the memorisation removed",
+    ],
+    chooseOther: [
+      "If you want the quietest option, Ancient Chams has no aim features and nothing anyone can record.",
+      "If you want the loot layer without the widest feature set, CRYO sits between the two.",
+    ],
+    faqs: [
+      {
+        q: "What does value filtering actually do?",
+        a: "It draws only items above a price threshold you set, so a room shows the two things worth taking instead of forty that are not.",
+      },
+      {
+        q: "Does it show quest items?",
+        a: "Yes. For anyone working through tasks that is often the single most useful feature in the product.",
+      },
+      {
+        q: "How risky is the aim assistance here?",
+        a: "Higher than on most games. Tarkov players record raids routinely and an implausible kill is shared and reported quickly.",
+      },
+      {
+        q: "Can I run the loot features only?",
+        a: "Yes, and for most players that is the sensible configuration — it is where the value is and it leaves nothing visible to anyone else.",
+      },
+    ],
+  },
+  {
+    key: "apex/nocturnal",
+    intro: [
+      "Nocturnal for Apex is built around restraint. Its defaults are deliberately conservative — narrow field of view, heavy smoothing, body targeting — where most products ship configured to feel impressive in the first ten minutes.",
+      "That suits a specific buyer: someone who has already lost an account and would rather keep this one. Apex bans arrive in waves and are driven as much by reports as by detection, so how obvious you are matters more than most sales pages admit.",
+    ],
+    featureGroups: [
+      {
+        heading: "Information",
+        items: [
+          "Player ESP with distance and squad grouping — a third party looks nothing like the team you are fighting",
+          "Knocked and downed state, which decides whether a push is real",
+          "Shield tier and health",
+          "Loot ESP with rarity filtering",
+        ],
+      },
+      {
+        heading: "Restrained aim",
+        items: [
+          "Narrow field of view and heavy smoothing as defaults rather than options",
+          "Projectile travel compensation, without which an Apex aimbot misses at the ranges you wanted help",
+          "Visibility checks before engaging",
+          "Body targeting by default",
+        ],
+      },
+      {
+        heading: "Configuration",
+        items: [
+          "Profiles for ranked versus pubs",
+          "Streamproof rendering",
+          "Adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "Apex runs Easy Anti-Cheat and Respawn ban in waves, so a quiet session tells you whether they have acted rather than whether you were detected.",
+      "There is no automatic replay system, so the human path is a report followed by a look at the account. Conservative settings are aimed squarely at that.",
+      "Ranked draws the most reports. Use the quieter profile there and the fuller one in pubs, not the other way round.",
+      "Bans take cosmetics and heirlooms with them and are not reversed. Use an account you can lose.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam or EA App copy of Apex Legends",
+      "Administrator rights for the loader",
+    ],
+    chooseWhen: [
+      "You want settings that keep you unremarkable rather than settings that feel powerful",
+      "You have been banned before and want to change how you play, not just the provider",
+      "You play ranked, where scrutiny is highest",
+    ],
+    chooseOther: [
+      "If you want nothing another player could record at all, Vector is ESP-only.",
+      "If you want the widest Apex feature set, Ancient Apex covers more ground.",
+    ],
+    faqs: [
+      {
+        q: "What makes Nocturnal different?",
+        a: "The defaults. Narrow field of view, heavy smoothing and body targeting out of the box, rather than a configuration that feels impressive and gets you reported.",
+      },
+      {
+        q: "Does the aimbot handle bullet drop?",
+        a: "Yes. Nearly every Apex weapon is a travel-time projectile, so prediction is the difference between help and a miss at the ranges that matter.",
+      },
+      {
+        q: "Will I be banned instantly if detected?",
+        a: "Respawn generally ban in waves, which is why an uneventful evening is not evidence that the account is safe.",
+      },
+      {
+        q: "Is it worth it if I already play well?",
+        a: "The information features are where the value is for a good player — squad grouping and knocked state change decisions rather than aim.",
+      },
+    ],
+  },
+  {
+    key: "arc-raiders/nocturnal",
+    intro: [
+      "Nocturnal for ARC Raiders takes the same conservative approach as its other builds: restrained defaults, information first, aim assistance deliberately understated.",
+      "That fits an extraction shooter better than it fits anything else. A raid is thirty minutes of accumulated risk and the highest-value decision is which fights to avoid — which is an information problem, not an aiming one.",
+    ],
+    featureGroups: [
+      {
+        heading: "Raid information",
+        items: [
+          "Player ESP with distance and squad grouping",
+          "ARC machine positions — the environmental threat other players forget about",
+          "Loot and container highlighting with value filtering",
+          "Extract locations and availability",
+        ],
+      },
+      {
+        heading: "Restrained aim",
+        items: [
+          "Narrow field of view with heavy smoothing by default",
+          "Visibility checks before engaging",
+          "Body targeting rather than headshot snapping",
+        ],
+      },
+      {
+        heading: "Configuration",
+        items: [
+          "Saveable profiles",
+          "Streamproof rendering",
+          "Adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "ARC Raiders is a newer title and Embark are still developing enforcement, so the patterns people rely on from mature games do not apply yet. Retroactive bans are a normal tool while anti-cheat is being built out.",
+      "Status changes faster here than on established games. Check it the day you play rather than the week you bought.",
+      "Extraction shooters make players study how they died, because dying costs real gear. A death that does not make sense gets clipped and discussed.",
+      "Treat progression as disposable and use an account you can lose.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "A legitimate ARC Raiders account and install",
+      "Administrator rights for the loader",
+    ],
+    chooseWhen: [
+      "You want to avoid fights rather than win them",
+      "Restrained defaults matter to you more than a long feature list",
+      "You are playing an account with progression you would rather keep a while",
+    ],
+    chooseOther: [
+      "If you want the fullest ARC Raiders toolkit, Ancient covers more.",
+      "If you play several games, Arcane covers ARC Raiders alongside Rust, Apex and CS2.",
+    ],
+    faqs: [
+      {
+        q: "Why choose restrained settings?",
+        a: "Because in an extraction shooter the players you kill study how they died — they lost real gear. Being unremarkable is worth more than being effective in any single fight.",
+      },
+      {
+        q: "Does it show ARC machines?",
+        a: "Yes, and it is underrated. Players focus on other squads and get caught by the environment.",
+      },
+      {
+        q: "How reliable is the status on a newer game?",
+        a: "Less than on a mature title. Builds are rebuilt more often because the game changes more often, so check it the day you play.",
+      },
+      {
+        q: "Is loot filtering included?",
+        a: "Yes, with value thresholds — carrying out what pays for the raid is most of what decides a session.",
+      },
+    ],
+  },
+  {
+    key: "delta-force/unnamedtech-delta-force-internal",
+    intro: [
+      "UnnamedTech Delta Force Internal loads into the game process rather than reading it from outside. That buys frame-accurate tracking, visuals drawn by the game's own renderer, and aim behaviour that follows targets instead of correcting toward them.",
+      "It also puts code inside a process guarded by Anti-Cheat Expert, a kernel-level anti-cheat that is stricter about co-loaded drivers than EAC or BattlEye. This is the highest-exposure Delta Force option here and should be bought with that understood rather than discovered.",
+    ],
+    featureGroups: [
+      {
+        heading: "Aimbot",
+        items: [
+          "Frame-accurate tracking with no polling gap between game state and correction",
+          "Configurable field of view, smoothing and bone selection",
+          "Ballistic prediction at the long ranges Warfare fights at",
+          "Visibility checks against the game's own state rather than an estimate",
+        ],
+      },
+      {
+        heading: "Visuals",
+        items: [
+          "ESP through the game's renderer — no separate overlay window",
+          "Player boxes, skeletons and team colouring",
+          "Operator ability and gadget indicators",
+          "Vehicle and objective tracking",
+        ],
+      },
+      {
+        heading: "Configuration",
+        items: [
+          "Separate profiles for Warfare and Operations",
+          "Per-feature toggles so it can run close to visuals-only",
+          "Adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "An internal cheat against ACE's kernel driver is the highest-risk combination on this game. No configuration makes it a low-risk purchase.",
+      "ACE loads before the game and refuses to start alongside other kernel drivers. A second bypass, an overlay or remnants of a previous cheat cause failures at launch rather than clean errors.",
+      "Operations is extraction mode — deaths cost gear, so people study how they died. Warfare is more forgiving of an unremarkable session.",
+      "Use hardware and an account you have written off, and load a spoofer first.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam or standalone copy of Delta Force",
+      "Administrator rights for the loader",
+      "No other kernel-level driver loaded",
+      "A spoofer — treat this as required rather than recommended",
+    ],
+    chooseWhen: [
+      "You want the best aim and visual quality available for Delta Force",
+      "The account and the machine are both disposable",
+      "You already run a spoofer as a matter of course",
+    ],
+    chooseOther: [
+      "If the account matters, Ancient Delta Force External is the sensible default.",
+      "If you want visuals only and nothing anyone can record, Vector Delta Force Chams is the quiet option.",
+    ],
+    faqs: [
+      {
+        q: "How much better is an internal?",
+        a: "Noticeably. It reads the real game state every frame, so tracking is smooth and prediction is exact rather than estimated. That is the entire reason to accept the extra risk.",
+      },
+      {
+        q: "It will not launch — where do I start?",
+        a: "Another kernel driver, almost always. ACE is stricter than EAC or BattlEye about what may load alongside it. Remove other bypasses and overlays, reboot, and confirm Secure Boot state.",
+      },
+      {
+        q: "Do I need a spoofer?",
+        a: "Yes. ACE bans reach hardware and this is the product most likely to earn one.",
+      },
+      {
+        q: "Does it cover both game modes?",
+        a: "Yes, with separate profiles — Operations and Warfare reward completely different settings.",
+      },
+    ],
+  },
+  {
+    key: "delta-force/vector-delta-force-chams",
+    intro: [
+      "Vector Delta Force Chams is visuals only. Players render through walls in a solid colour and that is the entire product — no aimbot, no recoil control, no aim assistance of any kind.",
+      "That is deliberate rather than a cut-down version of something else. Everything another player can see you doing comes from aim assistance; chams appear on your screen alone. On a game with a kernel anti-cheat and an extraction mode full of people studying their deaths, that is the trade worth making.",
+    ],
+    featureGroups: [
+      {
+        heading: "Chams",
+        items: [
+          "Player chams through walls with configurable colours",
+          "Team separation so friendly and enemy models are never confused",
+          "Visibility-based colouring, so you know when you are exposed",
+          "Distance fading to keep a large map readable",
+        ],
+      },
+      {
+        heading: "What it does not do",
+        items: [
+          "No aim assistance",
+          "No recoil control",
+          "No loot or objective tooling",
+        ],
+      },
+      {
+        heading: "Configuration",
+        items: [
+          "Profiles for Warfare and Operations",
+          "Streamproof rendering",
+          "Adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "Delta Force runs Anti-Cheat Expert, kernel-level and stricter than EAC or BattlEye about co-loaded drivers. Remove other kernel tools entirely rather than disabling them.",
+      "Chams are rendered on your machine only, so nothing appears in a killcam or a clip. That removes the report path, which is how most people are caught in Operations.",
+      "It does not remove detection risk. ACE detects software, and a detected visuals-only cheat is banned like any other.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam or standalone copy of Delta Force",
+      "Administrator rights for the loader",
+      "No other kernel-level driver loaded",
+    ],
+    chooseWhen: [
+      "You want information with nothing another player could record",
+      "You play Operations, where deaths cost gear and get scrutinised",
+      "You are decent already and aim is not what you are missing",
+    ],
+    chooseOther: [
+      "If you want ESP, objectives and aim assistance, Ancient Delta Force External is the full external.",
+      "If you want the best possible aim and accept the exposure, UnnamedTech Delta Force Internal is the other end of the range.",
+    ],
+    faqs: [
+      {
+        q: "Is visuals-only safer?",
+        a: "Against ACE, no — a detected build is detected either way. Against being reported after a suspicious death, substantially.",
+      },
+      {
+        q: "Can other players see the chams?",
+        a: "No. They are drawn on your machine only.",
+      },
+      {
+        q: "Why no aimbot?",
+        a: "Because that is the feature that gets people reported, and in Operations every death is examined by someone who just lost their kit.",
+      },
+      {
+        q: "Does it work in both modes?",
+        a: "Yes, with separate profiles — jungle-close Operations fights and open Warfare maps want different draw distances.",
+      },
+    ],
+  },
+  {
+    key: "rust/seryx",
+    intro: [
+      "Seryx for Rust is an external covering the information a wipe actually turns on: player and sleeper ESP, resource nodes, and the containers inside a base you are deciding whether to raid.",
+      "Rust has the worst ratio of time invested to time lost in the genre. Hours of farming produce a base that one raid removes, so knowing which bases are worth explosives is worth more than winning any particular gunfight.",
+    ],
+    featureGroups: [
+      {
+        heading: "ESP and raid information",
+        items: [
+          "Player ESP with distance and visibility state",
+          "Sleeper ESP — where most raid value on a populated server comes from",
+          "Container and tool cupboard awareness through walls",
+          "Turret and trap indicators before you walk into them",
+        ],
+      },
+      {
+        heading: "Farming",
+        items: [
+          "Ore, hemp and barrel highlighting",
+          "Animal and scientist awareness",
+          "Route-friendly draw distances so a farming run is not a wall of markers",
+        ],
+      },
+      {
+        heading: "Aim assistance",
+        items: [
+          "Recoil control tuned per weapon — the feature most Rust players actually want",
+          "Field-of-view-limited assist with smoothing",
+          "Visibility checks before engaging",
+        ],
+      },
+    ],
+    safety: [
+      "Rust runs EAC, but the bans people receive are usually the result of Facepunch's own review — reports, then a look at the account, then a wave. How you play matters more here than on most titles.",
+      "Recoil control looks like a practised player on a spectator replay. An aimbot that snaps looks like nothing else.",
+      "Force wipes are the worst window for anything unproven: population, scrutiny and report volume all peak at once, and it is the natural moment to action a backlog.",
+      "Rust bans are account bans first and hardware bans second. If you have had one, a spoofer comes before another cheat.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "Secure Boot disabled",
+      "Steam copy of Rust",
+      "Administrator rights for the loader",
+    ],
+    chooseWhen: [
+      "You raid regularly and want to know which bases are worth the explosives",
+      "Recoil control and sleeper information are what you actually use",
+      "You want a straightforward external rather than the widest feature list",
+    ],
+    chooseOther: [
+      "If you have already lost an account and want the quietest option, Calamari does less on purpose.",
+      "If you also play FiveM, Seryx covers that too — and Arcane covers Rust alongside Apex, CS2 and ARC Raiders.",
+    ],
+    faqs: [
+      {
+        q: "What does container ESP change?",
+        a: "It tells you whether a base is worth raiding before you commit rockets. On a wipe that is worth more than the aimbot, and nobody can see you using it.",
+      },
+      {
+        q: "Is recoil control enough on its own?",
+        a: "For most players it is the majority of the value. Rust spray patterns are fixed and learnable, so removing the practice requirement looks unremarkable to anyone watching.",
+      },
+      {
+        q: "When do builds go down?",
+        a: "Around the monthly force wipe, which ships a client patch. Expect an Updating window and check status before you play rather than after.",
+      },
+      {
+        q: "Do I need a spoofer?",
+        a: "Only if this machine has already carried an EAC ban. On clean hardware it is another driver and another thing to conflict with.",
+      },
+    ],
+  },
+  {
+    key: "fivem/seryx",
+    intro: [
+      "Seryx for FiveM is a menu for GTA V roleplay servers, and FiveM is a different problem from everything else on this site: there is no kernel anti-cheat. What stands between you and a ban is a staff team reading server logs.",
+      "Server-side detection watches events, not software. A teleport, a spawned vehicle, a health change no in-game event explains — those are entries an admin can query afterwards. Nothing scanned your machine to produce them.",
+    ],
+    featureGroups: [
+      {
+        heading: "Player and world",
+        items: [
+          "Player ESP with distance and vehicle occupancy",
+          "Entity and blip information beyond what the server sends your client",
+          "NPC and vehicle listings",
+        ],
+      },
+      {
+        heading: "Self options",
+        items: [
+          "Movement modifiers",
+          "Vehicle handling options",
+          "Cosmetic and appearance controls",
+        ],
+      },
+      {
+        heading: "Configuration",
+        items: [
+          "Per-server profiles, since what survives varies enormously between servers",
+          "Feature toggles so state-changing options can stay off entirely",
+          "Adjustable menu key",
+        ],
+      },
+    ],
+    safety: [
+      "The rule here is the opposite of the anti-cheat games: read-only features leave nothing in a log, and anything that changes world state writes an entry the moment you use it.",
+      "Roleplay servers have the largest staff teams and the most attentive players in the ecosystem. A menu used visibly is caught by people, quickly.",
+      "Bans are typically per server, but serious cases can reach the CFX account and hardware level, and those follow you everywhere.",
+      "A whitelisted RP character represents an application, an interview and months of play. That is what a ban actually costs.",
+    ],
+    requirements: [
+      "Windows 10 or 11, 64-bit",
+      "A legitimate copy of GTA V and a working FiveM install",
+      "Administrator rights for the loader",
+      "Secure Boot disabled",
+    ],
+    chooseWhen: [
+      "You want information the server does not send your client",
+      "You understand the threat is staff and logs rather than an anti-cheat",
+      "You play on more than one server and want per-server profiles",
+    ],
+    chooseOther: [
+      "If you would be devastated to lose a whitelisted character, think hard — staff bans take the character with them and appeals rarely go anywhere.",
+      "Macho is the other FiveM option here; the choice between them is feature preference rather than a difference in how detection works.",
+    ],
+    faqs: [
+      {
+        q: "Can FiveM servers detect this?",
+        a: "Server-side scripts detect actions — teleports, spawns, unexplained state changes. They do not scan your machine. What you do is what gets logged.",
+      },
+      {
+        q: "Will a ban follow me to other servers?",
+        a: "Usually not; bans are typically per server. Serious cases can reach the CFX account or hardware level, and those do follow.",
+      },
+      {
+        q: "Is it safe on roleplay servers?",
+        a: "Those have the most staff and the most attentive players on FiveM. Assume more scrutiny there, not less.",
+      },
+      {
+        q: "Does it work on every server?",
+        a: "Most, but servers run varying anti-cheat scripts and some block far more than others. Per-server profiles exist because of exactly that.",
       },
     ],
   },

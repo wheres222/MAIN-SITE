@@ -58,7 +58,9 @@ const [content, live] = await Promise.all([
   keysFromSitemap(),
 ]);
 
-const orphanedKeys = [...content].filter((k) => !live.has(k));
+// IGNORED applies here too: a hidden product keeps its content but leaves the
+// sitemap, so its key would look orphaned every run.
+const orphanedKeys = [...content].filter((k) => !live.has(k) && !IGNORED.has(k));
 const missingContent = [...live].filter(
   (k) => !content.has(k) && !IGNORED.has(k)
 );
