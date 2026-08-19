@@ -3,6 +3,7 @@
 // public/category/ and bump the _vN suffix to bust Next's image cache.
 export const CATEGORY_IMAGES: Record<string, string> = {
   "rust":               "/category/rust_v3.avif",
+  "hell-let-loose":     "/category/hell_let_loose_v1.avif",
   "fortnite":           "/category/fortnite_v3.avif",
   "counter-strike-2":   "/category/cs2_v3.avif",
   "arc-raiders":        "/category/arc_raiders_v3.avif",
