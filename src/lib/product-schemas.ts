@@ -24,27 +24,34 @@ function categorySlugFor(product: SellAuthProduct): string {
 }
 
 /**
- * Pick the best category URL for the breadcrumb — clean URL if we have a
- * landing page for the slug, fallback to the legacy query-param form.
+ * Pick the category URL for the breadcrumb — the clean URL when we have a
+ * landing page for the slug, the index otherwise.
  */
 function breadcrumbCategoryUrl(product: SellAuthProduct, siteUrl: string): string {
   const slug = categorySlugFor(product);
   if (!slug) return `${siteUrl}/categories`;
   if (gameSeoContentFor(slug)) return `${siteUrl}/categories/${slug}`;
-  return `${siteUrl}/categories?slug=${encodeURIComponent(slug)}`;
+  // The ?slug= form now 308s to the clean URL, and a breadcrumb pointing at a
+  // redirect is a structured-data item pointing somewhere that is not the page
+  // it claims. Fall back to the index instead.
+  return `${siteUrl}/categories`;
 }
 
-function osForProduct(product: SellAuthProduct): string {
-  const text = `${product.name} ${product.description}`.toLowerCase();
-  if (text.includes("android") || text.includes("mobile")) return "Android, iOS";
-  if (text.includes("mac") || text.includes("ios")) return "macOS";
-  return "Windows 10, Windows 11";
+/**
+ * Schema image URLs must be absolute. Local art is stored as "/pd/rust.avif",
+ * and emitting that verbatim is an invalid value — which is what the
+ * "structured data items are invalid" audit finding was counting.
+ */
+function absoluteImage(value: string | undefined, siteUrl: string): string | undefined {
+  const src = value?.trim();
+  if (!src) return undefined;
+  if (/^https?:\/\//i.test(src)) return src;
+  return `${siteUrl}${src.startsWith("/") ? "" : "/"}${src}`;
 }
 
 /**
  * Build the full set of JSON-LD schemas for a product page:
- * - Product (with Offer + AggregateRating)
- * - SoftwareApplication (co-typed for software / video-game category)
+ * - Product (with Offer)
  * - BreadcrumbList
  *
  * Returns an array of stringified JSON-LD objects, ready to be inlined into
@@ -76,7 +83,9 @@ export function buildProductSchemas(
     mpn: `CP-${product.id}`,
     brand: { "@type": "Brand", name: "Cheat Paradise" },
     category: product.categoryName || product.groupName || "Gaming Software",
-    image: product.image ? [product.image] : undefined,
+    image: absoluteImage(product.image, siteUrl)
+      ? [absoluteImage(product.image, siteUrl)]
+      : undefined,
     url: productUrl,
     offers: {
       "@type": "Offer",
@@ -91,29 +100,17 @@ export function buildProductSchemas(
     },
   };
 
-  // ── SoftwareApplication (co-typed with VideoGame for richer results) ───────
-  // Google won't show rich results for VideoGame alone — co-typing with
-  // SoftwareApplication unlocks software-rating snippets and the
-  // "GameApplication" category surface.
-  const softwareAppSchema = {
-    "@context": "https://schema.org",
-    "@type": ["SoftwareApplication", "VideoGame"],
-    name: product.name,
-    description:
-      product.description ||
-      `${product.name} — undetected gaming software delivered instantly by Cheat Paradise.`,
-    operatingSystem: osForProduct(product),
-    applicationCategory: "GameApplication",
-    applicationSubCategory: "Gaming Enhancement",
-    url: productUrl,
-    image: product.image || undefined,
-    offers: {
-      "@type": "Offer",
-      priceCurrency: product.currency || "USD",
-      price,
-      availability,
-    },
-  };
+  // SoftwareApplication is no longer emitted.
+  //
+  // It was here for the software rich result, which Google only awards when the
+  // item carries aggregateRating — and the rating we used to supply was
+  // invented from the product id, so it had to go. Left in place the schema
+  // could never qualify, and every validator reports it as missing a required
+  // field: a permanent error for a snippet that was never attainable.
+  //
+  // Product with a real Offer is valid on its own and is what these pages
+  // should be. If genuine reviews are ever wired up, this can come back with
+  // aggregateRating built from them.
 
   // ── BreadcrumbList ─────────────────────────────────────────────────────────
   const breadcrumbSchema = {
@@ -133,7 +130,6 @@ export function buildProductSchemas(
 
   return [
     JSON.stringify(productSchema),
-    JSON.stringify(softwareAppSchema),
     JSON.stringify(breadcrumbSchema),
   ];
 }
