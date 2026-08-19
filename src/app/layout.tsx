@@ -39,7 +39,12 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
     default: "Cheat Paradise — Undetected Rust, CS2 & ARC Raiders Cheats",
-    template: "%s | Cheat Paradise",
+    // No " | Cheat Paradise" suffix. It cost 16 characters on every page and
+    // pushed most titles past the ~60 Google displays, so the distinguishing
+    // half — the part naming the game and its features — was the half getting
+    // truncated. Google renders the site name separately in results now, so
+    // the suffix bought nothing. Pages needing the brand say it themselves.
+    template: "%s",
   },
   description:
     "Buy undetected game cheats with instant delivery. Rust cheats, CS2 cheats, ARC Raiders cheats, Fortnite, COD, Apex & more — trusted by thousands. 24/7 support.",

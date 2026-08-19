@@ -15,7 +15,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/categories`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${siteUrl}/products`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
     { url: `${siteUrl}/status`, lastModified: now, changeFrequency: "daily", priority: 0.7 },
-    { url: `${siteUrl}/reviews`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteUrl}/guide`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     { url: `${siteUrl}/loaders`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${siteUrl}/videos`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
@@ -80,16 +79,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         if (seenSlugs.has(canonical)) return null;
         seenSlugs.add(canonical);
 
-        const hasLandingPage = Boolean(gameSeoContentFor(canonical));
-        const url = hasLandingPage
-          ? `${siteUrl}/categories/${canonical}`
-          : `${siteUrl}/categories?slug=${encodeURIComponent(slug)}`;
+        // Only games with a landing page belong here. The others used to be
+        // listed under their legacy ?slug= form, which now 308s to the clean
+        // URL — and a sitemap full of redirects is a sitemap Search Console
+        // reports as containing incorrect pages. Write the content in
+        // game-seo-content.ts and the category appears here automatically.
+        if (!gameSeoContentFor(canonical)) return null;
 
         return {
-          url,
+          url: `${siteUrl}/categories/${canonical}`,
           lastModified: now,
           changeFrequency: "daily" as const,
-          priority: hasLandingPage ? 0.9 : 0.7,
+          priority: 0.9,
         };
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null);

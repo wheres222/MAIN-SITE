@@ -20,6 +20,44 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadi
 
 type RouteParams = Promise<{ game: string; slug: string }>;
 
+/**
+ * Meta description for a product page.
+ *
+ * SellAuth descriptions are raw HTML and were being passed straight into the
+ * meta tag — so search results carried literal markup
+ * ("&lt;p class=&quot;e-paragraph&quot;...") and several products shared the
+ * same boilerplate, which is where the duplicate-description warnings came
+ * from. Prefer our own editorial intro, unique per product by construction;
+ * fall back to the supplier text with tags stripped; fall back again to a
+ * generated sentence.
+ */
+function metaDescriptionFor(
+  product: SellAuthProduct,
+  gameName: string,
+  intro?: string
+): string {
+  const clamp = (value: string) =>
+    value.length > 158 ? value.slice(0, 155).trimEnd() + "…" : value;
+
+  const ours = (intro ?? "").replace(/\s+/g, " ").trim();
+  if (ours.length >= 60) return clamp(ours);
+
+  const fromSupplier = (product.description ?? "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&lt;|&gt;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (fromSupplier.length >= 60) return clamp(fromSupplier);
+
+  return gameName
+    ? `Buy ${product.name} for ${gameName} — undetected, instant delivery and secure checkout on Cheat Paradise.`
+    : `Buy ${product.name} with instant delivery and secure checkout on Cheat Paradise.`;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -38,11 +76,11 @@ export async function generateMetadata({
       // only half of any such search.
       const gameName = productGameName(product);
       const title = productSeoTitle(product);
-      const description =
-        product.description ||
-        (gameName
-          ? `Buy ${product.name} for ${gameName} — undetected, instant delivery and secure checkout on Cheat Paradise.`
-          : `Buy ${product.name} with instant delivery and secure checkout on Cheat Paradise.`);
+      const description = metaDescriptionFor(
+        product,
+        gameName,
+        productSeoContentFor(product)?.intro?.[0]
+      );
       const canonical = productHref(product);
 
       return {

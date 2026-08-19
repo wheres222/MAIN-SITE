@@ -114,7 +114,7 @@ BLOG_POSTS.push(
   {
     slug: "how-anti-cheat-detection-works",
     title: "How Anti-Cheat Detection Actually Works",
-    seoTitle: "How Anti-Cheat Detection Works — EAC, BattlEye and Vanguard Explained",
+    seoTitle: "How Anti-Cheat Detection Works — EAC, BattlEye, Vanguard",
     description:
       "What EAC, BattlEye and Vanguard actually look for, why 'undetected' is a moving target, and how detection waves work in practice.",
     published: "2026-08-09",
@@ -249,7 +249,7 @@ BLOG_POSTS.push(
   {
     slug: "best-rust-cheats-2026",
     title: "The Best Rust Cheats in 2026",
-    seoTitle: "Best Rust Cheats in 2026 — Undetected Aimbot, ESP & Wallhack Compared",
+    seoTitle: "Best Rust Cheats 2026 — Aimbot, ESP & Wallhack Compared",
     description:
       "Which Rust cheats are worth running in 2026, how EAC behaves on Rust specifically, and which features are worth the risk on a wipe-based server.",
     published: "2026-08-12",
