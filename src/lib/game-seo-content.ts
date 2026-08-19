@@ -2481,6 +2481,7 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
       },
     ],
     lastTested: "Guide reviewed against the current build · August 2026",
+    heroImage: "/banners/hell-let-loose.webp",
   },
 ];
 
