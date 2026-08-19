@@ -188,3 +188,24 @@
   .controls { flex-direction: column; }
   .search { max-width: none; }
 }
+
+/* ─── Page header ─────────────────────────────────────── */
+/* Added because the catalogue opened directly into a search input — no H1 and
+   no description, which reads as an empty page to a crawler. */
+.pageHead { margin: 0 0 18px; }
+.pageTitle {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+.pageSub {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 680px;
+  margin: 0;
+}
+.pageSub a { color: var(--accent); text-decoration: none; }
+.pageSub a:hover { text-decoration: underline; }
