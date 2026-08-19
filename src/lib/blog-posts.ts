@@ -33,6 +33,14 @@ export interface BlogPost {
   readingMinutes: number;
   /** Category slug this post supports, for cross-linking to the storefront. */
   relatedGameSlug?: string;
+  /**
+   * Slugs of other posts to link at the end, rendered as real anchors.
+   *
+   * Posts linked only to categories and never to each other, so twenty pages
+   * sat as twenty separate leaves — a reader who finished one had nowhere to go
+   * and no authority moved between them.
+   */
+  relatedPosts?: string[];
   lead: string;
   sections: BlogSection[];
   faqs: BlogFaq[];
@@ -120,6 +128,7 @@ BLOG_POSTS.push(
     published: "2026-08-09",
     updated: "2026-08-09",
     readingMinutes: 9,
+    relatedPosts: ["external-vs-internal-cheats", "hwid-bans-and-spoofers-explained", "will-i-get-banned-using-cheats"],
     lead:
       "Most advice about staying undetected is folklore, because most people have never been told what the software is actually doing. Here is the shape of it, without the marketing.",
     sections: [
@@ -188,6 +197,7 @@ BLOG_POSTS.push(
     published: "2026-08-11",
     updated: "2026-08-11",
     readingMinutes: 7,
+    relatedPosts: ["what-is-a-dma-cheat", "how-anti-cheat-detection-works", "why-free-cheats-get-you-banned"],
     relatedGameSlug: "hwid-spoofers",
     lead:
       "A hardware ban is not one number. Understanding what it actually records is the difference between a spoofer that works and one that quietly does nothing.",
@@ -646,6 +656,7 @@ BLOG_POSTS.push(
     published: "2026-08-16",
     updated: "2026-08-16",
     readingMinutes: 9,
+    relatedPosts: ["external-vs-internal-cheats", "what-is-a-dma-cheat", "how-anti-cheat-detection-works"],
     lead:
       "These three words appear on every product page in this market and are almost never explained. They describe where the code runs, and that single fact determines both how good the cheat feels and how likely it is to end your account.",
     sections: [
@@ -727,6 +738,7 @@ BLOG_POSTS.push(
     published: "2026-08-16",
     updated: "2026-08-16",
     readingMinutes: 8,
+    relatedPosts: ["how-anti-cheat-detection-works", "why-free-cheats-get-you-banned", "external-vs-internal-cheats"],
     lead:
       "Eventually, yes — if you keep going long enough on the same account. The useful questions are how long you get first, which of your habits shortens that, and whether the account was one you should have been using.",
     sections: [
@@ -1417,6 +1429,7 @@ BLOG_POSTS.push(
     published: "2026-08-19",
     updated: "2026-08-19",
     readingMinutes: 8,
+    relatedPosts: ["how-to-buy-cheats-without-getting-scammed", "how-anti-cheat-detection-works", "hwid-bans-and-spoofers-explained"],
     lead:
       "Every game has a free cheat circulating for it, and searching for one is how most people start. It is worth understanding what you are actually downloading, because the honest answer is not 'a worse version of the paid thing'.",
     sections: [
@@ -1489,6 +1502,7 @@ BLOG_POSTS.push(
     published: "2026-08-19",
     updated: "2026-08-19",
     readingMinutes: 8,
+    relatedPosts: ["why-free-cheats-get-you-banned", "internal-vs-external-vs-dma-cheats", "will-i-get-banned-using-cheats"],
     lead:
       "This market has no consumer protection worth the name. Chargebacks are awkward, reviews are gamed, and the product is invisible until it either works or bans you. Here is what actually distinguishes a provider worth paying.",
     sections: [
@@ -1550,6 +1564,200 @@ BLOG_POSTS.push(
       {
         q: "Can I get a refund if it gets detected?",
         a: "Rarely, and that is standard for instantly-delivered digital goods across this market. What a good provider does instead is pause subscription time while the product is down.",
+      },
+    ],
+  }
+);
+
+BLOG_POSTS.push(
+  {
+    slug: "external-vs-internal-cheats",
+    title: "External vs Internal Cheats: How Each One Actually Works",
+    seoTitle: "External vs Internal Cheats — How They Work and Which Is Safer",
+    description:
+      "What actually separates an external cheat from an internal one: where the code runs, how each draws its visuals, what the anti-cheat can see, and which to buy.",
+    published: "2026-08-20",
+    updated: "2026-08-20",
+    readingMinutes: 10,
+    relatedPosts: [
+      "what-is-a-dma-cheat",
+      "internal-vs-external-vs-dma-cheats",
+      "how-anti-cheat-detection-works",
+    ],
+    lead:
+      "Every product page in this market is labelled external or internal, and almost none of them explain what that means. It describes where the code runs — and that single fact determines how good it feels, how it draws on your screen, and how likely it is to end your account.",
+    sections: [
+      {
+        heading: "Where the code runs",
+        body: [
+          "An external cheat is a separate program. It runs as its own process alongside the game, asks the operating system to read the game's memory, and never becomes part of the game itself.",
+          "An internal cheat is loaded into the game's own process. Its code lives in the same memory space as the game, which means it can read variables directly rather than asking Windows for them, and can call the game's own functions.",
+          "That is the whole distinction. Everything else — the aim quality, the visuals, the detection risk — follows from it.",
+          "A useful way to picture it: an external is someone reading over your shoulder, and an internal is someone sitting inside your head. The second knows more, faster. The second is also much harder to explain away if anyone checks.",
+        ],
+      },
+      {
+        heading: "How each one reads the game",
+        body: [
+          "An external asks the operating system for a handle to the game process and reads memory across the process boundary. Every read is a system call, which costs time — so an external samples: it reads positions, draws, and reads again a fraction of a second later.",
+          "That sampling gap is why external aim assistance feels corrective. It knows where a target was a moment ago and adjusts toward where it thinks they are, rather than tracking where they are right now.",
+          "An internal reads the same values as ordinary memory access, at the speed the game itself does, every frame. There is no gap to compensate for, which is why internal aimbots track smoothly and internal projectile prediction is exact rather than estimated.",
+          "For hitscan weapons this difference is small. For anything with bullet travel — Apex, Warzone at range, DayZ, Tarkov — it is the difference between prediction that works and prediction that misses.",
+        ],
+      },
+      {
+        heading: "How each one draws on your screen",
+        body: [
+          "An external cannot draw inside the game, so it creates its own transparent window and floats it on top. That works, and it is why external overlays sometimes flicker, sit wrongly in fullscreen, or vanish when you alt-tab.",
+          "It also has a side effect people like: because the overlay is a separate window, it can be excluded from screen capture, which is what streamproof means on an external.",
+          "An internal hooks the game's own rendering and draws through it. The ESP is part of the frame the game produced, so it never flickers, never misaligns, and behaves correctly in exclusive fullscreen.",
+          "The trade is that hooking the renderer means modifying how the game draws, which is precisely the sort of change an anti-cheat can look for.",
+        ],
+      },
+      {
+        heading: "What the anti-cheat can see",
+        body: [
+          "This is where the safety difference lives, and it is not subtle. A large part of what modern anti-cheat does is inspect its own process: enumerate loaded modules, check that its code has not been modified, look for hooks in functions it cares about, and scan for threads that should not exist.",
+          "An internal is inside that perimeter. Everything it does — being loaded, hooking the renderer, running its own thread — is the exact category of thing those checks exist to find.",
+          "An external sits outside it. The checks that catch injected code do not apply, because there is nothing injected. What remains is a narrower surface: the process handle it holds to the game, the pattern of its memory reads, and the process itself being present on the machine.",
+          "Anti-cheats do look at that surface — handle enumeration is a known technique — but it is a smaller and more ambiguous signal than a module sitting inside the game.",
+        ],
+      },
+      {
+        heading: "The failure modes differ too",
+        body: [
+          "When an internal breaks, the game usually crashes, because the broken code is part of the game. When an external breaks, the cheat closes and the game keeps running.",
+          "That matters more than it sounds on games with kernel anti-cheat, where a mid-match crash is itself a signal worth investigating.",
+          "Game updates break internals harder. An external reading a handful of memory offsets can often be patched quickly; an internal that hooks functions has more to fix when those functions change.",
+          "It also explains why internal builds tend to be down longer after a patch, which is worth knowing before you buy one on a game that updates weekly.",
+        ],
+      },
+      {
+        heading: "Which one to buy",
+        body: [
+          "For most people, on most games, an external on a throwaway account is the right answer. The performance gap is real but modest; the detection gap is not modest at all.",
+          "Buy an internal when the quality genuinely matters to how you play — projectile-heavy games where prediction decides fights, or when you want visuals that behave perfectly in fullscreen — and when the account and the hardware are both disposable.",
+          "Do not buy an internal on a game with permanent hardware bans unless you are running a spoofer and have accepted losing the machine's clean status. Valorant and Call of Duty are the obvious cases.",
+          "And if the answer to 'which is safer' matters more to you than either, the honest next step is neither: a DMA setup runs nothing on the gaming machine at all.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Is an external cheat safer than an internal one?",
+        a: "Generally yes. Anti-cheats spend most of their effort inspecting their own process — loaded modules, hooks, unexpected threads — and an external is outside that perimeter entirely. It is safer, not safe.",
+      },
+      {
+        q: "Why does an internal aimbot feel smoother?",
+        a: "It reads the real game state every frame rather than sampling memory from outside, so there is no gap between what it knows and what is happening. Tracking follows rather than corrects.",
+      },
+      {
+        q: "Why does my external overlay flicker in fullscreen?",
+        a: "Because it is a separate window drawn on top of the game rather than part of the frame. Borderless windowed mode usually fixes it; an internal does not have the problem at all.",
+      },
+      {
+        q: "Which one survives game updates better?",
+        a: "Externals, usually. They read offsets that can be updated quickly, while internals hooking game functions have more to repair when those functions change.",
+      },
+      {
+        q: "Can anti-cheat detect an external at all?",
+        a: "Yes. The process handle it holds, its memory access pattern and the program's presence on the machine are all visible. The surface is smaller and more ambiguous than an injected module, not absent.",
+      },
+    ],
+  },
+  {
+    slug: "what-is-a-dma-cheat",
+    title: "What Is a DMA Cheat and How Does It Work?",
+    seoTitle: "What Is a DMA Cheat? How DMA Hardware Cheating Works in 2026",
+    description:
+      "How DMA cheats read game memory over hardware from a second computer, why software anti-cheat cannot scan them, what a full setup costs, and who it is actually for.",
+    published: "2026-08-20",
+    updated: "2026-08-20",
+    readingMinutes: 10,
+    relatedPosts: [
+      "external-vs-internal-cheats",
+      "hwid-bans-and-spoofers-explained",
+      "how-anti-cheat-detection-works",
+    ],
+    lead:
+      "DMA is the most misunderstood thing in this market. It is not a better cheat — it is a different architecture, where nothing runs on the computer you play on. That is the entire point, and it is also why it costs what it costs.",
+    sections: [
+      {
+        heading: "What DMA actually means",
+        body: [
+          "Direct Memory Access is an ordinary computing concept, not a cheating one. It is how hardware devices read and write system memory without asking the processor to do it for them — a network card or a disk controller moving data on its own is using DMA.",
+          "A DMA cheat setup uses a PCIe card in the gaming machine that has that same capability, and connects it to a second computer. The card reads the game's memory and passes what it finds to the second machine.",
+          "So the gaming PC runs the game and nothing else. No cheat process, no injected module, no driver, no file on disk. The software that interprets the memory and decides what to draw runs on the other computer entirely.",
+          "That is the whole idea. Everything else about DMA follows from the fact that there is nothing on the gaming machine for anti-cheat software to find.",
+        ],
+      },
+      {
+        heading: "Why software anti-cheat struggles with it",
+        body: [
+          "An anti-cheat is a program running on your machine. It can enumerate processes, inspect its own memory, check loaded drivers, scan the disk and watch for hooks — all of which are inspections of that machine.",
+          "None of those reach a device reading memory from outside the operating system's view. There is no process to find, because the process is on a different computer. There is no module to enumerate, because nothing was loaded.",
+          "This is why DMA is described as beyond the reach of software anti-cheat. It is not that it defeats detection cleverly; it is that the thing detection looks for is not present.",
+          "What it does not do is make you invisible. Everything you do in the game is still visible to other players, still recorded in replays and killcams, and still reportable. A DMA setup used obviously gets its account banned like any other.",
+        ],
+      },
+      {
+        heading: "How the pieces fit together",
+        body: [
+          "You need two computers. The gaming PC runs the game; the second runs the cheat software and displays what it produces.",
+          "You need the DMA card in the gaming PC and a cable to the second machine. That is the memory path.",
+          "You need a way to see the game while playing it. A capture card feeding the gaming PC's video into the second machine is the usual approach, so the overlay can be drawn on the second screen rather than on the game.",
+          "And if the setup provides any aim assistance, you need a way to send input that the gaming PC treats as a real mouse — a hardware input device rather than software moving the cursor, because software input is exactly what systems like Siege's MouseTrap are built to notice.",
+          "Assembled, that is two machines, a card, a capture device and an input device. The complexity is the reason most people who buy DMA hardware never get a working setup.",
+        ],
+      },
+      {
+        heading: "How vendors are fighting back",
+        body: [
+          "Anti-cheat companies are not ignoring this. The direction of travel is device-level: enumerating what is attached to the PCIe bus, checking device identifiers and configuration space against what a legitimate card of that type should report, and flagging things that look wrong.",
+          "That is why DMA cards are sold with firmware that presents them as ordinary hardware. It is an arms race between what the card claims to be and what the vendor knows real cards look like — the same shape of contest as everywhere else in this market, just fought at a different layer.",
+          "The practical consequence is that DMA is not a permanent answer. It is a substantially larger investment that buys a substantially better position, on a battlefield that still moves.",
+          "It also means the firmware matters as much as the card. A widely-circulated firmware that vendors have already characterised is worth less than the hardware suggests.",
+        ],
+      },
+      {
+        heading: "Who it is actually for",
+        body: [
+          "People who have already been hardware banned on a game that bans permanently. If the machine's clean status is gone and a spoofer is a recurring cost, the arithmetic shifts.",
+          "People protecting something worth more than the hardware — a Tarkov account with an edition upgrade, a CS2 inventory, a Valorant account on a machine they cannot replace.",
+          "People who play on kernel-anti-cheat games continuously rather than occasionally. The cost amortises over months, not weekends.",
+          "For everyone else it is overkill, and the honest recommendation is an external on a throwaway account. That covers the overwhelming majority of people who ask about DMA — the question is usually really 'how do I not get banned', and the cheaper answers to that are behavioural.",
+        ],
+      },
+      {
+        heading: "What DMA does not solve",
+        body: [
+          "It does not stop you being reported. Every game's community review path — killcams, replays, spectators, server admins — works exactly the same against a DMA user.",
+          "It does not fix an existing ban. A banned account stays banned, and on games that ban hardware the identifiers of the gaming machine are unchanged.",
+          "It does not remove the need to play plausibly. If anything the opposite: someone who has spent this much is less likely to accept losing an account and more likely to be conspicuous with it.",
+          "And it does not eliminate cost after the purchase. The cheat software running on the second machine is still a subscription, still breaks on game patches, and still needs the same maintenance as anything else.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What is a DMA cheat?",
+        a: "A setup where a PCIe card in the gaming PC reads the game's memory and passes it to a second computer running the cheat software. Nothing cheat-related runs on the machine playing the game.",
+      },
+      {
+        q: "Can anti-cheat detect DMA?",
+        a: "Not by scanning the gaming machine, because nothing is there to find. Vendors work at the device level instead — enumerating PCIe devices and checking whether their identifiers match real hardware — which is why DMA cards ship with firmware that imitates ordinary devices.",
+      },
+      {
+        q: "Do I need two computers for DMA?",
+        a: "Yes. The second machine runs the software and displays the output, usually via a capture card. That requirement is the main reason most people abandon the idea.",
+      },
+      {
+        q: "Is DMA worth it?",
+        a: "If you have already been hardware banned on a game that bans permanently, or you are protecting an account worth more than the hardware, the arithmetic can work. For everyone else an external on a throwaway account is the better use of the money.",
+      },
+      {
+        q: "Can I still get banned using DMA?",
+        a: "Easily. Killcams, replays, spectators and server admins all work the same against you. DMA addresses software detection and nothing else.",
       },
     ],
   }

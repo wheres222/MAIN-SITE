@@ -92,6 +92,12 @@ export default async function BlogPostPage({
     },
   ];
 
+  // Resolved rather than trusted: a slug that no longer exists would render a
+  // link to a 404, and posts do get renamed.
+  const related = (post.relatedPosts ?? [])
+    .map((slug) => blogPostBySlug(slug))
+    .filter((p): p is NonNullable<typeof p> => p !== null);
+
   const sections = [
     ...post.sections.map((s) => ({ heading: s.heading, body: s.body })),
     {
@@ -117,6 +123,21 @@ export default async function BlogPostPage({
         ),
       ],
     },
+    // Posts linked to categories and never to each other, so every one was a
+    // leaf: a reader who finished had nowhere to go, and no authority moved
+    // between them.
+    ...(related.length
+      ? [
+          {
+            heading: "Read next",
+            body: related.map((r) => (
+              <span key={r.slug}>
+                <Link href={`/blog/${r.slug}`}>{r.title}</Link> — {r.description}
+              </span>
+            )),
+          },
+        ]
+      : []),
   ];
 
   return (
