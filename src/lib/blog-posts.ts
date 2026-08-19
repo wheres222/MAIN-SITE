@@ -486,7 +486,7 @@ BLOG_POSTS.push(
   {
     slug: "best-tarkov-cheats-2026",
     title: "The Best Escape From Tarkov Cheats in 2026",
-    seoTitle: "Best Tarkov Cheats in 2026 — Loot ESP, Value Filtering & Wipe Cycles",
+    seoTitle: "Best Tarkov Cheats 2026 — Loot ESP & Value Filtering",
     description:
       "Which Escape From Tarkov cheats are worth running, why loot value filtering beats aim, how wipes break builds, and why an EOD account should never be the one you use.",
     published: "2026-08-16",
