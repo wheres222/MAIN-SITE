@@ -22,8 +22,21 @@ import { readFileSync } from "node:fs";
 
 const SITE = process.argv[2] ?? "https://cheatparadise.com";
 
-/** Deliberately excluded: not products anyone searches for. */
-const IGNORED = new Set(["misc/donation"]);
+/**
+ * Deliberately excluded.
+ *
+ * misc/donation was never a product anyone searches for. The three accounts
+ * entries are hidden from the site via src/lib/hidden-products.ts — their
+ * content is kept rather than deleted so un-hiding restores the page intact,
+ * but a hidden product is absent from the sitemap, and this check compares
+ * against the sitemap.
+ */
+const IGNORED = new Set([
+  "misc/donation",
+  "accounts/mails",
+  "accounts/ip-vanish-account",
+  "accounts/cyberghost-account",
+]);
 
 function keysFromSource() {
   const source = readFileSync("src/lib/product-seo-content.ts", "utf8");
