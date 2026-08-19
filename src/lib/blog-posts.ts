@@ -1103,6 +1103,458 @@ BLOG_POSTS.push(
   }
 );
 
+BLOG_POSTS.push(
+  {
+    slug: "best-rainbow-six-siege-cheats-2026",
+    title: "The Best Rainbow Six Siege Cheats in 2026",
+    seoTitle: "Best R6 Siege Cheats 2026 — MouseTrap, Gadget ESP, Crusader",
+    description:
+      "Which Rainbow Six Siege cheats are worth running, why MouseTrap makes aimbot settings a safety decision, and why gadget ESP wins more rounds than aim ever will.",
+    published: "2026-08-19",
+    updated: "2026-08-19",
+    readingMinutes: 9,
+    relatedGameSlug: "rainbow-six-siege",
+    lead:
+      "Siege is not a game where the faster aim wins. Rounds are short, there are no respawns, and the player who knew first almost always beats the player who reacted faster. That single fact should decide what you buy.",
+    sections: [
+      {
+        heading: "BattlEye and MouseTrap are two different systems",
+        body: [
+          "Siege runs BattlEye, which looks for cheat software the way every kernel anti-cheat does. Alongside it Ubisoft operate MouseTrap, and the two are constantly confused.",
+          "MouseTrap does not look for software. It looks at input — whether mouse movement has the characteristics of a human hand or of something generating it. Snapping corrections, perfectly linear tracking and superhuman flick timing are the signatures it exists to find.",
+          "That is why smoothing is a safety setting on this game rather than a comfort one. MouseTrap does not need to detect your loader to act on you; it can act on how your crosshair moves. Staying external does nothing about it.",
+          "The practical rule: an aimbot configured to feel good is an aimbot configured to look generated. On Siege those are the same slider turned two different ways.",
+        ],
+      },
+      {
+        heading: "Gadget ESP is the feature that actually wins rounds",
+        body: [
+          "Half of Siege is hardware. Every operator brings something to the map — cameras, traps, Kapkans, Frost mats, breach charges — and half the game is finding it before it finds you.",
+          "A cheat that shows you those placements is playing Siege's actual game. Knowing there is a Kapkan on the door you were about to breach changes the round; knowing where a defender is standing changes one duel.",
+          "Drone and defuser tracking belongs in the same bracket. More Siege rounds are decided by where the defuser is and whether a drone is watching your rotation than by anybody's aim.",
+          "Operator ESP with visibility state through soft walls is the third piece — Siege's destructible geometry means the question is rarely 'where are they' but 'can they shoot me through that'.",
+        ],
+      },
+      {
+        heading: "Killcams make Siege unusually unforgiving",
+        body: [
+          "Whoever you kill sees exactly what you did. Not a summary — the actual footage, from your point of view, immediately.",
+          "That catches tracking more than anything else. Following an operator through a wall, or turning to a flank before any sound justifies it, is unmistakable to the person watching, and Siege's community is quick to escalate.",
+          "Information is only safe if you act on it with a plausible delay. Holding an angle because you know someone is coming looks like game sense; snapping to them through plywood does not.",
+          "This is also why the pre-fire is the classic tell. One shot through a soft wall at someone who had made no noise is enough for a clip.",
+        ],
+      },
+      {
+        heading: "What a Siege ban actually costs",
+        body: [
+          "Operators are unlocked individually and there are dozens of them. A mature account is hundreds of hours or a substantial amount of money, and none of it transfers to a new one.",
+          "Ranked compounds it. A fresh account places you against other fresh accounts, which is a different game from the one you were playing, and climbing back takes weeks even if you are good.",
+          "Ubisoft ban permanently and are not known for reversing decisions. There is no wave-and-warn pattern to lean on and no equivalent of Ricochet's mitigations to tip you off first.",
+          "So the calculation is unusually stark: use an account whose roster you would not miss, and accept that a ban means starting the unlock grind rather than just rebuying the game.",
+        ],
+      },
+      {
+        heading: "Seasons, Siege X and when builds pause",
+        body: [
+          "Siege runs a four-season year with mid-season updates between. Major season patches — new operator, map rework, engine changes — are the ones that reliably break builds.",
+          "Siege X changed enough underneath that anything reading the game needed rebuilding rather than adjusting. Expect that pattern from any structural update: not a few hours of downtime but a genuine rebuild.",
+          "The test server before a season launch is a useful signal. A provider already talking about the changes is doing the work; one that says nothing until the loader stops opening is telling you how they operate.",
+          "Check the live status before the session rather than after the patch notes, and treat the first days of a season as the window where nothing is proven.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What is MouseTrap and does it detect cheats?",
+        a: "It analyses input rather than software. It was built to catch input translation but it acts on movement that looks generated, which means aimbot smoothing matters even when the cheat itself is undetected.",
+      },
+      {
+        q: "Is ESP or aimbot better on Siege?",
+        a: "ESP, and not narrowly. Gadget and drone information decides rounds; aim decides duels, and Siege's time-to-kill means the duel was usually settled by who knew first.",
+      },
+      {
+        q: "Will my operators be gone if I get banned?",
+        a: "Yes. Bans are permanent and unlocks do not transfer, so a new account starts on the base roster. That is the real cost, not the price of the game.",
+      },
+      {
+        q: "Do Siege cheats work after a season update?",
+        a: "Usually after a rebuild. Major season patches break builds more thoroughly than mid-season ones, and Siege X was a full rebuild rather than an adjustment.",
+      },
+      {
+        q: "Is an external safer than an internal here?",
+        a: "Against BattlEye's module checks, yes. Against MouseTrap it makes no difference at all, because that system watches input rather than what is loaded.",
+      },
+    ],
+  },
+  {
+    slug: "best-warzone-cheats-2026",
+    title: "The Best Warzone and Call of Duty Cheats in 2026",
+    seoTitle: "Best Warzone Cheats 2026 — Ricochet, Mitigations and What Works",
+    description:
+      "Which Call of Duty cheats are worth running, how Ricochet's mitigations warn you before a ban, and why Warzone and multiplayer need completely different settings.",
+    published: "2026-08-19",
+    updated: "2026-08-19",
+    readingMinutes: 9,
+    relatedGameSlug: "call-of-duty",
+    lead:
+      "Call of Duty is the one game where being caught does not necessarily mean being banned. Ricochet degrades the game for suspected cheaters instead — and that changes how you should read a bad session.",
+    sections: [
+      {
+        heading: "Ricochet's mitigations are a warning most people miss",
+        body: [
+          "Ricochet includes a kernel-level driver that loads with the game, but its most distinctive behaviour is what happens after it suspects you. Rather than banning immediately it applies mitigations.",
+          "Damage that does nothing is the best known: your rounds register as hits and take no health. Cloaking makes you invisible to the suspected cheater, so they are effectively fighting ghosts. Others include disabled parachutes and being quarantined into lobbies made largely of other flagged players.",
+          "This inverts the usual advice. On most games a quiet session means nothing happened. On Call of Duty, a session where your shots stop registering means something already has — you are flagged, and the ban is a decision nobody has taken yet.",
+          "That is the moment to stop, not the moment to reinstall and try a different loader.",
+        ],
+      },
+      {
+        heading: "Warzone and multiplayer are different games",
+        body: [
+          "Warzone is 150 players, long sightlines, armour plates and a shrinking circle. Multiplayer is six-versus-six on small maps with instant respawns. The features that matter barely overlap.",
+          "In Warzone, information is the product. Loot and contract awareness in the first two minutes decides whether you have a kit worth fighting with, and knowing which direction a third team is rotating from decides whether you survive the second circle. Ballistic compensation matters because engagements happen where bullet travel is real.",
+          "In multiplayer, engagements are close and constant, respawns make individual deaths cheap, and there is far less to know. That reduces what ESP is worth and increases the temptation to lean on aim — which is exactly backwards, because a short-map killcam shows everything.",
+          "Keep two profiles. Running one configuration across both is how people end up loud in one mode and unhelped in the other.",
+        ],
+      },
+      {
+        heading: "Hardware bans are the norm here",
+        body: [
+          "Activision ban at both account and hardware level and are more willing to hardware ban than most publishers. A new account on flagged hardware is money spent for nothing.",
+          "That makes a spoofer close to mandatory if the machine has any history at all — and it means buying one after a ban costs more than buying one before, because you are now also replacing the account.",
+          "Order matters: spoofer first, reboot if prompted, then the game, then the loader. Anything else and the original identifiers were already read.",
+          "Ricochet's driver also loads before the game and conflicts with other kernel-level tools. Remove leftovers from previous cheats rather than disabling them — a failure to launch is almost always another driver rather than a broken build.",
+        ],
+      },
+      {
+        heading: "External or internal on a kernel anti-cheat",
+        body: [
+          "An external reads the game from a separate process and never injects, which keeps it clear of the checks aimed at loaded modules. That is the sensible default on a game whose anti-cheat ships a kernel driver.",
+          "An internal buys frame-accurate tracking and visuals drawn by the game's own renderer. It also puts your code inside the exact process Ricochet is built to protect, which is the highest-exposure combination available on this title.",
+          "Neither choice does anything about mitigations. Those are applied on suspicion, and suspicion comes from behaviour as much as detection.",
+          "If the account or the machine matters to you, external plus a spoofer plus restrained settings is the whole answer.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Why is my damage not registering in Warzone?",
+        a: "That is one of Ricochet's documented mitigations. Treat it as a flag on the account rather than a technical fault, and stop rather than reconfiguring.",
+      },
+      {
+        q: "Do I need a spoofer for Call of Duty?",
+        a: "If the machine has ever had a banned account on it, yes. Activision hardware bans follow the hardware and a new account will not clear them.",
+      },
+      {
+        q: "Are Warzone cheats different from multiplayer cheats?",
+        a: "The products cover both, but the useful settings differ enormously. Warzone rewards information and ballistic compensation; multiplayer punishes visible aim because every death produces a killcam.",
+      },
+      {
+        q: "Why do Call of Duty cheats go down so often?",
+        a: "The game patches frequently and Ricochet is actively developed, so builds are rebuilt often. A product that never pauses through a patch is one nobody is maintaining.",
+      },
+      {
+        q: "Does an external avoid Ricochet?",
+        a: "It avoids the checks aimed at code loaded into the game process. It does not avoid behavioural mitigation, and nothing avoids a player reporting you.",
+      },
+    ],
+  },
+  {
+    slug: "best-dayz-cheats-2026",
+    title: "The Best DayZ Cheats in 2026",
+    seoTitle: "Best DayZ Cheats 2026 — Stash ESP, Admins and What Works",
+    description:
+      "Which DayZ cheats are worth running, why community server admins catch more people than BattlEye, and why stash ESP changes a server more than any aimbot.",
+    published: "2026-08-19",
+    updated: "2026-08-19",
+    readingMinutes: 8,
+    relatedGameSlug: "dayz",
+    lead:
+      "DayZ is not a shooter with a survival theme. It is a game where you can walk for forty minutes, meet nobody, and then lose six hours of gear in two seconds — and that asymmetry is what a cheat actually changes.",
+    sections: [
+      {
+        heading: "The fight you avoid is worth more than the one you win",
+        body: [
+          "Nothing else in the genre punishes death this hard. There is no insurance, no stash you did not build yourself, and no way to recover a character. Six hours of careful play ends with one unseen player.",
+          "Player ESP at long range is therefore the feature that matters, and not because it wins gunfights. It lets you not have them. A player spotted at 300 metres is a player you walked around.",
+          "That also makes it the quietest thing you can run. Nobody can see you deciding to take a different route, which is not true of any aim feature.",
+          "The corollary: if what frustrates you is losing duels, DayZ is not the game where a cheat fixes that. The duel was decided by who saw whom first.",
+        ],
+      },
+      {
+        heading: "Stash and tent ESP changes a whole server",
+        body: [
+          "DayZ's real economy is buried in treelines. Groups accumulate for weeks in tents and buried containers, and finding one without help is close to random.",
+          "Stash ESP turns that into a route you can plan. It is the single biggest change to how a server plays for you, and it is worth more over a wipe than any combat feature.",
+          "It is also the fastest way to be noticed. A group whose stash is found within days of burying it talks about it, and admins read logs.",
+          "The habit that keeps people playing: take a plausible route, arrive at a believable pace, and do not clear every stash on the map in one session.",
+        ],
+      },
+      {
+        heading: "Community admins, not BattlEye, catch most people",
+        body: [
+          "Official servers run BattlEye and issue global bans. Most people, though, play on community servers — and those have admins in the match, spectator tools, log access and Discord report channels.",
+          "None of that requires a detection. An admin who watches you walk to three buried stashes has everything they need, and a server ban follows within the hour.",
+          "Large server networks share ban lists, so a ban from one major community can reach several servers rather than the one you were on. That is a bigger practical loss than a global ban for anyone who plays regularly on the same servers.",
+          "Being clean on official servers says nothing about community ones, and vice versa.",
+        ],
+      },
+      {
+        heading: "Which DayZ product fits",
+        body: [
+          "The information-first externals concentrate on players, stashes, vehicles and loot filtering. For most people that is the whole value of cheating on this game.",
+          "The fuller toolkits add aim assistance and more configuration. That is worth something only if you use the profile system to keep it switched down on servers you want to keep playing on.",
+          "The multi-game subscriptions cover DayZ alongside Rust, Apex and CS2, which is the right answer if your group rotates rather than living in one game.",
+          "Whichever you pick, ballistic compensation is what makes an aim feature usable here — DayZ models drop and zeroing heavily, and that is also exactly what makes an assisted shot conspicuous at 400 metres.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "What is the most useful DayZ cheat feature?",
+        a: "Stash and tent ESP. It converts the hidden economy of a server into something you can plan around, and unlike aim it produces nothing another player can watch.",
+      },
+      {
+        q: "Can community server admins ban me without a detection?",
+        a: "Yes, and that is how most people are caught on DayZ. Admins spectate, read movement logs and act on suspicion.",
+      },
+      {
+        q: "Does a community ban follow me to other servers?",
+        a: "Often. Large networks share ban lists, so one ban can reach several servers. A global BattlEye ban from official servers is a separate matter.",
+      },
+      {
+        q: "Is an aimbot worth using in DayZ?",
+        a: "Rarely. One round kills at most ranges and engagements are long and deliberate, so an assisted shot at 400 metres is remembered and reported.",
+      },
+      {
+        q: "Do I need a spoofer?",
+        a: "Only if the machine has already carried a BattlEye ban. On clean hardware it is another kernel driver and another thing to conflict with.",
+      },
+    ],
+  }
+);
+
+BLOG_POSTS.push(
+  {
+    slug: "best-fivem-mod-menus-2026",
+    title: "The Best FiveM Mod Menus in 2026",
+    seoTitle: "Best FiveM Mod Menus 2026 — Server Logs, Admins and Real Risk",
+    description:
+      "FiveM has no kernel anti-cheat. What that means for which features are safe, why server-side logs decide bans, and what a whitelisted roleplay character actually costs.",
+    published: "2026-08-19",
+    updated: "2026-08-19",
+    readingMinutes: 8,
+    relatedGameSlug: "fivem",
+    lead:
+      "FiveM is the one game in this market with no kernel anti-cheat. That does not make it safe — it moves the entire risk from what you run to what you do, and almost nobody explains the difference.",
+    sections: [
+      {
+        heading: "Nothing is scanning your machine",
+        body: [
+          "FiveM is GTA V running on community-hosted servers. There is no EAC, no BattlEye, no Vanguard. Protection is server-side scripts plus staff.",
+          "Those scripts watch events, not software. When your client tells the server you moved 400 metres in one tick, or that a vehicle now exists nobody spawned through a legitimate route, that is an event a script can flag and an admin can query days later.",
+          "So the rule here is the inverse of every other game on this site: features that only change what you see leave nothing behind, and features that change world state write a log entry the moment you use them.",
+          "Player ESP is extremely hard to prove. A teleport is a database row with your name on it.",
+        ],
+      },
+      {
+        heading: "What actually gets people banned on FiveM",
+        body: [
+          "Spawning things. Vehicles, weapons and money all produce events that do not match any legitimate action, and they are the first thing an admin greps for.",
+          "Movement that does not add up. Teleporting, noclip and impossible speeds are trivially visible in position logs even when nobody saw it happen.",
+          "Being visible. Roleplay servers have large staff teams and a culture of reporting, because a player breaking the fiction ruins the thing everybody is there for.",
+          "Nothing about the above requires a scanner. It requires somebody reading logs after a report, which is exactly what those staff teams do.",
+        ],
+      },
+      {
+        heading: "What a roleplay ban actually costs",
+        body: [
+          "The economics here are unlike anything else in this market. A serious RP server involves an application, a whitelist interview, and then months building a character with property, a business and a reputation among people who know them.",
+          "That is what a ban takes. Not a Steam account you can replace for the price of the game — a character other people's stories are built around.",
+          "Bans are usually per server, which sounds reassuring until you realise the servers worth playing on are few and their staff talk to each other. Serious cases can also reach the CFX account or hardware level, and those follow you everywhere.",
+          "If you have a character you would be genuinely upset to lose, the honest advice is not to run anything on it.",
+        ],
+      },
+      {
+        heading: "Choosing a menu, and configuring it",
+        body: [
+          "Feature lists between menus matter less than the discipline to leave most of them off. The information features are the ones you can use for months; the state-changing ones are the ones that end accounts.",
+          "Per-server profiles are the feature to actually check for. What survives varies enormously — some servers run heavy detection scripts, others almost none — and one configuration across all of them is how people get caught on the strict one.",
+          "Test on a server you do not care about first. That is possible on FiveM in a way it is not on games with account-level bans, and almost nobody bothers.",
+          "And keep in mind that support for a specific server can break without anything being detected — a script update changes what the server permits, not what your menu can do.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Does FiveM have anti-cheat?",
+        a: "Not in the kernel sense. Servers run their own detection scripts and staff read logs, which catches actions rather than software.",
+      },
+      {
+        q: "Can I be banned for ESP on FiveM?",
+        a: "It is much harder to prove than anything that changes state, because it leaves no server-side event. Staff can still ban on suspicion — it is their server.",
+      },
+      {
+        q: "Will a FiveM ban affect my Rockstar account?",
+        a: "Usually not; bans are typically per server. Serious cases can reach the CFX account or hardware level, which does follow you.",
+      },
+      {
+        q: "Are roleplay servers stricter?",
+        a: "Considerably. They have the largest staff teams and the most invested players, and both of those work against you.",
+      },
+      {
+        q: "What is the safest way to use one?",
+        a: "Read-only features, per-server profiles, and a character you would not mind losing. Anything that spawns or teleports is logged the moment it happens.",
+      },
+    ],
+  },
+  {
+    slug: "why-free-cheats-get-you-banned",
+    title: "Why Free Cheats Get You Banned (or Worse)",
+    seoTitle: "Are Free Cheats Safe? Why Free Hacks Get You Banned in 2026",
+    description:
+      "Free cheats are free for a reason. What actually happens when you run one, why they are detected within days, and the malware risk nobody selling them mentions.",
+    published: "2026-08-19",
+    updated: "2026-08-19",
+    readingMinutes: 8,
+    lead:
+      "Every game has a free cheat circulating for it, and searching for one is how most people start. It is worth understanding what you are actually downloading, because the honest answer is not 'a worse version of the paid thing'.",
+    sections: [
+      {
+        heading: "Keeping a cheat undetected costs money every month",
+        body: [
+          "This is the part that explains everything else. Anti-cheat vendors ship updates constantly, and a working cheat needs a developer responding to each one — reverse-engineering the change, rebuilding, testing.",
+          "That is a salary. A paid provider funds it with subscriptions; a free one funds it with something else, or does not fund it at all.",
+          "Which is why free builds are almost always old builds. They worked once, the developer moved on or was caught, and the file kept circulating on forums long after the anti-cheat learned its signature.",
+          "Running a detected build is not a gamble. It is the ban, with a delay attached while the vendor decides when to action it.",
+        ],
+      },
+      {
+        heading: "The ones that are maintained are monetised another way",
+        body: [
+          "Bundled malware is the common case. A loader that also installs a stealer takes your browser sessions, saved passwords, crypto wallets and Discord token — the last of which is worth real money on its own.",
+          "Some are cryptominers, which is the gentler outcome: your electricity rather than your accounts.",
+          "Some sell your machine as a proxy node, which is how residential proxy networks are built. You will not notice, and it does not affect your game.",
+          "The pattern to recognise: if you are not paying, the loader has another job. It needs administrator rights and it disables your antivirus first, which you were told is normal for cheats — and for a legitimate cheat it genuinely is. That is what makes the trick work.",
+        ],
+      },
+      {
+        heading: "\"Disable your antivirus\" is doing a lot of work",
+        body: [
+          "Every cheat asks for this, and every cheat has a legitimate reason: cheat loaders trip heuristics because they do exactly what malware does — inject, hook, hide.",
+          "So the one instruction that would normally protect you is the one you are trained to ignore before you ever reach the malicious file. There is no way to tell, from the instruction alone, which kind you have.",
+          "The only real defence is where you got it. A provider with a reputation, a support channel and a paying customer base has something to lose. A file from a forum post has nothing.",
+          "This is also why a hardware ban is not the worst outcome from a free cheat. Losing a game account is recoverable; losing your email and everything reachable from it is not.",
+        ],
+      },
+      {
+        heading: "The arithmetic nobody does",
+        body: [
+          "A month of a paid cheat costs less than a copy of the game it runs on. A banned account costs the game, the progress, and on hardware-ban games the machine's clean status too.",
+          "On Tarkov, an edition upgrade. On CS2, an inventory. On Siege, a full operator roster. The free version is a discount on the cheapest input into that equation.",
+          "The one honest argument for a free cheat is that you want to see whether cheating is even fun before paying. If that is the case, use a throwaway account and hardware you do not care about — which is the same advice as for a paid one, only more so.",
+          "And check whether the game has a hardware-ban reputation first. On Valorant or Call of Duty the free experiment can cost you the machine, not the account.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "Are free cheats always detected?",
+        a: "Not always, but usually and quickly. Keeping a build undetected takes continuous developer work, and nobody does that work for free indefinitely.",
+      },
+      {
+        q: "Do free cheats contain malware?",
+        a: "Frequently. Stealers, miners and proxy clients are the common payloads, and a cheat loader is the perfect delivery vehicle because it legitimately needs administrator rights.",
+      },
+      {
+        q: "Why do cheats ask me to disable antivirus?",
+        a: "Because loaders inject and hook, which is exactly what malware does, so heuristics flag them. The problem is that it trains you to ignore the one warning that would catch a genuinely malicious file.",
+      },
+      {
+        q: "What is the worst that can happen?",
+        a: "Not the ban. A stealer takes browser sessions, saved passwords, wallets and tokens — and unlike a game account, none of that is replaceable.",
+      },
+      {
+        q: "Is there any safe way to try cheating cheaply?",
+        a: "A throwaway account, hardware you do not care about, and a provider with something to lose. On games with hardware bans, even that costs the machine's clean status.",
+      },
+    ],
+  },
+  {
+    slug: "how-to-buy-cheats-without-getting-scammed",
+    title: "How to Buy Cheats Without Getting Scammed",
+    seoTitle: "How to Buy Game Cheats Safely — Spotting Scams and Dead Providers",
+    description:
+      "The tells that separate a provider worth paying from one that takes your money: status honesty, update cadence, refund reality and what lifetime pricing really means.",
+    published: "2026-08-19",
+    updated: "2026-08-19",
+    readingMinutes: 8,
+    lead:
+      "This market has no consumer protection worth the name. Chargebacks are awkward, reviews are gamed, and the product is invisible until it either works or bans you. Here is what actually distinguishes a provider worth paying.",
+    sections: [
+      {
+        heading: "How they handle downtime tells you everything",
+        body: [
+          "A cheat goes down. Every cheat goes down — a game patches, offsets move, the anti-cheat ships an update. What separates providers is what happens in the hours afterwards.",
+          "A provider who publishes status and marks products as detected or updating is telling you before you get banned. One that stays silent through a patch has decided a day of sales is worth more than your account.",
+          "So look for a status page, then check whether it has ever said anything bad. A product that has been Undetected continuously for a year is not a well-maintained product; it is a decorative status page.",
+          "The same applies to how they handle subscription time. Pausing time while a product is down is standard among providers who intend to keep customers.",
+        ],
+      },
+      {
+        heading: "Lifetime pricing is a statement about the future",
+        body: [
+          "Maintaining a cheat costs money every month, forever. A one-off payment for lifetime access means one of two things, and neither is generous.",
+          "Either the price assumes you will stop using it long before the maintenance cost catches up — which is a bet on you losing interest or getting banned — or the product will stop being maintained and the word 'lifetime' will quietly mean the product's lifetime rather than yours.",
+          "Subscription pricing at least aligns the incentives: they get paid while it works, and they stop getting paid when it does not.",
+          "This is not an argument that lifetime is always a scam. It is an argument that you should know which of the two you are buying.",
+        ],
+      },
+      {
+        heading: "The tells of a provider that will not be there next month",
+        body: [
+          "No status page, or one that has never reported a problem. Covered above and worth repeating because it is the single strongest signal.",
+          "Support that only exists on one platform, especially a Discord with no history. Accounts get deleted; a provider with a website, a support channel and a customer base has something to lose.",
+          "Claims of permanent undetectability. Nobody can promise this, and a provider that does is either lying or does not understand their own product.",
+          "Prices far below the market for the same game. Undetected builds are expensive to maintain, and someone selling at a fraction of everyone else is either reselling somebody else's detected build or not planning to be around.",
+          "Pressure to pay by irreversible means only. Crypto is normal in this market and not a red flag by itself — being pushed away from every other option is.",
+        ],
+      },
+      {
+        heading: "Before you pay, and after",
+        body: [
+          "Check the live status for the specific product, not the site. Providers sell many products and they do not go down together.",
+          "Check when the game last patched. A cheat that has not been updated since before the last major update is untested rather than undetected.",
+          "Buy the shortest term available first. A day or a week costs little and tells you whether the loader works, whether support answers, and whether the status page is honest — all things you cannot learn from a sales page.",
+          "Keep the receipt and the order reference. In a market where support is a Discord ticket, being able to prove what you bought and when is most of what resolution depends on.",
+        ],
+      },
+    ],
+    faqs: [
+      {
+        q: "How do I know if a cheat provider is legitimate?",
+        a: "Look at how they report downtime. A status page that has never marked anything detected is decorative, and a provider who stays quiet through a game patch is protecting sales rather than customers.",
+      },
+      {
+        q: "Is lifetime pricing a scam?",
+        a: "Not necessarily, but it is a bet that you will stop using the product before the maintenance cost catches up. Subscriptions align the incentives better.",
+      },
+      {
+        q: "Are crypto-only providers dodgy?",
+        a: "Crypto is normal in this market. Being pushed away from every other payment method is the warning, not crypto itself.",
+      },
+      {
+        q: "What should I buy first?",
+        a: "The shortest term offered. A day or a week tells you whether the loader works, whether support answers and whether the status page is honest.",
+      },
+      {
+        q: "Can I get a refund if it gets detected?",
+        a: "Rarely, and that is standard for instantly-delivered digital goods across this market. What a good provider does instead is pause subscription time while the product is down.",
+      },
+    ],
+  }
+);
+
 export function allBlogSlugs(): string[] {
   return BLOG_POSTS.map((p) => p.slug);
 }
