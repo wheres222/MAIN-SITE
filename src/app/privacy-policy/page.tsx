@@ -31,7 +31,7 @@ export default function PrivacyPolicyPage() {
             "Payment data: Payment processing is handled entirely by third-party providers (NowPayments for cryptocurrency payments). We do not collect, store, or have access to raw credit card numbers, bank account details, or cryptocurrency private keys. We receive only a payment confirmation and a transaction reference.",
             "Technical data: We automatically collect certain information when you visit the Site, including your IP address, browser type and version, operating system, referring URL, pages visited, and timestamps. This data is used for security, fraud prevention, and site analytics.",
             "Communications data: If you contact support via Discord or our support page, we may retain a record of that correspondence to resolve your enquiry and improve our service.",
-            "Analytics data: We use PostHog for product analytics. PostHog may collect event data such as page views, clicks, and feature interactions to help us understand how the Site is used. This data is pseudonymous and aggregated.",
+            "Analytics data: We use Vercel Analytics and Google Analytics to understand how the Site is used. These collect page views, referring pages and coarse device information. The data is pseudonymous and aggregated.",
           ],
         },
         {
@@ -58,7 +58,7 @@ export default function PrivacyPolicyPage() {
           heading: "5. Cookies and Tracking",
           body: [
             "We use essential cookies required for authentication sessions and basic site functionality. These cannot be disabled without breaking the Site.",
-            "We use analytics cookies set by PostHog to track usage behaviour in a pseudonymous manner. These help us improve the product. You may opt out of analytics tracking by adjusting your browser's cookie settings or using a browser extension that blocks tracking scripts.",
+            "Google Analytics sets cookies to measure usage in a pseudonymous manner. Vercel Analytics is cookieless and does not track visitors across sites. You may opt out of analytics by adjusting your browser's cookie settings or using an extension that blocks tracking scripts.",
             "We do not use third-party advertising cookies or sell cookie data to advertisers.",
           ],
         },
@@ -68,7 +68,7 @@ export default function PrivacyPolicyPage() {
             "Supabase: We use Supabase to store account data, order records, and product status information. Supabase infrastructure is hosted on AWS. Their privacy practices can be reviewed at supabase.com/privacy.",
             "NowPayments: Cryptocurrency payment processing is handled by NowPayments. When you initiate a crypto payment, you will interact with NowPayments' infrastructure. We receive only a payment confirmation webhook. Their privacy policy is available at nowpayments.io.",
             "Discord & Google OAuth: When you choose to sign in via Discord or Google, you are subject to those platforms' respective privacy policies. We receive only the data they choose to share (typically email and user ID).",
-            "PostHog: Analytics are powered by PostHog. Event data may be processed on PostHog's cloud infrastructure. Their privacy policy is available at posthog.com/privacy.",
+            "Vercel: Hosting and analytics. Page-view data is processed on Vercel's infrastructure; their privacy policy is at vercel.com/legal/privacy-policy. Google: Google Analytics processes usage data under policies.google.com/privacy.",
             "Resend: Transactional emails (order confirmations, account notifications) are sent via Resend. Your email address is shared with Resend solely for this purpose.",
             "All third-party service providers are required to handle your data securely and in accordance with applicable data protection law.",
           ],
@@ -79,7 +79,7 @@ export default function PrivacyPolicyPage() {
             "Account data is retained for as long as your account remains active. If you request account deletion, we will delete or anonymise your personal data within 30 days, except where we are required to retain it by law (for example, for tax or fraud prevention purposes).",
             "Order records, including transaction references and purchase confirmations, are retained for a minimum of 3 years for financial record-keeping purposes.",
             "Support communications are retained for up to 12 months after the matter is resolved.",
-            "Analytics data collected by PostHog is subject to PostHog's own retention policies.",
+            "Analytics data is subject to the retention policies of Vercel and Google respectively.",
           ],
         },
         {
