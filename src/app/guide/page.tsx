@@ -122,7 +122,7 @@ export default function GuidePage() {
               <path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v16H7.5A2.5 2.5 0 0 0 5 21V5.5Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
               <path d="M9 7h6M9 10h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-            <span>Guides</span>
+            <h1 className="guide-sidebar-h1">Setup Guides</h1>
           </div>
 
           <nav className="guide-nav">
@@ -286,6 +286,15 @@ export default function GuidePage() {
           margin-bottom: 8px;
         }
         .guide-sidebar-icon { color: var(--accent); }
+        /* The sidebar label is the page's H1. Inheriting the header's type
+           keeps it looking like a label rather than a heading. */
+        .guide-sidebar-h1 {
+          font: inherit;
+          color: inherit;
+          letter-spacing: inherit;
+          text-transform: inherit;
+          margin: 0;
+        }
 
         .guide-nav {
           display: flex;

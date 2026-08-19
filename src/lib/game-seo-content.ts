@@ -2076,7 +2076,7 @@ export const GAME_SEO_CONTENT: GameSeoContent[] = [
     // while every other game had a full page.
     slug: "palworld",
     displayName: "Palworld",
-    title: "Palworld Cheats — Undetected ESP, Pal Spawner & Item Hacks 2026",
+    title: "Palworld Cheats 2026 — ESP, Pal Spawner & Item Hacks",
     metaDescription:
       "Buy undetected Palworld cheats with instant delivery. Palworld hacks with full ESP, pal and item spawning, speed and infinite stamina — tested on the current build.",
     h1: "Palworld Cheats — ESP, Pal Spawner & Item Hacks",
