@@ -37,8 +37,7 @@ export default function ReferralsPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
-  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedValue, setCopiedValue] = useState("");
   const [cashingOut, setCashingOut] = useState(false);
   const [cashoutNotice, setCashoutNotice] = useState({ text: "", type: "" });
 
@@ -68,22 +67,34 @@ export default function ReferralsPage() {
   useEffect(() => { load(); }, []);
 
   const siteUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const referralLink = `${siteUrl}/register?ref=${profile?.referral_code || ""}`;
+  const code = profile?.referral_code || "";
 
-  function copyCode() {
-    if (!profile?.referral_code) return;
-    navigator.clipboard.writeText(profile.referral_code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  /**
+   * Every form of the link that actually works, so nobody has to build one.
+   *
+   * All of these credit you. proxy.ts stores ?ref= in a 30-day cookie on
+   * whatever page it arrives at, and the signup form reads the parameter first
+   * and the cookie second — so a link to the homepage or to a category page
+   * still attributes the signup that happens twenty minutes later.
+   */
+  const referralLinks = code
+    ? [
+        `${siteUrl}/register?ref=${code}`,
+        `${siteUrl}/?ref=${code}`,
+        `${siteUrl}/categories/rust?ref=${code}`,
+      ]
+    : [];
+
+
+  /** Copy any link row, tracking which one so the button can confirm it. */
+  function copyValue(value: string) {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopiedValue(value);
+      setTimeout(() => setCopiedValue(""), 2000);
     });
   }
 
-  function copyLink() {
-    navigator.clipboard.writeText(referralLink).then(() => {
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2000);
-    });
-  }
+
 
   async function handleCashout() {
     setCashoutNotice({ text: "", type: "" });
@@ -119,69 +130,78 @@ export default function ReferralsPage() {
   return (
     <>
       <div className={styles.pageHead}>
-        <h1 className={styles.pageTitle}>Affiliates</h1>
+        <h1 className={styles.pageTitle}>My Referrers</h1>
         <p className={styles.pageSub}>
-          Invite others and earn a kickback every time they make a purchase under your code.
-          Level up your tier and earn up to {AFFILIATE_TIERS[AFFILIATE_TIERS.length - 1].kickback} kickback from each order!
+          Earn credit every time someone you invited makes a purchase.
         </p>
       </div>
 
-      <div className={styles.statsRow} style={{ marginBottom: 20 }}>
+      {/* The explainer. Someone landing here for the first time needs to know
+          what the code does before any number on this page means anything. */}
+      <section className={styles.refExplain}>
+        <h2 className={styles.refExplainTitle}>How the referral system works</h2>
+        <p className={styles.refExplainBody}>
+          Earn free site credit from the people you invite with your referral code.
+          Whenever someone you invited makes a purchase, you receive a percentage of
+          what they spend.
+        </p>
+        <p className={styles.refExplainAccent}>
+          This applies to every purchase they make, not only their first.
+        </p>
+        <p className={styles.refExplainAccent}>
+          Credit buys keys and accounts, or can be withdrawn by crypto or PayPal by
+          opening a support ticket.
+        </p>
+        <a className={styles.refCta} href="/support">
+          Open a ticket to apply for a % increase
+        </a>
+      </section>
+
+      {/* Four figures, in the order people actually ask them: what rate am I on,
+          how many people, how much, how many payouts. */}
+      <div className={styles.statsRow}>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Current Tier</span>
-          <span className={styles.statValue}>{currentTier.name}</span>
-          <span style={{ fontSize: "0.72rem", color: "#4ade80", marginTop: -2 }}>{currentTier.kickback} kickback</span>
+          <span className={styles.statLabel}>Percentage</span>
+          <span className={styles.statValueNeutral}>{currentTier.kickback}</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Total Deposited</span>
+          <span className={styles.statLabel}>Users</span>
+          <span className={styles.statValueNeutral}>{referrals.length}</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Earning</span>
           <span className={styles.statValue}>${(profile?.total_earned ?? 0).toFixed(2)}</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Current Users</span>
-          <span className={styles.statValue}>{referrals.length}</span>
+          <span className={styles.statLabel}>Earning count</span>
+          <span className={styles.statValueNeutral}>{referrals.length}</span>
         </div>
       </div>
 
-      <div className={styles.section}>
+      {/* Every usable form of the link, so nobody has to construct one. Each row
+          copies on click — the reference layout lists them as bare text, which
+          leaves you selecting a URL by hand. */}
+      <section className={styles.section}>
         <div className={styles.sectionHead}>
-          <h2 className={styles.sectionTitle}>Share your referral link</h2>
+          <h2 className={styles.sectionTitle}>Referrer link</h2>
         </div>
-        <p className={styles.notice}>
-          Users will automatically be prompted to claim your code when they click this link.
-        </p>
-        <div className={styles.linkRow}>
-          <input type="text" readOnly value={referralLink} className={styles.linkInput} />
-          <button type="button" className={styles.copyLinkBtn} onClick={copyLink}>
-            {copiedLink ? "Copied!" : "Copy"}
-          </button>
-        </div>
-      </div>
+        <p className={styles.refLinkHint}>Any of these work. Click one to copy it.</p>
+        <ul className={styles.refLinkList}>
+          {referralLinks.map((link) => (
+            <li key={link}>
+              <button type="button" className={styles.refLinkRow} onClick={() => copyValue(link)}>
+                <span className={styles.refLinkText}>{link}</span>
+                <span className={styles.refLinkCopy}>
+                  {copiedValue === link ? "Copied" : "Copy"}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </section>
 
-      <div className={styles.refBlock}>
-        <div>
-          <span className={styles.refCodeLabel}>Your Referral Code</span>
-          <span className={styles.refCode}>{profile?.referral_code || "—"}</span>
-        </div>
-        <button type="button" className={styles.copyBtn} onClick={copyCode}>
-          {copied ? (
-            <>
-              <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden>
-                <path d="M20 6 9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Copied!
-            </>
-          ) : (
-            <>
-              <svg viewBox="0 0 24 24" fill="none" width="15" height="15" aria-hidden>
-                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="1.6" />
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" strokeWidth="1.6" />
-              </svg>
-              Copy Code
-            </>
-          )}
-        </button>
-      </div>
-
+      {/* Cash out stays: it is the only place the affiliate balance can be
+          claimed, and the reference layout has no equivalent. */}
       <div className={styles.affiliateBalanceCard}>
         <div className={styles.affiliateBalanceInfo}>
           <span className={styles.affiliateBalanceTitle}>Affiliate balance</span>
@@ -189,7 +209,10 @@ export default function ReferralsPage() {
             Cash out your affiliate balance. Minimum cash out is $1.00.
           </span>
           {cashoutNotice.text && (
-            <p className={cashoutNotice.type === "error" ? styles.error : styles.success} style={{ marginTop: 8, marginBottom: 0 }}>
+            <p
+              className={cashoutNotice.type === "error" ? styles.error : styles.success}
+              style={{ marginTop: 8, marginBottom: 0 }}
+            >
               {cashoutNotice.text}
             </p>
           )}
@@ -207,16 +230,51 @@ export default function ReferralsPage() {
         </div>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 0 10px", fontSize: "0.8rem", color: "#6b7280" }}>
-        <span>Total earned from referrals</span>
-        <span style={{ color: "#4ade80", fontWeight: 600 }}>${(profile?.total_earned ?? 0).toFixed(2)}</span>
-      </div>
-
-      {referrals.length > 0 && (
-        <div className={styles.section}>
-          <div className={styles.sectionHead}>
-            <h2 className={styles.sectionTitle}>Referral History</h2>
+      <section className={styles.section}>
+        <div className={styles.sectionHead}>
+          <h2 className={styles.sectionTitle}>Users</h2>
+        </div>
+        {referrals.length === 0 ? (
+          <p className={styles.refEmpty}>No referred users yet</p>
+        ) : (
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Joined</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {referrals.map((r) => (
+                  <tr key={r.id}>
+                    <td>
+                      {new Date(r.created_at).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td>
+                      <span className={`${styles.badge} ${styles[`badge_${r.status}` as keyof typeof styles]}`}>
+                        {r.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.sectionHead}>
+          <h2 className={styles.sectionTitle}>Earnings</h2>
+        </div>
+        {referrals.length === 0 ? (
+          <p className={styles.refEmpty}>No transactions from users yet</p>
+        ) : (
           <div className={styles.tableWrap}>
             <table className={styles.table}>
               <thead>
@@ -229,45 +287,46 @@ export default function ReferralsPage() {
               <tbody>
                 {referrals.map((r) => (
                   <tr key={r.id}>
-                    <td style={{ color: "#6b7280", fontSize: "0.78rem" }}>
-                      {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    <td>
+                      {new Date(r.created_at).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </td>
                     <td className={styles.tdGreen}>${r.commission_amount.toFixed(2)}</td>
                     <td>
-                      <span className={`${styles.badge} ${styles[`badge_${r.status}` as keyof typeof styles]}`}>{r.status}</span>
+                      <span className={`${styles.badge} ${styles[`badge_${r.status}` as keyof typeof styles]}`}>
+                        {r.status}
+                      </span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
+      </section>
 
-      <div className={styles.section}>
+      <section className={styles.section}>
         <div className={styles.sectionHead}>
-          <h2 className={styles.sectionTitle} style={{ color: "#fb923c" }}>Affiliate Tiers</h2>
+          <h2 className={styles.sectionTitle}>Affiliate tiers</h2>
         </div>
         <div className={styles.tierList}>
-          {TIERS.map((tier) => {
-            const isActive = tier.name === currentTier.name;
-            const nextTier = TIERS[TIERS.indexOf(tier) + 1];
-            return (
-              <div key={tier.name} className={`${styles.tierRow} ${isActive ? styles.tierRowActive : ""}`}>
-                <span>
-                  <span className={styles.tierName}>{tier.name}</span>
-                  <span className={styles.tierKickback}>({tier.kickback} kickback)</span>
-                </span>
-                <span className={styles.tierReq}>
-                  {nextTier
-                    ? `$${tier.threshold.toFixed(2)} total deposited`
-                    : `$${tier.threshold.toFixed(2)} total deposited`}
-                </span>
-              </div>
-            );
-          })}
+          {TIERS.map((tier) => (
+            <div
+              key={tier.name}
+              className={`${styles.tierRow} ${tier.name === currentTier.name ? styles.tierRowActive : ""}`}
+            >
+              <span>
+                <span className={styles.tierName}>{tier.name}</span>
+                <span className={styles.tierKickback}>({tier.kickback} kickback)</span>
+              </span>
+              <span className={styles.tierReq}>${tier.threshold.toFixed(2)} total deposited</span>
+            </div>
+          ))}
         </div>
-      </div>
+      </section>
     </>
   );
 }

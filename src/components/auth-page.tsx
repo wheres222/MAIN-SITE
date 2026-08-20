@@ -11,6 +11,8 @@ interface AuthPageProps {
   next?: string;
   /** Message forwarded by /api/auth/callback when the OAuth round-trip fails. */
   initialError?: string;
+  /** Referral code from ?ref= on the URL, prefilled into the signup form. */
+  initialReferral?: string;
 }
 
 /**
@@ -131,7 +133,12 @@ const IconTag = (
   </svg>
 );
 
-export function AuthPage({ defaultTab = "login", next = "/account", initialError = "" }: AuthPageProps) {
+export function AuthPage({
+  defaultTab = "login",
+  next = "/account",
+  initialError = "",
+  initialReferral = "",
+}: AuthPageProps) {
   const router = useRouter();
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
 
@@ -144,7 +151,11 @@ export function AuthPage({ defaultTab = "login", next = "/account", initialError
   const [regPassword, setRegPassword] = useState("");
   const [regConfirm, setRegConfirm] = useState("");
   const [regUsername, setRegUsername] = useState("");
-  const [regReferral, setRegReferral] = useState("");
+  // Prefilled from ?ref= on the URL. Affiliate links pointed at
+  // /register?ref=CODE and nothing read the parameter, so every referral link
+  // on the site opened a form with an empty code field — and a code nobody
+  // types is a commission nobody earns.
+  const [regReferral, setRegReferral] = useState(initialReferral.toUpperCase());
   const [regError, setRegError] = useState("");
   const [regSuccess, setRegSuccess] = useState("");
   const [regLoading, setRegLoading] = useState(false);
