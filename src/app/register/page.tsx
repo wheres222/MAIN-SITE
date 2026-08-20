@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { AuthPage } from "@/components/auth-page";
+import { REFERRAL_COOKIE } from "@/proxy";
 
 export const metadata: Metadata = {
   title: "Create Account",
@@ -24,8 +26,21 @@ function safeNext(value: string | undefined): string {
 export default async function RegisterPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; ref?: string }>;
 }) {
-  const { next } = await searchParams;
-  return <AuthPage defaultTab="register" next={safeNext(next)} />;
+  const { next, ref } = await searchParams;
+
+  // The parameter wins when present; otherwise fall back to the cookie the
+  // proxy set when the visitor first arrived on any page carrying ?ref=. That
+  // fallback is the whole point — most people click an affiliate link, browse,
+  // and sign up later from somewhere else entirely.
+  //
+  // Codes are short alphanumerics. Anything else is not one of ours and has no
+  // business being reflected into a form field.
+  const fromCookie = (await cookies()).get(REFERRAL_COOKIE)?.value ?? "";
+  const candidate = ref || fromCookie;
+  const referral = /^[A-Za-z0-9]{4,24}$/.test(candidate) ? candidate : "";
+  return (
+    <AuthPage defaultTab="register" next={safeNext(next)} initialReferral={referral} />
+  );
 }

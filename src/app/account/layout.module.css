@@ -31,6 +31,8 @@
   border-radius: 2px;
   overflow: hidden;
   min-height: 640px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
 /* ─── Sidebar ─────────────────────────────────────────── */
@@ -50,10 +52,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 12px;
-  background: var(--surface-1);
+  padding: 15px 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
+    var(--surface-1);
   border-bottom: 1px solid var(--border);
   margin-bottom: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .avatar {
@@ -62,6 +66,7 @@
   border-radius: 50%;
   overflow: hidden;
   background: linear-gradient(135deg, var(--accent-dark), var(--accent));
+  box-shadow: 0 0 0 1px var(--border-strong), 0 1px 3px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,8 +90,9 @@
   white-space: nowrap;
 }
 .userEmail {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--text-dim);
+  letter-spacing: 0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -105,11 +111,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 12px;
+  padding: 10px 13px;
   border-radius: 0;
   color: var(--text-muted);
   font-size: 0.83rem;
   font-weight: 500;
+  letter-spacing: 0.005em;
   text-decoration: none;
   border: none;
   border-left: 3px solid transparent;
@@ -128,6 +135,7 @@
   background: var(--accent-dim);
   border-left-color: var(--accent);
   color: var(--accent);
+  font-weight: 600;
 }
 .navItemActive:hover {
   background: var(--accent-soft);

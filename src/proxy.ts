@@ -14,6 +14,8 @@ import { canonicalGameSlug } from "@/lib/game-slug";
 // ── Maintenance mode ─────────────────────────────────────────────────────────
 const MAINTENANCE_MODE  = false;               // ← flip to true to close the site
 const PREVIEW_COOKIE    = "cp_preview";
+/** Referral code captured from ?ref=, read back by the signup form. */
+export const REFERRAL_COOKIE = "cp_ref";
 const MAINTENANCE_PATH  = "/maintenance";
 
 /**
@@ -130,6 +132,32 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // ── Referral capture ───────────────────────────────────────────────────────
+  //
+  // Affiliate links pointed at /register?ref=CODE and only that one route ever
+  // read the parameter, so a link to any other page lost the code entirely —
+  // and a code that never reaches the form is a commission nobody earns.
+  //
+  // Storing it here means a link to any page on the site still credits the
+  // referrer when that visitor signs up later. Thirty days, matching the
+  // shortest attribution window anyone in this market advertises; lax so the
+  // cookie survives arriving from a YouTube description or a Discord embed.
+  const refParam = searchParams.get("ref");
+  const validRef = refParam && /^[A-Za-z0-9]{4,24}$/.test(refParam) ? refParam : null;
+
+  /** Attach the referral cookie to whichever response this request returns. */
+  const withRef = (res: NextResponse) => {
+    if (validRef) {
+      res.cookies.set(REFERRAL_COOKIE, validRef, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
+    return res;
+  };
+
   // Always pass through maintenance page + static assets
   const isPassthrough =
     pathname === MAINTENANCE_PATH ||
@@ -191,7 +219,7 @@ export async function proxy(request: NextRequest) {
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
-    return supabaseResponse;
+    return withRef(supabaseResponse);
   }
 
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
@@ -256,7 +284,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  return supabaseResponse;
+  return withRef(supabaseResponse);
 }
 
 export const config = {

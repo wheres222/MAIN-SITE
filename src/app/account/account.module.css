@@ -15,11 +15,13 @@
 /* ─── Page header ──────────────────────────────────────── */
 .pageHead {
   margin-bottom: 18px;
-  padding: 11px 14px;
-  background: var(--surface-2);
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
+    var(--surface-2);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
   border-radius: 2px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .pageTitle {
   font-size: 0.95rem;
@@ -61,14 +63,17 @@
   border-radius: 2px;
   background: var(--surface-1);
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
 }
 .sectionHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 14px;
-  background: var(--surface-2);
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
+    var(--surface-2);
   border-bottom: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .sectionTitle {
   font-size: 0.76rem;
@@ -100,8 +105,9 @@
   overflow: hidden;
 }
 .statCard {
-  padding: 12px 14px;
-  background: var(--surface-1);
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent),
+    var(--surface-1);
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   margin: 0 -1px -1px 0;
@@ -117,16 +123,20 @@
   letter-spacing: 0.07em;
 }
 .statValue {
-  font-size: 1.18rem;
+  font-size: 1.32rem;
   font-weight: 700;
   color: #4ade80;
   line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 .statValueNeutral {
-  font-size: 1.18rem;
+  font-size: 1.32rem;
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 .statCode {
   font-size: 0.9rem;
@@ -141,7 +151,7 @@
   color: var(--text-dim);
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 10px 14px;
   margin-bottom: 16px;
 }
@@ -152,7 +162,7 @@
   min-height: 38px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 0 14px;
   color: var(--text-primary);
   font-size: 0.84rem;
@@ -174,7 +184,7 @@
   padding: 5px 14px;
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
-  border-radius: 6px;
+  border-radius: 2px;
   color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 500;
@@ -191,7 +201,7 @@
 .rowsSelect {
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
-  border-radius: 6px;
+  border-radius: 2px;
   padding: 4px 10px;
   color: var(--text-muted);
   font-size: 0.8rem;
@@ -247,7 +257,7 @@
 .productCell { display: flex; align-items: center; gap: 8px; }
 .productThumb {
   width: 30px; height: 30px;
-  border-radius: 8px;
+  border-radius: 2px;
   object-fit: cover;
   border: 1px solid var(--border);
   flex: 0 0 auto;
@@ -258,10 +268,11 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 14px;
-  background: var(--accent);
-  border: none;
-  border-radius: 6px;
+  padding: 7px 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)), var(--accent);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
   color: var(--accent-ink);
   font-size: 0.78rem;
   font-weight: 600;
@@ -269,7 +280,7 @@
   transition: background 0.12s;
   white-space: nowrap;
 }
-.actionBtn:hover { background: var(--accent-dark); }
+.actionBtn:hover { background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)), var(--accent-dark); }
 
 .downloadBtn {
   display: inline-flex;
@@ -278,7 +289,7 @@
   padding: 5px 12px;
   background: rgba(239, 27, 53,0.1);
   border: 1px solid rgba(239, 27, 53,0.25);
-  border-radius: 6px;
+  border-radius: 2px;
   color: var(--accent);
   font-size: 0.76rem;
   font-weight: 600;
@@ -339,9 +350,10 @@
   align-items: center;
   gap: 7px;
   padding: 8px 16px;
-  background: var(--accent);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)), var(--accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
   border: none;
-  border-radius: 7px;
+  border-radius: 2px;
   color: var(--accent-ink);
   font-size: 0.8rem;
   font-weight: 600;
@@ -350,7 +362,7 @@
   transition: background 0.12s;
   flex-shrink: 0;
 }
-.copyBtn:hover { background: var(--accent-dark); }
+.copyBtn:hover { background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)), var(--accent-dark); }
 
 .linkRow { display: flex; gap: 8px; margin-bottom: 18px; }
 .linkInput {
@@ -358,7 +370,7 @@
   min-height: 38px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 0 12px;
   color: var(--text-muted);
   font-size: 0.8rem;
@@ -369,7 +381,7 @@
   min-height: 38px;
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
-  border-radius: 7px;
+  border-radius: 2px;
   color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
@@ -406,7 +418,7 @@
   padding: 10px 14px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 2px;
   font-size: 0.82rem;
 }
 .tierRowActive {
@@ -422,7 +434,7 @@
   padding: 16px 18px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 2px;
   margin-top: 20px;
 }
 .infoBoxTitle { font-size: 0.84rem; font-weight: 700; color: var(--text-primary); margin: 0 0 10px; }
@@ -442,7 +454,7 @@
   padding: 14px 16px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 2px;
   text-decoration: none;
   transition: border-color 0.12s;
 }
@@ -460,7 +472,7 @@
   padding: 11px 14px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 2px;
   transition: border-color 0.12s;
 }
 .orderRow:hover { border-color: rgba(239, 27, 53,0.3); }
@@ -476,7 +488,7 @@
   padding: 40px 20px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 2px;
   color: var(--text-dim);
   font-size: 0.86rem;
 }
@@ -484,15 +496,16 @@
   display: inline-block;
   margin-top: 12px;
   padding: 8px 20px;
-  background: var(--accent);
-  border-radius: 7px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)), var(--accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  border-radius: 2px;
   color: var(--accent-ink);
   font-weight: 700;
   font-size: 0.82rem;
   text-decoration: none;
   transition: background 0.12s;
 }
-.emptyBtn:hover { background: var(--accent-dark); }
+.emptyBtn:hover { background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)), var(--accent-dark); }
 
 /* ─── Forms ────────────────────────────────────────────── */
 /* Forms stay narrow on purpose — a full-width input is harder to scan, not
@@ -508,7 +521,7 @@
   min-height: 40px;
   background: var(--surface-3);
   border: 1px solid var(--border-strong);
-  border-radius: 7px;
+  border-radius: 2px;
   padding: 0 12px;
   color: var(--text-primary);
   font-size: 0.86rem;
@@ -523,7 +536,7 @@ select.input { cursor: pointer; }
 .error {
   background: rgba(248,113,113,0.06);
   border: 1px solid rgba(248,113,113,0.2);
-  border-radius: 7px;
+  border-radius: 2px;
   color: #f87171;
   font-size: 0.78rem;
   padding: 8px 12px;
@@ -531,7 +544,7 @@ select.input { cursor: pointer; }
 .success {
   background: rgba(74,222,128,0.06);
   border: 1px solid rgba(74,222,128,0.2);
-  border-radius: 7px;
+  border-radius: 2px;
   color: #4ade80;
   font-size: 0.78rem;
   padding: 8px 12px;
@@ -540,9 +553,10 @@ select.input { cursor: pointer; }
 .submitBtn {
   min-height: 42px;
   padding: 0 24px;
-  background: var(--accent);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)), var(--accent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
   border: none;
-  border-radius: 8px;
+  border-radius: 2px;
   color: var(--accent-ink);
   font-size: 0.88rem;
   font-weight: 700;
@@ -550,7 +564,7 @@ select.input { cursor: pointer; }
   transition: background 0.14s;
   align-self: flex-start;
 }
-.submitBtn:hover:not(:disabled) { background: var(--accent-dark); }
+.submitBtn:hover:not(:disabled) { background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)), var(--accent-dark); }
 .submitBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ─── Settings grid ────────────────────────────────────── */
@@ -563,7 +577,7 @@ select.input { cursor: pointer; }
   padding: 18px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 2px;
 }
 
 @media (max-width: 600px) {
@@ -574,4 +588,125 @@ select.input { cursor: pointer; }
   .refBlock { flex-direction: column; align-items: flex-start; }
   .linkRow { flex-direction: column; }
   .affiliateBalanceCard { flex-direction: column; align-items: flex-start; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Referrals
+   ═══════════════════════════════════════════════════════ */
+
+/* The explainer panel. Given a left accent edge rather than a filled
+   background so it reads as guidance rather than as a warning. */
+.refExplain {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+
+.refExplainTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 10px;
+}
+
+.refExplainBody {
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+  max-width: 78ch;
+}
+
+/* Amber rather than the site accent: these two lines are the terms of the
+   deal, and red on a payout page reads as an error. */
+.refExplainAccent {
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: #e0a458;
+  margin: 0 0 6px;
+  max-width: 78ch;
+}
+
+.refCta {
+  display: block;
+  margin-top: 14px;
+  padding: 11px 16px;
+  text-align: center;
+  background: var(--text-primary);
+  color: var(--surface-0, #050506);
+  border-radius: 2px;
+  font-size: 0.83rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: opacity 0.12s;
+}
+.refCta:hover { opacity: 0.88; }
+
+.refLinkHint {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin: 0;
+  padding: 12px 14px 0;
+}
+
+.refLinkList {
+  list-style: none;
+  margin: 0;
+  padding: 12px 14px 14px;
+  display: grid;
+  gap: 6px;
+}
+
+/* A button rather than a text row: the reference layout prints these as bare
+   text, which leaves you dragging a selection across a URL. */
+.refLinkRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s, background 0.12s;
+}
+.refLinkRow:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.refLinkText {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.refLinkCopy {
+  flex: 0 0 auto;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+.refLinkRow:hover .refLinkCopy { color: var(--accent); }
+
+.refEmpty {
+  margin: 0;
+  padding: 26px 14px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-dim);
 }
