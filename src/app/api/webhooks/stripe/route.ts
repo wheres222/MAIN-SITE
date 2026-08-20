@@ -2,7 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { creditReferral } from "@/lib/referrals";
 import { constructStripeEvent } from "@/lib/stripe";
-import { deliverOrder } from "@/lib/delivery";
+import { fulfillVariant } from "@/lib/delivery";
 import { sendOrderKeysEmail, sendOrderDeliveredEmail, sendDepositConfirmedEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
 import { NextResponse, type NextRequest } from "next/server";
@@ -297,10 +297,11 @@ async function fulfillShopOrder(
   const deliveredKeys: { itemName: string; keys: string[]; instructions: string; loaderUrl: string }[] = [];
 
   for (const item of items) {
-    // Get variant details including reselling.pro product ID
+    // Get variant details — which provider backs this line is decided by which
+    // of these columns is populated.
     const { data: variant } = await admin
       .from("shop_variants")
-      .select("reselling_product_id, sellauth_id")
+      .select("reselling_product_id, sellauth_id, seryx_game, seryx_plan_type")
       .eq("id", item.variant_id)
       .single();
 
@@ -324,35 +325,31 @@ async function fulfillShopOrder(
       loaderUrl    = productDetails?.loader_url    ?? "";
     }
 
-    const resellingProductId =
-      variant?.reselling_product_id || variant?.sellauth_id || null;
+    // The order item id is the idempotency seed: stable across Stripe's webhook
+    // retries and unique per line, so a retry cannot charge the Seryx wallet
+    // for a second set of keys.
+    const fulfillment = await fulfillVariant({
+      variant:         variant ?? {},
+      quantity:        item.quantity,
+      customerEmail:   deliveryEmail,
+      idempotencySeed: item.id,
+      variantLabel:    item.variant_name,
+    });
 
-    if (!resellingProductId) {
-      const msg = `No reselling.pro product ID for variant "${item.variant_name}"`;
+    for (const msg of fulfillment.errors) {
       logger.error(msg, { orderId });
       deliveryErrors.push(msg);
-      continue;
     }
 
-    const itemKeys: string[] = [];
+    const itemKeys = fulfillment.keys;
 
-    for (let unit = 0; unit < item.quantity; unit++) {
-      const result = await deliverOrder(resellingProductId, deliveryEmail);
-
-      if (!result.success) {
-        const msg = `Delivery failed for "${item.variant_name}" (unit ${unit + 1}): ${result.message}`;
-        logger.error(msg, { orderId });
-        deliveryErrors.push(msg);
-      } else {
-        const keyToStore = result.key ?? result.deliveryId ?? "delivered";
-        itemKeys.push(keyToStore);
-        try {
-          await admin.rpc("append_delivery_key", {
-            p_item_id:     item.id,
-            p_delivery_id: keyToStore,
-          });
-        } catch {/* non-fatal */}
-      }
+    for (const key of itemKeys) {
+      try {
+        await admin.rpc("append_delivery_key", {
+          p_item_id:     item.id,
+          p_delivery_id: key,
+        });
+      } catch {/* non-fatal */}
     }
 
     if (itemKeys.length > 0) {

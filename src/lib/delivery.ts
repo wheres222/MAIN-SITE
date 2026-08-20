@@ -1,9 +1,20 @@
 /**
- * reselling.pro delivery integration — SERVER SIDE ONLY.
+ * Delivery integration — SERVER SIDE ONLY.
  * This module must never be imported from client components.
- * The DELIVERY_API_KEY is read from process.env and never exposed.
+ * API keys are read from process.env and never exposed.
+ *
+ * Two providers live behind one entry point, `fulfillVariant()`:
+ *   • Seryx      — variants carrying seryx_game + seryx_plan_type
+ *   • reselling.pro — everything else (the original path)
  */
 import "server-only";
+import { sendSecurityAlert } from "@/lib/alerts";
+import {
+  findSeryxPlan,
+  generateSeryxKeys,
+  isSeryxConfigured,
+  type SeryxGame,
+} from "@/lib/seryx";
 
 function normalizeEnvSecret(value: string | undefined): string {
   if (!value) return "";
@@ -91,4 +102,110 @@ export async function deliverOrder(
       : undefined;
 
   return { success: true, message: "Delivery triggered.", deliveryId, key };
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Provider dispatch
+   ───────────────────────────────────────────────────────────────────────────*/
+
+/** The variant columns delivery cares about. */
+export interface DeliverableVariant {
+  reselling_product_id?: string | null;
+  sellauth_id?: string | null;
+  seryx_game?: string | null;
+  seryx_plan_type?: string | null;
+}
+
+export interface FulfillmentResult {
+  /** Keys actually obtained. May be shorter than `quantity` on partial failure. */
+  keys: string[];
+  /** Human-readable failures, one per unit or per batch depending on provider. */
+  errors: string[];
+  /** Set when the Seryx wallet is empty — worth alerting on, not just logging. */
+  outOfBalance?: boolean;
+}
+
+export function variantProvider(
+  variant: DeliverableVariant
+): "seryx" | "reselling" | "none" {
+  if (findSeryxPlan(variant.seryx_game, variant.seryx_plan_type)) return "seryx";
+  if (variant.reselling_product_id || variant.sellauth_id) return "reselling";
+  return "none";
+}
+
+/**
+ * Fulfil one order line, whatever provider backs it.
+ *
+ * `idempotencySeed` should be the order item id: stable across webhook retries,
+ * unique per line. Seryx uses it to avoid double-charging the wallet;
+ * reselling.pro has no idempotency support, so it is unused there — that path
+ * is protected only by the order-level pending→paid lock in the webhooks.
+ */
+export async function fulfillVariant(params: {
+  variant: DeliverableVariant;
+  quantity: number;
+  customerEmail: string;
+  idempotencySeed: string;
+  variantLabel: string;
+}): Promise<FulfillmentResult> {
+  const { variant, quantity, customerEmail, idempotencySeed, variantLabel } = params;
+
+  switch (variantProvider(variant)) {
+    case "seryx": {
+      if (!isSeryxConfigured()) {
+        return { keys: [], errors: [`SERYX_API_KEY not configured — cannot deliver "${variantLabel}"`] };
+      }
+      const result = await generateSeryxKeys({
+        game: variant.seryx_game as SeryxGame,
+        planType: variant.seryx_plan_type as string,
+        quantity,
+        idempotencySeed,
+      });
+      // An empty wallet fails every subsequent order too, so it is worth waking
+      // someone up rather than only landing in the log. Throttled to one alert
+      // per 15 minutes by sendSecurityAlert, and never allowed to throw — a
+      // Discord outage must not stop a customer receiving what they paid for.
+      if (result.outOfBalance) {
+        sendSecurityAlert({
+          kind: "seryx_balance_empty",
+          ip: null,
+          path: null,
+          detail: { variant: variantLabel, message: result.message },
+        }).catch(() => {});
+      }
+
+      return {
+        keys: result.keys,
+        errors: result.success
+          ? []
+          : [`Seryx delivery failed for "${variantLabel}": ${result.message}`],
+        outOfBalance: result.outOfBalance,
+      };
+    }
+
+    case "reselling": {
+      const productId = (variant.reselling_product_id || variant.sellauth_id) as string;
+      const keys: string[] = [];
+      const errors: string[] = [];
+
+      // reselling.pro has no batch endpoint, so this stays a per-unit loop.
+      for (let unit = 0; unit < quantity; unit++) {
+        const result = await deliverOrder(productId, customerEmail);
+        if (!result.success) {
+          errors.push(
+            `Delivery failed for "${variantLabel}" (unit ${unit + 1}): ${result.message}`
+          );
+        } else {
+          keys.push(result.key ?? result.deliveryId ?? "delivered");
+        }
+      }
+      return { keys, errors };
+    }
+
+    default:
+      return {
+        keys: [],
+        errors: [`No delivery provider configured for variant "${variantLabel}"`],
+      };
+  }
 }

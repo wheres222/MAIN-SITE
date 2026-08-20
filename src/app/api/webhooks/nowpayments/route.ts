@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { creditReferral } from "@/lib/referrals";
 import { NextResponse, type NextRequest } from "next/server";
 import { sendDepositConfirmedEmail, sendOrderKeysEmail, sendOrderDeliveredEmail } from "@/lib/email";
-import { deliverOrder } from "@/lib/delivery";
+import { fulfillVariant } from "@/lib/delivery";
 import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
@@ -182,15 +182,15 @@ async function handleShopOrder(
     .update({ status: "delivering", updated_at: new Date().toISOString() })
     .eq("id", order.id);
 
-  // ── Trigger delivery for each line item via reselling.pro ────────────────────
+  // ── Trigger delivery for each line item ──────────────────────────────────────
   const deliveryErrors: string[] = [];
   const deliveredKeys: { itemName: string; keys: string[]; instructions: string; loaderUrl: string }[] = [];
 
   for (const item of items) {
-    // Fetch the variant's reselling.pro product identifier
+    // Which provider backs this line is decided by which columns are set.
     const { data: variant } = await admin
       .from("shop_variants")
-      .select("reselling_product_id, sellauth_id")
+      .select("reselling_product_id, sellauth_id, seryx_game, seryx_plan_type")
       .eq("id", item.variant_id)
       .single();
 
@@ -213,37 +213,32 @@ async function handleShopOrder(
       loaderUrl    = productDetails?.loader_url    ?? "";
     }
 
-    const resellingProductId =
-      variant?.reselling_product_id || variant?.sellauth_id || null;
+    // The order item id is the idempotency seed: stable across NOWPayments'
+    // IPN retries and unique per line, so a retry cannot charge the Seryx
+    // wallet for a second set of keys.
+    const fulfillment = await fulfillVariant({
+      variant:         variant ?? {},
+      quantity:        item.quantity,
+      customerEmail:   order.email,
+      idempotencySeed: item.id,
+      variantLabel:    item.variant_name,
+    });
 
-    if (!resellingProductId) {
-      const msg = `No reselling product ID for variant ${item.variant_id} ("${item.variant_name}")`;
+    for (const msg of fulfillment.errors) {
       log.error(msg, { orderId: order.id });
       deliveryErrors.push(msg);
-      continue;
     }
 
-    const itemKeys: string[] = [];
+    const itemKeys = fulfillment.keys;
 
-    // Deliver once per unit purchased
-    for (let unit = 0; unit < item.quantity; unit++) {
-      const result = await deliverOrder(resellingProductId, order.email);
-
-      if (!result.success) {
-        const msg = `Delivery failed for "${item.variant_name}" (unit ${unit + 1}): ${result.message}`;
-        log.error(msg, { orderId: order.id });
-        deliveryErrors.push(msg);
-      } else {
-        const keyToStore = result.key ?? result.deliveryId ?? "delivered";
-        itemKeys.push(keyToStore);
-        // Store delivered key/ID against the item — non-fatal if it fails
-        try {
-          await admin.rpc("append_delivery_key", {
-            p_item_id:     item.id,
-            p_delivery_id: keyToStore,
-          });
-        } catch {/* non-fatal */}
-      }
+    // Store delivered keys against the item — non-fatal if it fails
+    for (const key of itemKeys) {
+      try {
+        await admin.rpc("append_delivery_key", {
+          p_item_id:     item.id,
+          p_delivery_id: key,
+        });
+      } catch {/* non-fatal */}
     }
 
     if (itemKeys.length > 0) {
