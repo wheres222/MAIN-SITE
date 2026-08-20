@@ -183,6 +183,11 @@ export default function ReferralsPage() {
           leaves you selecting a URL by hand. */}
       <section className={styles.section}>
         <div className={styles.sectionHead}>
+          <span className={styles.sectionIcon}>
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" aria-hidden>
+              <path d="M9.5 14.5 14.5 9.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><path d="M11 6.5 12.8 4.7a3.8 3.8 0 0 1 5.4 5.4L16.5 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><path d="M13 17.5l-1.8 1.8a3.8 3.8 0 0 1-5.4-5.4L7.5 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </span>
           <h2 className={styles.sectionTitle}>Referrer link</h2>
         </div>
         <p className={styles.refLinkHint}>Any of these work. Click one to copy it.</p>
@@ -232,6 +237,11 @@ export default function ReferralsPage() {
 
       <section className={styles.section}>
         <div className={styles.sectionHead}>
+          <span className={styles.sectionIcon}>
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" aria-hidden>
+              <circle cx="9" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.8" /><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><path d="M16 5.2a3.5 3.5 0 0 1 0 6.6M17 14.6c2.4.7 4 2.8 4 5.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </span>
           <h2 className={styles.sectionTitle}>Users</h2>
         </div>
         {referrals.length === 0 ? (
@@ -270,6 +280,11 @@ export default function ReferralsPage() {
 
       <section className={styles.section}>
         <div className={styles.sectionHead}>
+          <span className={styles.sectionIcon}>
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" aria-hidden>
+              <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7v1.4M12 15.6V17M9.7 9.8a2.3 2.3 0 0 1 4.6 0c0 1.3-.9 1.8-2.3 1.8s-2.3.5-2.3 1.8a2.3 2.3 0 0 0 4.6 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            </svg>
+          </span>
           <h2 className={styles.sectionTitle}>Earnings</h2>
         </div>
         {referrals.length === 0 ? (
@@ -310,6 +325,11 @@ export default function ReferralsPage() {
 
       <section className={styles.section}>
         <div className={styles.sectionHead}>
+          <span className={styles.sectionIcon}>
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" aria-hidden>
+              <path d="M4 19h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><rect x="5" y="12" width="4" height="5" stroke="currentColor" strokeWidth="1.7" /><rect x="10" y="8" width="4" height="9" stroke="currentColor" strokeWidth="1.7" /><rect x="15" y="4" width="4" height="13" stroke="currentColor" strokeWidth="1.7" />
+            </svg>
+          </span>
           <h2 className={styles.sectionTitle}>Affiliate tiers</h2>
         </div>
         <div className={styles.tierList}>

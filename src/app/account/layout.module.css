@@ -1,3 +1,15 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Account shell — sidebar + content panel
+
+   The sidebar is a list of rounded, floating rows grouped under quiet section
+   labels, sitting on a surface one step darker than the content beside it.
+   The active row is filled and marked with an accent bar on its left edge.
+
+   Deliberately no hairline under each row: the grouping labels already break
+   the list into readable runs, and adding dividers on top of that gives the
+   nav more horizontal lines than the content it is navigating.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .page {
   min-height: 100vh;
   background: transparent;
@@ -14,50 +26,39 @@
   padding: 28px 20px 48px;
 }
 
-/* Was capped at 1060px, which left most of a modern display empty while the
-   tables inside scrolled horizontally. 1440 matches the widest common laptop
-   without letting text run to unreadable line lengths on an ultrawide — the
-   content columns inside cap themselves separately. */
+/* 1440 matches the widest common laptop without letting text run to unreadable
+   line lengths on an ultrawide — the content columns inside cap themselves. */
 .panel {
   width: 100%;
   max-width: 1440px;
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 248px 1fr;
   background: var(--surface-1);
   border: 1px solid var(--border);
-  /* 2px rather than 8: the account area is a board, and a board has corners.
-     Not 0 — a hairline border at exactly square reads as an unstyled table in
-     most browsers' rendering of thin dark borders. */
-  border-radius: 2px;
+  border-radius: 16px;
   overflow: hidden;
   min-height: 640px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 12px 32px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
 }
 
 /* ─── Sidebar ─────────────────────────────────────────── */
-/* No inner padding: menu rows run edge to edge, the way a board's side panel
-   does, so the active row's accent bar sits flush against the panel border. */
 .sidebar {
-  background: var(--surface-2);
+  background: var(--surface-0);
   border-right: 1px solid var(--border);
-  padding: 0;
+  padding: 0 0 14px;
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
-/* The identity block is the sidebar's own header bar. */
+/* The identity block. Its own bar at the top of the rail, matching the height
+   and treatment of a card header on the content side. */
 .userBlock {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 15px 12px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
-    var(--surface-1);
+  gap: 11px;
+  padding: 16px 14px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  margin-bottom: 10px;
 }
 
 .avatar {
@@ -65,22 +66,17 @@
   height: 38px;
   border-radius: 50%;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--accent-dark), var(--accent));
-  box-shadow: 0 0 0 1px var(--border-strong), 0 1px 3px rgba(0, 0, 0, 0.4);
+  background: var(--brand-gradient);
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
+  box-shadow: 0 0 0 1px var(--border-strong);
 }
 .avatarImg { width: 100%; height: 100%; object-fit: cover; display: block; }
 .avatarInitials { color: var(--accent-ink); font-weight: 700; font-size: 0.78rem; }
 
-.userMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
+.userMeta { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .userName {
   font-size: 0.85rem;
   font-weight: 600;
@@ -90,115 +86,128 @@
   white-space: nowrap;
 }
 .userEmail {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--text-dim);
-  letter-spacing: 0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* ─── Nav ─────────────────────────────────────────────── */
 .nav {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 2px;
+  padding: 0 10px;
   flex: 1;
 }
 
-/* Menu rows, not pills. Full-bleed, separated by hairlines, with the active
-   row marked by a solid accent bar down its left edge. */
+/* Quiet uppercase run-in headings. They carry no border — the space above
+   them is what separates one group from the last. */
+.navGroupLabel {
+  padding: 14px 8px 6px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.navGroupLabel:first-child { padding-top: 4px; }
+
 .navItem {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 13px;
-  border-radius: 0;
+  padding: 9px 11px;
+  border-radius: 8px;
   color: var(--text-muted);
   font-size: 0.83rem;
   font-weight: 500;
-  letter-spacing: 0.005em;
   text-decoration: none;
-  border: none;
-  border-left: 3px solid transparent;
-  border-bottom: 1px solid var(--border);
   background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
   cursor: pointer;
   width: 100%;
   text-align: left;
-  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  transition: background 0.13s, color 0.13s, border-color 0.13s;
 }
 .navItem:hover {
-  background: var(--accent-dim);
+  background: rgba(255, 255, 255, 0.045);
   color: var(--text-primary);
 }
 .navItemActive {
   background: var(--accent-dim);
   border-left-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-hover);
   font-weight: 600;
 }
 .navItemActive:hover {
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-hover);
 }
 
-.navIcon {
-  display: inline-flex;
-  flex: 0 0 auto;
-  opacity: 0.85;
-}
+.navIcon { display: inline-flex; flex: 0 0 auto; opacity: 0.9; }
 
 .navDivider {
   height: 1px;
   background: var(--border);
-  margin: 6px 4px;
+  margin: 10px 8px;
 }
 
-.navSignOut { color: var(--text-dim); }
+/* Sign out sits apart at the foot of the rail, not in the page list. */
+.navSignOut {
+  margin-top: auto;
+  color: var(--text-dim);
+}
 .navSignOut:hover {
-  background: rgba(239, 68, 68, 0.08);
-  border-left-color: rgba(239, 68, 68, 0.4);
+  background: rgba(248, 113, 113, 0.08);
   color: #f87171;
 }
 
 /* ─── Content ─────────────────────────────────────────── */
-/* Tighter than the card layout it replaced. Boards are dense — the structure
-   comes from borders and header bars, so the padding does not also have to do
-   the work of separating things. */
 .content {
-  padding: 22px 24px;
+  padding: 26px 28px;
   min-width: 0;
   overflow: hidden;
   background: var(--surface-1);
 }
 
 /* ─── Responsive ──────────────────────────────────────── */
-@media (max-width: 720px) {
+@media (max-width: 860px) {
   .wrapper { padding: 0 0 32px; }
   .panel {
     grid-template-columns: 1fr;
     border-radius: 0;
     border-left: none;
     border-right: none;
+    box-shadow: none;
   }
   .sidebar {
     border-right: none;
     border-bottom: 1px solid var(--border);
-    padding: 14px 10px;
+    padding: 0 0 10px;
   }
-  .nav { flex-direction: row; flex-wrap: wrap; gap: 2px; }
+  .userBlock { margin-bottom: 8px; }
+
+  /* The rail becomes a wrapping chip row. Group labels would each force a line
+     break in a horizontal list, so they are dropped at this width. */
+  .nav { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+  .navGroupLabel { display: none; }
   .navItem {
     flex: 0 0 auto;
+    width: auto;
     border-left: none;
-    border-bottom: 2px solid transparent;
-    border-radius: 8px;
-    padding: 7px 10px;
+    padding: 7px 11px;
     font-size: 0.8rem;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
   }
   .navItemActive {
-    border-bottom-color: var(--accent);
-    border-left-color: transparent;
+    background: var(--accent-dim);
+    border-color: rgba(239, 27, 53, 0.35);
   }
   .navSignOut { margin-top: 0; }
+  .navDivider { display: none; }
   .content { padding: 20px 16px; }
 }

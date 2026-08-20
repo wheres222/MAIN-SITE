@@ -3,17 +3,24 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useMemo } from "react";
+import { Fragment, useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import styles from "./layout.module.css";
 
+/**
+ * Order matters: items are rendered flat and a group heading is emitted
+ * whenever `group` changes, so entries sharing a group must be adjacent. An
+ * empty group renders no heading — the first run needs no label, it is simply
+ * the top of the list.
+ */
 const NAV_ITEMS = [
   {
     href: "/account",
     exact: true,
     label: "Account",
+    group: "",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
@@ -22,42 +29,10 @@ const NAV_ITEMS = [
     ),
   },
   {
-    href: "/account/settings",
-    exact: false,
-    label: "Password",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    href: "/account/invoices",
-    exact: false,
-    label: "Invoices",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-      </svg>
-    ),
-  },
-  {
-    href: "/account/orders",
-    exact: false,
-    label: "Orders",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <path d="M5 7h14l-1 12H6L5 7Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.6" />
-      </svg>
-    ),
-  },
-  {
     href: "/account/balance",
     exact: false,
     label: "Balances",
+    group: "Billing",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6" />
@@ -69,6 +44,7 @@ const NAV_ITEMS = [
     href: "/account/deposit",
     exact: false,
     label: "Deposit",
+    group: "Billing",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -77,14 +53,51 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: "/account/invoices",
+    exact: false,
+    label: "Invoices",
+    group: "Billing",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
+        <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/account/orders",
+    exact: false,
+    label: "Orders",
+    group: "Billing",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
+        <path d="M5 7h14l-1 12H6L5 7Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+        <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.6" />
+      </svg>
+    ),
+  },
+  {
     href: "/account/referrals",
     exact: false,
     label: "Referrers",
+    group: "Affiliate",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
         <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
         <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/account/settings",
+    exact: false,
+    label: "Password",
+    group: "Security",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
+        <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
     ),
   },
@@ -167,21 +180,39 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             </div>
 
             <nav className={styles.nav}>
-              {NAV_ITEMS.map((item) => {
+              {NAV_ITEMS.map((item, i) => {
                 const isActive = item.exact
                   ? pathname === item.href
                   : pathname.startsWith(item.href);
+                // A heading appears wherever the group changes. Fragments emit
+                // no DOM node, so the links stay direct children of .nav and
+                // its flex layout — including the mobile wrap — is unaffected.
+                const startsGroup = item.group && item.group !== NAV_ITEMS[i - 1]?.group;
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`${styles.navItem} ${isActive ? styles.navItemActive : ""}`}
-                  >
-                    <span className={styles.navIcon}>{item.icon}</span>
-                    {item.label}
-                  </Link>
+                  <Fragment key={item.href}>
+                    {startsGroup && (
+                      <span className={styles.navGroupLabel}>{item.group}</span>
+                    )}
+                    <Link
+                      href={item.href}
+                      className={`${styles.navItem} ${isActive ? styles.navItemActive : ""}`}
+                    >
+                      <span className={styles.navIcon}>{item.icon}</span>
+                      {item.label}
+                    </Link>
+                  </Fragment>
                 );
               })}
+
+              <span className={styles.navGroupLabel}>Support</span>
+              <Link href="/support" className={styles.navItem}>
+                <span className={styles.navIcon}>
+                  <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden>
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                  </svg>
+                </span>
+                Tickets
+              </Link>
 
               {/* Shown only to staff and owners. This is convenience, not
                   security: the markup ships in the client bundle either way, so
