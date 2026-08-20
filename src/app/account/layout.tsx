@@ -22,9 +22,8 @@ const NAV_ITEMS = [
     label: "Account",
     group: "",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <path fill="currentColor" d="M12 12.2a4.1 4.1 0 1 0 0-8.2 4.1 4.1 0 0 0 0 8.2Zm0 1.9c-4.4 0-8 2.6-8 5.4 0 .8.7 1.5 1.5 1.5h13c.8 0 1.5-.7 1.5-1.5 0-2.8-3.6-5.4-8-5.4Z" />
       </svg>
     ),
   },
@@ -34,9 +33,10 @@ const NAV_ITEMS = [
     label: "Balances",
     group: "Billing",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M12 7v1.5M12 15.5V17M9.5 10a2.5 2.5 0 0 1 5 0c0 1.4-1 2-2.5 2s-2.5.6-2.5 2a2.5 2.5 0 0 0 5 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <path fill="currentColor" d="M12 3c-4.4 0-7.9 1.3-7.9 3S7.6 9 12 9s7.9-1.3 7.9-3S16.4 3 12 3Z" />
+        <path fill="currentColor" d="M4.1 8.7v2.6c0 1.6 3.5 2.9 7.9 2.9s7.9-1.3 7.9-2.9V8.7C18.2 9.9 15.2 10.6 12 10.6s-6.2-.7-7.9-1.9Z" />
+        <path fill="currentColor" d="M4.1 13.6v2.6c0 1.6 3.5 2.9 7.9 2.9s7.9-1.3 7.9-2.9v-2.6c-1.7 1.2-4.7 1.9-7.9 1.9s-6.2-.7-7.9-1.9Z" />
       </svg>
     ),
   },
@@ -46,9 +46,9 @@ const NAV_ITEMS = [
     label: "Deposit",
     group: "Billing",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M12 10v6M9 13h6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <path fill="currentColor" d="M3 7.2A2.2 2.2 0 0 1 5.2 5h13.6A2.2 2.2 0 0 1 21 7.2V8H3v-.8Z" />
+        <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d="M3 10.2h18v6.6a2.2 2.2 0 0 1-2.2 2.2H5.2A2.2 2.2 0 0 1 3 16.8v-6.6Zm8.2 2.1v1.8H9.4v1.6h1.8v1.8h1.6v-1.8h1.8v-1.6h-1.8v-1.8h-1.6Z" />
       </svg>
     ),
   },
@@ -58,9 +58,8 @@ const NAV_ITEMS = [
     label: "Invoices",
     group: "Billing",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 4.6h8v1.6H8V7.6Zm0 3.6h8v1.6H8v-1.6Zm0 3.6h5v1.6H8v-1.6Z" />
       </svg>
     ),
   },
@@ -70,9 +69,9 @@ const NAV_ITEMS = [
     label: "Orders",
     group: "Billing",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <path d="M5 7h14l-1 12H6L5 7Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-        <path d="M9 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.6" />
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <path d="M8.7 8.4V6.3a3.3 3.3 0 0 1 6.6 0v2.1" stroke="currentColor" strokeWidth="1.9" fill="none" strokeLinecap="round" />
+        <path fill="currentColor" d="M5.3 7.4h13.4a1.1 1.1 0 0 1 1.1 1.2l-1 10.5A2.1 2.1 0 0 1 16.7 21H7.3a2.1 2.1 0 0 1-2.1-1.9l-1-10.5a1.1 1.1 0 0 1 1.1-1.2Z" />
       </svg>
     ),
   },
@@ -82,10 +81,9 @@ const NAV_ITEMS = [
     label: "Referrers",
     group: "Affiliate",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <path fill="currentColor" d="M9.2 11.9a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2Zm0 1.7c-4 0-7.2 2.2-7.2 4.8 0 .8.6 1.4 1.4 1.4h11.6c.8 0 1.4-.6 1.4-1.4 0-2.6-3.2-4.8-7.2-4.8Z" />
+        <path fill="currentColor" d="M17 11.4a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm.5 1.6c-.5 0-1 .04-1.5.12 1.7 1.2 2.8 2.9 2.8 4.9 0 .3 0 .6-.1.9h2.9c.8 0 1.4-.6 1.4-1.4 0-2.5-2.5-4.5-5.5-4.5Z" />
       </svg>
     ),
   },
@@ -95,9 +93,9 @@ const NAV_ITEMS = [
     label: "Password",
     group: "Security",
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
-        <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
-        <path d="M8 11V7a4 4 0 0 1 8 0v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
+        <path d="M8.2 10.4V7.6a3.8 3.8 0 0 1 7.6 0v2.8" stroke="currentColor" strokeWidth="1.9" fill="none" strokeLinecap="round" />
+        <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d="M6.4 10.2h11.2a1.8 1.8 0 0 1 1.8 1.8v7.2a1.8 1.8 0 0 1-1.8 1.8H6.4a1.8 1.8 0 0 1-1.8-1.8V12a1.8 1.8 0 0 1 1.8-1.8Zm6.4 5.6a1.2 1.2 0 1 0-1.6 0v1.5a.8.8 0 0 0 1.6 0v-1.5Z" />
       </svg>
     ),
   },
@@ -207,9 +205,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
               <span className={styles.navGroupLabel}>Support</span>
               <Link href="/support" className={styles.navItem}>
                 <span className={styles.navIcon}>
-                  <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden>
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-                  </svg>
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden>
+        <path fill="currentColor" d="M5.2 3.5h13.6A2.2 2.2 0 0 1 21 5.7v8.6a2.2 2.2 0 0 1-2.2 2.2H8.9l-4 3.8a1 1 0 0 1-1.7-.8V5.7a2.2 2.2 0 0 1 2-2.2Z" />
+      </svg>
                 </span>
                 Tickets
               </Link>
@@ -222,12 +220,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
               {isStaff && (
                 <Link href="/admin" className={styles.navItem}>
                   <span className={styles.navIcon}>
-                    <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden>
-                      <rect x="3" y="3" width="7" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
-                      <rect x="14" y="3" width="7" height="5" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
-                      <rect x="14" y="11" width="7" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
-                      <rect x="3" y="15" width="7" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
-                    </svg>
+                    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden>
+        <path fill="currentColor" d="M3.5 3.5h6v9h-6v-9Zm11 0h6v5h-6v-5Zm0 7.5h6v9.5h-6V11Zm-11 4h6v5.5h-6V15Z" />
+      </svg>
                   </span>
                   Dashboard
                 </Link>
@@ -239,9 +234,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                 className={`${styles.navItem} ${styles.navSignOut}`}
               >
                 <span className={styles.navIcon}>
-                  <svg viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden>
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden>
+        <path fill="currentColor" d="M4 5.3A2.3 2.3 0 0 1 6.3 3h4.6a1 1 0 1 1 0 2H6.3a.3.3 0 0 0-.3.3v13.4c0 .2.1.3.3.3h4.6a1 1 0 1 1 0 2H6.3A2.3 2.3 0 0 1 4 18.7V5.3Z" />
+        <path fill="currentColor" d="m16.5 7.3 4.2 4a1 1 0 0 1 0 1.4l-4.2 4a1 1 0 0 1-1.4-1.4l2.4-2.3H10a1 1 0 1 1 0-2h7.5l-2.4-2.3a1 1 0 0 1 1.4-1.4Z" />
+      </svg>
                 </span>
                 Sign out
               </button>
