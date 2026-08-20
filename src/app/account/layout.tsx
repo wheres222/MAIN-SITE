@@ -161,7 +161,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     <div className={styles.page}>
       <SiteHeader activeTab="none" />
 
-      <div className={styles.wrapper} style={{ paddingTop: 96 }}>
+      <div className={styles.wrapper}>
         <div className={styles.panel}>
           {/* Sidebar */}
           <aside className={styles.sidebar}>
@@ -249,7 +249,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           </aside>
 
           {/* Content */}
-          <main className={styles.content}>{children}</main>
+          <main className={styles.content}>
+            <div className={styles.contentInner}>{children}</div>
+          </main>
         </div>
       </div>
 

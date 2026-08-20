@@ -21,24 +21,25 @@
 .wrapper {
   flex: 1;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 28px 20px 48px;
+  align-items: stretch;
+  padding: 0;
 }
 
 /* 1440 matches the widest common laptop without letting text run to unreadable
    line lengths on an ultrawide — the content columns inside cap themselves. */
 .panel {
   width: 100%;
-  max-width: 1440px;
   display: grid;
-  grid-template-columns: 248px 1fr;
+  grid-template-columns: 264px 1fr;
   background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  /* Only a top hairline: the other three edges are the viewport. */
+  border: none;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
   overflow: hidden;
-  min-height: 640px;
-  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+  /* Fill whatever is left below the fixed navbar so the sidebar rail runs the
+     full height of the window even on a short page. */
+  min-height: calc(100vh - 72px);
 }
 
 /* ─── Sidebar ─────────────────────────────────────────── */
@@ -167,21 +168,24 @@
 
 /* ─── Content ─────────────────────────────────────────── */
 .content {
-  padding: 26px 28px;
+  padding: 28px 32px 48px;
   min-width: 0;
   overflow: hidden;
   background: var(--surface-1);
 }
 
+/* Cards may stretch, but a 3000px-wide table row is unreadable. This caps the
+   reading column while leaving the panel itself full-bleed. */
+.contentInner {
+  width: 100%;
+  max-width: 1600px;
+}
+
 /* ─── Responsive ──────────────────────────────────────── */
 @media (max-width: 860px) {
-  .wrapper { padding: 0 0 32px; }
   .panel {
     grid-template-columns: 1fr;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    box-shadow: none;
+    min-height: 0;
   }
   .sidebar {
     border-right: none;
