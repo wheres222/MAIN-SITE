@@ -2061,3 +2061,46 @@ select::-ms-expand { display: none; }
     }
   }
 }
+
+/* ─── Header cart ─────────────────────────────────────────────────────── */
+.nav-cart-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
+}
+.nav-cart-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+/* Overlaps the icon's top-right corner so the control stays 34px wide however
+   many digits the badge grows to. */
+.nav-cart-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  border-radius: 999px;
+  color: var(--accent-ink);
+  font-family: var(--font-brand);
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}

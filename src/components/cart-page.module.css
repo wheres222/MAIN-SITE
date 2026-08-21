@@ -1,0 +1,253 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-top: 72px;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.title {
+  margin: 0;
+  font-family: var(--font-brand);
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+.count { font-size: 0.86rem; color: var(--text-dim); }
+
+/* ─── Empty ────────────────────────────────────────────────────────────── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 20px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+.emptyBtn {
+  padding: 10px 20px;
+  background: var(--accent);
+  border-radius: 8px;
+  color: var(--accent-ink);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.emptyBtn:hover { background: var(--accent-hover); }
+
+/* ─── Layout ───────────────────────────────────────────────────────────── */
+/* Summary is a sidebar on desktop and stacks under the lines on mobile, where
+   it becomes the last thing before the thumb reaches the checkout button. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.lines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+
+.line {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.thumb,
+.thumbFallback {
+  width: 68px;
+  height: 68px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.lineInfo { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.lineName {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+}
+.lineVariant { font-size: 0.8rem; color: var(--text-muted); }
+.lineUnit { font-size: 0.78rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+
+.lineControls { display: flex; align-items: center; gap: 16px; flex: 0 0 auto; }
+
+.stepper {
+  display: flex;
+  align-items: center;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stepper button {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.stepper button:hover { background: rgba(255, 255, 255, 0.07); color: var(--text-primary); }
+
+.qty {
+  min-width: 32px;
+  text-align: center;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.lineTotal {
+  min-width: 84px;
+  text-align: right;
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.12s;
+}
+.removeBtn:hover { color: #f87171; }
+
+/* ─── Summary ──────────────────────────────────────────────────────────── */
+.summary {
+  position: sticky;
+  top: 92px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.summaryTitle {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summaryRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+.summaryValue { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+.summaryTotal {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.summaryTotal .summaryValue { font-size: 1.15rem; }
+
+.chargeNote {
+  margin: 0;
+  padding: 9px 11px;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+.error {
+  margin: 0;
+  padding: 9px 12px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: #f87171;
+}
+
+.checkoutBtn {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 2px;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: var(--accent-ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.checkoutBtn:hover:not(:disabled) { background: var(--accent-hover); }
+.checkoutBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.keepShopping {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.keepShopping:hover { color: var(--text-primary); text-decoration: underline; }
+
+/* ─── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .summary { position: static; }
+}
+
+@media (max-width: 620px) {
+  /* The controls drop below the name rather than squeezing a stepper, a total
+     and a remove link into the last 90px of a phone screen. */
+  .line {
+    grid-template-columns: 56px minmax(0, 1fr);
+    row-gap: 12px;
+  }
+  .thumb, .thumbFallback { width: 56px; height: 56px; }
+  .lineControls {
+    grid-column: 1 / -1;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .lineTotal { min-width: 0; }
+}

@@ -1,3 +1,13 @@
+import { cookies } from "next/headers";
+import {
+  CURRENCY_COOKIE,
+  LOCALE_COOKIE,
+  normalizeCurrency,
+  normalizeLocale,
+} from "@/lib/preferences";
+import { getRates } from "@/lib/rates";
+import { PreferencesProvider } from "@/components/preferences-provider";
+import { CartProvider } from "@/components/cart-provider";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway } from "next/font/google";
 import Script from "next/script";
@@ -78,11 +88,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read once here and hand down, so the very first HTML already carries the
+  // visitor's language and currency.
+  const cookieStore = await cookies();
+  const locale = normalizeLocale(cookieStore.get(LOCALE_COOKIE)?.value);
+  const currency = normalizeCurrency(cookieStore.get(CURRENCY_COOKIE)?.value);
+  const { rates } = await getRates();
+
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -121,7 +138,16 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${inter.variable} ${raleway.variable}`}>
+    /* lang stays "en" on purpose. Only the chrome is translated; blog posts
+       and the SEO landing pages are English, so claiming lang="de" on a page
+       whose body is English would misdescribe it to screen readers and to
+       Google. data-ui-lang records the chrome language for styling and for
+       anyone debugging which dictionary is live. */
+    <html
+      lang="en"
+      data-ui-lang={locale}
+      className={`${inter.variable} ${raleway.variable}`}
+    >
       <head>
         <link rel="preconnect" href="https://api.sellauth.com" />
         <link rel="dns-prefetch" href="https://api.sellauth.com" />
@@ -142,7 +168,13 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-        {children}
+        <PreferencesProvider
+          initialLocale={locale}
+          initialCurrency={currency}
+          initialRates={rates}
+        >
+          <CartProvider>{children}</CartProvider>
+        </PreferencesProvider>
         {/* lazyOnload keeps gtag (and its head preload hint) entirely off the
             critical path — it loads after everything else is done. */}
         <Script

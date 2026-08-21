@@ -8,6 +8,8 @@ import { createClient } from "@/lib/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import styles from "./layout.module.css";
+import { usePreferences } from "@/components/preferences-provider";
+import type { TranslationKey } from "@/lib/i18n/dictionaries";
 
 /**
  * Order matters: items are rendered flat and a group heading is emitted
@@ -19,8 +21,8 @@ const NAV_ITEMS = [
   {
     href: "/account",
     exact: true,
-    label: "Account",
-    group: "",
+    labelKey: "account.account",
+    groupKey: "",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
         <path fill="currentColor" d="M12 12.2a4.1 4.1 0 1 0 0-8.2 4.1 4.1 0 0 0 0 8.2Zm0 1.9c-4.4 0-8 2.6-8 5.4 0 .8.7 1.5 1.5 1.5h13c.8 0 1.5-.7 1.5-1.5 0-2.8-3.6-5.4-8-5.4Z" />
@@ -30,8 +32,8 @@ const NAV_ITEMS = [
   {
     href: "/account/balance",
     exact: false,
-    label: "Balances",
-    group: "Billing",
+    labelKey: "account.balances",
+    groupKey: "account.billing",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
         <path fill="currentColor" d="M12 3c-4.4 0-7.9 1.3-7.9 3S7.6 9 12 9s7.9-1.3 7.9-3S16.4 3 12 3Z" />
@@ -43,8 +45,8 @@ const NAV_ITEMS = [
   {
     href: "/account/deposit",
     exact: false,
-    label: "Deposit",
-    group: "Billing",
+    labelKey: "account.deposit",
+    groupKey: "account.billing",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
         <path fill="currentColor" d="M3 7.2A2.2 2.2 0 0 1 5.2 5h13.6A2.2 2.2 0 0 1 21 7.2V8H3v-.8Z" />
@@ -55,8 +57,8 @@ const NAV_ITEMS = [
   {
     href: "/account/invoices",
     exact: false,
-    label: "Invoices",
-    group: "Billing",
+    labelKey: "account.invoices",
+    groupKey: "account.billing",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
         <path fill="currentColor" fillRule="evenodd" clipRule="evenodd" d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 4.6h8v1.6H8V7.6Zm0 3.6h8v1.6H8v-1.6Zm0 3.6h5v1.6H8v-1.6Z" />
@@ -66,8 +68,8 @@ const NAV_ITEMS = [
   {
     href: "/account/orders",
     exact: false,
-    label: "Orders",
-    group: "Billing",
+    labelKey: "account.orders",
+    groupKey: "account.billing",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
         <path d="M8.7 8.4V6.3a3.3 3.3 0 0 1 6.6 0v2.1" stroke="currentColor" strokeWidth="1.9" fill="none" strokeLinecap="round" />
@@ -78,8 +80,8 @@ const NAV_ITEMS = [
   {
     href: "/account/referrals",
     exact: false,
-    label: "Referrers",
-    group: "Affiliate",
+    labelKey: "account.referrers",
+    groupKey: "account.affiliate",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
         <path fill="currentColor" d="M9.2 11.9a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2Zm0 1.7c-4 0-7.2 2.2-7.2 4.8 0 .8.6 1.4 1.4 1.4h11.6c.8 0 1.4-.6 1.4-1.4 0-2.6-3.2-4.8-7.2-4.8Z" />
@@ -90,8 +92,8 @@ const NAV_ITEMS = [
   {
     href: "/account/settings",
     exact: false,
-    label: "Password",
-    group: "Security",
+    labelKey: "account.password",
+    groupKey: "account.security",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16">
         <path d="M8.2 10.4V7.6a3.8 3.8 0 0 1 7.6 0v2.8" stroke="currentColor" strokeWidth="1.9" fill="none" strokeLinecap="round" />
@@ -102,6 +104,7 @@ const NAV_ITEMS = [
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
+  const { t } = usePreferences();
   const pathname = usePathname();
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
@@ -185,31 +188,31 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                 // A heading appears wherever the group changes. Fragments emit
                 // no DOM node, so the links stay direct children of .nav and
                 // its flex layout — including the mobile wrap — is unaffected.
-                const startsGroup = item.group && item.group !== NAV_ITEMS[i - 1]?.group;
+                const startsGroup = item.groupKey && item.groupKey !== NAV_ITEMS[i - 1]?.groupKey;
                 return (
                   <Fragment key={item.href}>
                     {startsGroup && (
-                      <span className={styles.navGroupLabel}>{item.group}</span>
+                      <span className={styles.navGroupLabel}>{t(item.groupKey as TranslationKey)}</span>
                     )}
                     <Link
                       href={item.href}
                       className={`${styles.navItem} ${isActive ? styles.navItemActive : ""}`}
                     >
                       <span className={styles.navIcon}>{item.icon}</span>
-                      {item.label}
+                      {t(item.labelKey as TranslationKey)}
                     </Link>
                   </Fragment>
                 );
               })}
 
-              <span className={styles.navGroupLabel}>Support</span>
+              <span className={styles.navGroupLabel}>{t("nav.support")}</span>
               <Link href="/support" className={styles.navItem}>
                 <span className={styles.navIcon}>
                   <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden>
         <path fill="currentColor" d="M5.2 3.5h13.6A2.2 2.2 0 0 1 21 5.7v8.6a2.2 2.2 0 0 1-2.2 2.2H8.9l-4 3.8a1 1 0 0 1-1.7-.8V5.7a2.2 2.2 0 0 1 2-2.2Z" />
       </svg>
                 </span>
-                Tickets
+                {t("account.tickets")}
               </Link>
 
               {/* Shown only to staff and owners. This is convenience, not
@@ -239,7 +242,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         <path fill="currentColor" d="m16.5 7.3 4.2 4a1 1 0 0 1 0 1.4l-4.2 4a1 1 0 0 1-1.4-1.4l2.4-2.3H10a1 1 0 1 1 0-2h7.5l-2.4-2.3a1 1 0 0 1 1.4-1.4Z" />
       </svg>
                 </span>
-                Sign out
+                {t("auth.signOut")}
               </button>
             </nav>
           </aside>
@@ -253,10 +256,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
       {showSignOutConfirm && (
         <ConfirmDialog
-          title="Sign out?"
-          message="You'll need to sign back in to access your account, orders, and balance."
-          confirmLabel="Sign out"
-          cancelLabel="Stay signed in"
+          title={t("auth.signOutConfirmTitle")}
+          message={t("auth.signOutConfirmBody")}
+          confirmLabel={t("auth.signOut")}
+          cancelLabel={t("auth.staySignedIn")}
           destructive
           onConfirm={confirmSignOut}
           onCancel={() => setShowSignOutConfirm(false)}

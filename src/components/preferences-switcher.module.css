@@ -1,0 +1,119 @@
+.root {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
+}
+.trigger:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.triggerText { font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+
+.panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 120;
+  width: 290px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.75);
+}
+
+.group { display: flex; flex-direction: column; gap: 7px; }
+
+.groupLabel {
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Two columns: eight languages in one column makes the panel taller than most
+   headers have room for. */
+.optionList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  min-width: 0;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.option:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+.optionActive,
+.optionActive:hover {
+  background: var(--accent-dim);
+  border-color: rgba(239, 27, 53, 0.32);
+  color: var(--accent-hover);
+  font-weight: 600;
+}
+
+/* Fixed width so the labels line up into a readable column. */
+.optionCode {
+  flex: 0 0 auto;
+  width: 26px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+}
+.optionActive .optionCode { color: var(--accent-hover); }
+
+.note {
+  margin: 0;
+  padding-top: 11px;
+  border-top: 1px solid var(--border);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+@media (max-width: 640px) {
+  /* The trigger keeps only the codes on a narrow header. */
+  .triggerText { font-size: 0.72rem; }
+  .panel {
+    width: min(290px, calc(100vw - 24px));
+    right: 0;
+  }
+}
