@@ -70,11 +70,24 @@ function money(value: number | null, code = "USD"): string {
 
 function cleanDescription(value: string): string {
   return value
-    .replace(/<br\s*\/?\s*>/gi, "\n")
-    .replace(/<\/p>/gi, "\n")
+    // SellAuth descriptions are rich text. Only <br> and </p> used to become
+    // line breaks, so a <ul> collapsed into one run-on line and every heading
+    // fused onto the paragraph after it — which made the parser below treat
+    // whole descriptions as a single unparseable blob.
+    .replace(/<\s*(?:br|hr)\s*\/?\s*>/gi, "\n")
+    .replace(/<\s*li\b[^>]*>/gi, "\n• ")
+    .replace(/<\/\s*(?:p|div|li|ul|ol|h[1-6]|tr|section|blockquote)\s*>/gi, "\n")
     .replace(/<[^>]+>/g, "")
+    // Entities survive tag stripping, so without this a description reads
+    // "Fast &amp; undetected".
     .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0?39;|&apos;/gi, "'")
     .replace(/\r/g, "")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
@@ -202,6 +215,29 @@ function isPostPaymentOnlyCopy(value: string): boolean {
   const normalized = normalizeLabel(value);
   return /(\bloader\b|\binstructions?\b|\bsetup\b|\bguide\b|\binstall\b|\blaunch\b|\binject\b)/.test(
     normalized
+  );
+}
+
+/**
+ * Delivery copy that genuinely only makes sense after payment.
+ *
+ * Deliberately much narrower than isPostPaymentOnlyCopy, which word-matches on
+ * loader/install/setup/guide/launch/inject. That is fine for a short tab title,
+ * but as a filter on prose it is catastrophic: "easy to install", "undetected
+ * loader" and "launch the game" are ordinary sentences in a cheat listing, so
+ * it silently deleted most of what sellers had written.
+ */
+function isDeliveryInstruction(line: string): boolean {
+  const normalized = normalizeLabel(line);
+
+  // A download link for the loader — the one thing worth withholding.
+  if (/https?:\/\//i.test(line) && /(loader|download|install|setup|mirror)/.test(normalized)) {
+    return true;
+  }
+
+  // A bare instruction heading with no content of its own.
+  return /^(how to (install|set ?up|use)|installation|setup instructions?|instructions)\b[:\s]*$/i.test(
+    line.trim()
   );
 }
 
@@ -349,7 +385,7 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
       }
     }
 
-    if (!isPostPaymentOnlyCopy(line)) {
+    if (!isDeliveryInstruction(line)) {
       descriptionParagraphs.push(line);
     }
   }
@@ -833,8 +869,26 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
         </section>
         </div>
 
-        {(detailContent.featureTabs.length > 0 || detailContent.requirements.length > 0 || showRequirements) && (
+        {(detailContent.descriptionParagraphs.length > 0 ||
+          detailContent.featureTabs.length > 0 ||
+          detailContent.requirements.length > 0 ||
+          showRequirements) && (
           <section className={styles.descPanel}>
+            {/* The seller's own copy. This was being parsed and then thrown
+                away — descriptionParagraphs was computed, returned, and never
+                referenced in the markup, so nothing a seller wrote in SellAuth
+                ever reached the page. */}
+            {detailContent.descriptionParagraphs.length > 0 && (
+              <div className="panel">
+                <header className="panel-header">Description</header>
+                <div className="panel-body">
+                  {detailContent.descriptionParagraphs.map((paragraph, i) => (
+                    <p key={i} className={styles.descText}>{paragraph}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Information panel */}
             {(detailContent.requirements.length > 0 || showRequirements) && (
               <div className="panel">

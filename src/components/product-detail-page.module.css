@@ -520,3 +520,17 @@
   .relatedList { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 }
 
+
+/* The seller's own description copy. Slightly larger and lighter than the
+   Information bullets beside it — this is prose meant to be read, not a spec
+   list meant to be scanned, and it caps its measure so long paragraphs do not
+   run the full width of the panel. */
+.descText {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  max-width: 78ch;
+  white-space: pre-line;
+}
+.descText:last-child { margin-bottom: 0; }
