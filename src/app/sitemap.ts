@@ -32,6 +32,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${siteUrl}/support`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
     { url: `${siteUrl}/faq`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    // Publicly linked from the footer and indexable, but it was never listed
+    // here — so its only route to discovery was a crawl of the footer.
+    { url: `${siteUrl}/contact-us`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteUrl}/about/editorial-team`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteUrl}/refund-policy`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${siteUrl}/terms-of-service`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },

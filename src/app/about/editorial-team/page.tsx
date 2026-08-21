@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { DISCORD_INVITE_URL } from "@/lib/links";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const metadata: Metadata = {
   title: "Editorial Team & Methodology",
@@ -42,6 +44,7 @@ const personJsonLd = {
 };
 
 export default function EditorialTeamPage() {
+  const seoContent = pageSeoFor("editorial-team");
   return (
     <>
       <script
@@ -166,6 +169,7 @@ export default function EditorialTeamPage() {
               weekdays.
             </p>
           </Section>
+          {seoContent && <PageSeoSections content={seoContent} />}
         </main>
 
         <SiteFooter />

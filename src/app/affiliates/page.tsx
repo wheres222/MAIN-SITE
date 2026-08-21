@@ -5,6 +5,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { AFFILIATE_FACTS, AFFILIATE_TIERS, AFFILIATE_TOP_RATE } from "@/lib/affiliate-program";
 import { AFFILIATE_GUIDES } from "@/lib/affiliate-guides";
 import styles from "./affiliates.module.css";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const revalidate = 3600;
 
@@ -17,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default function AffiliatesPage() {
+  const seoContent = pageSeoFor("affiliates");
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -122,6 +125,7 @@ export default function AffiliatesPage() {
             ))}
           </div>
         </section>
+        {seoContent && <PageSeoSections content={seoContent} />}
       </main>
 
       <SiteFooter />

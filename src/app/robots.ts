@@ -14,7 +14,18 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: [
           "/api/",
-          "/orders",
+          // NOTE: /orders is deliberately absent.
+          //
+          // It was disallowed here while also serving <meta name="robots"
+          // content="noindex">, which is self-defeating: a page Google is
+          // forbidden to fetch is a page whose noindex Google never reads, so
+          // the URL stays eligible for indexing on the strength of inbound
+          // links alone. Search Console filed it under "Blocked by robots.txt"
+          // rather than dropping it.
+          //
+          // Letting the crawl through is what makes the noindex effective.
+          // Nothing is exposed by doing so: order lookup requires an order ID
+          // plus the token emailed at checkout, neither of which a crawler has.
           "/account",
           "/admin",
           "/login",

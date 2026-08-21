@@ -37,8 +37,15 @@ function isCheatProduct(slug: string): boolean {
 
 export function ProductsCatalogClient({
   initialData,
+  seoFooter,
 }: {
   initialData?: StorefrontData | null;
+  /**
+   * Server-rendered editorial block, passed in rather than imported, so the
+   * long-form copy stays out of this client bundle and lands in the initial
+   * HTML. Same arrangement as GameCatalogPage's seoFooter.
+   */
+  seoFooter?: React.ReactNode;
 } = {}) {
   // Prices are stored in USD and converted for display only — the charge is
   // always USD. The currency argument some call sites still pass came from
@@ -216,6 +223,8 @@ export function ProductsCatalogClient({
             ))}
           </div>
         )}
+
+        {seoFooter}
       </main>
 
       <SiteFooter />

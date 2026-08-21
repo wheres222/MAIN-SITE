@@ -10,11 +10,17 @@ import { guideForProduct } from "@/lib/product-guides";
 import { SETUP_SECTIONS as SECTIONS } from "@/lib/setup-guides";
 import { fetchStorefrontClient } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 // Setup sections live in @/lib/setup-guides; per-product guides in
 // @/lib/product-guides.
 
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Module scope, not component scope: the content is static, and this file is
+// a client component — recomputing it per render would ship it per render too.
+const GUIDE_SEO = pageSeoFor("guide");
 
 interface GameGroup {
   slug: string;
@@ -245,6 +251,8 @@ export default function GuidePage() {
             </div>
           )}
         </article>
+
+        {GUIDE_SEO && <PageSeoSections content={GUIDE_SEO} />}
       </main>
 
       <style>{`

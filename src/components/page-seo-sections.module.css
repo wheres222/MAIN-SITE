@@ -1,0 +1,161 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Editorial block for the site's utility pages.
+
+   Mirrors product-seo-sections.module.css — same tokens, same rhythm — so a
+   visitor moving between /support, /status and a product page reads one voice
+   rather than three. Wider max-width than the product variant because these
+   pages have no product column competing for the space.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.wrap {
+  max-width: 940px;
+  margin: 52px auto 0;
+  padding: 34px 20px 8px;
+  border-top: 1px solid var(--border);
+}
+
+.head {
+  margin-bottom: 26px;
+}
+
+.h2 {
+  font-family: var(--font-brand);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.lead {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.block {
+  margin-top: 30px;
+}
+
+.h3 {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+  line-height: 1.35;
+}
+
+.p {
+  font-size: 0.94rem;
+  line-height: 1.72;
+  color: var(--text-secondary);
+  margin: 0 0 14px;
+}
+.p:last-child {
+  margin-bottom: 0;
+}
+
+.bullets {
+  margin: 14px 0 0;
+  padding: 14px 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.bulletHeading {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin: 0 0 9px;
+}
+
+.list {
+  margin: 0;
+  padding-left: 19px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.list li {
+  font-size: 0.91rem;
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+.list li::marker {
+  color: var(--accent);
+}
+
+/* ─── FAQ ────────────────────────────────────────────────────────────────
+   <details> rather than a JS accordion so the answers exist in the initial
+   HTML. Content behind a click still counts; content behind a hydration
+   does not.                                                                */
+.faqWrap {
+  margin-top: 38px;
+  padding-top: 26px;
+  border-top: 1px solid var(--border);
+}
+
+.faqHeading {
+  font-family: var(--font-brand);
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+}
+
+.faqItem {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 0;
+}
+
+.faqQ {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+.faqQ::-webkit-details-marker {
+  display: none;
+}
+.faqQ::before {
+  content: "+";
+  color: var(--accent);
+  font-weight: 800;
+  line-height: 1.5;
+  flex: 0 0 auto;
+}
+.faqItem[open] .faqQ::before {
+  content: "−";
+}
+
+.faqA {
+  font-size: 0.91rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 9px 0 0 19px;
+}
+
+.link {
+  color: var(--accent-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .wrap {
+    margin-top: 36px;
+    padding: 26px 16px 8px;
+  }
+  .h2 {
+    font-size: 1.25rem;
+  }
+}

@@ -3,6 +3,8 @@ import { getStorefrontData } from "@/lib/sellauth";
 import { getMergedStatuses } from "@/lib/status-feed";
 import { StatusRouteClient } from "@/components/status-route-client";
 import type { StorefrontData } from "@/types/sellauth";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const revalidate = 300;
 
@@ -21,10 +23,13 @@ export default async function StatusPage() {
     getMergedStatuses().catch(() => null),
   ]);
 
+  const seoContent = pageSeoFor("status");
+
   return (
     <StatusRouteClient
       initialData={initialData}
       initialStatuses={merged?.statuses ?? {}}
+      seoFooter={seoContent ? <PageSeoSections content={seoContent} /> : undefined}
     />
   );
 }

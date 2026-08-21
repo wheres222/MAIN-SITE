@@ -10,6 +10,7 @@ import {
   recordSecurityEvent,
 } from "@/lib/security/events";
 import { canonicalGameSlug } from "@/lib/game-slug";
+import { gameSeoContentFor } from "@/lib/game-seo-content";
 
 // ── Maintenance mode ─────────────────────────────────────────────────────────
 const MAINTENANCE_MODE  = false;               // ← flip to true to close the site
@@ -124,6 +125,36 @@ export async function proxy(request: NextRequest) {
     if (legacySlug) {
       const canonical = canonicalGameSlug(legacySlug);
       if (canonical) {
+        const url = request.nextUrl.clone();
+        url.pathname = `/categories/${canonical}`;
+        url.search = "";
+        return NextResponse.redirect(url, 308);
+      }
+    }
+  }
+
+  // ── Legacy /products?game=x → /categories/x ────────────────────────────────
+  //
+  // Nothing reads this parameter any more — the catalogue client ignores it
+  // entirely — but the URLs are still linked from older posts and Google is
+  // still crawling them. Each one served the full catalogue with a canonical
+  // pointing at /products, which is why Search Console lists ten of them under
+  // "Alternative page with proper canonical tag".
+  //
+  // A canonical is the weaker signal here. The visitor asked for one game and
+  // was handed the unfiltered catalogue, so the honest answer is the category
+  // page for that game — same intent, and it consolidates the duplicate away
+  // rather than merely labelling it.
+  //
+  // Guarded on there being an authored landing page for the slug, because
+  // canonicalGameSlug falls through to a plain slugify for anything it does
+  // not recognise — without the guard, /products?game=asdf would redirect a
+  // visitor to a 404 instead of leaving them on the catalogue.
+  if (pathname === "/products") {
+    const legacyGame = searchParams.get("game");
+    if (legacyGame) {
+      const canonical = canonicalGameSlug(legacyGame);
+      if (canonical && gameSeoContentFor(canonical)) {
         const url = request.nextUrl.clone();
         url.pathname = `/categories/${canonical}`;
         url.search = "";

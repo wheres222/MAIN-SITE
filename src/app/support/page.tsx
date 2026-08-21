@@ -4,6 +4,8 @@ import Image from "next/image";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getDiscordUrl } from "@/lib/links";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const metadata: Metadata = {
   title: "Support & FAQ",
@@ -117,17 +119,30 @@ export default function SupportPage() {
     },
   ];
 
+  const seoContent = pageSeoFor("support");
+
+  // Merged rather than emitted separately — one FAQPage per URL.
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: faq.a,
-      },
-    })),
+    mainEntity: [
+      ...faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.a,
+        },
+      })),
+      ...(seoContent?.faqs ?? []).map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.a.replace(/\[([^\]]+)\]\(\/[^)\s]*\)/g, "$1"),
+        },
+      })),
+    ],
   };
 
   return (
@@ -247,6 +262,8 @@ export default function SupportPage() {
             ))}
           </div>
         </section>
+
+        {seoContent && <PageSeoSections content={seoContent} faqSchema={false} />}
       </main>
 
       <SiteFooter />

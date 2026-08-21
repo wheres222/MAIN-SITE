@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const metadata: Metadata = {
   title: "Loaders & Setup Files — CheatParadise",
@@ -100,6 +102,7 @@ function StatusBadge({ status }: { status: LoaderEntry["status"] }) {
 }
 
 export default function LoadersPage() {
+  const seoContent = pageSeoFor("loaders");
   return (
     <div className="marketplace-page">
       <SiteHeader activeTab="none" />
@@ -216,6 +219,7 @@ export default function LoadersPage() {
             </div>
           </div>
         </section>
+        {seoContent && <PageSeoSections content={seoContent} />}
       </main>
 
       <style>{`

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ProductsCatalogClient } from "@/components/products-catalog-client";
 import { getStorefrontData } from "@/lib/sellauth";
 import type { StorefrontData } from "@/types/sellauth";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const revalidate = 300;
 
@@ -27,5 +29,12 @@ export default async function ProductsPage() {
     // Fall through to client-side fetch on error
   }
 
-  return <ProductsCatalogClient initialData={initialData} />;
+  const seoContent = pageSeoFor("products");
+
+  return (
+    <ProductsCatalogClient
+      initialData={initialData}
+      seoFooter={seoContent ? <PageSeoSections content={seoContent} /> : undefined}
+    />
+  );
 }
