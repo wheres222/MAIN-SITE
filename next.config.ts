@@ -51,6 +51,20 @@ const nextConfig: NextConfig = {
         destination: "/categories/:gameSlug",
         permanent: true,
       },
+      // /dashboard never existed as a route — the account area lives at
+      // /account and the header's "Dashboard" item already points there. It is
+      // the name people type anyway, so serve it rather than 404 on it.
+      // Permanent so anyone who bookmarked the 404 gets corrected once.
+      {
+        source: "/dashboard",
+        destination: "/account",
+        permanent: true,
+      },
+      {
+        source: "/dashboard/:path*",
+        destination: "/account/:path*",
+        permanent: true,
+      },
       {
         source: "/orders/mock",
         destination: "/orders?orderId=mock",
