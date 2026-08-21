@@ -17,6 +17,71 @@ const CURRENCY_MAP: Record<string, string> = {
 
 const ALLOWED_CURRENCIES = Object.keys(CURRENCY_MAP);
 
+/**
+ * Turn a NOWPayments failure into something the customer can act on.
+ *
+ * This route used to answer every provider failure with "Payment provider
+ * error. Try again." while logging the real reason server-side only. Retrying
+ * does not help when the amount is under the coin's minimum — the common case,
+ * because that minimum is per-coin and usually far above this site's $1 floor —
+ * so the customer just failed again with no idea why.
+ *
+ * Authentication faults are deliberately NOT surfaced. A customer can do
+ * nothing about an expired key, and naming it tells an attacker which half of
+ * the integration is broken.
+ */
+function describeNowPaymentsError(
+  status: number,
+  raw: string
+): { message: string; httpStatus: number; configProblem: boolean } {
+  let code = "";
+  let providerMessage = "";
+  try {
+    const parsed = JSON.parse(raw) as { code?: unknown; message?: unknown };
+    code = typeof parsed.code === "string" ? parsed.code : "";
+    providerMessage = typeof parsed.message === "string" ? parsed.message : "";
+  } catch {
+    // Not JSON — fall through to the generic message.
+  }
+
+  const combined = code + " " + providerMessage;
+
+  // The provider names the real minimum, usually with a fiat equivalent, which
+  // is exactly what the customer needs in order to proceed.
+  if (code === "AMOUNT_MINIMAL_ERROR" || /minimal|too small|minimum/i.test(providerMessage)) {
+    const detail = providerMessage.replace(/\s+/g, " ").trim().slice(0, 160);
+    return {
+      message: detail
+        ? "That amount is below this coin's minimum. " + detail + " Try a larger amount or a different coin."
+        : "That amount is below this coin's minimum. Try a larger amount or a different coin.",
+      httpStatus: 422,
+      configProblem: false,
+    };
+  }
+
+  if (status === 401 || status === 403 || /api.?key|auth|forbidden/i.test(combined)) {
+    return {
+      message: "Deposits are temporarily unavailable. Please try again shortly.",
+      httpStatus: 503,
+      configProblem: true,
+    };
+  }
+
+  if (/currency|not found|not available|disabled|unsupported/i.test(combined)) {
+    return {
+      message: "That coin is not available for deposits right now. Please choose another.",
+      httpStatus: 422,
+      configProblem: false,
+    };
+  }
+
+  return {
+    message: "The payment provider rejected this deposit. Try a different amount or coin.",
+    httpStatus: 502,
+    configProblem: false,
+  };
+}
+
 // A ceiling existed nowhere on this route. NOWPayments would happily quote an
 // address for a six-figure invoice, and the row it writes is what the webhook
 // later credits.
@@ -129,9 +194,23 @@ export async function POST(request: NextRequest) {
 
     if (!resp.ok) {
       const err = await resp.text();
-      console.error("NOWPayments error", resp.status, err);
+      const described = describeNowPaymentsError(resp.status, err);
+
+      // Logged either way, and loudly when it is a configuration fault: an
+      // expired key fails every deposit on the site, and the only symptom a
+      // customer can report is that it "did not work".
+      if (described.configProblem) {
+        console.error(
+          "NOWPayments rejected the request — check NOWPAYMENTS_API_KEY",
+          resp.status,
+          err
+        );
+      } else {
+        console.warn("NOWPayments declined a deposit", resp.status, err);
+      }
+
       await admin.from("deposits").delete().eq("id", depositRow.id);
-      return NextResponse.json({ error: "Payment provider error. Try again." }, { status: 502 });
+      return NextResponse.json({ error: described.message }, { status: described.httpStatus });
     }
 
     nowData = await resp.json() as typeof nowData;
