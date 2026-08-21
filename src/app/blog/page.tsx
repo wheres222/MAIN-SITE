@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { blogPostsByDate } from "@/lib/blog-posts";
+import { jsonLd } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 
@@ -37,7 +38,7 @@ export default function BlogIndexPage() {
     <div className="marketplace-page">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(schema) }}
       />
       <SiteHeader activeTab="none" />
 

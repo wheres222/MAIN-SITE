@@ -7,6 +7,7 @@ import { canonicalGameSlug, isSameGameSlug } from "@/lib/game-slug";
 import { gameSeoContentFor, allGameSeoSlugs } from "@/lib/game-seo-content";
 import { productHref } from "@/lib/product-route";
 import type { SellAuthGroup } from "@/types/sellauth";
+import { jsonLd } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -176,7 +177,7 @@ export default async function CategoryLandingPage({
   return (
     <>
       {schemas.map((s, i) => (
-        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }} />
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(s) }} />
       ))}
 
       <GameCatalogPage

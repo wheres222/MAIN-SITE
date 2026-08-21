@@ -7,6 +7,7 @@ import { AFFILIATE_GUIDES } from "@/lib/affiliate-guides";
 import styles from "./affiliates.module.css";
 import { PageSeoSections } from "@/components/page-seo-sections";
 import { pageSeoFor } from "@/lib/page-seo-content";
+import { jsonLd } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 
@@ -32,7 +33,7 @@ export default function AffiliatesPage() {
     <div className="marketplace-page">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(schema) }}
       />
       <SiteHeader activeTab="none" />
 

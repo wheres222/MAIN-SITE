@@ -2,6 +2,7 @@ import { canonicalGameSlug } from "@/lib/game-slug";
 import { gameSeoContentFor } from "@/lib/game-seo-content";
 import { productHref } from "@/lib/product-route";
 import type { SellAuthProduct } from "@/types/sellauth";
+import { jsonLd } from "@/lib/json-ld";
 
 /**
  * No AggregateRating is emitted, deliberately.
@@ -129,7 +130,7 @@ export function buildProductSchemas(
   };
 
   return [
-    JSON.stringify(productSchema),
-    JSON.stringify(breadcrumbSchema),
+    jsonLd(productSchema),
+    jsonLd(breadcrumbSchema),
   ];
 }

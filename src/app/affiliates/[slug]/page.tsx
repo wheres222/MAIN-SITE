@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { InfoPage } from "@/components/info-page";
 import { affiliateGuideBySlug, allAffiliateGuideSlugs } from "@/lib/affiliate-guides";
+import { jsonLd } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 
@@ -100,7 +101,7 @@ export default async function AffiliateGuidePage({
         <script
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(schema) }}
         />
       ))}
       <InfoPage title={guide.title} subtitle={guide.lead} sections={sections} />

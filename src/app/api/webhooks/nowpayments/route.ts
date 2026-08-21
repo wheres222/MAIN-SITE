@@ -1,4 +1,5 @@
 import { createHmac } from "crypto";
+import { safeEqual } from "@/lib/security/compare";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { creditReferral } from "@/lib/referrals";
 import { NextResponse, type NextRequest } from "next/server";
@@ -37,13 +38,7 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
   const expected = createHmac("sha512", secret)
     .update(sortObjectKeys(payload))
     .digest("hex");
-  // Constant-time comparison
-  if (expected.length !== signature.length) return false;
-  let diff = 0;
-  for (let i = 0; i < expected.length; i++) {
-    diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
-  }
-  return diff === 0;
+  return safeEqual(expected, signature);
 }
 
 // ── Main handler ──────────────────────────────────────────────────────────────
