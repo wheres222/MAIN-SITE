@@ -10,6 +10,11 @@ useDefault = true
 
 [allowlist]
 description = "Allow obvious placeholder/test values"
+# Match against the whole source line rather than gitleaks' extracted secret,
+# which defaults to just the captured value. Without this a pattern written as
+# key: "..." can never match, because by the time the allowlist runs the
+# candidate has been reduced to the value alone.
+regexTarget = "line"
 regexes = [
   '''your_shop_id_here''',
   '''your_api_key_here''',
