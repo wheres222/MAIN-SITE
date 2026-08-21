@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getStorefrontData } from "@/lib/sellauth";
+import { getMergedStatuses } from "@/lib/status-feed";
 import { StatusRouteClient } from "@/components/status-route-client";
 import type { StorefrontData } from "@/types/sellauth";
 
@@ -12,11 +13,18 @@ export const metadata: Metadata = {
 };
 
 export default async function StatusPage() {
-  let initialData: StorefrontData | null = null;
-  try {
-    initialData = await getStorefrontData();
-  } catch {
-    // Client-side fetch will handle it
-  }
-  return <StatusRouteClient initialData={initialData} />;
+  // Both in parallel: the board needs the catalogue and the statuses together,
+  // and fetching statuses here is what stops the first paint showing guessed
+  // ones until the client poll lands.
+  const [initialData, merged] = await Promise.all([
+    getStorefrontData().catch(() => null as StorefrontData | null),
+    getMergedStatuses().catch(() => null),
+  ]);
+
+  return (
+    <StatusRouteClient
+      initialData={initialData}
+      initialStatuses={merged?.statuses ?? {}}
+    />
+  );
 }

@@ -19,15 +19,18 @@ interface StatusOverride {
 
 interface StatusRouteClientProps {
   initialData?: StorefrontData | null;
+  /** Server-rendered statuses, so the first paint is already correct. The
+   *  60s poll below keeps them fresh from there. */
+  initialStatuses?: Record<string, StatusOverride>;
 }
 
-export function StatusRouteClient({ initialData }: StatusRouteClientProps) {
+export function StatusRouteClient({ initialData, initialStatuses }: StatusRouteClientProps) {
   const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState("");
   const [data, setData] = useState<StorefrontData | null>(initialData ?? null);
   const [statusOverrides, setStatusOverrides] = useState<
     Record<string, StatusOverride>
-  >({});
+  >(initialStatuses ?? {});
 
   // Seed client-side cache with SSR data so subsequent navigations are instant
   useEffect(() => {
