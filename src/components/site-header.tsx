@@ -19,7 +19,7 @@ interface SiteHeaderProps {
 
 export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: SiteHeaderProps) {
   const { t } = usePreferences();
-  const { count: cartCount } = useCart();
+  const { count: cartCount, openCart } = useCart();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
@@ -139,7 +139,12 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
           </div>
 
           <div className="nav-row-actions">
-            <Link href="/cart" className="nav-cart-btn" aria-label={t("cart.cart")}>
+            <button
+              type="button"
+              onClick={openCart}
+              className="nav-cart-btn"
+              aria-label={t("cart.cart")}
+            >
               <svg viewBox="0 0 24 24" fill="none" width="17" height="17" aria-hidden>
                 <path
                   d="M3 4h2.2l2.1 10.4a1.8 1.8 0 0 0 1.8 1.4h7.6a1.8 1.8 0 0 0 1.8-1.4L20.5 7H6"
@@ -152,7 +157,7 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
                 <circle cx="17" cy="20" r="1.4" fill="currentColor" />
               </svg>
               {cartCount > 0 && <span className="nav-cart-count">{cartCount}</span>}
-            </Link>
+            </button>
 
             <PreferencesSwitcher />
 

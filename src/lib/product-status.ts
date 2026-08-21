@@ -68,8 +68,12 @@ export function inferStatusKind(product: SellAuthProduct): StatusKind {
       .join(" ")}`
   );
 
-  if (/(detected|disabled|offline|down|banned|unsafe)/i.test(text)) return "detected";
-  if (/(updating|testing|maintenance|patching|investigating|beta)/i.test(text)) {
+  // Word boundaries are load-bearing. Without them "detected" matched inside
+  // "undetected" and "down" inside "download" — so a listing whose selling
+  // point is being undetected was classified as DETECTED, which is how the
+  // board came to show red badges for products that were fine.
+  if (/\b(detected|disabled|offline|down|banned|unsafe)\b/i.test(text)) return "detected";
+  if (/\b(updating|testing|maintenance|patching|investigating|beta)\b/i.test(text)) {
     return "updating";
   }
   return "undetected";

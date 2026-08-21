@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -46,11 +47,20 @@ export interface CartValue {
   changeQuantity: (lineId: string, delta: number) => void;
   remove: (lineId: string) => void;
   clear: () => void;
+  /** Drawer visibility. Lives here so the header button, the product page and
+   *  the drawer itself all drive one piece of state. */
+  isOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
 }
 
 const CartContext = createContext<CartValue | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
+
   const lines = useSyncExternalStore(
     subscribeCart,
     readCart,
@@ -108,8 +118,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartValue>(() => {
     const count = lines.reduce((sum, l) => sum + l.quantity, 0);
     const subtotalUsd = lines.reduce((sum, l) => sum + l.unitPrice * l.quantity, 0);
-    return { lines, count, subtotalUsd, add, setQuantity, changeQuantity, remove, clear };
-  }, [lines, add, setQuantity, changeQuantity, remove, clear]);
+    return {
+      lines, count, subtotalUsd,
+      add, setQuantity, changeQuantity, remove, clear,
+      isOpen, openCart, closeCart,
+    };
+  }, [lines, add, setQuantity, changeQuantity, remove, clear, isOpen, openCart, closeCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
@@ -131,5 +145,8 @@ export function useCart(): CartValue {
     changeQuantity: () => {},
     remove: () => {},
     clear: () => {},
+    isOpen: false,
+    openCart: () => {},
+    closeCart: () => {},
   };
 }

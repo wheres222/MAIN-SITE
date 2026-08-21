@@ -1,0 +1,326 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Cart drawer
+
+   Deliberately on the checkout's palette rather than the storefront's: the
+   slate-tinted panels (#101012 / #0d1117), #1e293b hairlines and 11px
+   uppercase micro-labels are what src/app/checkout uses, so the cart and the
+   page it hands off to read as one flow.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  /* Not display:none — the panel has to be in the layout for the transform to
+     animate. pointer-events keeps the closed drawer from swallowing clicks. */
+  pointer-events: none;
+}
+.rootOpen { pointer-events: auto; }
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.62);
+  opacity: 0;
+  transition: opacity 0.26s ease;
+}
+.rootOpen .overlay { opacity: 1; }
+
+.panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(420px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: #101012;
+  border-left: 1px solid #1e293b;
+  box-shadow: -24px 0 60px -20px rgba(0, 0, 0, 0.8);
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.rootOpen .panel { transform: translateX(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .panel, .overlay { transition: none; }
+}
+
+/* ─── Head ─────────────────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #1e293b;
+  flex: 0 0 auto;
+}
+.title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  font-family: var(--font-brand);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  letter-spacing: -0.01em;
+}
+.countPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--accent);
+  border-radius: 999px;
+  color: var(--accent-ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s;
+}
+.closeBtn:hover { background: #26344a; border-color: #43536b; }
+
+/* ─── Lines ────────────────────────────────────────────────────────────── */
+/* The only scrolling region: head and foot stay put so the checkout button is
+   always reachable however long the cart gets. */
+.lines {
+  list-style: none;
+  margin: 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+}
+.lines::-webkit-scrollbar { width: 7px; }
+.lines::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
+
+.line {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
+  padding-right: 30px;
+  background: #0d1117;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+}
+
+.thumb,
+.thumbFallback {
+  width: 56px;
+  height: 56px;
+  border-radius: 7px;
+  object-fit: cover;
+  border: 1px solid #1e293b;
+  background: #0a0a0a;
+}
+
+.lineBody { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.lineName {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  line-height: 1.35;
+}
+.lineVariant {
+  font-size: 0.74rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.lineFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  background: #0a0a0a;
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.stepper button {
+  width: 26px;
+  height: 26px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.stepper button:hover { background: #1e293b; color: #e2e8f0; }
+
+.qty {
+  min-width: 26px;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+}
+
+.lineTotal {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pinned to the row's corner so it never competes with the stepper for the
+   same tap target. */
+.removeBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.removeBtn:hover { background: #1f0707; color: #f87171; }
+
+/* ─── Empty ────────────────────────────────────────────────────────────── */
+.empty {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 24px;
+  text-align: center;
+}
+.emptyText { margin: 0; font-size: 0.88rem; color: #64748b; }
+.emptyBtn {
+  padding: 10px 20px;
+  background: var(--accent);
+  border-radius: 8px;
+  color: var(--accent-ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.emptyBtn:hover { background: var(--accent-hover); }
+
+/* ─── Foot ─────────────────────────────────────────────────────────────── */
+.foot {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid #1e293b;
+  background: #0d1117;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.summaryLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.summaryValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.chargeNote {
+  margin: 0;
+  padding: 8px 10px;
+  background: #0a0a0a;
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+.error {
+  margin: 0;
+  padding: 9px 11px;
+  background: #1f0707;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 6px;
+  font-size: 0.76rem;
+  color: #f87171;
+}
+
+.checkoutBtn {
+  width: 100%;
+  min-height: 46px;
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: var(--accent-ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.14s;
+}
+.checkoutBtn:hover:not(:disabled) { background: var(--accent-hover); }
+.checkoutBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.keepShopping {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 2px;
+  transition: color 0.12s;
+}
+.keepShopping:hover { color: #e2e8f0; text-decoration: underline; }
+
+@media (max-width: 480px) {
+  /* Full width, but leave a sliver of the page visible so it still reads as a
+     panel over the site rather than as a navigation. */
+  .panel { width: calc(100vw - 32px); }
+}

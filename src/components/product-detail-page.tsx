@@ -553,7 +553,7 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
   // SellAuth and was always "USD"; the display currency is the visitor's
   // choice now, so it is ignored.
   const { money: formatPrice, t } = usePreferences();
-  const { add: addToCart } = useCart();
+  const { add: addToCart, openCart } = useCart();
   const [added, setAdded] = useState(false);
   const money = (value: number | null, _currency?: string): string =>
     value === null ? "N/A" : formatPrice(value);
@@ -904,6 +904,7 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                     status: "undetected",
                   });
                   setAdded(true);
+                  openCart();
                 }}
                 disabled={isCheckingOut || variants.length === 0}
               >
