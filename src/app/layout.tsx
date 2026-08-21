@@ -8,6 +8,7 @@ import {
 import { getRates } from "@/lib/rates";
 import { PreferencesProvider } from "@/components/preferences-provider";
 import { CartProvider } from "@/components/cart-provider";
+import { CartDrawer } from "@/components/cart-drawer";
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway } from "next/font/google";
 import Script from "next/script";
@@ -173,7 +174,10 @@ export default async function RootLayout({
           initialCurrency={currency}
           initialRates={rates}
         >
-          <CartProvider>{children}</CartProvider>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+          </CartProvider>
         </PreferencesProvider>
         {/* lazyOnload keeps gtag (and its head preload hint) entirely off the
             critical path — it loads after everything else is done. */}
