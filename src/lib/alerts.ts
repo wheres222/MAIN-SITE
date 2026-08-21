@@ -41,6 +41,7 @@ const KIND_LABEL: Record<string, string> = {
   rate_limited: "Rate limit tripped",
   admin_denied: "Denied admin access attempt",
   preview_secret_failed: "Wrong maintenance preview secret",
+  seryx_balance_empty: "Seryx wallet out of balance — deliveries failing",
 };
 
 /**

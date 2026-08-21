@@ -10,7 +10,7 @@ interface ShopCategory {
   name: string;
   slug: string;
   image_url: string | null;
-  is_active: boolean;
+  active: boolean;
 }
 
 interface ShopProduct {
@@ -20,7 +20,7 @@ interface ShopProduct {
   name: string;
   description: string | null;
   image_url: string | null;
-  is_active: boolean;
+  active: boolean;
 }
 
 interface ShopVariant {
@@ -30,8 +30,28 @@ interface ShopVariant {
   name: string;
   price: number;
   sort_order: number;
-  is_active: boolean;
+  active: boolean;
+  seryx_game: string | null;
+  seryx_plan_type: string | null;
 }
+
+/**
+ * The Seryx plan table, mirroring SERYX_PLANS in src/lib/seryx.ts and the CHECK
+ * constraint on shop_variants. Seryx publishes no plan-listing endpoint, so
+ * these three copies are the only source of truth and must move together.
+ *
+ * The value is "game:planType" so one <select> can set both columns.
+ */
+const SERYX_PLAN_OPTIONS = [
+  { value: "",                     label: "— reselling.pro —" },
+  { value: "rust:rust_day",        label: "Seryx · Rust · 1 Day" },
+  { value: "rust:rust_threeday",   label: "Seryx · Rust · 3 Days" },
+  { value: "rust:rust_month",      label: "Seryx · Rust · 30 Days" },
+  { value: "rust:rust_lifetime",   label: "Seryx · Rust · Lifetime" },
+  { value: "fivem:week",           label: "Seryx · FiveM · 7 Days" },
+  { value: "fivem:month",          label: "Seryx · FiveM · 30 Days" },
+  { value: "fivem:lifetime",       label: "Seryx · FiveM · Lifetime" },
+] as const;
 
 interface MigrateStats {
   categories: number;
@@ -138,15 +158,31 @@ export function AdminProductsManager() {
   }
 
   async function toggleActive(table: string, id: string, current: boolean) {
-    const update = { is_active: !current };
+    const update = { active: !current };
     if (table === "shop_products") {
-      setProducts(prev => prev.map(p => p.id === id ? { ...p, is_active: !current } : p));
+      setProducts(prev => prev.map(p => p.id === id ? { ...p, active: !current } : p));
     } else if (table === "shop_variants") {
-      setVariants(prev => prev.map(v => v.id === id ? { ...v, is_active: !current } : v));
+      setVariants(prev => prev.map(v => v.id === id ? { ...v, active: !current } : v));
     } else if (table === "shop_categories") {
-      setCategories(prev => prev.map(c => c.id === id ? { ...c, is_active: !current } : c));
+      setCategories(prev => prev.map(c => c.id === id ? { ...c, active: !current } : c));
     }
     await patch(table, id, update);
+  }
+
+  /**
+   * Both columns move together or not at all — the CHECK constraint rejects a
+   * half-set pair, which is what stops a variant from reaching delivery with a
+   * game but no plan.
+   */
+  async function saveSeryxPlan(variantId: string, combined: string) {
+    const [game, planType] = combined ? combined.split(":") : [null, null];
+    setVariants(prev => prev.map(v =>
+      v.id === variantId ? { ...v, seryx_game: game, seryx_plan_type: planType } : v
+    ));
+    await patch("shop_variants", variantId, {
+      seryx_game: game,
+      seryx_plan_type: planType,
+    });
   }
 
   async function savePrice(variantId: string, raw: string) {
@@ -210,7 +246,7 @@ export function AdminProductsManager() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   const totalVariants = variants.length;
-  const activeProducts = products.filter(p => p.is_active).length;
+  const activeProducts = products.filter(p => p.active).length;
 
   return (
     // Page chrome (header/footer/sidebar) comes from src/app/admin/layout.tsx
@@ -356,10 +392,10 @@ export function AdminProductsManager() {
                   <span style={{ color: "#4a5060", fontSize: "0.75rem" }}>{catProducts.length} products</span>
                   {category && (
                     <button
-                      onClick={() => toggleActive("shop_categories", category.id, category.is_active)}
-                      style={{ ...css.pill(category.is_active), marginLeft: "auto" }}
+                      onClick={() => toggleActive("shop_categories", category.id, category.active)}
+                      style={{ ...css.pill(category.active), marginLeft: "auto" }}
                     >
-                      {category.is_active ? "Active" : "Hidden"}
+                      {category.active ? "Active" : "Hidden"}
                     </button>
                   )}
                 </div>
@@ -374,7 +410,7 @@ export function AdminProductsManager() {
                     return (
                       <div key={product.id} style={{
                         ...css.card,
-                        border: `1px solid ${product.is_active ? "#1e2230" : "#2a1a1a"}`,
+                        border: `1px solid ${product.active ? "#1e2230" : "#2a1a1a"}`,
                         opacity: isSaving ? 0.7 : 1,
                         transition: "opacity 0.15s",
                       }}>
@@ -407,10 +443,10 @@ export function AdminProductsManager() {
                           </span>
 
                           <button
-                            onClick={() => toggleActive("shop_products", product.id, product.is_active)}
-                            style={css.pill(product.is_active)}
+                            onClick={() => toggleActive("shop_products", product.id, product.active)}
+                            style={css.pill(product.active)}
                           >
-                            {product.is_active ? "Active" : "Hidden"}
+                            {product.active ? "Active" : "Hidden"}
                           </button>
 
                           <button
@@ -472,11 +508,30 @@ export function AdminProductsManager() {
                                   </button>
                                 )}
 
-                                <button
-                                  onClick={() => toggleActive("shop_variants", v.id, v.is_active)}
-                                  style={css.pill(v.is_active)}
+                                {/* Which provider fulfils this variant. Blank
+                                    leaves it on reselling.pro, as before. */}
+                                <select
+                                  value={v.seryx_game && v.seryx_plan_type ? `${v.seryx_game}:${v.seryx_plan_type}` : ""}
+                                  onChange={e => saveSeryxPlan(v.id, e.target.value)}
+                                  title="Delivery provider / Seryx plan"
+                                  style={{
+                                    padding: "3px 7px", borderRadius: 5,
+                                    border: `1px solid ${v.seryx_game ? "#3a6050" : "#2a2f3d"}`,
+                                    background: "#0d1117",
+                                    color: v.seryx_game ? "#2fe496" : "#8e98ab",
+                                    fontSize: "0.74rem", outline: "none", cursor: "pointer",
+                                  }}
                                 >
-                                  {v.is_active ? "Active" : "Hidden"}
+                                  {SERYX_PLAN_OPTIONS.map(o => (
+                                    <option key={o.value} value={o.value}>{o.label}</option>
+                                  ))}
+                                </select>
+
+                                <button
+                                  onClick={() => toggleActive("shop_variants", v.id, v.active)}
+                                  style={css.pill(v.active)}
+                                >
+                                  {v.active ? "Active" : "Hidden"}
                                 </button>
 
                                 <button
