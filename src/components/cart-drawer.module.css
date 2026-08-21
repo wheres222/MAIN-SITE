@@ -1,18 +1,21 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    Cart drawer
 
-   Deliberately on the checkout's palette rather than the storefront's: the
-   slate-tinted panels (#101012 / #0d1117), #1e293b hairlines and 11px
-   uppercase micro-labels are what src/app/checkout uses, so the cart and the
-   page it hands off to read as one flow.
+   Built on the site's own design tokens — --surface-*, --border, --accent —
+   rather than on the checkout page's palette.
+   src/app/checkout styles itself with hard-coded slate hexes (#101012 panels,
+   #1e293b hairlines, #34d399 accents) that appear nowhere else on the site, so
+   matching it made the cart the second thing that looked imported from another
+   product. The storefront is what a customer has been looking at up to this
+   point, so the cart follows the storefront.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .root {
   position: fixed;
   inset: 0;
   z-index: 200;
-  /* Not display:none — the panel has to be in the layout for the transform to
-     animate. pointer-events keeps the closed drawer from swallowing clicks. */
+  /* Not display:none — the panel has to stay in the layout for the transform
+     to animate. pointer-events keeps the closed drawer from eating clicks. */
   pointer-events: none;
 }
 .rootOpen { pointer-events: auto; }
@@ -34,8 +37,8 @@
   width: min(420px, 100vw);
   display: flex;
   flex-direction: column;
-  background: #101012;
-  border-left: 1px solid #1e293b;
+  background: var(--surface-1);
+  border-left: 1px solid var(--border);
   box-shadow: -24px 0 60px -20px rgba(0, 0, 0, 0.8);
   transform: translateX(100%);
   transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
@@ -53,7 +56,8 @@
   justify-content: space-between;
   gap: 12px;
   padding: 18px 20px;
-  border-bottom: 1px solid #1e293b;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
   flex: 0 0 auto;
 }
 .title {
@@ -64,7 +68,7 @@
   font-family: var(--font-brand);
   font-size: 1.05rem;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 .countPill {
@@ -89,14 +93,18 @@
   width: 30px;
   height: 30px;
   flex: 0 0 auto;
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 6px;
-  color: #e2e8f0;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: background 0.14s, border-color 0.14s;
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
 }
-.closeBtn:hover { background: #26344a; border-color: #43536b; }
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
 
 /* ─── Lines ────────────────────────────────────────────────────────────── */
 /* The only scrolling region: head and foot stay put so the checkout button is
@@ -113,7 +121,7 @@
   min-height: 0;
 }
 .lines::-webkit-scrollbar { width: 7px; }
-.lines::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
+.lines::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
 
 .line {
   position: relative;
@@ -122,8 +130,8 @@
   gap: 12px;
   padding: 12px;
   padding-right: 30px;
-  background: #0d1117;
-  border: 1px solid #1e293b;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
   border-radius: 10px;
 }
 
@@ -131,24 +139,24 @@
 .thumbFallback {
   width: 56px;
   height: 56px;
-  border-radius: 7px;
+  border-radius: 8px;
   object-fit: cover;
-  border: 1px solid #1e293b;
-  background: #0a0a0a;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
 }
 
 .lineBody { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .lineName {
   font-size: 0.86rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--text-primary);
   line-height: 1.35;
 }
 .lineVariant {
-  font-size: 0.74rem;
-  color: #64748b;
+  font-size: 0.72rem;
+  color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   font-weight: 600;
 }
 
@@ -163,9 +171,9 @@
 .stepper {
   display: flex;
   align-items: center;
-  background: #0a0a0a;
-  border: 1px solid #1e293b;
-  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   overflow: hidden;
 }
 .stepper button {
@@ -173,27 +181,27 @@
   height: 26px;
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 0.95rem;
   line-height: 1;
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
 }
-.stepper button:hover { background: #1e293b; color: #e2e8f0; }
+.stepper button:hover { background: rgba(255, 255, 255, 0.07); color: var(--text-primary); }
 
 .qty {
   min-width: 26px;
   text-align: center;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
 
 .lineTotal {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -210,12 +218,12 @@
   height: 22px;
   background: transparent;
   border: none;
-  border-radius: 5px;
-  color: #475569;
+  border-radius: 6px;
+  color: var(--text-dim);
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
 }
-.removeBtn:hover { background: #1f0707; color: #f87171; }
+.removeBtn:hover { background: rgba(248, 113, 113, 0.1); color: #f87171; }
 
 /* ─── Empty ────────────────────────────────────────────────────────────── */
 .empty {
@@ -228,7 +236,7 @@
   padding: 40px 24px;
   text-align: center;
 }
-.emptyText { margin: 0; font-size: 0.88rem; color: #64748b; }
+.emptyText { margin: 0; font-size: 0.88rem; color: var(--text-muted); }
 .emptyBtn {
   padding: 10px 20px;
   background: var(--accent);
@@ -247,8 +255,8 @@
   flex-direction: column;
   gap: 10px;
   padding: 16px 20px 20px;
-  border-top: 1px solid #1e293b;
-  background: #0d1117;
+  border-top: 1px solid var(--border);
+  background: var(--surface-2);
 }
 
 .summaryRow {
@@ -258,16 +266,16 @@
   gap: 12px;
 }
 .summaryLabel {
-  font-size: 11px;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #475569;
+  color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
 }
 .summaryValue {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #e2e8f0;
+  color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.02em;
 }
@@ -275,21 +283,22 @@
 .chargeNote {
   margin: 0;
   padding: 8px 10px;
-  background: #0a0a0a;
-  border: 1px solid #1e293b;
-  border-radius: 6px;
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   font-size: 0.72rem;
   line-height: 1.5;
-  color: #64748b;
+  color: var(--text-dim);
 }
 
 .error {
   margin: 0;
   padding: 9px 11px;
-  background: #1f0707;
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  border-radius: 6px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.25);
+  border-radius: 8px;
   font-size: 0.76rem;
+  line-height: 1.45;
   color: #f87171;
 }
 
@@ -311,13 +320,13 @@
 .keepShopping {
   background: none;
   border: none;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.78rem;
   cursor: pointer;
   padding: 2px;
   transition: color 0.12s;
 }
-.keepShopping:hover { color: #e2e8f0; text-decoration: underline; }
+.keepShopping:hover { color: var(--text-primary); text-decoration: underline; }
 
 @media (max-width: 480px) {
   /* Full width, but leave a sliver of the page visible so it still reads as a

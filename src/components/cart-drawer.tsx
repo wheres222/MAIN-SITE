@@ -73,10 +73,26 @@ export function CartDrawer() {
     setBusy(true);
     setError("");
     try {
+      // The route requires a payment method and answers with `redirectUrl`.
+      // This originally sent only `items` and then read `url`, so cart checkout
+      // failed twice over: 400 "paymentMethod or currency is required", and
+      // nowhere to go even if it had succeeded. Buy Now on the product page
+      // has always sent this shape — the cart just never matched it.
+      const idempotencyKey = [
+        "stripe",
+        ...lines.map((l) => `${l.productId}:${l.variantId ?? 0}:${l.quantity}`),
+        Date.now().toString(),
+      ].join("|");
+
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-idempotency-key": idempotencyKey,
+        },
         body: JSON.stringify({
+          paymentMethod: "stripe",
+          currency: "stripe",
           items: lines.map((l) => ({
             productId: l.productId,
             quantity: l.quantity,
@@ -84,12 +100,22 @@ export function CartDrawer() {
           })),
         }),
       });
-      const data = (await res.json()) as { url?: string; message?: string; error?: string };
-      if (!res.ok || !data.url) {
-        setError(data.message || data.error || t("common.error"));
+
+      const payload = (await res.json()) as {
+        success?: boolean;
+        redirectUrl?: string | null;
+        message?: string;
+      };
+
+      if (!res.ok || !payload.redirectUrl) {
+        // The route explains itself — an out-of-stock variant, a minimum
+        // quantity, a provider outage — so pass that through rather than
+        // replacing it with a generic failure.
+        setError(payload.message || t("common.error"));
         return;
       }
-      window.location.href = data.url;
+
+      window.location.href = payload.redirectUrl;
     } catch {
       setError(t("common.error"));
     } finally {
