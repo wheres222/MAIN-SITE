@@ -13,6 +13,7 @@ import {
 import { buildProductSchemas } from "@/lib/product-schemas";
 import { productSeoContentFor } from "@/lib/product-seo-content";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
+import { jsonLd } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -190,7 +191,7 @@ export default async function ProductSlugPage({ params }: { params: RouteParams 
   // structured-data violation, not a shortcut.
   if (seoContent && seoContent.faqs.length > 0) {
     schemas.push(
-      JSON.stringify({
+      jsonLd({
         "@context": "https://schema.org",
         "@type": "FAQPage",
         mainEntity: seoContent.faqs.map((faq) => ({

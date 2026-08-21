@@ -16,6 +16,7 @@ import { AssistifyScript } from "@assistifychat/widget/react";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { DISCORD_INVITE_URL } from "@/lib/links";
+import { jsonLd } from "@/lib/json-ld";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -163,11 +164,11 @@ export default async function RootLayout({
         <a href="#main-content" className="skip-link">Skip to main content</a>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(organizationJsonLd) }}
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(websiteJsonLd) }}
         />
         <PreferencesProvider
           initialLocale={locale}

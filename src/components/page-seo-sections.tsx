@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import Link from "next/link";
 import type { PageSeoContent } from "@/lib/page-seo-content";
 import styles from "./page-seo-sections.module.css";
+import { jsonLd } from "@/lib/json-ld";
 
 /**
  * The editorial half of the site's utility pages — /products, /status,
@@ -71,7 +72,7 @@ export function PageSeoSections({
       {schema && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(schema) }}
         />
       )}
 

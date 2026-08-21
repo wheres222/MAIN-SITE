@@ -167,6 +167,17 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
+              // An injected <base> tag rewrites every relative URL on the page,
+              // including the ones Next uses to fetch its own chunks — so
+              // without this, a single injection point becomes full script
+              // control even where script-src would otherwise have held.
+              "base-uri 'self'",
+              // No Flash/Java/embed surface on this site, and object-src is not
+              // covered by default-src for plugin contexts in older engines.
+              "object-src 'none'",
+              // Nothing here posts a form cross-origin; checkout redirects are
+              // top-level navigations, not form targets.
+              "form-action 'self'",
               // script-src — explicit allowlist of CDNs we load JS from.
               // jsdelivr powers @widgetbot/html-embed. googletagmanager and
               // google-analytics power the gtag snippet in src/app/layout.tsx.
