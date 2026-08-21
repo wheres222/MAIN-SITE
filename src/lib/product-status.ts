@@ -53,29 +53,25 @@ export function findStatusOverride(
   return undefined;
 }
 
-function normalized(value: string): string {
-  return (value || "").toLowerCase();
-}
-
 /**
- * Last-resort guess from the product's own text, used when no feed or manual
- * override covers it.
+ * The status shown when nothing real covers a product.
+ *
+ * This used to guess by scanning the product's own marketing copy for words
+ * like "detected", "offline" or "banned". That was never a status — it was a
+ * text match on a sales page — and it was wrong in the worst direction:
+ * "Arcane Hell Let Loose External" was showing DETECTED on the public board
+ * while the KeyHub feed listed it as fine, because prose about detection
+ * tripped the pattern.
+ *
+ * A guess that a product is detected costs a sale and tells a customer
+ * something untrue. Undetected is the only defensible default, so absence of
+ * data now reads as undetected rather than as a red badge nobody can explain.
+ *
+ * Real detections are unaffected: the KeyHub feed and the manual overrides in
+ * /admin/status both take priority over this, and both are still free to
+ * report "detected" — which they should, because that one is true.
  */
-export function inferStatusKind(product: SellAuthProduct): StatusKind {
-  const text = normalized(
-    `${product.name} ${product.description} ${product.variants
-      .map((variant) => variant.name)
-      .join(" ")}`
-  );
-
-  // Word boundaries are load-bearing. Without them "detected" matched inside
-  // "undetected" and "down" inside "download" — so a listing whose selling
-  // point is being undetected was classified as DETECTED, which is how the
-  // board came to show red badges for products that were fine.
-  if (/\b(detected|disabled|offline|down|banned|unsafe)\b/i.test(text)) return "detected";
-  if (/\b(updating|testing|maintenance|patching|investigating|beta)\b/i.test(text)) {
-    return "updating";
-  }
+export function inferStatusKind(_product: SellAuthProduct): StatusKind {
   return "undetected";
 }
 

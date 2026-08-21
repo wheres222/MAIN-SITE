@@ -1,13 +1,40 @@
 title = "MAIN-SITE gitleaks config"
 
+# Without this, passing --config replaces gitleaks' built-in ruleset entirely.
+# This file defines no [[rules]] of its own, so the scan was running with zero
+# rules loaded and could not have detected anything — a green check that meant
+# nothing. useDefault keeps the ~170 built-in provider rules and layers the
+# allowlist below on top.
+[extend]
+useDefault = true
+
 [allowlist]
 description = "Allow obvious placeholder/test values"
+# Match against the whole source line rather than gitleaks' extracted secret,
+# which defaults to just the captured value. Without this a pattern written as
+# key: "..." can never match, because by the time the allowlist runs the
+# candidate has been reduced to the value alone.
+regexTarget = "line"
 regexes = [
   '''your_shop_id_here''',
   '''your_api_key_here''',
   '''https://discord\.gg/yourserver''',
-  '''SELLAUTH_API_KEY\s*=\s*your_api_key_here'''
+  '''SELLAUTH_API_KEY\s*=\s*your_api_key_here''',
+  # Placeholders added alongside the Seryx and KeyHub integrations. They carry
+  # the real key prefixes on purpose, so the docs show what to paste — which is
+  # exactly what makes a generic-secret rule fire on them.
+  '''sk_rsl_your_seryx_reseller_key_here''',
+  '''kh_your_keyhub_api_key_here''',
+  '''your_[a-z_]*key_here''',
+  '''your_webhook_secret_here''',
+  # Product SEO content keys a map by "<game>/<product>". gitleaks reads any
+  # key: "..." with entropy over 3.5 as a generic API key, and slugs like
+  # "apex/nocturnal" score just above it. Matched narrowly on the slug shape
+  # rather than muting the rule or exempting the whole file.
+  '''key:\s*"[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*"''',
 ]
 paths = [
-  '''\.env\.example$'''
+  '''\.env\.example$''',
+  # Lockfiles carry integrity hashes that look like high-entropy secrets.
+  '''package-lock\.json$''',
 ]
