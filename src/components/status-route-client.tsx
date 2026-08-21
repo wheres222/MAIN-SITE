@@ -22,9 +22,15 @@ interface StatusRouteClientProps {
   /** Server-rendered statuses, so the first paint is already correct. The
    *  60s poll below keeps them fresh from there. */
   initialStatuses?: Record<string, StatusOverride>;
+  /**
+   * Server-rendered editorial block, passed in rather than imported, so the
+   * long-form copy stays out of this client bundle and lands in the initial
+   * HTML. Same arrangement as GameCatalogPage's seoFooter.
+   */
+  seoFooter?: React.ReactNode;
 }
 
-export function StatusRouteClient({ initialData, initialStatuses }: StatusRouteClientProps) {
+export function StatusRouteClient({ initialData, initialStatuses, seoFooter }: StatusRouteClientProps) {
   const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState("");
   const [data, setData] = useState<StorefrontData | null>(initialData ?? null);
@@ -169,6 +175,8 @@ export function StatusRouteClient({ initialData, initialStatuses }: StatusRouteC
             statusOverrides={statusOverrides}
           />
         ) : null}
+
+        {seoFooter}
       </main>
       <SiteFooter />
     </div>

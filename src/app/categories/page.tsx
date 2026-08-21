@@ -5,6 +5,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { CategoriesIndex } from "@/components/categories-index";
 import { canonicalGameSlug } from "@/lib/game-slug";
 import { gameSeoContentFor } from "@/lib/game-seo-content";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const revalidate = 300;
 
@@ -45,6 +47,8 @@ export default async function CategoriesPage({
     if (gameSeoContentFor(canonical)) redirect(`/categories/${canonical}`);
   }
 
+  const seoContent = pageSeoFor("categories");
+
   const breadcrumbs = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -63,6 +67,7 @@ export default async function CategoriesPage({
       <SiteHeader activeTab="store" />
       <main>
         <CategoriesIndex />
+        {seoContent && <PageSeoSections content={seoContent} />}
       </main>
       <SiteFooter />
     </div>

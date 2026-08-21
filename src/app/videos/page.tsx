@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const metadata: Metadata = {
   title: "Product Videos — CheatParadise",
@@ -151,6 +153,7 @@ function VideoCard({ entry }: { entry: VideoEntry }) {
 }
 
 export default function VideosPage() {
+  const seoContent = pageSeoFor("videos");
   const liveCount = VIDEOS.filter((v) => v.youtubeId !== null).length;
 
   return (
@@ -198,6 +201,7 @@ export default function VideosPage() {
             YouTube Channel
           </a>
         </section>
+        {seoContent && <PageSeoSections content={seoContent} />}
       </main>
 
       <style>{`

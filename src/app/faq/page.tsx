@@ -1,6 +1,8 @@
 
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/info-page";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const metadata: Metadata = {
   title: "FAQ",
@@ -85,17 +87,32 @@ const FAQ_SECTIONS = [
         },
 ];
 
+const FAQ_SEO = pageSeoFor("faq");
+
+// One FAQPage per URL. These questions are merged into the block this page
+// already publishes rather than emitting a second one, which would be a
+// structured-data error.
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: FAQ_SECTIONS.map((s) => ({
-    "@type": "Question",
-    name: s.heading,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: s.body.join(" "),
-    },
-  })),
+  mainEntity: [
+    ...FAQ_SECTIONS.map((s) => ({
+      "@type": "Question",
+      name: s.heading,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: s.body.join(" "),
+      },
+    })),
+    ...(FAQ_SEO?.faqs ?? []).map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.a.replace(/\[([^\]]+)\]\(\/[^)\s]*\)/g, "$1"),
+      },
+    })),
+  ],
 };
 
 export default function FaqPage() {
@@ -105,6 +122,7 @@ export default function FaqPage() {
       subtitle="Common questions and quick answers."
       sections={FAQ_SECTIONS}
       jsonLd={faqJsonLd}
+      seo={FAQ_SEO ? <PageSeoSections content={FAQ_SEO} faqSchema={false} /> : undefined}
     />
   );
 }

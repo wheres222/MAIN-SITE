@@ -2,6 +2,8 @@
 import type { Metadata } from "next";
 import { InfoPage } from "@/components/info-page";
 import { getDiscordUrl } from "@/lib/links";
+import { PageSeoSections } from "@/components/page-seo-sections";
+import { pageSeoFor } from "@/lib/page-seo-content";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -13,6 +15,7 @@ export const dynamic = "force-static";
 
 export default function ContactUsPage() {
   const discordUrl = getDiscordUrl();
+  const seoContent = pageSeoFor("contact-us");
 
   return (
     <InfoPage
@@ -33,6 +36,7 @@ export default function ContactUsPage() {
           ],
         },
       ]}
+      seo={seoContent ? <PageSeoSections content={seoContent} /> : undefined}
     />
   );
 }

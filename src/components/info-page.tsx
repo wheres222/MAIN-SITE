@@ -18,9 +18,16 @@ interface InfoPageProps {
   subtitle: string;
   sections: InfoSection[];
   jsonLd?: object;
+  /**
+   * Long-form editorial block rendered below the sections.
+   *
+   * The pages built on InfoPage were the thinnest on the site — /contact-us
+   * shipped 149 rendered words — and Google declined to index them for it.
+   */
+  seo?: React.ReactNode;
 }
 
-export function InfoPage({ title, subtitle, sections, jsonLd }: InfoPageProps) {
+export function InfoPage({ title, subtitle, sections, jsonLd, seo }: InfoPageProps) {
   return (
     <div className="marketplace-page">
       {jsonLd && (
@@ -57,6 +64,8 @@ export function InfoPage({ title, subtitle, sections, jsonLd }: InfoPageProps) {
             ))}
           </div>
         </section>
+
+        {seo}
       </main>
 
       <SiteFooter />
