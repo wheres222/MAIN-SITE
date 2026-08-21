@@ -22,6 +22,11 @@ regexes = [
   '''kh_your_keyhub_api_key_here''',
   '''your_[a-z_]*key_here''',
   '''your_webhook_secret_here''',
+  # Product SEO content keys a map by "<game>/<product>". gitleaks reads any
+  # key: "..." with entropy over 3.5 as a generic API key, and slugs like
+  # "apex/nocturnal" score just above it. Matched narrowly on the slug shape
+  # rather than muting the rule or exempting the whole file.
+  '''key:\s*"[a-z0-9]+(?:-[a-z0-9]+)*/[a-z0-9]+(?:-[a-z0-9]+)*"''',
 ]
 paths = [
   '''\.env\.example$''',
