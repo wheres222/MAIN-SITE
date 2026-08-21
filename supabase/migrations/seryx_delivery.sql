@@ -1,15 +1,28 @@
 -- ============================================================
--- Seryx reseller delivery — variant columns + Rust/FiveM catalog
+-- Seryx reseller delivery — variant columns
 -- Supabase Dashboard → SQL Editor → New query → paste → Run
 --
 -- Run AFTER shop_catalog.sql and shop_orders.sql.
 -- Safe to re-run: every statement is idempotent.
 -- ============================================================
+--
+-- This file only adds the columns. It deliberately does NOT create products.
+--
+-- An earlier version seeded "Seryx Rust" and "Seryx FiveM" into shop_products
+-- and shop_variants. That was wrong: the storefront is served from SellAuth,
+-- and the shop_ tables are a mirror that /api/checkout resolves against by
+-- sellauth_id. Rows created here carry no sellauth_id, so checkout can never
+-- reach them and the storefront never shows them — they were dead rows, and
+-- both Seryx products already exist in the catalogue with real prices.
+--
+-- Wiring Seryx delivery is therefore a matter of TAGGING the existing mirrored
+-- variants, which is a separate step because it has to match the real product
+-- and variant names. See the query at the bottom.
 
 -- ── 1. Mark a variant as Seryx-delivered ─────────────────────────────────────
--- A variant delivers through Seryx when BOTH columns are set. The delivery
--- dispatcher (src/lib/delivery.ts → variantProvider) checks Seryx first and
--- falls back to reselling.pro, so existing variants are untouched.
+-- A variant delivers through Seryx when BOTH columns are set. The dispatcher
+-- (src/lib/delivery.ts → variantProvider) checks Seryx first and falls back to
+-- reselling.pro, so untagged variants are completely unaffected.
 ALTER TABLE public.shop_variants
   ADD COLUMN IF NOT EXISTS seryx_game      text,
   ADD COLUMN IF NOT EXISTS seryx_plan_type text;
@@ -29,107 +42,57 @@ ALTER TABLE public.shop_variants
   );
 
 -- Delivery reads these per order line; the partial index keeps that lookup off
--- a full scan once the catalog grows.
+-- a full scan once the catalogue grows.
 CREATE INDEX IF NOT EXISTS shop_variants_seryx_idx
   ON public.shop_variants (seryx_game, seryx_plan_type)
   WHERE seryx_game IS NOT NULL;
 
--- ── 2. Categories ────────────────────────────────────────────────────────────
--- Both slugs are already used by the site's category art and routing, so reuse
--- them rather than creating parallel ones.
-INSERT INTO public.shop_categories (name, slug, active)
-VALUES ('Rust', 'rust', true)
-ON CONFLICT (slug) DO NOTHING;
+-- ── 2. Remove the dead rows the earlier version created, if any ──────────────
+-- Only rows with no sellauth_id are touched: those can only have come from that
+-- seeding, never from the SellAuth mirror. A mirrored product is never deleted
+-- by this.
+DELETE FROM public.shop_variants v
+USING public.shop_products p
+WHERE v.product_id = p.id
+  AND p.name IN ('Seryx Rust', 'Seryx FiveM')
+  AND p.sellauth_id IS NULL;
 
-INSERT INTO public.shop_categories (name, slug, active)
-VALUES ('FiveM', 'fivem', true)
-ON CONFLICT (slug) DO NOTHING;
+DELETE FROM public.shop_products
+WHERE name IN ('Seryx Rust', 'Seryx FiveM')
+  AND sellauth_id IS NULL;
 
--- ── 3. Products ──────────────────────────────────────────────────────────────
--- Seeded INACTIVE on purpose. Variant prices below are placeholders, and a
--- product that goes live before it is priced sells at the placeholder. Set real
--- prices first, then flip active in /admin/products.
-DO $$
-DECLARE
-  v_rust_cat  uuid;
-  v_fivem_cat uuid;
-  v_rust_prod  uuid;
-  v_fivem_prod uuid;
-BEGIN
-  SELECT id INTO v_rust_cat  FROM public.shop_categories WHERE slug = 'rust'  LIMIT 1;
-  SELECT id INTO v_fivem_cat FROM public.shop_categories WHERE slug = 'fivem' LIMIT 1;
-
-  -- ── Seryx Rust ─────────────────────────────────────────────────────────────
-  SELECT id INTO v_rust_prod
-    FROM public.shop_products WHERE name = 'Seryx Rust' LIMIT 1;
-
-  IF v_rust_prod IS NULL THEN
-    INSERT INTO public.shop_products (category_id, name, description, active)
-    VALUES (
-      v_rust_cat,
-      'Seryx Rust',
-      'Seryx Rust cheat. Instant key delivery to your email and your account order history.',
-      false
-    )
-    RETURNING id INTO v_rust_prod;
-  END IF;
-
-  -- ── Seryx FiveM ────────────────────────────────────────────────────────────
-  SELECT id INTO v_fivem_prod
-    FROM public.shop_products WHERE name = 'Seryx FiveM' LIMIT 1;
-
-  IF v_fivem_prod IS NULL THEN
-    INSERT INTO public.shop_products (category_id, name, description, active)
-    VALUES (
-      v_fivem_cat,
-      'Seryx FiveM',
-      'Seryx FiveM cheat. Instant key delivery to your email and your account order history.',
-      false
-    )
-    RETURNING id INTO v_fivem_prod;
-  END IF;
-
-  -- ── 4. Variants ────────────────────────────────────────────────────────────
-  -- price 9999.00 is a deliberate placeholder. It is the safe direction to be
-  -- wrong in: an unpriced variant that reaches the storefront sells to nobody,
-  -- where a 0.00 placeholder would sell to everybody.
-  INSERT INTO public.shop_variants
-    (product_id, name, price, sort_order, active, stock_available, seryx_game, seryx_plan_type)
-  SELECT * FROM (VALUES
-    (v_rust_prod,  '1 Day',    9999.00, 1, true, true, 'rust',  'rust_day'),
-    (v_rust_prod,  '3 Days',   9999.00, 2, true, true, 'rust',  'rust_threeday'),
-    (v_rust_prod,  '30 Days',  9999.00, 3, true, true, 'rust',  'rust_month'),
-    (v_rust_prod,  'Lifetime', 9999.00, 4, true, true, 'rust',  'rust_lifetime'),
-    (v_fivem_prod, '7 Days',   9999.00, 1, true, true, 'fivem', 'week'),
-    (v_fivem_prod, '30 Days',  9999.00, 2, true, true, 'fivem', 'month'),
-    (v_fivem_prod, 'Lifetime', 9999.00, 3, true, true, 'fivem', 'lifetime')
-  ) AS v(product_id, name, price, sort_order, active, stock_available, seryx_game, seryx_plan_type)
-  WHERE NOT EXISTS (
-    SELECT 1 FROM public.shop_variants existing
-    WHERE existing.product_id = v.product_id
-      AND existing.name       = v.name
-  );
-END $$;
-
--- ── 5. Verify ────────────────────────────────────────────────────────────────
--- Expect 7 rows, every one carrying a game and a plan type.
+-- ── 3. What to tag ───────────────────────────────────────────────────────────
+-- Lists the real, mirrored Seryx variants and the plan each should carry.
+-- Nothing is written: run the UPDATEs separately once the names below match
+-- what you expect.
 SELECT
-  p.name        AS product,
-  v.name        AS variant,
-  v.price,
+  p.name          AS product,
+  v.name          AS variant,
+  v.price         AS charged_price,
+  v.sellauth_id   AS variant_sellauth_id,
   v.seryx_game,
   v.seryx_plan_type,
-  p.active      AS product_active,
-  v.active      AS variant_active
-FROM public.shop_variants v
-JOIN public.shop_products p ON p.id = v.product_id
-WHERE v.seryx_game IS NOT NULL
-ORDER BY p.name, v.sort_order;
+  CASE
+    WHEN p.name ILIKE '%rust%'  AND v.name ILIKE '%1 day%'    THEN 'rust / rust_day'
+    WHEN p.name ILIKE '%rust%'  AND v.name ILIKE '%3 day%'    THEN 'rust / rust_threeday'
+    WHEN p.name ILIKE '%rust%'  AND v.name ILIKE '%30 day%'   THEN 'rust / rust_month'
+    WHEN p.name ILIKE '%rust%'  AND v.name ILIKE '%lifetime%' THEN 'rust / rust_lifetime'
+    WHEN p.name ILIKE '%fivem%' AND v.name ILIKE '%week%'     THEN 'fivem / week'
+    WHEN p.name ILIKE '%fivem%' AND v.name ILIKE '%30 day%'   THEN 'fivem / month'
+    WHEN p.name ILIKE '%fivem%' AND v.name ILIKE '%lifetime%' THEN 'fivem / lifetime'
+    ELSE '(no mapping)'
+  END AS should_be_tagged
+FROM public.shop_products p
+JOIN public.shop_variants v ON v.product_id = p.id
+WHERE p.name ILIKE '%seryx%'
+ORDER BY p.name, v.sort_order, v.name;
 
 -- ============================================================
 -- BEFORE GOING LIVE
 --   1. Set SERYX_API_KEY in Vercel (server-side, never NEXT_PUBLIC_)
---   2. Replace every 9999.00 price in /admin/products
---   3. Flip both products to active
---   4. Top up the Seryx reseller wallet — delivery 402s on an empty balance
+--   2. Tag the variants above with seryx_game / seryx_plan_type
+--   3. Top up the Seryx reseller wallet — delivery 402s on an empty balance
+--
+-- Prices need no change: both products already sell at their real prices,
+-- which come from the SellAuth mirror in shop_variants.price.
 -- ============================================================

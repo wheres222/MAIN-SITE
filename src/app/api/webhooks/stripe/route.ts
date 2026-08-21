@@ -299,11 +299,40 @@ async function fulfillShopOrder(
   for (const item of items) {
     // Get variant details — which provider backs this line is decided by which
     // of these columns is populated.
-    const { data: variant } = await admin
-      .from("shop_variants")
-      .select("reselling_product_id, sellauth_id, seryx_game, seryx_plan_type")
-      .eq("id", item.variant_id)
-      .single();
+    // The Seryx columns may not exist yet. PostgREST rejects the entire query
+    // when a selected column is missing, so asking for them unconditionally
+    // would return null for every line and fail delivery on every order — a
+    // schema change silently breaking fulfilment. Ask once, and if the query
+    // errors fall back to the columns that have always been there.
+    let variant: {
+      reselling_product_id?: string | null;
+      sellauth_id?: string | null;
+      seryx_game?: string | null;
+      seryx_plan_type?: string | null;
+    } | null = null;
+
+    {
+      const { data, error } = await admin
+        .from("shop_variants")
+        .select("reselling_product_id, sellauth_id, seryx_game, seryx_plan_type")
+        .eq("id", item.variant_id)
+        .single();
+
+      if (error) {
+        logger.warn("Variant lookup with Seryx columns failed — retrying without them", {
+          orderId: orderId,
+          err: error.message,
+        });
+        const { data: base } = await admin
+          .from("shop_variants")
+          .select("reselling_product_id, sellauth_id")
+          .eq("id", item.variant_id)
+          .single();
+        variant = base ?? null;
+      } else {
+        variant = data ?? null;
+      }
+    }
 
     // Get product instructions + loader URL
     const { data: itemProduct } = await admin
