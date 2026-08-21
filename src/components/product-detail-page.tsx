@@ -13,6 +13,7 @@ import type { ProductSeoContent } from "@/lib/product-seo-content";
 import { variantsFor } from "@/lib/cart";
 import type { SellAuthPaymentMethod, SellAuthProduct, SellAuthVariant } from "@/types/sellauth";
 import styles from "./product-detail-page.module.css";
+import { usePreferences } from "@/components/preferences-provider";
 
 interface ProductDetailPageProps {
   product: SellAuthProduct;
@@ -59,14 +60,6 @@ const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {};
 // Add group-wide videos here by slugified group/category name (e.g. "rust", "valorant"):
 const PRODUCT_VIDEO_PREVIEW_BY_GROUP: Record<string, ProductVideoPreview> = {};
 
-function money(value: number | null, code = "USD"): string {
-  if (value === null) return "N/A";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: code,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
 
 function cleanDescription(value: string): string {
   return value
@@ -554,6 +547,14 @@ function tabDescription(title: string): string {
 
 
 export function ProductDetailPage({ product, paymentMethods, seoContent, relatedProducts = [] }: ProductDetailPageProps) {
+  // Prices are stored in USD and converted for display only — the charge is
+  // always USD. The currency argument some call sites still pass came from
+  // SellAuth and was always "USD"; the display currency is the visitor's
+  // choice now, so it is ignored.
+  const { money: formatPrice } = usePreferences();
+  const money = (value: number | null, _currency?: string): string =>
+    value === null ? "N/A" : formatPrice(value);
+
   const variants = useMemo(() => variantsFor(product), [product]);
   const [selectedVariantId, setSelectedVariantId] = useState<number>(
     variants[0]?.id || product.id

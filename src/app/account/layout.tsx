@@ -8,12 +8,14 @@ import { createClient } from "@/lib/supabase/client";
 import { SiteHeader } from "@/components/site-header";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import styles from "./layout.module.css";
+import { usePreferences } from "@/components/preferences-provider";
+import type { TranslationKey } from "@/lib/i18n/dictionaries";
 
 const NAV_ITEMS = [
   {
     href: "/account",
     exact: true,
-    label: "Account",
+    labelKey: "account.account",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
@@ -24,7 +26,7 @@ const NAV_ITEMS = [
   {
     href: "/account/settings",
     exact: false,
-    label: "Password",
+    labelKey: "account.password",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -35,7 +37,7 @@ const NAV_ITEMS = [
   {
     href: "/account/invoices",
     exact: false,
-    label: "Invoices",
+    labelKey: "account.invoices",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -46,7 +48,7 @@ const NAV_ITEMS = [
   {
     href: "/account/orders",
     exact: false,
-    label: "Orders",
+    labelKey: "account.orders",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <path d="M5 7h14l-1 12H6L5 7Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
@@ -57,7 +59,7 @@ const NAV_ITEMS = [
   {
     href: "/account/balance",
     exact: false,
-    label: "Balances",
+    labelKey: "account.balances",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6" />
@@ -68,7 +70,7 @@ const NAV_ITEMS = [
   {
     href: "/account/deposit",
     exact: false,
-    label: "Deposit",
+    labelKey: "account.deposit",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" strokeWidth="1.6" />
@@ -79,7 +81,7 @@ const NAV_ITEMS = [
   {
     href: "/account/referrals",
     exact: false,
-    label: "Referrers",
+    labelKey: "account.referrers",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" width="16" height="16">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -91,6 +93,7 @@ const NAV_ITEMS = [
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
+  const { t } = usePreferences();
   const pathname = usePathname();
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
@@ -178,7 +181,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                     className={`${styles.navItem} ${isActive ? styles.navItemActive : ""}`}
                   >
                     <span className={styles.navIcon}>{item.icon}</span>
-                    {item.label}
+                    {t(item.labelKey as TranslationKey)}
                   </Link>
                 );
               })}
@@ -212,7 +215,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </span>
-                Sign out
+                {t("auth.signOut")}
               </button>
             </nav>
           </aside>
@@ -224,10 +227,10 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
       {showSignOutConfirm && (
         <ConfirmDialog
-          title="Sign out?"
-          message="You'll need to sign back in to access your account, orders, and balance."
-          confirmLabel="Sign out"
-          cancelLabel="Stay signed in"
+          title={t("auth.signOutConfirmTitle")}
+          message={t("auth.signOutConfirmBody")}
+          confirmLabel={t("auth.signOut")}
+          cancelLabel={t("auth.staySignedIn")}
           destructive
           onConfirm={confirmSignOut}
           onCancel={() => setShowSignOutConfirm(false)}

@@ -21,6 +21,7 @@ import { DISCORD_INVITE_URL } from "@/lib/links";
 import { buildCategoryTiles } from "@/lib/category-tiles";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { StorefrontData } from "@/types/sellauth";
+import { usePreferences } from "@/components/preferences-provider";
 
 /**
  * Swaps the full "Shop by Game" tile grid on the homepage for the tall cover
@@ -36,14 +37,6 @@ const CATEGORY_CARDS = [
   { slug: "arc-raiders", name: "ARC Raiders", image: "/category-cards/arc-raiders.avif" },
 ] as const;
 
-function money(value: number | null, currency = "USD"): string {
-  if (value === null) return "N/A";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
 
 export function StorefrontClient({
   initialData,
@@ -53,6 +46,14 @@ export function StorefrontClient({
   /** Server-rendered long-form copy, passed down so it stays in the initial HTML. */
   seoContent?: React.ReactNode;
 }) {
+  // Prices are stored in USD and converted for display only — the charge is
+  // always USD. The currency argument some call sites still pass came from
+  // SellAuth and was always "USD"; the display currency is the visitor's
+  // choice now, so it is ignored.
+  const { money: formatPrice, t } = usePreferences();
+  const money = (value: number | null, _currency?: string): string =>
+    value === null ? "N/A" : formatPrice(value);
+
   const [storefront, setStorefront] = useState<StorefrontData | null>(initialData ?? null);
   const [adspotOpen, setAdspotOpen] = useState(false);
 
@@ -184,7 +185,7 @@ export function StorefrontClient({
                     <span className="game-tile-info">
                       <span className="game-tile-name">{tile.name}</span>
                       {tile.lowestPrice !== null && (
-                        <span className="game-tile-price">from {money(tile.lowestPrice)}</span>
+                        <span className="game-tile-price">{t("product.from")} {money(tile.lowestPrice)}</span>
                       )}
                     </span>
                   </Link>

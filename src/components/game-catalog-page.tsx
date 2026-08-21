@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/site-header";
 import { productHref } from "@/lib/product-route";
 import type { SellAuthGroup, SellAuthProduct } from "@/types/sellauth";
 import styles from "./game-catalog-page.module.css";
+import { usePreferences } from "@/components/preferences-provider";
 
 interface GameCatalogPageProps {
   group: SellAuthGroup;
@@ -25,9 +26,7 @@ interface GameCatalogPageProps {
   title?: string;
 }
 
-function money(value: number, currency = "USD"): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 2 }).format(value);
-}
+
 
 function priceRange(product: SellAuthProduct): { min: number; max: number } | null {
   const prices: number[] = [];
@@ -55,6 +54,14 @@ const IconShield = (
 );
 
 export function GameCatalogPage({ group, products, seoContent, seoFooter, emptyNotice, title }: GameCatalogPageProps) {
+  // Prices are stored in USD and converted for display only — the charge is
+  // always USD. The currency argument some call sites still pass came from
+  // SellAuth and was always "USD"; the display currency is the visitor's
+  // choice now, so it is ignored.
+  const { money: formatPrice } = usePreferences();
+  const money = (value: number | null, _currency?: string): string =>
+    value === null ? "N/A" : formatPrice(value);
+
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
