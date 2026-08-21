@@ -7,6 +7,17 @@ import { AFFILIATE_GUIDES } from "@/lib/affiliate-guides";
 import { gameSeoContentFor, allGameSeoSlugs } from "@/lib/game-seo-content";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://cheatparadise.com";
 
+/**
+ * Rebuild hourly instead of only at deploy.
+ *
+ * The sitemap was fully static, so it kept advertising products for as long as
+ * it took someone to redeploy after pulling them from the catalogue — and a
+ * sitemap listing URLs that no longer resolve is the fastest way to fail a
+ * Search Console validation. An hour is well inside how often Google refetches
+ * it and costs one catalogue read per hour.
+ */
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
