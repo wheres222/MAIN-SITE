@@ -9,101 +9,18 @@
 }
 
 /* ── Deposit method cards ─────────────────────────────── */
-.methodRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
 
-.methodCard {
-  position: relative;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 18px 14px 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  transition: border-color 0.12s, background 0.12s;
-  text-align: center;
-}
-.methodCardActive:hover {
-  border-color: rgba(224, 21, 48, 0.55);
-}
-.methodCardDisabled {
-  opacity: 0.5;
-  cursor: default;
-}
 
-.methodIcon {
-  display: inline-flex;
-  color: var(--text-muted);
-  margin-bottom: 2px;
-}
 
-.methodName {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--text-primary);
-}
 
-.methodDesc {
-  font-size: 0.7rem;
-  color: var(--text-dim);
-}
 
-.methodBadge,
-.methodBadgeActive {
-  margin-top: 6px;
-  font-size: 0.6rem;
-  font-weight: 800;
-  padding: 3px 9px;
-  border-radius: 999px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-.methodBadge {
-  background: rgba(140, 145, 160, 0.14);
-  border: 1px solid rgba(140, 145, 160, 0.28);
-  color: #9ca3af;
-}
-.methodBadgeActive {
-  background: rgba(22, 163, 74, 0.16);
-  border: 1px solid rgba(22, 163, 74, 0.4);
-  color: #4ade80;
-}
 
 @media (max-width: 420px) {
-  .methodRow { grid-template-columns: 1fr; }
 }
 
 /* ── Crypto section ───────────────────────────────────── */
-.cryptoHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 
-.sectionLabel {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
 
-.bonusBadgeAlt {
-  background: rgba(234, 179, 8, 0.15);
-  border: 1px solid rgba(234, 179, 8, 0.3);
-  color: #eab308;
-  font-size: 0.64rem;
-  font-weight: 800;
-  padding: 3px 9px;
-  border-radius: 999px;
-  letter-spacing: 0.04em;
-}
 
 /* auto-fill rather than a fixed column count: the coin list is short enough
    that a hardcoded 6 left an awkward orphan row, and it now reflows with the
@@ -182,24 +99,6 @@
   letter-spacing: -0.01em;
 }
 
-.selectedCoinRow {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-.selectedCoinName {
-  font-weight: 700;
-  color: var(--text-primary);
-  font-size: 0.96rem;
-}
-.selectedCoinMeta {
-  font-size: 0.74rem;
-  color: var(--text-dim);
-}
 
 /* The form column stays narrow on purpose. A full-width amount field on a
    1440px panel is harder to scan, not easier. */
@@ -231,23 +130,6 @@
 }
 .input:focus { outline: none; border-color: var(--accent); }
 
-.presetRow {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.presetBtn {
-  padding: 6px 16px;
-  background: var(--surface-3, #050506);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.12s, color 0.12s, background 0.12s;
-}
-.presetBtn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
 
 .inputHint { font-size: 0.72rem; color: var(--text-dim); }
 
@@ -262,24 +144,6 @@
   margin: 0;
 }
 
-.primaryBtn {
-  width: 100%;
-  max-width: 560px;
-  min-height: 48px;
-  background: var(--accent);
-  border: none;
-  border-radius: 9px;
-  color: var(--accent-ink, #fff);
-  font-size: 0.96rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: filter 0.14s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.primaryBtn:hover:not(:disabled) { filter: brightness(1.12); }
-.primaryBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .btnSpinner {
   width: 20px;
@@ -378,4 +242,131 @@
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.2; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Top-up card
+
+   One card that asks for an amount, a method, and nothing else. The coin grid
+   moved to a second screen, which is what the card's own hint promises.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.topUpCard {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 600px;
+  padding: 26px 28px 28px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+/* Names the card without spending a heading on it — the balance underneath is
+   the thing worth reading first. */
+.kicker {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.balanceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: -6px 0 2px;
+}
+.balanceAmount {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.035em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.balanceCaption { font-size: 0.86rem; color: var(--text-muted); }
+
+/* Sentence case and full size: these read as questions being asked, not as
+   the uppercase micro-labels used for read-only facts elsewhere. */
+.topUpCard .fieldLabel {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.inputReadonly {
+  color: var(--text-secondary);
+  cursor: default;
+}
+.inputReadonly:focus { border-color: var(--border); }
+
+/* ─── Method tabs ──────────────────────────────────────────────────────── */
+.methodTabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.methodTab {
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.14s, color 0.14s, border-color 0.14s;
+}
+.methodTab:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+/* Inverted rather than accent-filled: on a page where the next click spends
+   money, the selected method needs to be unmistakable, and white against this
+   surface separates further than any tint of the brand red does. */
+.methodTabActive,
+.methodTabActive:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #0a0a0b;
+}
+
+.methodHint {
+  margin: -6px 0 0;
+  font-size: 0.83rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+/* ─── Continue ─────────────────────────────────────────────────────────── */
+.continueBtn {
+  width: 100%;
+  min-height: 50px;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 10px;
+  color: #0a0a0b;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.14s, border-color 0.14s;
+}
+.continueBtn:hover:not(:disabled) { background: #e6e6e8; border-color: #e6e6e8; }
+.continueBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+@media (max-width: 560px) {
+  .topUpCard { padding: 20px 18px 22px; border-radius: 12px; }
+  .balanceAmount { font-size: 2.1rem; }
+  .methodTab { white-space: normal; }
 }
