@@ -61,6 +61,7 @@ export const en = {
 
   // ── Products ─────────────────────────────────────────────────────────────
   "product.addToCart": "Add to cart",
+  "product.added": "Added",
   "product.buyNow": "Buy now",
   "product.outOfStock": "Out of stock",
   "product.inStock": "In stock",
@@ -173,6 +174,7 @@ const de: Dictionary = {
   "account.username": "Benutzername",
 
   "product.addToCart": "In den Warenkorb",
+  "product.added": "Hinzugefügt",
   "product.buyNow": "Jetzt kaufen",
   "product.outOfStock": "Nicht verfügbar",
   "product.inStock": "Verfügbar",
@@ -277,6 +279,7 @@ const ru: Dictionary = {
   "account.username": "Имя пользователя",
 
   "product.addToCart": "В корзину",
+  "product.added": "Добавлено",
   "product.buyNow": "Купить сейчас",
   "product.outOfStock": "Нет в наличии",
   "product.inStock": "В наличии",
@@ -381,6 +384,7 @@ const es: Dictionary = {
   "account.username": "Nombre de usuario",
 
   "product.addToCart": "Añadir al carrito",
+  "product.added": "Añadido",
   "product.buyNow": "Comprar ahora",
   "product.outOfStock": "Agotado",
   "product.inStock": "Disponible",
@@ -485,6 +489,7 @@ const fr: Dictionary = {
   "account.username": "Nom d'utilisateur",
 
   "product.addToCart": "Ajouter au panier",
+  "product.added": "Ajouté",
   "product.buyNow": "Acheter maintenant",
   "product.outOfStock": "Rupture de stock",
   "product.inStock": "En stock",
@@ -589,6 +594,7 @@ const pt: Dictionary = {
   "account.username": "Nome de utilizador",
 
   "product.addToCart": "Adicionar ao carrinho",
+  "product.added": "Adicionado",
   "product.buyNow": "Comprar agora",
   "product.outOfStock": "Esgotado",
   "product.inStock": "Disponível",
@@ -693,6 +699,7 @@ const pl: Dictionary = {
   "account.username": "Nazwa użytkownika",
 
   "product.addToCart": "Dodaj do koszyka",
+  "product.added": "Dodano",
   "product.buyNow": "Kup teraz",
   "product.outOfStock": "Niedostępny",
   "product.inStock": "Dostępny",
@@ -797,6 +804,7 @@ const tr: Dictionary = {
   "account.username": "Kullanıcı adı",
 
   "product.addToCart": "Sepete ekle",
+  "product.added": "Eklendi",
   "product.buyNow": "Hemen al",
   "product.outOfStock": "Stokta yok",
   "product.inStock": "Stokta",

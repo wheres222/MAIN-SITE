@@ -534,3 +534,77 @@
   white-space: pre-line;
 }
 .descText:last-child { margin-bottom: 0; }
+
+/* ─── Description under the product name ───────────────────────────────── */
+/* Capped and scrollable rather than unbounded: this sits above the price and
+   the buy buttons now, and a seller who writes six paragraphs should not push
+   the purchase controls off the screen. */
+.buyDescription {
+  margin: 12px 0 4px;
+  max-height: 190px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.buyDescription .descText {
+  font-size: 0.86rem;
+  line-height: 1.6;
+  max-width: none;
+}
+.buyDescription::-webkit-scrollbar { width: 6px; }
+.buyDescription::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+}
+
+/* ─── Selected plan ────────────────────────────────────────────────────── */
+/* The plan cards select rather than buy now, so the chosen one has to be
+   unmistakable — the buttons beneath act on it. */
+.planCardActive,
+.planCardActive:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* ─── Buy actions ──────────────────────────────────────────────────────── */
+.buyActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.addToCartBtn,
+.buyNowBtn {
+  min-height: 46px;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.14s, border-color 0.14s, color 0.14s;
+}
+
+/* Secondary: adding to a cart is a smaller commitment than paying, and the
+   two should not compete for the same emphasis. */
+.addToCartBtn {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+}
+.addToCartBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: var(--accent);
+}
+
+.buyNowBtn {
+  background: var(--accent);
+  border: 1px solid transparent;
+  color: var(--accent-ink);
+}
+.buyNowBtn:hover:not(:disabled) { background: var(--accent-hover); }
+
+.addToCartBtn:disabled,
+.buyNowBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 520px) {
+  .buyActions { grid-template-columns: 1fr; }
+}
