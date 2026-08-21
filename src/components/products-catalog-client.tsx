@@ -13,13 +13,10 @@ import { canonicalGroupSlug } from "@/lib/category-tiles";
 import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-client-cache";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 import styles from "./products-catalog.module.css";
+import { usePreferences } from "@/components/preferences-provider";
 
 const PLACEHOLDER = "/placeholders/category-banner-not-added.svg";
 
-function money(value: number | null, currency = "USD"): string {
-  if (value === null) return "N/A";
-  return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: 2 }).format(value);
-}
 
 function productPrice(product: SellAuthProduct): number | null {
   if (typeof product.price === "number") return product.price;
@@ -43,6 +40,14 @@ export function ProductsCatalogClient({
 }: {
   initialData?: StorefrontData | null;
 } = {}) {
+  // Prices are stored in USD and converted for display only — the charge is
+  // always USD. The currency argument some call sites still pass came from
+  // SellAuth and was always "USD"; the display currency is the visitor's
+  // choice now, so it is ignored.
+  const { money: formatPrice, t } = usePreferences();
+  const money = (value: number | null, _currency?: string): string =>
+    value === null ? "N/A" : formatPrice(value);
+
   // Seed from the server render so the catalog is present in the HTML — this
   // page previously shipped only a skeleton and filled in client-side, which
   // meant crawlers indexed an empty page.
@@ -198,7 +203,7 @@ export function ProductsCatalogClient({
                           <span className={styles.pcardMeta}>
                             <span className={styles.pcardName}>{product.name}</span>
                             {price !== null && (
-                              <span className={styles.pcardPrice}>from {money(price, product.currency || "USD")}</span>
+                              <span className={styles.pcardPrice}>{t("product.from")} {money(price, product.currency || "USD")}</span>
                             )}
                           </span>
                           <span className={styles.pcardBtn}>Purchase</span>

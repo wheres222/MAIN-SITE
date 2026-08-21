@@ -11,8 +11,10 @@ import { productDisplayName, productHref } from "@/lib/product-route";
 import { ProductSeoSections } from "@/components/product-seo-sections";
 import type { ProductSeoContent } from "@/lib/product-seo-content";
 import { variantsFor } from "@/lib/cart";
+import { useCart } from "@/components/cart-provider";
 import type { SellAuthPaymentMethod, SellAuthProduct, SellAuthVariant } from "@/types/sellauth";
 import styles from "./product-detail-page.module.css";
+import { usePreferences } from "@/components/preferences-provider";
 
 interface ProductDetailPageProps {
   product: SellAuthProduct;
@@ -59,22 +61,27 @@ const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {};
 // Add group-wide videos here by slugified group/category name (e.g. "rust", "valorant"):
 const PRODUCT_VIDEO_PREVIEW_BY_GROUP: Record<string, ProductVideoPreview> = {};
 
-function money(value: number | null, code = "USD"): string {
-  if (value === null) return "N/A";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: code,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
 
 function cleanDescription(value: string): string {
   return value
-    .replace(/<br\s*\/?\s*>/gi, "\n")
-    .replace(/<\/p>/gi, "\n")
+    // SellAuth descriptions are rich text. Only <br> and </p> used to become
+    // line breaks, so a <ul> collapsed into one run-on line and every heading
+    // fused onto the paragraph after it — which made the parser below treat
+    // whole descriptions as a single unparseable blob.
+    .replace(/<\s*(?:br|hr)\s*\/?\s*>/gi, "\n")
+    .replace(/<\s*li\b[^>]*>/gi, "\n• ")
+    .replace(/<\/\s*(?:p|div|li|ul|ol|h[1-6]|tr|section|blockquote)\s*>/gi, "\n")
     .replace(/<[^>]+>/g, "")
+    // Entities survive tag stripping, so without this a description reads
+    // "Fast &amp; undetected".
     .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#0?39;|&apos;/gi, "'")
     .replace(/\r/g, "")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
 
@@ -202,6 +209,29 @@ function isPostPaymentOnlyCopy(value: string): boolean {
   const normalized = normalizeLabel(value);
   return /(\bloader\b|\binstructions?\b|\bsetup\b|\bguide\b|\binstall\b|\blaunch\b|\binject\b)/.test(
     normalized
+  );
+}
+
+/**
+ * Delivery copy that genuinely only makes sense after payment.
+ *
+ * Deliberately much narrower than isPostPaymentOnlyCopy, which word-matches on
+ * loader/install/setup/guide/launch/inject. That is fine for a short tab title,
+ * but as a filter on prose it is catastrophic: "easy to install", "undetected
+ * loader" and "launch the game" are ordinary sentences in a cheat listing, so
+ * it silently deleted most of what sellers had written.
+ */
+function isDeliveryInstruction(line: string): boolean {
+  const normalized = normalizeLabel(line);
+
+  // A download link for the loader — the one thing worth withholding.
+  if (/https?:\/\//i.test(line) && /(loader|download|install|setup|mirror)/.test(normalized)) {
+    return true;
+  }
+
+  // A bare instruction heading with no content of its own.
+  return /^(how to (install|set ?up|use)|installation|setup instructions?|instructions)\b[:\s]*$/i.test(
+    line.trim()
   );
 }
 
@@ -349,7 +379,7 @@ function parseDetailContent(product: SellAuthProduct): ParsedDetailContent {
       }
     }
 
-    if (!isPostPaymentOnlyCopy(line)) {
+    if (!isDeliveryInstruction(line)) {
       descriptionParagraphs.push(line);
     }
   }
@@ -518,6 +548,16 @@ function tabDescription(title: string): string {
 
 
 export function ProductDetailPage({ product, paymentMethods, seoContent, relatedProducts = [] }: ProductDetailPageProps) {
+  // Prices are stored in USD and converted for display only — the charge is
+  // always USD. The currency argument some call sites still pass came from
+  // SellAuth and was always "USD"; the display currency is the visitor's
+  // choice now, so it is ignored.
+  const { money: formatPrice, t } = usePreferences();
+  const { add: addToCart, openCart } = useCart();
+  const [added, setAdded] = useState(false);
+  const money = (value: number | null, _currency?: string): string =>
+    value === null ? "N/A" : formatPrice(value);
+
   const variants = useMemo(() => variantsFor(product), [product]);
   const [selectedVariantId, setSelectedVariantId] = useState<number>(
     variants[0]?.id || product.id
@@ -788,6 +828,18 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                 of it — "ancient arc raiders" rather than just "ancient". */}
             <h1>{productDisplayName(product)}</h1>
 
+            {/* The seller's own copy, directly under the name. It used to sit
+                in the full-width block beneath the gallery, which put the one
+                piece of writing that actually sells the product below the
+                fold on most screens. */}
+            {detailContent.descriptionParagraphs.length > 0 && (
+              <div className={styles.buyDescription}>
+                {detailContent.descriptionParagraphs.map((paragraph, i) => (
+                  <p key={i} className={styles.descText}>{paragraph}</p>
+                ))}
+              </div>
+            )}
+
             <div className={styles.badgeRow}>
               <span className={styles.badgeUndetected}>
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -803,11 +855,18 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                 return (
                   <button
                     key={variant.id}
-                    className={styles.planCard}
+                    className={`${styles.planCard} ${
+                      selectedVariantId === variant.id ? styles.planCardActive : ""
+                    }`}
+                    // Selection only. This used to fire checkoutNow() straight
+                    // from the plan card, so a single click on a price sent
+                    // someone to Stripe with no confirmation and no way to buy
+                    // anything alongside it.
                     onClick={() => {
                       setSelectedVariantId(variant.id);
-                      void checkoutNow(variant);
+                      setAdded(false);
                     }}
+                    aria-pressed={selectedVariantId === variant.id}
                     disabled={isCheckingOut}
                   >
                     <div className={styles.planTopRow}>
@@ -824,6 +883,47 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
               })}
             </div>
 
+            <div className={styles.buyActions}>
+              <button
+                type="button"
+                className={styles.addToCartBtn}
+                onClick={() => {
+                  const variant = variants.find((v) => v.id === selectedVariantId) ?? variants[0];
+                  if (!variant || variant.price === null) return;
+                  addToCart({
+                    productId: product.id,
+                    productName: productDisplayName(product),
+                    image: galleryImages[0] ?? "",
+                    quantity: resolveCheckoutQuantity(),
+                    // A synthetic variant stands in for a product with no real
+                    // options, and its id is fabricated — sending it to
+                    // checkout would fail to resolve.
+                    ...(variant.isSynthetic ? {} : { variantId: variant.id, variantName: variant.name }),
+                    unitPrice: variant.price,
+                    currency: product.currency || "USD",
+                    status: "undetected",
+                  });
+                  setAdded(true);
+                  openCart();
+                }}
+                disabled={isCheckingOut || variants.length === 0}
+              >
+                {added ? t("product.added") : t("product.addToCart")}
+              </button>
+
+              <button
+                type="button"
+                className={styles.buyNowBtn}
+                onClick={() => {
+                  const variant = variants.find((v) => v.id === selectedVariantId) ?? variants[0];
+                  void checkoutNow(variant);
+                }}
+                disabled={isCheckingOut || variants.length === 0}
+              >
+                {isCheckingOut ? `${t("common.loading")}…` : t("product.buyNow")}
+              </button>
+            </div>
+
             {minQuantity > 1 ? (
               <p className={styles.minimumHint}>Minimum quantity for this product: {minQuantity}</p>
             ) : null}
@@ -833,7 +933,9 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
         </section>
         </div>
 
-        {(detailContent.featureTabs.length > 0 || detailContent.requirements.length > 0 || showRequirements) && (
+        {(detailContent.featureTabs.length > 0 ||
+          detailContent.requirements.length > 0 ||
+          showRequirements) && (
           <section className={styles.descPanel}>
             {/* Information panel */}
             {(detailContent.requirements.length > 0 || showRequirements) && (

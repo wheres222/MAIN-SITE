@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { permanentRedirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ProductRouteClient } from "@/components/product-route-client";
 import { SubpageSkeleton } from "@/components/subpage-skeleton";
 import { getStorefrontData } from "@/lib/sellauth";
@@ -65,8 +65,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { game, slug } = await params;
 
+  // Distinguishes "the catalogue says this product is gone" from "the
+  // catalogue could not be reached", which need opposite handling below.
+  let catalogueLoaded = false;
+
   try {
     const storefront = await getStorefrontData();
+    catalogueLoaded = true;
     const product = findProductByRoute(storefront.products, game, slug);
 
     if (product) {
@@ -105,11 +110,26 @@ export async function generateMetadata({
     // Fall through to default metadata
   }
 
+  // The catalogue loaded and this product is not in it. Previously this
+  // returned the products index metadata with alternates.canonical set to
+  // /products — a missing product declaring the index as its canonical, which
+  // is exactly what Search Console files under "alternative page with proper
+  // canonical tag". The page itself now calls notFound(), so this only has to
+  // avoid asking for indexing.
+  if (catalogueLoaded) {
+    return {
+      title: "Product not found",
+      robots: { index: false, follow: true },
+    };
+  }
+
+  // Catalogue unreachable. The client still fetches and renders the product,
+  // so this must not noindex or canonicalise elsewhere — a transient upstream
+  // outage would otherwise deindex live product pages.
   return {
     title: "Products",
     description:
       "Browse game cheats and hacks for Rust, Valorant, Fortnite, COD, CS2, Apex, R6, and more. Instant delivery, secure checkout, and 24/7 support.",
-    alternates: { canonical: "/products" },
   };
 }
 
@@ -130,6 +150,21 @@ export default async function ProductSlugPage({ params }: { params: RouteParams 
   let resolvedProduct: SellAuthProduct | null = null;
   if (initialData) {
     resolvedProduct = findProductByRoute(initialData.products, game, slug);
+
+    // A product that has been pulled from the catalogue must 404, not fall
+    // through. Without this the page rendered anyway, the client fetched
+    // nothing, and the visitor got the products index at status 200 with a
+    // canonical pointing at /products — which Search Console counts twice,
+    // once as a soft 404 and once as "alternative page with proper canonical
+    // tag".
+    //
+    // Guarded on initialData deliberately: when the catalogue fetch itself
+    // fails, initialData is null and the client fallback still runs. Turning a
+    // transient upstream outage into a 404 on every product page would be far
+    // worse than the bug being fixed.
+    if (!resolvedProduct) {
+      notFound();
+    }
 
     // One canonical URL per product. A resolvable-but-non-canonical path (an
     // un-stripped leaf, or the wrong case) redirects rather than serving the

@@ -6,6 +6,9 @@ import { type ReactNode, useEffect, useRef, useState, useMemo } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { PreferencesSwitcher } from "@/components/preferences-switcher";
+import { usePreferences } from "@/components/preferences-provider";
+import { useCart } from "@/components/cart-provider";
 
 export type NavTab = "store" | "status" | "support" | "guide" | "loaders" | "videos" | "none";
 
@@ -15,6 +18,8 @@ interface SiteHeaderProps {
 }
 
 export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: SiteHeaderProps) {
+  const { t } = usePreferences();
+  const { count: cartCount, openCart } = useCart();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState("");
@@ -126,14 +131,36 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
             </Link>
 
             <nav className="site-nav" aria-label="Main navigation">
-              <Link className={pathname === "/" ? "active" : ""} href="/">Home</Link>
-              <Link className={pathname.startsWith("/products") ? "active" : ""} href="/products">Products</Link>
-              <Link className={pathname.startsWith("/guide") ? "active" : ""} href="/guide">Guides</Link>
-              <Link className={pathname.startsWith("/status") ? "active" : ""} href="/status">Status</Link>
+              <Link className={pathname === "/" ? "active" : ""} href="/">{t("nav.home")}</Link>
+              <Link className={pathname.startsWith("/products") ? "active" : ""} href="/products">{t("nav.products")}</Link>
+              <Link className={pathname.startsWith("/guide") ? "active" : ""} href="/guide">{t("nav.guides")}</Link>
+              <Link className={pathname.startsWith("/status") ? "active" : ""} href="/status">{t("nav.status")}</Link>
             </nav>
           </div>
 
           <div className="nav-row-actions">
+            <button
+              type="button"
+              onClick={openCart}
+              className="nav-cart-btn"
+              aria-label={t("cart.cart")}
+            >
+              <svg viewBox="0 0 24 24" fill="none" width="17" height="17" aria-hidden>
+                <path
+                  d="M3 4h2.2l2.1 10.4a1.8 1.8 0 0 0 1.8 1.4h7.6a1.8 1.8 0 0 0 1.8-1.4L20.5 7H6"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="10" cy="20" r="1.4" fill="currentColor" />
+                <circle cx="17" cy="20" r="1.4" fill="currentColor" />
+              </svg>
+              {cartCount > 0 && <span className="nav-cart-count">{cartCount}</span>}
+            </button>
+
+            <PreferencesSwitcher />
+
             {isLoggedIn ? (
               <div className="nav-user-group">
                 {/* Balance bar. A link to a real page rather than a popup, so
@@ -142,9 +169,9 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
                 <Link
                   href="/account/deposit"
                   className="nav-balance-btn"
-                  aria-label="Add account balance"
+                  aria-label={t("auth.addBalance")}
                 >
-                  <span className="nav-balance-label">BALANCE</span>
+                  <span className="nav-balance-label">{t("auth.balance")}</span>
                   <span className="nav-balance-amount">${(balance ?? 0).toFixed(2)}</span>
                   {/* Deposit plus icon */}
                   <span className="nav-balance-add" aria-hidden="true">
@@ -180,16 +207,16 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
                           same content was implemented twice and the cramped
                           copy was the one most people saw. */}
                       <Link href="/account" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
-                        Dashboard
+                        {t("auth.dashboard")}
                       </Link>
                       <Link href="/account/settings" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
-                        Settings
+                        {t("auth.settings")}
                       </Link>
                       <Link href="/account/balance" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
-                        Transactions
+                        {t("auth.transactions")}
                       </Link>
                       <Link href="/account/referrals" role="menuitem" className="nav-dropdown-item" onClick={() => setShowDropdown(false)}>
-                        Affiliates
+                        {t("auth.affiliates")}
                       </Link>
                       <div role="menuitem" aria-disabled="true" className="nav-dropdown-item nav-dropdown-disabled">
                         Live Support
@@ -232,10 +259,10 @@ export function SiteHeader({ activeTab: _activeTab, searchSlot: _searchSlot }: S
 
       {showSignOutConfirm && (
         <ConfirmDialog
-          title="Sign out?"
-          message="You'll need to sign back in to access your account, orders, and balance."
-          confirmLabel="Sign out"
-          cancelLabel="Stay signed in"
+          title={t("auth.signOutConfirmTitle")}
+          message={t("auth.signOutConfirmBody")}
+          confirmLabel={t("auth.signOut")}
+          cancelLabel={t("auth.staySignedIn")}
           destructive
           onConfirm={confirmLogout}
           onCancel={() => setShowSignOutConfirm(false)}

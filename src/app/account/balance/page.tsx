@@ -151,7 +151,12 @@ export default function BalancePage() {
       {showForm && (
         <div className={styles.section}>
           <div className={styles.sectionHead}>
-            <h2 className={styles.sectionTitle}>Withdraw Funds</h2>
+            <span className={styles.sectionIcon}>
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" aria-hidden>
+              <path d="M12 3v12m0 0 4-4m-4 4-4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </span>
+          <h2 className={styles.sectionTitle}>Withdraw Funds</h2>
           </div>
           <p className={styles.notice}>
             Minimum $1.00. Reviewed manually within 24–48 hours.
@@ -207,6 +212,11 @@ export default function BalancePage() {
 
       <div className={styles.section}>
         <div className={styles.sectionHead}>
+          <span className={styles.sectionIcon}>
+            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" aria-hidden>
+              <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7.5V12l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
           <h2 className={styles.sectionTitle}>Withdrawal History</h2>
         </div>
 
