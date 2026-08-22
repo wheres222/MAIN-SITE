@@ -1,7 +1,11 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { DISCORD_INVITE_URL } from "@/lib/links";
+import {
+  DISCORD_INVITE_URL,
+  getElitepvpersLabel,
+  getElitepvpersUrl,
+} from "@/lib/links";
 import { categoryHref } from "@/lib/category-href";
 
 // Curated list of game categories shown in the footer. Mirrors what
@@ -34,6 +38,11 @@ const OTHER_LINKS = [
 ];
 
 export function SiteFooter() {
+  // Null until NEXT_PUBLIC_EPVP_URL is set, and the banner is skipped entirely
+  // rather than rendering a link to nowhere.
+  const epvpUrl = getElitepvpersUrl();
+  const epvpLabel = getElitepvpersLabel();
+
   return (
     <footer className="global-footer">
       <div className="footer-shell">
@@ -60,6 +69,68 @@ export function SiteFooter() {
               round-the-clock support so you never miss a beat. Ready to dominate the
               game without limits? Get started with CheatParadise today!
             </p>
+
+            {/* ── elitepvpers banner ──
+                Built from markup and site tokens rather than an image file:
+                it stays crisp on any display, costs no extra request, needs no
+                external host that could later 404, and it re-themes with the
+                rest of the site instead of being a fixed-colour rectangle
+                sitting on top of it.
+
+                The mark is a neutral badge glyph, not the elitepvpers logo —
+                that is their trademark, and inventing an approximation of
+                someone else's brand mark is worse than not showing one. If you
+                want the official artwork here, take it from epvp and swap this
+                block for an <img>. */}
+            {epvpUrl && (
+              <a
+                href={epvpUrl}
+                target="_blank"
+                // noopener is what matters: the tab we open gets no handle back
+                // to window.opener. noreferrer is deliberately not set, so epvp
+                // still sees the referral.
+                rel="noopener nofollow"
+                className="footer-epvp"
+              >
+                <span className="footer-epvp-mark" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
+                    <path
+                      d="M12 2.6 4.8 5.7v5.5c0 4.5 3 8.6 7.2 9.9 4.2-1.3 7.2-5.4 7.2-9.9V5.7L12 2.6Z"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="m8.8 11.8 2.3 2.3 4.1-4.4"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span className="footer-epvp-text">
+                  <span className="footer-epvp-name">elitepvpers</span>
+                  <span className="footer-epvp-sub">{epvpLabel}</span>
+                </span>
+                <svg
+                  className="footer-epvp-arrow"
+                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M7 17 17 7M9 7h8v8"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </a>
+            )}
 
             {/* Social icon squares */}
             <div className="footer-social-icons">
