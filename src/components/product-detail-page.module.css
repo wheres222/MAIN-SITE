@@ -39,7 +39,11 @@
      what keeps it uncropped — the buy panel needs far less. */
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
   gap: 56px;
-  align-items: start;
+  /* stretch, not start: the art column grows to the buy column's height so
+     the thumbnail rail lands level with the Buy now / Add to cart row. A
+     fixed aspect ratio can only line those up for one product, since the
+     buy column's height varies with the number of variants. */
+  align-items: stretch;
 }
 
 .imagePanel {
@@ -49,24 +53,26 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  height: 100%;
 }
 
 /* ── Main display ──────────────────────────────── */
-/* Aspect stays 16/9 — product art here is gameplay screenshots and video, not
-   the square box render the design was drawn against. Squaring it would
-   letterbox every real image.
+/* Product art here is banner-shaped gameplay screenshots and video (the Rust
+   art is 1200x483), not the square box render the design was drawn against.
+   A square frame threw away ~60% of the width to `cover`, so the panel is
+   wide and takes its height from the column instead.
 
    The dot grid is a background layer rather than a ::before overlay so it
    paints behind the screenshot instead of over it, and the glow sits above the
    dots in the stack to fade them toward the middle. */
-/* 16:9 rather than square. The art is banner-shaped (1200x483), so a square
-   frame threw away ~60% of the width to `cover`; this keeps most of it and
-   matches the aspect video embeds are authored at, so both fill the frame. */
 .mainDisplay {
   width: 100%;
   border-radius: 24px;
   overflow: hidden;
-  aspect-ratio: 16 / 9;
+  /* Grows into whatever height the stretched column has left after the
+     thumbnail rail, with a floor so a short buy column cannot squash it. */
+  flex: 1 1 auto;
+  min-height: 440px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -443,6 +449,20 @@
   gap: 12px;
 }
 
+/* The Information and feature blocks use the sitewide .panel class, which is
+   a different dark (#0a0a0b card on a #101012 header, hairline in white 10%)
+   from the buy panel's cards. Re-pointed here only — .panel is shared with
+   five other pages, so changing it globally would move all of them. */
+.descPanel :global(.panel) {
+  background: var(--pd-card);
+  border-color: var(--pd-line);
+  box-shadow: none;
+}
+.descPanel :global(.panel-header) {
+  background: var(--pd-card-sel);
+  border-bottom-color: var(--pd-line);
+}
+
 /* Information panel bullets (label: value pairs, 2-col) */
 .descBullets {
   list-style: none;
@@ -641,7 +661,7 @@
    unmistakable — the buttons beneath act on it. */
 .planCardActive,
 .planCardActive:hover {
-  border-color: #2f2d2a;
+  border-color: var(--pd-dim);
   background: var(--pd-card-sel);
 }
 
@@ -676,7 +696,7 @@
 
 .addToCartBtn {
   background: var(--pd-card);
-  border: 1px solid #272522;
+  border: 1px solid var(--pd-line);
   color: #ffffff;
   order: 2;
 }
@@ -700,6 +720,13 @@
   .topGrid {
     grid-template-columns: minmax(0, 1fr);
     gap: 44px;
+  }
+  /* Stacked, there is no second column to match, so the panel goes back to a
+     fixed ratio — flex-growing here would just make it tall and narrow. */
+  .mainDisplay {
+    flex: none;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
   }
 }
 

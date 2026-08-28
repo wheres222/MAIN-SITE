@@ -768,7 +768,6 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
         />
         <div className={styles.showreel}>
         <section className={styles.topGrid}>
-          <div>
             <article className={styles.imagePanel}>
               {/* ── Main display: video or first image ── */}
               <div className={styles.mainDisplay}>
@@ -835,7 +834,6 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                 );
               })()}
             </article>
-          </div>
 
           <article className={styles.buyColumn}>
             {/* Includes the game so the H1 matches the whole query, not half

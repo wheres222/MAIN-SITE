@@ -87,7 +87,10 @@
   --surface-3:      var(--surface-0);  /* inputs — sunken to page level */
   --surface-strong: var(--surface-2);  /* hover / strongest elevation */
   --surface-main:   var(--surface-1);
-  --surface-overlay: rgba(5, 5, 6, 0.82); /* glass panels — pair with --blur-panel */
+  /* Navbar. Solid rather than translucent glass: the bar now matches the page
+     background exactly instead of tinting whatever scrolls under it. Only
+     .nav-row uses this. */
+  --surface-overlay: var(--surface-0);
 
   /* ── Accent — brand red, gradient treatment ──────────────────────────── */
   /* #e01530 rather than a brighter red: white button text needs 4.5:1 for
@@ -132,9 +135,6 @@
   --card-shadow: var(--shadow-md), var(--edge-top);
   --card-shadow-hover: var(--shadow-lg), var(--edge-top), 0 0 0 1px rgba(239, 27, 53, 0.18);
   --glow-live: 0 0 16px -2px rgba(239, 27, 53, 0.6);
-
-  /* ── Glass ───────────────────────────────────────────────────────────── */
-  --blur-panel: saturate(140%) blur(14px);
 
   /* ── Ambient background — aurora red tints ───────────────────────────── */
   --bg-aurora:
@@ -1043,7 +1043,9 @@ select::-ms-expand { display: none; }
   display: inline-block;
 }
 
-/* ── Navbar — frosted glass bar ── */
+/* ── Navbar — solid bar, same black as the page ── */
+/* Was frosted glass. The backdrop blur went with it: it costs a compositing
+   layer and cannot show through an opaque background. */
 .nav-row {
   position: fixed;
   top: 0;
@@ -1051,8 +1053,6 @@ select::-ms-expand { display: none; }
   right: 0;
   z-index: 100;
   background: var(--surface-overlay);
-  -webkit-backdrop-filter: var(--blur-panel);
-  backdrop-filter: var(--blur-panel);
   border-bottom: 1px solid var(--border);
   box-shadow: none;
   transform: translateZ(0);
