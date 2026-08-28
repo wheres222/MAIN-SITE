@@ -31,3 +31,34 @@ export const DISCORD_INVITE_URL = resolveInvite();
 export function getDiscordUrl(): string {
   return DISCORD_INVITE_URL;
 }
+
+/**
+ * elitepvpers profile or sales thread, shown as a banner in the footer.
+ *
+ * Returns null when unset, and the footer renders nothing rather than a dead
+ * link — a footer badge pointing at a 404 is worse than no badge, because the
+ * whole point of it is to look like corroboration.
+ *
+ * Same host guard as the Discord invite: this value is rendered into an href on
+ * every page of the site, so it is checked rather than trusted. Both the .com
+ * and the German .de host are accepted since epvp serves profiles on both.
+ */
+export function getElitepvpersUrl(): string | null {
+  const configured = process.env.NEXT_PUBLIC_EPVP_URL?.trim();
+  if (!configured) return null;
+  if (!/^https:\/\/(www\.)?elitepvpers\.(com|de)\//i.test(configured)) return null;
+  return configured;
+}
+
+/**
+ * Caption under the wordmark.
+ *
+ * Deliberately not hard-coded to something like "Trusted Trader" or "Verified
+ * Seller". That is a reputation claim about a third party's system, and this
+ * site cannot verify it at build time — stating it anyway on a storefront is
+ * exactly the kind of unearned trust signal that costs you when a customer
+ * checks. Set it to whatever standing the profile actually shows.
+ */
+export function getElitepvpersLabel(): string {
+  return process.env.NEXT_PUBLIC_EPVP_LABEL?.trim() || "Find us on elitepvpers";
+}

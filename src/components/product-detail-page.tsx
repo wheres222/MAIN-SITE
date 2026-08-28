@@ -58,6 +58,20 @@ interface ProductVideoPreview {
 // };
 const PRODUCT_VIDEO_PREVIEW_BY_ID: Record<number, ProductVideoPreview> = {};
 
+/**
+ * Splits a formatted price so the cents can be dimmed against the whole
+ * amount: "$239.99" -> ["$239", ".99", ""].
+ *
+ * formatMoney() always emits exactly two fraction digits, so the last
+ * "<separator><2 digits>" group is the cents whatever the locale's separator
+ * or symbol placement — "239,99 €" gives ["239", ",99", " €"], keeping the
+ * trailing symbol at full brightness rather than dimming it with the decimals.
+ */
+function splitMoney(text: string): [string, string, string] {
+  const match = text.match(/^(.*)([.,]\d{2})(\D*)$/);
+  return match ? [match[1], match[2], match[3]] : [text, "", ""];
+}
+
 // Add group-wide videos here by slugified group/category name (e.g. "rust", "valorant"):
 const PRODUCT_VIDEO_PREVIEW_BY_GROUP: Record<string, ProductVideoPreview> = {};
 
@@ -757,7 +771,11 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
           <div>
             <article className={styles.imagePanel}>
               {/* ── Main display: video or first image ── */}
-              <div className={styles.mainDisplay}>
+              <div
+                className={`${styles.mainDisplay} ${
+                  videoPreview ? styles.mainDisplayVideo : ""
+                }`}
+              >
                 {videoPreview && videoPreviewEmbed ? (
                   <iframe
                     src={videoPreviewEmbed}
@@ -828,28 +846,72 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                 of it — "ancient arc raiders" rather than just "ancient". */}
             <h1>{productDisplayName(product)}</h1>
 
-            {/* The seller's own copy, directly under the name. It used to sit
-                in the full-width block beneath the gallery, which put the one
-                piece of writing that actually sells the product below the
-                fold on most screens. */}
-            {detailContent.descriptionParagraphs.length > 0 && (
-              <div className={styles.buyDescription}>
-                {detailContent.descriptionParagraphs.map((paragraph, i) => (
-                  <p key={i} className={styles.descText}>{paragraph}</p>
-                ))}
-              </div>
-            )}
+            {/* The seller's own copy moved out of this column and down to
+                .aboutPanel — see the note on that class. The buy panel now
+                carries only what a purchase decision needs. */}
 
             <div className={styles.badgeRow}>
               <span className={styles.badgeUndetected}>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z" />
                 </svg>
                 Undetected (Working)
               </span>
+              <span className={styles.badgeDelivery}>
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />
+                </svg>
+                Instant Delivery
+              </span>
             </div>
 
-            <div className={styles.planGrid}>
+            {/* Price of the selected plan, announced politely so a screen
+                reader hears it change without focus leaving the plan card
+                that changed it. */}
+            {(() => {
+              const [head, cents, suffix] = splitMoney(
+                money(selectedVariant?.price ?? null, product.currency)
+              );
+              return (
+                <p className={styles.price} aria-live="polite">
+                  {head}
+                  {cents ? <span className={styles.priceCents}>{cents}</span> : null}
+                  {suffix}
+                </p>
+              );
+            })()}
+
+            <div className={styles.priceQtyRow}>
+              <span className={styles.selectLabel} id="select-option-label">
+                {t("product.selectOption")}
+              </span>
+
+              <div className={styles.qtyStepper}>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.max(minQuantity, q - 1))}
+                  disabled={quantity <= minQuantity || isCheckingOut}
+                  aria-label={`${t("product.quantity")} −`}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M5 12h14" />
+                  </svg>
+                </button>
+                <span aria-live="polite">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.min(999, q + 1))}
+                  disabled={quantity >= 999 || isCheckingOut}
+                  aria-label={`${t("product.quantity")} +`}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className={styles.planGrid} role="radiogroup" aria-labelledby="select-option-label">
               {variants.map((variant) => {
                 const stock = typeof variant.stock === "number" && variant.stock >= 0 ? variant.stock : null;
                 return (
@@ -866,7 +928,8 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                       setSelectedVariantId(variant.id);
                       setAdded(false);
                     }}
-                    aria-pressed={selectedVariantId === variant.id}
+                    role="radio"
+                    aria-checked={selectedVariantId === variant.id}
                     disabled={isCheckingOut}
                   >
                     <div className={styles.planTopRow}>
@@ -875,9 +938,16 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                         IN STOCK{stock !== null ? ` (${stock})` : ""}
                       </span>
                     </div>
-                    <span className={styles.planPrice}>
-                      {money(variant.price, product.currency)}
-                    </span>
+                    <div className={styles.planBottomRow}>
+                      <span className={styles.planPrice}>
+                        {money(variant.price, product.currency)}
+                      </span>
+                      {selectedVariantId === variant.id ? (
+                        <svg className={styles.planCheck} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M20 6 9 17l-5-5" />
+                        </svg>
+                      ) : null}
+                    </div>
                   </button>
                 );
               })}
@@ -908,6 +978,11 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                 }}
                 disabled={isCheckingOut || variants.length === 0}
               >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="8" cy="21" r="1" />
+                  <circle cx="19" cy="21" r="1" />
+                  <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                </svg>
                 {added ? t("product.added") : t("product.addToCart")}
               </button>
 
@@ -920,6 +995,10 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                 }}
                 disabled={isCheckingOut || variants.length === 0}
               >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect width="20" height="14" x="2" y="5" rx="2" />
+                  <path d="M2 10h20" />
+                </svg>
                 {isCheckingOut ? `${t("common.loading")}…` : t("product.buyNow")}
               </button>
             </div>
@@ -932,6 +1011,16 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
           </article>
         </section>
         </div>
+
+        {/* The seller's own copy, full width below the buy area. */}
+        {detailContent.descriptionParagraphs.length > 0 && (
+          <section className={styles.aboutPanel}>
+            <h2 className={styles.aboutTitle}>{t("product.description")}</h2>
+            {detailContent.descriptionParagraphs.map((paragraph, i) => (
+              <p key={i} className={styles.descText}>{paragraph}</p>
+            ))}
+          </section>
+        )}
 
         {(detailContent.featureTabs.length > 0 ||
           detailContent.requirements.length > 0 ||

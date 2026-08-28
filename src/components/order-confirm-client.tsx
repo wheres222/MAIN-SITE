@@ -360,7 +360,7 @@ const s: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     alignItems:     "flex-start",
     padding:        "60px 16px 40px",
-    background:     "#050506",
+    background:     "#020202",
   },
   card: {
     width:          "100%",

@@ -46,7 +46,7 @@ export default function MaintenancePage() {
 
         .maint-root {
           min-height: 100vh;
-          background: #050506;
+          background: #020202;
           display: flex;
           align-items: center;
           justify-content: center;
