@@ -1,54 +1,80 @@
 .page {
   min-height: 100vh;
   /* Match the category page background (.marketplace-page) instead of the body grey */
-  background-color: #050506;
+  background-color: #020202;
   background-image: none;
   color: var(--text-primary);
+
+  /* Fossil-grey secondary, scoped to the product page. The rest of the site
+     keeps the brand red; the buy panel spends no accent on anything but state,
+     so the product art carries the colour. */
+  --pd-line:     #1e1d1b;
+  --pd-dim:      #45433e;
+  --pd-fossil:   #6b6862;
+  --pd-bright:   #9a968e;
+  --pd-card:     #070707;
+  --pd-card-sel: #171717;
+  --pd-radius:   12px;
 }
 
 .shell {
-  width: min(1320px, calc(100% - 40px));
+  width: min(1264px, calc(100% - 48px));
   margin: 0 auto;
   padding-top: 88px;
   padding-bottom: 60px;
 }
 
+/* Was a bordered card wrapping the whole buy area. The panel competed with
+   the product art for the eye and boxed the H1 in, so it is now a plain
+   spacing wrapper. */
 .showreel {
-  margin-top: 16px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 22px 26px;
+  margin-top: 28px;
 }
 
 .topGrid {
   display: grid;
-  /* Was 0.78 / 1.22 — the preview column now takes an even share so the
-     screenshots are actually legible at a glance. */
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: 38px;
-  align-items: stretch;
+  /* Even halves with a wide gutter: the art and the buy panel are equal
+     partners, and the gap is what separates them rather than a divider. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 82px;
+  align-items: start;
 }
 
 .imagePanel {
-  border-radius: 12px;
+  border-radius: 24px;
   background: transparent;
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 /* ── Main display ──────────────────────────────── */
+/* Aspect stays 16/9 — product art here is gameplay screenshots and video, not
+   the square box render the design was drawn against. Squaring it would
+   letterbox every real image.
+
+   The dot grid is a background layer rather than a ::before overlay so it
+   paints behind the screenshot instead of over it, and the glow sits above the
+   dots in the stack to fade them toward the middle. */
 .mainDisplay {
   width: 100%;
-  border-radius: 6px;
+  border-radius: 24px;
   overflow: hidden;
-  background: var(--surface-3);
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  background:
+    radial-gradient(115% 95% at 28% 18%, rgba(255, 255, 255, 0.055), transparent 62%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(158deg, #0f0f0f 0%, #090909 45%, #040404 100%);
+}
+
+/* A square frame would letterbox a video on both sides, so an embed keeps the
+   16:9 the footage was authored at. */
+.mainDisplayVideo {
+  aspect-ratio: 16 / 9;
 }
 
 .mainEmbed {
@@ -61,7 +87,7 @@
 .mainImgBtn {
   width: 100%;
   height: 100%;
-  padding: 0;
+  padding: 7%;
   border: none;
   background: none;
   cursor: zoom-in;
@@ -73,7 +99,7 @@
 .mainImg {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -89,9 +115,9 @@
   position: relative;
   width: 132px;
   aspect-ratio: 16 / 10;
-  border: 1px solid var(--border);
+  border: 1px solid var(--pd-line);
   border-radius: 8px;
-  background: var(--surface-3);
+  background: var(--pd-card);
   overflow: hidden;
   cursor: pointer;
   padding: 0;
@@ -99,9 +125,9 @@
   transition: border-color 0.15s ease, transform 0.1s ease;
 }
 
-.thumbCard:hover { border-color: var(--accent); }
+.thumbCard:hover { border-color: var(--pd-dim); }
 .thumbCard:active { transform: translateY(1px); }
-.thumbCard:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.thumbCard:focus-visible { outline: 2px solid var(--pd-bright); outline-offset: 2px; }
 
 .thumbCard img {
   width: 100%;
@@ -150,17 +176,17 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--accent);
-  border: none;
+  background: var(--pd-card-sel);
+  border: 1px solid var(--pd-line);
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
-.lightboxClose:hover { background: var(--accent-dark); }
+.lightboxClose:hover { background: var(--pd-dim); border-color: var(--pd-dim); }
 
 .lightboxArrow {
   position: fixed;
@@ -169,17 +195,17 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--accent);
-  border: none;
+  background: var(--pd-card-sel);
+  border: 1px solid var(--pd-line);
   color: #fff;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
-.lightboxArrow:hover { background: var(--accent-dark); }
+.lightboxArrow:hover { background: var(--pd-dim); border-color: var(--pd-dim); }
 .lightboxArrowLeft { left: 20px; }
 .lightboxArrowRight { right: 20px; }
 
@@ -192,82 +218,114 @@
 }
 
 .buyColumn h1 {
-  margin: 0;
+  margin: 0 0 18px;
   font-family: var(--font-brand);
-  font-size: clamp(22px, 2.6vw, 32px);
-  line-height: 1.15;
+  font-size: clamp(2.25rem, 3.4vw, 4rem);
+  line-height: 1.02;
   font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.01em;
+  color: #ffffff;
+  letter-spacing: -0.035em;
 }
 
 .badgeRow {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
-  margin: 14px 0 18px;
+  margin: 0 0 26px;
 }
-.badgeUndetected {
+
+.badgeUndetected,
+.badgeDelivery {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  height: 27px;
+  padding-inline: 13px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  line-height: 1.4;
+  white-space: nowrap;
   border: 1px solid transparent;
 }
+
 /* Undetected — semantic green pill (matches status board), NOT the brand red */
 .badgeUndetected {
   background: var(--status-ok-bg);
   border-color: var(--status-ok-border);
   color: var(--status-ok);
 }
-.badgeUndetected svg { width: 14px; height: 14px; color: var(--status-ok); flex: 0 0 auto; }
+
+.badgeDelivery {
+  background: var(--pd-card);
+  border-color: var(--pd-line);
+  color: var(--pd-bright);
+}
+
+.badgeUndetected svg,
+.badgeDelivery svg { width: 12px; height: 12px; flex: 0 0 auto; }
+
+/* ── Price ───────────────────────────────────── */
+/* Cents dimmed so the figure reads at a glance as its whole-currency value;
+   the decimals are required, not the message. */
+.price {
+  margin: 0 0 34px;
+  font-size: clamp(2.5rem, 3vw, 3.375rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: #ffffff;
+}
+.priceCents { color: #ffffff; }
 
 .priceQtyRow {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 16px;
-  margin: 0 0 14px;
+  margin: 0 0 18px;
+}
+
+.selectLabel {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pd-bright);
 }
 
 /* ── Plan / variant grid ─────────────────────── */
 .planGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 /* Ghost variant rather than solid brand red: on the red fill the plan name and
    stock count sat at roughly 2:1 contrast, which failed to read at all. This
    matches .btn-ghost, so the accent is spent on the price alone. */
 .planCard {
-  border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  background: var(--surface-1);
-  box-shadow: var(--edge-top);
-  padding: 12px 14px;
-  min-height: 72px;
+  border: 1px solid var(--pd-line);
+  border-radius: var(--pd-radius);
+  background: var(--pd-card);
+  box-shadow: none;
+  padding: 16px 18px;
+  min-height: 82px;
   color: var(--text-primary);
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: space-between;
-  gap: 0;
-  transition: background 0.12s ease, border-color 0.12s ease, transform 0.1s ease;
+  gap: 6px;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 .planCard:hover {
-  background: var(--surface-strong);
-  border-color: var(--border-accent);
-  transform: translateY(-1px);
+  border-color: var(--pd-dim);
 }
-.planCard:active { transform: translateY(1px); }
 .planCard:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 .planCard:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
@@ -280,12 +338,13 @@
   margin-bottom: 6px;
 }
 .planName {
-  font-size: 0.67rem;
-  font-weight: 800;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -0.005em;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .planStock {
   font-size: 0.62rem;
@@ -294,49 +353,70 @@
   letter-spacing: 0.05em;
   text-align: right;
   white-space: nowrap;
+  opacity: 0.75;
+}
+
+.planBottomRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
 }
 .planPrice {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  line-height: 1;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--pd-fossil);
+  line-height: 1.2;
 }
-.planCard:hover .planPrice { color: var(--accent-hover); }
+.planCardActive .planPrice { color: var(--pd-bright); }
+
+.planCheck {
+  width: 16px;
+  height: 16px;
+  color: #ffffff;
+  flex: 0 0 auto;
+}
 
 /* ── Qty stepper ─────────────────────────────── */
 .qtyStepper {
-  height: 40px;
-  border-radius: 6px;
-  border: none;
-  background: var(--surface-2);
+  height: 44px;
+  border-radius: var(--pd-radius);
+  border: 1px solid var(--pd-line);
+  background: transparent;
   display: inline-grid;
-  grid-template-columns: 40px 48px 40px;
+  grid-template-columns: 42px 38px 42px;
   align-items: stretch;
   overflow: hidden;
 }
 
 .qtyStepper button {
   border: 0;
-  background: var(--themed-blue-gradient);
-  color: var(--text-primary);
-  font-size: 1.15rem;
-  line-height: 1;
+  background: transparent;
+  color: var(--pd-bright);
   cursor: pointer;
-  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  transition: opacity 0.12s ease;
+  transition: color 0.15s ease, background 0.15s ease;
 }
+.qtyStepper button svg { width: 16px; height: 16px; }
 
-.qtyStepper button:hover { opacity: 0.9; }
+.qtyStepper button:hover:not(:disabled) {
+  color: #ffffff;
+  background: var(--pd-card-sel);
+}
+.qtyStepper button:disabled {
+  color: var(--pd-dim);
+  cursor: not-allowed;
+}
 
 .qtyStepper span {
   text-align: center;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -386,7 +466,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--pd-fossil);
 }
 
 /* Feature category panels — grid of forum panels */
@@ -424,7 +504,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--pd-fossil);
 }
 
 /* ── Responsive ────────────────────────────────── */
@@ -452,7 +532,7 @@
 .relatedSection {
   margin: 40px 0 8px;
   padding-top: 28px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--pd-line);
 }
 
 .relatedTitle {
@@ -476,15 +556,15 @@
 .relatedLink {
   display: flex;
   flex-direction: column;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  background: var(--pd-card);
+  border: 1px solid var(--pd-line);
   border-radius: 10px;
   overflow: hidden;
   text-decoration: none;
   transition: border-color 0.12s, transform 0.12s;
 }
 .relatedLink:hover {
-  border-color: var(--accent);
+  border-color: var(--pd-dim);
   transform: translateY(-2px);
 }
 
@@ -493,7 +573,7 @@
   aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
-  background: var(--surface-3);
+  background: var(--pd-card);
 }
 
 .relatedInfo {
@@ -509,7 +589,7 @@
   color: var(--text-primary);
   line-height: 1.3;
 }
-.relatedLink:hover .relatedName { color: var(--accent); }
+.relatedLink:hover .relatedName { color: #ffffff; }
 
 .relatedPrice {
   font-size: 0.78rem;
@@ -535,25 +615,23 @@
 }
 .descText:last-child { margin-bottom: 0; }
 
-/* ─── Description under the product name ───────────────────────────────── */
-/* Capped and scrollable rather than unbounded: this sits above the price and
-   the buy buttons now, and a seller who writes six paragraphs should not push
-   the purchase controls off the screen. */
-.buyDescription {
-  margin: 12px 0 4px;
-  max-height: 190px;
-  overflow-y: auto;
-  padding-right: 6px;
+/* ─── Seller description ───────────────────────────────────────────────── */
+/* Sat in the buy column, capped at 190px and scrolling inside itself. It now
+   runs full width below the buy area, so long copy is read rather than
+   scrolled in a 190px window, and the purchase controls keep the first
+   screen. */
+.aboutPanel {
+  margin-top: 44px;
+  padding-top: 32px;
+  border-top: 1px solid var(--pd-line);
 }
-.buyDescription .descText {
-  font-size: 0.86rem;
-  line-height: 1.6;
-  max-width: none;
-}
-.buyDescription::-webkit-scrollbar { width: 6px; }
-.buyDescription::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
-  border-radius: 999px;
+.aboutTitle {
+  margin: 0 0 16px;
+  font-family: var(--font-brand);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
 /* ─── Selected plan ────────────────────────────────────────────────────── */
@@ -561,50 +639,74 @@
    unmistakable — the buttons beneath act on it. */
 .planCardActive,
 .planCardActive:hover {
-  border-color: var(--accent);
-  background: var(--accent-dim);
+  border-color: #2f2d2a;
+  background: var(--pd-card-sel);
 }
 
 /* ─── Buy actions ──────────────────────────────────────────────────────── */
+/* Buy Now leads and takes the wider track — it is the action the page exists
+   for. Order is set in CSS so the DOM can keep Add to Cart first, which is the
+   order the two buttons had when their handlers were written. */
 .buyActions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 14px;
+  grid-template-columns: 1.85fr 1fr;
+  gap: 19px;
+  margin-top: 36px;
 }
 
 .addToCartBtn,
 .buyNowBtn {
-  min-height: 46px;
-  border-radius: 9px;
-  font-size: 0.9rem;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  min-height: 58px;
+  padding-inline: 20px;
+  border-radius: var(--pd-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   cursor: pointer;
-  transition: background 0.14s, border-color 0.14s, color 0.14s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
 }
+.addToCartBtn svg,
+.buyNowBtn svg { width: 18px; height: 18px; flex: 0 0 auto; }
 
-/* Secondary: adding to a cart is a smaller commitment than paying, and the
-   two should not compete for the same emphasis. */
 .addToCartBtn {
-  background: var(--surface-2);
-  border: 1px solid var(--border-strong);
-  color: var(--text-primary);
+  background: var(--pd-card);
+  border: 1px solid #272522;
+  color: #ffffff;
+  order: 2;
 }
 .addToCartBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: var(--accent);
+  background: var(--pd-card-sel);
+  border-color: var(--pd-dim);
 }
 
 .buyNowBtn {
-  background: var(--accent);
+  background: linear-gradient(180deg, #ffffff 0%, #e9e7e4 100%);
   border: 1px solid transparent;
-  color: var(--accent-ink);
+  color: #060606;
+  order: 1;
 }
-.buyNowBtn:hover:not(:disabled) { background: var(--accent-hover); }
+.buyNowBtn:hover:not(:disabled) { opacity: 0.9; }
 
 .addToCartBtn:disabled,
 .buyNowBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+@media (max-width: 1024px) {
+  .topGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 44px;
+  }
+}
+
+@media (max-width: 560px) {
+  .planGrid { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (max-width: 520px) {
   .buyActions { grid-template-columns: 1fr; }
+  .addToCartBtn { order: 2; }
+  .buyNowBtn { order: 1; }
 }

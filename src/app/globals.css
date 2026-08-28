@@ -79,7 +79,7 @@
      Deliberately minimal: page, card, raised. Everything else aliases one of
      these. The palette previously sprawled to 37 distinct dark hexes (several
      navy-tinted leftovers), which read as muddy rather than deliberate. */
-  --surface-0: #050506;   /* page bg / body — near black */
+  --surface-0: #020202;   /* page bg / body — near black */
   --surface-1: #0a0a0b;   /* card */
   --surface-2: #101012;   /* raised / headers / hover */
 
@@ -1023,7 +1023,7 @@ select::-ms-expand { display: none; }
 
 .marketplace-page {
   min-height: 100vh;
-  background-color: #050506;
+  background-color: #020202;
   background-image: none;
   --ui-border: var(--global-outline);
   --ui-border-strong: var(--global-outline);

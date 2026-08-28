@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Buy undetected game cheats, hacks, and mods with instant delivery.",
     start_url: "/",
     display: "standalone",
-    background_color: "#050506",
-    theme_color: "#050506",
+    background_color: "#020202",
+    theme_color: "#020202",
     icons: [
       {
         src: "/branding/LOGO.webp",

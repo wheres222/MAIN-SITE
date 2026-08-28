@@ -43,7 +43,7 @@ const assistifyWidgetId = process.env.NEXT_PUBLIC_ASSISTIFY_WIDGET_ID?.trim();
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#050506",
+  themeColor: "#020202",
 };
 
 export const metadata: Metadata = {
