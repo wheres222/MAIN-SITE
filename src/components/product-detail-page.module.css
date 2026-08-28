@@ -17,8 +17,10 @@
   --pd-radius:   12px;
 }
 
+/* Wider than the 1264 the design was drawn at: the extra width is spent on
+   the art column, which starts further left as a result. */
 .shell {
-  width: min(1264px, calc(100% - 48px));
+  width: min(1440px, calc(100% - 48px));
   margin: 0 auto;
   padding-top: 88px;
   padding-bottom: 60px;
@@ -33,10 +35,10 @@
 
 .topGrid {
   display: grid;
-  /* Even halves with a wide gutter: the art and the buy panel are equal
-     partners, and the gap is what separates them rather than a divider. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 82px;
+  /* The art takes the larger share. Product art is banner-shaped, so width is
+     what keeps it uncropped — the buy panel needs far less. */
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 56px;
   align-items: start;
 }
 
@@ -57,11 +59,14 @@
    The dot grid is a background layer rather than a ::before overlay so it
    paints behind the screenshot instead of over it, and the glow sits above the
    dots in the stack to fade them toward the middle. */
+/* 16:9 rather than square. The art is banner-shaped (1200x483), so a square
+   frame threw away ~60% of the width to `cover`; this keeps most of it and
+   matches the aspect video embeds are authored at, so both fill the frame. */
 .mainDisplay {
   width: 100%;
   border-radius: 24px;
   overflow: hidden;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 16 / 9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,12 +74,6 @@
     radial-gradient(115% 95% at 28% 18%, rgba(255, 255, 255, 0.055), transparent 62%),
     radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 22px 22px,
     linear-gradient(158deg, #0f0f0f 0%, #090909 45%, #040404 100%);
-}
-
-/* A square frame would letterbox a video on both sides, so an embed keeps the
-   16:9 the footage was authored at. */
-.mainDisplayVideo {
-  aspect-ratio: 16 / 9;
 }
 
 .mainEmbed {

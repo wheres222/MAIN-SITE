@@ -771,11 +771,7 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
           <div>
             <article className={styles.imagePanel}>
               {/* ── Main display: video or first image ── */}
-              <div
-                className={`${styles.mainDisplay} ${
-                  videoPreview ? styles.mainDisplayVideo : ""
-                }`}
-              >
+              <div className={styles.mainDisplay}>
                 {videoPreview && videoPreviewEmbed ? (
                   <iframe
                     src={videoPreviewEmbed}
