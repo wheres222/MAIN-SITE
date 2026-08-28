@@ -120,7 +120,7 @@
 .input {
   width: 100%;
   min-height: 46px;
-  background: var(--surface-3, #050506);
+  background: var(--surface-3, #020202);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0 16px;
@@ -180,7 +180,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 14px;
-  background: var(--surface-3, #050506);
+  background: var(--surface-3, #020202);
   border: 1px solid var(--border);
   border-radius: 8px;
   word-break: break-all;
