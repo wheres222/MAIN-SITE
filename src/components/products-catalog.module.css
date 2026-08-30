@@ -133,6 +133,17 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+
+/* The other two states. Border and text both shift, so the pill reads at a
+   glance over artwork of any colour — the dot inherits currentColor. */
+.pcardBadgeUpdating {
+  border-color: var(--status-info-border);
+  color: var(--status-info);
+}
+.pcardBadgeDetected {
+  border-color: var(--status-bad-border);
+  color: var(--status-bad);
+}
 .pcardDot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 5px currentColor; flex: 0 0 auto; }
 
 .pcardFoot {

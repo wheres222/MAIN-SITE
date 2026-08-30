@@ -12,6 +12,7 @@ import { ProductSeoSections } from "@/components/product-seo-sections";
 import type { ProductSeoContent } from "@/lib/product-seo-content";
 import { variantsFor } from "@/lib/cart";
 import { resolveStatusKind } from "@/lib/product-status";
+import { formatCategoryName } from "@/lib/category-name";
 import { useProductStatuses } from "@/lib/use-product-statuses";
 import { useCart } from "@/components/cart-provider";
 import type { SellAuthPaymentMethod, SellAuthProduct, SellAuthVariant } from "@/types/sellauth";
@@ -774,7 +775,7 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
           items={[
             { label: "Home", href: "/" },
             { label: "Store", href: "/#games" },
-            { label: product.groupName || product.categoryName || "Products", href: product.groupName ? categoryHref(product.groupName) : "/categories" },
+            { label: formatCategoryName(product.groupName || product.categoryName || "Products"), href: product.groupName ? categoryHref(product.groupName) : "/categories" },
             { label: product.name },
           ]}
         />
@@ -1100,7 +1101,7 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
         {relatedProducts.length > 0 && (
           <section className={styles.relatedSection} aria-labelledby="related-products">
             <h2 id="related-products" className={styles.relatedTitle}>
-              Other {product.groupName || product.categoryName || "cheats"} options
+              Other {formatCategoryName(product.groupName || product.categoryName || "cheats")} options
             </h2>
             <ul className={styles.relatedList}>
               {relatedProducts.map((other) => {

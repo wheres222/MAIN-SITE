@@ -14,6 +14,9 @@ import { fetchStorefrontClient, primeStorefrontCache } from "@/lib/storefront-cl
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
 import styles from "./products-catalog.module.css";
 import { usePreferences } from "@/components/preferences-provider";
+import { formatCategoryName } from "@/lib/category-name";
+import { resolveStatusKind } from "@/lib/product-status";
+import { useProductStatuses } from "@/lib/use-product-statuses";
 
 const PLACEHOLDER = "/placeholders/category-banner-not-added.svg";
 
@@ -55,6 +58,9 @@ export function ProductsCatalogClient({
   const money = (value: number | null, _currency?: string): string =>
     value === null ? "N/A" : formatPrice(value);
 
+  // Live detection status, same feed the /status board polls.
+  const statusOverrides = useProductStatuses();
+
   // Seed from the server render so the catalog is present in the HTML — this
   // page previously shipped only a skeleton and filled in client-side, which
   // meant crawlers indexed an empty page.
@@ -92,7 +98,7 @@ export function ProductsCatalogClient({
       if (!g) {
         const image =
           CATEGORY_IMAGES[slug] || remoteImages.get(slug) || p.image || PLACEHOLDER;
-        g = { slug, name: rawName, image, products: [] };
+        g = { slug, name: formatCategoryName(rawName), image, products: [] };
         map.set(slug, g);
       }
       g.products.push(p);
@@ -199,12 +205,32 @@ export function ProductsCatalogClient({
                             height={225}
                             sizes="(max-width: 760px) 100vw, 33vw"
                           />
-                          {isCheatProduct(g.slug) && (
-                            <span className={styles.pcardBadge}>
-                              <span className={styles.pcardDot} aria-hidden="true" />
-                              Undetected
-                            </span>
-                          )}
+                          {isCheatProduct(g.slug) &&
+                            (() => {
+                              // Live status, not a fixed claim. This cover pill
+                              // said "Undetected" for every cheat product,
+                              // including ones the board was reporting as
+                              // detected.
+                              const kind = resolveStatusKind(product, statusOverrides);
+                              return (
+                                <span
+                                  className={`${styles.pcardBadge} ${
+                                    kind === "updating"
+                                      ? styles.pcardBadgeUpdating
+                                      : kind === "detected"
+                                        ? styles.pcardBadgeDetected
+                                        : ""
+                                  }`}
+                                >
+                                  <span className={styles.pcardDot} aria-hidden="true" />
+                                  {kind === "undetected"
+                                    ? "Undetected"
+                                    : kind === "updating"
+                                      ? "Updating"
+                                      : "Detected"}
+                                </span>
+                              );
+                            })()}
                         </div>
                         <div className={styles.pcardFoot}>
                           <span className={styles.pcardMeta}>

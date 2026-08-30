@@ -1,6 +1,7 @@
 import { canonicalGameSlug } from "@/lib/game-slug";
 import { CATEGORY_IMAGES, CATEGORY_TILES } from "@/lib/category-images";
 import type { SellAuthProduct, StorefrontData } from "@/types/sellauth";
+import { formatCategoryName } from "@/lib/category-name";
 
 const PLACEHOLDER = "/placeholders/category-banner-not-added.svg";
 
@@ -116,7 +117,7 @@ export function buildCategoryTiles(data: StorefrontData | null): CategoryTile[] 
 
     tiles.push({
       slug,
-      name: CURATED_NAME.get(slug) || bucket.name,
+      name: CURATED_NAME.get(slug) || formatCategoryName(bucket.name),
       image,
       lowestPrice,
       usesRemoteImage: !localImage,
