@@ -302,6 +302,90 @@ const AVOIDING_BANS = (
   </>
 );
 
+// ── Banned programs ──────────────────────────────────────────────────────────
+
+const BANNED_PROGRAMS = (
+  <>
+    <p>
+      Close these before launching the loader. Anti-cheats and our own loader
+      both scan for them, and having one running is enough to fail injection or
+      flag the session — even when the program has nothing to do with the game.
+    </p>
+
+    <Warn>
+      This is not a list to work around. Anything that debugs, reverse
+      engineers, virtualises or sandboxes another process counts, whether or not
+      it is named below. Rename it, portable-ise it, run it from a USB stick —
+      it is still detected, and you are risking your account and your licence.
+    </Warn>
+
+    <h3>Virtualisation and sandboxing</h3>
+    <ul className="guide-list">
+      <li>
+        <strong>Oracle VirtualBox</strong> — including its services and drivers,
+        which keep running after the window is closed.
+      </li>
+      <li>
+        <strong>VMware</strong> — Workstation, Player and Fusion alike.
+      </li>
+      <li>
+        <strong>Sandboxie</strong> — any sandboxed or containerised launch.
+      </li>
+    </ul>
+    <Note>
+      Uninstalling is not always enough. Both VirtualBox and VMware leave
+      services and network adapters behind that still register as present — check
+      Services and Device Manager if the loader reports one after you removed it.
+    </Note>
+
+    <h3>Debuggers and reverse-engineering tools</h3>
+    <ul className="guide-list">
+      <li>
+        <strong>Cheat Engine</strong> — the single most common cause of a failed
+        launch. Its driver loads at boot, so a reboot is usually needed after
+        uninstalling.
+      </li>
+      <li>
+        <strong>x64dbg</strong> and <strong>x32dbg</strong>
+      </li>
+      <li>
+        <strong>WinDbg</strong> — and kernel debugging generally. Turn off
+        Windows kernel debug mode if you have ever enabled it.
+      </li>
+      <li>
+        Anything comparable: IDA, Ghidra, OllyDbg, Process Hacker, ReClass,
+        HxD, API monitors, packet sniffers and memory editors.
+      </li>
+    </ul>
+
+    <h3>Conflicting anti-cheat clients</h3>
+    <ul className="guide-list">
+      <li>
+        <strong>FACEIT</strong> — the FACEIT Anti-Cheat client runs at kernel
+        level and will conflict. Close the client and stop its service; do not
+        simply exit the tray icon.
+      </li>
+    </ul>
+
+    <h3>Before you launch</h3>
+    <ul className="guide-list">
+      <li>
+        Close the programs, then check Task Manager for leftover background
+        processes and services under the same name.
+      </li>
+      <li>
+        Reboot after uninstalling anything that installed a driver — Cheat
+        Engine, VirtualBox, VMware and FACEIT all do.
+      </li>
+      <li>
+        If the loader still reports a detection, it is usually a service or
+        driver rather than an open window. See{" "}
+        <em>General Troubleshooting</em>.
+      </li>
+    </ul>
+  </>
+);
+
 // ── Section list ─────────────────────────────────────────────────────────────
 
 export const SETUP_SECTIONS: GuideSection[] = [
@@ -311,5 +395,6 @@ export const SETUP_SECTIONS: GuideSection[] = [
   { id: "troubleshooting", title: "General Troubleshooting", icon: "🔧", content: TROUBLESHOOTING },
   { id: "loader-crashing", title: "Loader Crashing Fixes",   icon: "💥", content: LOADER_CRASHING },
   { id: "avoiding-bans",   title: "Avoiding Bans",           icon: "🛡️", content: AVOIDING_BANS },
+  { id: "banned-programs", title: "Banned Programs",         icon: "🚫", content: BANNED_PROGRAMS },
   { id: "hwid-spoofer",    title: "HWID Spoofer Guide",      icon: "🔀", content: null },
 ];
