@@ -3,6 +3,7 @@ import { mockStorefrontData } from "@/lib/mock-data";
 import { getSupabaseCatalog } from "@/lib/supabase-catalog";
 import { toGameSlug } from "@/lib/game-slug";
 import { withoutHiddenProducts } from "@/lib/hidden-products";
+import { logger } from "@/lib/logger";
 import {
   bannersToCategories,
   bannersToGroups,
@@ -1647,31 +1648,71 @@ function parseCheckoutUrl(rawData: unknown): string | null {
   return null;
 }
 
-export async function createSellAuthCheckout(input: CheckoutRequestInput): Promise<{
-  redirectUrl: string | null;
-  raw: unknown;
-}> {
-  if (!isSellAuthConfigured()) {
-    throw new Error(
-      "SellAuth is not configured. Set SELLAUTH_SHOP_ID and SELLAUTH_API_KEY."
-    );
-  }
+/** One entry in SellAuth's `cart` array. */
+export interface SellAuthCartItem {
+  productId: number | string;
+  variantId: number | string;
+  quantity: number;
+}
 
+/**
+ * Build the checkout body SellAuth expects.
+ *
+ * Extracted from createSellAuthCheckout so the payload can be asserted on
+ * without making a network call — this is the code that decides whether a
+ * three-item cart stays three items.
+ *
+ * The shape follows SellAuth's documented contract for
+ * POST /v1/shops/{shopId}/checkout:
+ *
+ *   - `cart` is the item array. Each entry is either a catalog item
+ *     (productId + variantId) or a custom item (name + price).
+ *   - the buyer's address is `email`, not `customer_email`.
+ *   - a coupon is `coupon`, not `coupon_code`.
+ *
+ * The previous body used `customer_email` and `coupon_code`, neither of which
+ * SellAuth documents — so prefilled emails and coupon codes were being sent
+ * and silently ignored. It also sent a duplicate `items` key and snake_case
+ * copies of every id, none of which are part of the contract.
+ */
+export function buildCheckoutPayload(input: CheckoutRequestInput): {
+  payload: GenericRecord;
+  cart: SellAuthCartItem[];
+} {
   const paymentMethod = input.paymentMethod.trim();
   const paymentMethodId = asNumber(paymentMethod);
-  const checkoutItems = input.items.map((item) => ({
-    productId: item.productId,
-    product_id: item.productId,
-    quantity: item.quantity,
-    ...(item.variantId ? { variantId: item.variantId, variant_id: item.variantId } : {}),
-  }));
+
+  const cart: SellAuthCartItem[] = input.items.map((item) => {
+    // A catalog item needs both ids. Without a variantId the entry is neither
+    // a catalog item nor a custom item, and SellAuth drops it — which is how a
+    // three-item cart came back having delivered one thing: the lines whose
+    // variant was synthetic carried no variantId at all.
+    //
+    // Failing here is deliberate. A visible checkout error is recoverable; a
+    // silently short delivery means the customer paid for three products and
+    // received one, and nothing in our logs said so.
+    if (item.variantId === undefined || item.variantId === null) {
+      throw new SellAuthRequestError(
+        400,
+        `Cart line for product ${item.productId} has no variant id. ` +
+          `SellAuth requires productId and variantId on every catalog item, ` +
+          `so this line would be dropped and never delivered.`
+      );
+    }
+
+    return {
+      productId: item.productId,
+      variantId: item.variantId,
+      quantity: item.quantity,
+    };
+  });
 
   const payload: GenericRecord = {
-    cart: checkoutItems,
-    items: checkoutItems,
-    ...(input.email ? { customer_email: input.email } : {}),
-    ...(input.couponCode ? { coupon_code: input.couponCode } : {}),
+    cart,
+    ...(input.email ? { email: input.email } : {}),
+    ...(input.couponCode ? { coupon: input.couponCode } : {}),
   };
+
   if (
     paymentMethod &&
     paymentMethodId !== null &&
@@ -1683,6 +1724,21 @@ export async function createSellAuthCheckout(input: CheckoutRequestInput): Promi
     payload.gateway = paymentMethod;
   }
 
+  return { payload, cart };
+}
+
+export async function createSellAuthCheckout(input: CheckoutRequestInput): Promise<{
+  redirectUrl: string | null;
+  raw: unknown;
+}> {
+  if (!isSellAuthConfigured()) {
+    throw new Error(
+      "SellAuth is not configured. Set SELLAUTH_SHOP_ID and SELLAUTH_API_KEY."
+    );
+  }
+
+  const { payload, cart } = buildCheckoutPayload(input);
+
   const response = await fetchSellAuth<unknown>(
     `/v1/shops/${SELLAUTH_SHOP_ID}/checkout`,
     {
@@ -1693,8 +1749,93 @@ export async function createSellAuthCheckout(input: CheckoutRequestInput): Promi
 
   const redirectUrl = parseCheckoutUrl(response.data) || parseCheckoutUrl(response);
 
+  // ── Diagnostic: multi-item orders delivering a single item ────────────────
+  // Every line the cart holds is sent above, and the whole Stripe/Supabase
+  // fulfilment path is bypassed whenever SellAuth is configured — so when a
+  // three-item order delivers one thing, the loss is either in this payload or
+  // on SellAuth's side. Comparing what we sent against what came back is the
+  // cheapest way to tell which, and it can only be observed on a real order.
+  //
+  // Logged unconditionally so a normal order establishes the baseline shape;
+  // escalated to error when the counts disagree, so the fault announces itself
+  // rather than waiting for someone to go looking.
+  const sentCount = cart.length;
+  const acknowledged = countAcknowledgedItems(response.data ?? response);
+
+  const context = {
+    route: "sellauth/checkout",
+    sentCount,
+    acknowledgedCount: acknowledged.count,
+    acknowledgedVia: acknowledged.path,
+    sentItems: cart.map((item) => ({
+      p: item.productId,
+      v: item.variantId ?? 0,
+      q: item.quantity,
+    })),
+    gotRedirectUrl: Boolean(redirectUrl),
+    // Truncated: enough to read the response's shape without filling the log
+    // with an entire invoice on every checkout.
+    rawSample: safeSample(response.data ?? response),
+  };
+
+  if (acknowledged.count !== null && acknowledged.count !== sentCount) {
+    logger.error("SellAuth checkout acknowledged a different item count", context);
+  } else {
+    logger.info("SellAuth checkout created", context);
+  }
+
   return {
     redirectUrl,
     raw: response.data ?? response,
   };
+}
+
+/**
+ * How many line items SellAuth echoed back.
+ *
+ * Their checkout response has changed shape between versions, so several
+ * plausible containers are probed rather than one being assumed. Returns a
+ * null count when none of them are present — absence of evidence, so the
+ * caller logs it as normal rather than as a mismatch.
+ */
+function countAcknowledgedItems(response: unknown): {
+  count: number | null;
+  path: string | null;
+} {
+  if (!response || typeof response !== "object") return { count: null, path: null };
+
+  const roots: [string, unknown][] = [
+    ["", response],
+    ["invoice", (response as GenericRecord).invoice],
+    ["order", (response as GenericRecord).order],
+    ["data", (response as GenericRecord).data],
+  ];
+
+  for (const [rootName, root] of roots) {
+    if (!root || typeof root !== "object") continue;
+    for (const key of ["items", "cart", "line_items", "products", "order_items"]) {
+      const value = (root as GenericRecord)[key];
+      if (Array.isArray(value)) {
+        return {
+          count: value.length,
+          path: rootName ? `${rootName}.${key}` : key,
+        };
+      }
+    }
+  }
+
+  return { count: null, path: null };
+}
+
+/** A bounded string form of a response, safe to put in a log line. */
+function safeSample(response: unknown, limit = 1500): string {
+  try {
+    const serialised = JSON.stringify(response);
+    if (!serialised) return String(response);
+    return serialised.length > limit
+      ? `${serialised.slice(0, limit)}…[${serialised.length} chars total]`
+      : serialised;
+  } catch {
+    return "[unserialisable response]";
+  }
 }
