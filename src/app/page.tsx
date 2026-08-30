@@ -3,6 +3,7 @@ import { StorefrontClient } from "@/components/storefront-client";
 import { HomeSeoSections } from "@/components/home-seo-sections";
 import { getStorefrontData } from "@/lib/sellauth";
 import type { StorefrontData } from "@/types/sellauth";
+import { jsonLd } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -51,7 +52,7 @@ const FOOTAGE_VIDEOS: Array<{
 
 function buildVideoSchemas() {
   return FOOTAGE_VIDEOS.map((video) =>
-    JSON.stringify({
+    jsonLd({
       "@context": "https://schema.org",
       "@type": "VideoObject",
       name: video.name,

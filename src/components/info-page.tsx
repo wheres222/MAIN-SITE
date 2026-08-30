@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { jsonLd as serializeJsonLd } from "@/lib/json-ld";
 
 interface InfoSection {
   heading: string;
@@ -33,7 +34,7 @@ export function InfoPage({ title, subtitle, sections, jsonLd, seo }: InfoPagePro
       {jsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       )}
       <SiteHeader activeTab="none" />

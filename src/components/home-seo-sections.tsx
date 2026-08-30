@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "./home-seo-sections.module.css";
+import { jsonLd } from "@/lib/json-ld";
 
 /**
  * Long-form homepage content.
@@ -57,7 +58,7 @@ export function HomeSeoSections() {
     <section className={`home-shell ${styles.wrap}`} aria-labelledby="home-about">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema) }}
       />
 
       <h2 id="home-about" className={styles.heading}>

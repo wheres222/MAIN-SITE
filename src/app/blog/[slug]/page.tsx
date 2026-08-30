@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { InfoPage } from "@/components/info-page";
 import { allBlogSlugs, blogPostBySlug } from "@/lib/blog-posts";
+import { jsonLd } from "@/lib/json-ld";
 
 export const revalidate = 3600;
 
@@ -146,7 +147,7 @@ export default async function BlogPostPage({
         <script
           key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(schema) }}
         />
       ))}
 

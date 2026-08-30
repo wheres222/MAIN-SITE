@@ -3,6 +3,7 @@ import { deliverOrder, isDeliveryConfigured } from "@/lib/delivery";
 import { sendOrderDeliveredEmail } from "@/lib/email";
 import { claimDeliveryRecord, setDeliveryRecord, failDeliveryRecord } from "@/lib/dedupe";
 import { logger } from "@/lib/logger";
+import { safeEqual } from "@/lib/security/compare";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,9 @@ async function verifySignature(request: Request, rawBody: string): Promise<{ val
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
-  return { valid: signature === expected, secretMissing: false };
+  // Constant-time: a plain === short-circuits on the first differing byte,
+  // which leaks how much of the digest an attacker has guessed correctly.
+  return { valid: safeEqual(signature, expected), secretMissing: false };
 }
 
 export async function POST(request: Request) {

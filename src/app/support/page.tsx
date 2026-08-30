@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/site-header";
 import { getDiscordUrl } from "@/lib/links";
 import { PageSeoSections } from "@/components/page-seo-sections";
 import { pageSeoFor } from "@/lib/page-seo-content";
+import { jsonLd } from "@/lib/json-ld";
 
 export const metadata: Metadata = {
   title: "Support & FAQ",
@@ -149,7 +150,7 @@ export default function SupportPage() {
     <div className="marketplace-page" style={{ background: "#0d0d0f" }}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(faqJsonLd) }}
       />
       <SiteHeader activeTab="support" />
 

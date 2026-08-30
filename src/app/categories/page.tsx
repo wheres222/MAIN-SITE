@@ -7,6 +7,7 @@ import { canonicalGameSlug } from "@/lib/game-slug";
 import { gameSeoContentFor } from "@/lib/game-seo-content";
 import { PageSeoSections } from "@/components/page-seo-sections";
 import { pageSeoFor } from "@/lib/page-seo-content";
+import { jsonLd } from "@/lib/json-ld";
 
 export const revalidate = 300;
 
@@ -62,7 +63,7 @@ export default async function CategoriesPage({
     <div className="marketplace-page">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbs) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbs) }}
       />
       <SiteHeader activeTab="store" />
       <main>

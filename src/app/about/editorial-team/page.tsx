@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { DISCORD_INVITE_URL } from "@/lib/links";
 import { PageSeoSections } from "@/components/page-seo-sections";
 import { pageSeoFor } from "@/lib/page-seo-content";
+import { jsonLd } from "@/lib/json-ld";
 
 export const metadata: Metadata = {
   title: "Editorial Team & Methodology",
@@ -49,7 +50,7 @@ export default function EditorialTeamPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(personJsonLd) }}
       />
 
       <div className="marketplace-page" style={{ background: "#0d0d0f" }}>

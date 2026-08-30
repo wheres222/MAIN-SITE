@@ -16,6 +16,9 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse, type NextRequest } from "next/server";
+import { safeEqual } from "@/lib/security/compare";
+import { rateLimit } from "@/lib/rate-limit";
+import { clientIp } from "@/lib/security/events";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +34,7 @@ function checkApiKey(request: NextRequest): boolean {
   const apiKey = process.env.STATUS_API_KEY?.trim();
   if (!apiKey) return false;
   const authHeader = request.headers.get("Authorization") ?? "";
-  return authHeader === `Bearer ${apiKey}`;
+  return safeEqual(authHeader, `Bearer ${apiKey}`);
 }
 
 async function fireDiscordWebhook(ref: string, status: string, message?: string) {
@@ -59,10 +62,28 @@ async function fireDiscordWebhook(ref: string, status: string, message?: string)
   }).catch(() => {});
 }
 
+/**
+ * Throttle by IP before the key is checked.
+ *
+ * STATUS_API_KEY is a static bearer token on an endpoint that writes to the
+ * status board, and there was nothing here to make guessing it expensive. The
+ * limit is generous enough for a monitoring bot pushing on every build change
+ * and far too tight to search a keyspace.
+ */
+function overKeyAttemptLimit(request: NextRequest): boolean {
+  return rateLimit("status-push", clientIp(request.headers) ?? "unknown", {
+    windowMs: 60_000,
+    max: 30,
+  }).limited;
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ ref: string }> }
 ) {
+  if (overKeyAttemptLimit(request)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   if (!checkApiKey(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -137,6 +158,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ ref: string }> }
 ) {
+  if (overKeyAttemptLimit(request)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
   if (!checkApiKey(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

@@ -13,6 +13,7 @@ import {
   lineId as makeLineId,
   readCart,
   subscribeCart,
+  EMPTY_CART_LINES,
   writeCart,
   type StoredCartLine,
 } from "@/lib/cart";
@@ -66,7 +67,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     readCart,
     // Server snapshot. localStorage does not exist during SSR, so the cart
     // renders empty and fills in on hydration.
-    () => [] as StoredCartLine[]
+    //
+    // Must be a stable reference, not a fresh [] per call: useSyncExternalStore
+    // compares snapshots by identity, so returning a new array every time makes
+    // React believe the store changed on every render. That is what produced
+    // "The result of getServerSnapshot should be cached to avoid an infinite
+    // loop" on every page of the site.
+    () => EMPTY_CART_LINES
   );
 
   const add = useCallback((line: Omit<StoredCartLine, "lineId">) => {

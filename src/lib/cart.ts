@@ -17,7 +17,8 @@ export interface StoredCartLine {
 
 export const CART_STORAGE_KEY = "marketplace_cart_v1";
 const CART_CHANGE_EVENT = "marketplace:cart-change";
-const EMPTY_CART_LINES: StoredCartLine[] = [];
+/** Shared identity — see the note in cart-provider.tsx on why this matters. */
+export const EMPTY_CART_LINES: StoredCartLine[] = [];
 
 let cachedCartRaw: string | null | undefined;
 let cachedCartLines: StoredCartLine[] = EMPTY_CART_LINES;
