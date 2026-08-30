@@ -6,6 +6,8 @@ import { useMemo, useState } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { productHref } from "@/lib/product-route";
+import { resolveStatusKind } from "@/lib/product-status";
+import { useProductStatuses } from "@/lib/use-product-statuses";
 import type { SellAuthGroup, SellAuthProduct } from "@/types/sellauth";
 import styles from "./game-catalog-page.module.css";
 import { usePreferences } from "@/components/preferences-provider";
@@ -61,6 +63,11 @@ export function GameCatalogPage({ group, products, seoContent, seoFooter, emptyN
   const { money: formatPrice } = usePreferences();
   const money = (value: number | null, _currency?: string): string =>
     value === null ? "N/A" : formatPrice(value);
+
+  // Live detection status, same feed the /status board polls. Every card used
+  // to read "Undetected" unconditionally, which advertised a detected or
+  // mid-update product as safe on the page people browse to buy from.
+  const statusOverrides = useProductStatuses();
 
   const [query, setQuery] = useState("");
 
@@ -126,7 +133,27 @@ export function GameCatalogPage({ group, products, seoContent, seoFooter, emptyN
                   <div className={styles.specs}>
                     <span className={styles.spec}>{IconOS} Windows 10, 11</span>
                     <span className={styles.spec}>{IconCPU} Intel / AMD</span>
-                    <span className={styles.statusOk}>{IconShield} Undetected</span>
+                    {(() => {
+                      const kind = resolveStatusKind(product, statusOverrides);
+                      return (
+                        <span
+                          className={
+                            kind === "undetected"
+                              ? styles.statusOk
+                              : kind === "updating"
+                                ? styles.statusUpdating
+                                : styles.statusDetected
+                          }
+                        >
+                          {IconShield}
+                          {kind === "undetected"
+                            ? "Undetected"
+                            : kind === "updating"
+                              ? "Updating"
+                              : "Detected"}
+                        </span>
+                      );
+                    })()}
                   </div>
 
                   {/* Star ratings removed. They were generated from the product

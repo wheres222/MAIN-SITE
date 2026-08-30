@@ -79,9 +79,11 @@
      Deliberately minimal: page, card, raised. Everything else aliases one of
      these. The palette previously sprawled to 37 distinct dark hexes (several
      navy-tinted leftovers), which read as muddy rather than deliberate. */
+  /* Fossil-grey system, promoted from the product page to the whole site.
+     Warm neutrals rather than the blue-tinted darks these were before. */
   --surface-0: #020202;   /* page bg / body — near black */
-  --surface-1: #0a0a0b;   /* card */
-  --surface-2: #101012;   /* raised / headers / hover */
+  --surface-1: #070707;   /* card */
+  --surface-2: #171717;   /* raised / headers / hover / selected */
 
   /* Aliases — no new tones, just intent */
   --surface-3:      var(--surface-0);  /* inputs — sunken to page level */
@@ -116,15 +118,20 @@
   /* Legacy alias */
   --brand-gold: var(--accent);
 
-  /* ── Text — frost scale ──────────────────────────────────────────────── */
-  --text-primary:   #f2f2f4;  /* headings / strong */
-  --text-secondary: #b7b7bb;  /* body */
-  --text-muted:     #8a8a90;
-  --text-dim:       #66666c;
+  /* ── Text — fossil scale ─────────────────────────────────────────────── */
+  /* Warm greys rather than the blue-grey frost these were. Four steps, same
+     ladder the product page uses. */
+  --text-primary:   #ffffff;  /* headings / strong */
+  --text-secondary: #9a968e;  /* body */
+  --text-muted:     #6b6862;
+  --text-dim:       #5f5b54;
 
-  /* ── Borders — white-alpha hairlines ─────────────────────────────────── */
-  --border:        rgba(255, 255, 255, 0.10);
-  --border-strong: rgba(255, 255, 255, 0.17);
+  /* ── Borders — solid fossil hairlines ────────────────────────────────── */
+  /* Solid rather than white-alpha: alpha borders lightened whatever sat
+     behind them, so a card on the page and the same card on a raised surface
+     drew different-looking edges. */
+  --border:        #1e1d1b;
+  --border-strong: #45433e;
   --border-accent: rgba(239, 27, 53, 0.45);
 
   /* ── Depth — layered shadows + inset top edge highlight ──────────────── */
@@ -151,6 +158,17 @@
   --status-ok:        #43c601;
   --status-ok-bg:     rgba(67, 198, 1, 0.10);
   --status-ok-border: rgba(67, 198, 1, 0.25);
+
+  /* Updating — blue, deliberately not the amber the /status board uses, so an
+     in-progress build reads as "work happening" rather than as a warning. */
+  --status-info:        #3b82f6;
+  --status-info-bg:     rgba(59, 130, 246, 0.10);
+  --status-info-border: rgba(59, 130, 246, 0.28);
+
+  /* Detected — the one state that is actually bad. */
+  --status-bad:        #ef4444;
+  --status-bad-bg:     rgba(239, 68, 68, 0.10);
+  --status-bad-border: rgba(239, 68, 68, 0.28);
   --success: #22c55e;
   --warning: #fbbf24;
   --danger:  #ef4444;
@@ -801,7 +819,7 @@ select::-ms-expand { display: none; }
 .media-pill {
   padding: 6px 12px;
   border-radius: var(--radius-sm);
-  background: rgba(5, 5, 6, 0.82);
+  background: rgba(2, 2, 2, 0.82);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   border: 1px solid var(--border);

@@ -5,15 +5,15 @@
   background-image: none;
   color: var(--text-primary);
 
-  /* Fossil-grey secondary, scoped to the product page. The rest of the site
-     keeps the brand red; the buy panel spends no accent on anything but state,
-     so the product art carries the colour. */
-  --pd-line:     #1e1d1b;
-  --pd-dim:      #45433e;
-  --pd-fossil:   #6b6862;
-  --pd-bright:   #9a968e;
-  --pd-card:     #070707;
-  --pd-card-sel: #171717;
+  /* These were the product page's own palette; the same fossil scale is now
+     the sitewide one, so they alias the global tokens rather than restating
+     the hexes. Kept as names because this file reads by role, not by tone. */
+  --pd-line:     var(--border);
+  --pd-dim:      var(--border-strong);
+  --pd-fossil:   var(--text-muted);
+  --pd-bright:   var(--text-secondary);
+  --pd-card:     var(--surface-1);
+  --pd-card-sel: var(--surface-2);
   --pd-radius:   12px;
 }
 
@@ -243,7 +243,7 @@
   margin: 0 0 26px;
 }
 
-.badgeUndetected,
+.statusBadge,
 .badgeDelivery {
   display: inline-flex;
   align-items: center;
@@ -259,11 +259,22 @@
   border: 1px solid transparent;
 }
 
-/* Undetected — semantic green pill (matches status board), NOT the brand red */
-.badgeUndetected {
+/* Three real states, all semantic — never the brand red, which would make a
+   healthy product look flagged. */
+.statusUndetected {
   background: var(--status-ok-bg);
   border-color: var(--status-ok-border);
   color: var(--status-ok);
+}
+.statusUpdating {
+  background: var(--status-info-bg);
+  border-color: var(--status-info-border);
+  color: var(--status-info);
+}
+.statusDetected {
+  background: var(--status-bad-bg);
+  border-color: var(--status-bad-border);
+  color: var(--status-bad);
 }
 
 .badgeDelivery {
@@ -272,7 +283,7 @@
   color: var(--pd-bright);
 }
 
-.badgeUndetected svg,
+.statusBadge svg,
 .badgeDelivery svg { width: 12px; height: 12px; flex: 0 0 auto; }
 
 /* ── Price ───────────────────────────────────── */

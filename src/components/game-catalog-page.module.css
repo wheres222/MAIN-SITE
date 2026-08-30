@@ -111,8 +111,25 @@
 .specs { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 .spec { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-muted); }
 .spec svg { color: var(--text-dim); flex: 0 0 auto; }
-.statusOk { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color: var(--accent); }
-.statusOk svg { flex: 0 0 auto; }
+/* Semantic colours, not the brand red. This read `var(--accent)` — so a
+   healthy product announced "Undetected" in the same red the site uses for
+   errors and warnings. */
+.statusOk,
+.statusUpdating,
+.statusDetected {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.statusOk       { color: var(--status-ok); }
+.statusUpdating { color: var(--status-info); }
+.statusDetected { color: var(--status-bad); }
+
+.statusOk svg,
+.statusUpdating svg,
+.statusDetected svg { flex: 0 0 auto; }
 
 .rating { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
 .stars { display: inline-flex; gap: 1px; }

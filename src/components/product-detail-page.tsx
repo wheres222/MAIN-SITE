@@ -11,6 +11,8 @@ import { productDisplayName, productHref } from "@/lib/product-route";
 import { ProductSeoSections } from "@/components/product-seo-sections";
 import type { ProductSeoContent } from "@/lib/product-seo-content";
 import { variantsFor } from "@/lib/cart";
+import { resolveStatusKind } from "@/lib/product-status";
+import { useProductStatuses } from "@/lib/use-product-statuses";
 import { useCart } from "@/components/cart-provider";
 import type { SellAuthPaymentMethod, SellAuthProduct, SellAuthVariant } from "@/types/sellauth";
 import styles from "./product-detail-page.module.css";
@@ -567,6 +569,16 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
   // SellAuth and was always "USD"; the display currency is the visitor's
   // choice now, so it is ignored.
   const { money: formatPrice, t } = usePreferences();
+
+  // Live detection status for this product, same feed the /status board uses.
+  const statusOverrides = useProductStatuses();
+  const statusKind = resolveStatusKind(product, statusOverrides);
+  const statusText =
+    statusKind === "undetected"
+      ? "Undetected (Working)"
+      : statusKind === "updating"
+        ? "Updating"
+        : "Detected";
   const { add: addToCart, openCart } = useCart();
   const [added, setAdded] = useState(false);
   const money = (value: number | null, _currency?: string): string =>
@@ -845,11 +857,23 @@ export function ProductDetailPage({ product, paymentMethods, seoContent, related
                 carries only what a purchase decision needs. */}
 
             <div className={styles.badgeRow}>
-              <span className={styles.badgeUndetected}>
+              {/* Live status, not a hardcoded claim. A product mid-update or
+                  detected has to say so here, on the page where the purchase
+                  actually happens. */}
+              <span
+                className={`${styles.statusBadge} ${
+                  statusKind === "undetected"
+                    ? styles.statusUndetected
+                    : statusKind === "updating"
+                      ? styles.statusUpdating
+                      : styles.statusDetected
+                }`}
+                aria-live="polite"
+              >
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z" />
                 </svg>
-                Undetected (Working)
+                {statusText}
               </span>
               <span className={styles.badgeDelivery}>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
