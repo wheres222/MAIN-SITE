@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { deliverOrder, isDeliveryConfigured } from "@/lib/delivery";
+
 import { sendOrderDeliveredEmail } from "@/lib/email";
 import { claimDeliveryRecord, setDeliveryRecord, failDeliveryRecord } from "@/lib/dedupe";
 import { logger } from "@/lib/logger";
@@ -71,46 +71,45 @@ export async function POST(request: Request) {
     return ok();
   }
 
-  // Bookkeeping first, and independently of delivery. Marking the order paid
-  // and paying the referral commission must not be gated on DELIVERY_API_KEY
-  // being set — that early return below is why a completed order never showed
-  // up in the buyer's account and never credited a referrer.
+  // Mark the order paid and pay any referral commission on it. Nothing used to
+  // do either, which is why a completed order never appeared in the buyer's
+  // account and no referrer was ever credited.
   //
   // Idempotent by construction: it only updates rows still in "pending", so a
   // SellAuth webhook retry updates nothing and cannot pay twice.
   await completeSellAuthOrder(orderId);
 
-  if (!isDeliveryConfigured()) {
-    logger.error("DELIVERY_API_KEY is not set.", { route: "webhook/sellauth", orderId });
-    return ok();
-  }
-
-  // Atomic claim via INSERT — unique constraint ensures only one handler proceeds.
-  // claimDeliveryRecord returns false if the row already exists (done, pending, or failed).
+  // SellAuth delivers the product itself when the invoice is paid, so there is
+  // nothing for us to fulfil on this path.
+  //
+  // This used to call deliverOrder(orderId, …) against reselling.pro. That was
+  // wrong twice over: the parameter is a reselling.pro *product* id, not a
+  // SellAuth *order* id, and reselling.pro no longer exists at all. The call
+  // failed on every completed order, which marked the delivery record failed —
+  // and /api/order/[orderId] reads that record, so buyers who had already
+  // received their key from SellAuth were shown "Delivery failed. Please
+  // contact support."
+  //
+  // The record is still claimed and marked done so that endpoint reports the
+  // truth, and so the confirmation email is sent exactly once per order.
   const claimed = await claimDeliveryRecord(orderId);
   if (!claimed) {
-    logger.info("Order delivery already claimed — skipping duplicate.", { route: "webhook/sellauth", orderId });
+    logger.info("Order already recorded — skipping duplicate.", { route: "webhook/sellauth", orderId });
     return ok();
   }
 
   try {
-    const result = await deliverOrder(orderId, customerEmail);
+    await setDeliveryRecord(orderId, "done");
+    logger.info("Order completed — delivered by SellAuth.", { route: "webhook/sellauth", orderId });
 
-    if (result.success) {
-      await setDeliveryRecord(orderId, "done", result.deliveryId ?? undefined);
-      logger.info("Order delivered.", { route: "webhook/sellauth", orderId, deliveryId: result.deliveryId });
-      if (customerEmail) {
-        sendOrderDeliveredEmail(customerEmail, orderId).catch((err) =>
-          logger.error("Failed to send delivery email.", { route: "webhook/sellauth", orderId, err: String(err) })
-        );
-      }
-    } else {
-      await failDeliveryRecord(orderId, result.message);
-      logger.error("Delivery failed.", { route: "webhook/sellauth", orderId, message: result.message });
+    if (customerEmail) {
+      sendOrderDeliveredEmail(customerEmail, orderId).catch((err) =>
+        logger.error("Failed to send delivery email.", { route: "webhook/sellauth", orderId, err: String(err) })
+      );
     }
   } catch (err) {
     await failDeliveryRecord(orderId, String(err));
-    logger.error("Unexpected error during delivery.", { route: "webhook/sellauth", orderId, err: String(err) });
+    logger.error("Unexpected error recording completion.", { route: "webhook/sellauth", orderId, err: String(err) });
   }
 
   // Always 200 — never let SellAuth see an error status that would cause retries.
