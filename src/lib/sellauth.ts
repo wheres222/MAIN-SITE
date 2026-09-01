@@ -1729,6 +1729,8 @@ export function buildCheckoutPayload(input: CheckoutRequestInput): {
 
 export async function createSellAuthCheckout(input: CheckoutRequestInput): Promise<{
   redirectUrl: string | null;
+  /** SellAuth's invoice id — the join key their order.completed webhook sends. */
+  invoiceId: string | null;
   raw: unknown;
 }> {
   if (!isSellAuthConfigured()) {
@@ -1786,8 +1788,38 @@ export async function createSellAuthCheckout(input: CheckoutRequestInput): Promi
 
   return {
     redirectUrl,
+    invoiceId: parseInvoiceId(response.data ?? response),
     raw: response.data ?? response,
   };
+}
+
+/**
+ * SellAuth's id for the invoice this checkout created.
+ *
+ * Their `order.completed` webhook identifies the order by this value, so it is
+ * the join key between a checkout we started and the payment that eventually
+ * confirms it. Read defensively for the same reason as everything else here —
+ * the field has appeared as both `invoice_id` and a nested `invoice.id`.
+ */
+function parseInvoiceId(response: unknown): string | null {
+  const record = asRecord(response);
+  const candidates = [
+    record.invoice_id,
+    record.invoiceId,
+    record.order_id,
+    record.orderId,
+    asRecord(record.invoice).id,
+    asRecord(record.order).id,
+    asRecord(record.data).invoice_id,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim()) return candidate.trim();
+    if (typeof candidate === "number" && Number.isFinite(candidate)) {
+      return String(candidate);
+    }
+  }
+  return null;
 }
 
 /**

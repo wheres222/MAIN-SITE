@@ -3,6 +3,7 @@ import { deliverOrder, isDeliveryConfigured } from "@/lib/delivery";
 import { sendOrderDeliveredEmail } from "@/lib/email";
 import { claimDeliveryRecord, setDeliveryRecord, failDeliveryRecord } from "@/lib/dedupe";
 import { logger } from "@/lib/logger";
+import { completeSellAuthOrder } from "@/lib/order-records";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,15 @@ export async function POST(request: Request) {
   if (event !== "order.completed" || !orderId) {
     return ok();
   }
+
+  // Bookkeeping first, and independently of delivery. Marking the order paid
+  // and paying the referral commission must not be gated on DELIVERY_API_KEY
+  // being set — that early return below is why a completed order never showed
+  // up in the buyer's account and never credited a referrer.
+  //
+  // Idempotent by construction: it only updates rows still in "pending", so a
+  // SellAuth webhook retry updates nothing and cannot pay twice.
+  await completeSellAuthOrder(orderId);
 
   if (!isDeliveryConfigured()) {
     logger.error("DELIVERY_API_KEY is not set.", { route: "webhook/sellauth", orderId });

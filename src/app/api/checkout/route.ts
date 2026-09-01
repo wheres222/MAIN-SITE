@@ -6,6 +6,8 @@ import { createNowPayment, CURRENCY_MAP, ALLOWED_CURRENCIES } from "@/lib/nowpay
 import { createStripeCheckoutSession } from "@/lib/stripe";
 import { createHash } from "crypto";
 import type { CheckoutRequestInput } from "@/types/sellauth";
+import { getViewer } from "@/lib/auth/guard";
+import { recordSellAuthOrder } from "@/lib/order-records";
 
 export const dynamic = "force-dynamic";
 
@@ -174,6 +176,23 @@ export async function POST(request: Request) {
         couponCode:    body.couponCode,
         items:         sanitizedItems,
       });
+
+      // Record the order against the buyer's account. This branch returns
+      // before the Stripe and crypto paths run, so without this nothing
+      // anywhere persists a SellAuth order — which is why /account/orders,
+      // /account/invoices and the dashboard were all permanently empty, and
+      // why no referral commission was ever paid.
+      //
+      // Awaited rather than fired and forgotten: the row has to exist before
+      // the webhook can find it, and SellAuth can complete a fast payment
+      // while we are still here.
+      const viewer = await getViewer();
+      await recordSellAuthOrder({
+        userId:    viewer.userId,
+        invoiceId: checkout.invoiceId,
+        items:     sanitizedItems,
+      });
+
       locks.set(dedupeKey, { status: "ready", updatedAt: Date.now(), redirectUrl: checkout.redirectUrl, raw: checkout.raw });
       return NextResponse.json({ success: true, message: checkout.redirectUrl ? "Checkout created successfully." : "Checkout created.", redirectUrl: checkout.redirectUrl, data: checkout.raw });
     }
